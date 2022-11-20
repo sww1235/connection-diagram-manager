@@ -9,7 +9,7 @@ use simple_logger::SimpleLogger;
 mod config;
 
 use config::Config;
-
+//https://stackoverflow.com/questions/66799905/how-to-make-some-structs-fields-mandatory-to-fill-and-others-optional-in-rust
 fn main() {
     //parse command line flags
     let cli = Cli::parse();
