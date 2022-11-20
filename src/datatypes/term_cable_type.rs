@@ -2,7 +2,7 @@ use super::{cable_type, connector_type, wire_type};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct CableType {
+pub struct TermCableType {
     pub manufacturer: String,
     pub model: String,
     pub part_number: String,
