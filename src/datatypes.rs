@@ -1,2 +1,9 @@
+pub mod cable_type;
 pub mod connector_type;
 pub mod equipment_connector;
+pub mod equipment_type;
+pub mod location_type;
+pub mod pathway_type;
+pub mod svg;
+pub mod term_cable_type;
+pub mod wire_type;

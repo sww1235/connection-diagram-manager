@@ -1,5 +1,5 @@
+use super::svg;
 use serde::{Deserialize, Serialize};
-
 //TODO: Make some of these fields enums
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct ConnectorType {
@@ -22,6 +22,6 @@ pub struct ConnectorType {
     pub pin_labels: Vec<String>,
     pub pin_colors: Vec<String>,
     pub pin_signal_type: Vec<String>,
-    //pub visual_rep: SVG, // TODO: add this type in
-    //pub pin_visual_rep: SVG
+    pub visual_rep: svg::Svg,
+    pub pin_visual_rep: svg::Svg,
 }
