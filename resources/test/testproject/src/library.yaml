@@ -1,0 +1,142 @@
+term_cable_type:
+  test1:
+    manufacturer: MarkerTek
+    supplier: MarkerTek
+    cable: 2MIC
+    nom_length: 10
+    length: 11
+    end1:
+      - type: XLR3M
+        termination:
+          - core: 1.1
+            pin: 1
+          - core: 1.2
+            pin: 2
+          - core: 1.3
+            pin: 3
+      - type: XLR3M
+        termination:
+          - core: 2.1
+            pin: 1
+          - core: 2.2
+            pin: 1
+          - core: 2.3
+            pin: 3
+    end2:
+      - type: XLR3M
+        termination:
+          - core: 1.1
+            pin: 1
+          - core: 1.2
+            pin: 2
+          - core: 1.3
+            pin: 3
+      - type: XLR3M
+        termination:
+          - core: 2.1
+            pin: 1
+          - core: 2.2
+            pin: 1
+          - core: 2.3
+            pin: 3
+  test2:
+    manufacturer: custom
+    wire: 12AWGTHHN
+    nom_length: 0.5
+    length: 0.5
+    end1:
+      - type: 12AWGFerrule
+        termination:
+          - core: 1
+            pin: 1
+    end2:
+      - type: 12AWGFerrule
+        termination:
+          - core: 1
+            pin: 1
+
+
+cable_type:
+  2MIC:
+    core:
+      1:
+        type: MIC
+        color: Red
+      2:
+        type: MIC
+        color: Green
+    manufacturer: Belden
+    diameter: 8
+    layer:
+      - layer_nbr: 2
+        type: insulation
+        material: nylon
+      - layer_nbr: 1
+        type: screen
+        material: copper
+
+  MIC:
+    core:
+      1:
+        type: 18AWGINSUL
+        color: Black
+      2:
+        type: 18AWGINSUL
+        color: Blue
+      3:
+        type: 18AWGBARE
+        color: Clear
+    manufacturer: Belden
+    diameter: 6.35 # 0.25in
+    layer:
+      - layer_nbr: 1
+        type: insulation
+        material: nylon
+
+
+
+
+wire_type:
+  18AWGINSUL:
+    material: copper
+    insulation_material: nylon
+    cross_sect_area: 0.82 # 18 AWG
+    stranded: true
+    insulated: true
+    num_strands: 10
+  18AWGBARE:
+    material: copper
+    insulated: false
+    cross_sect_area: 0.82
+    stranded: true
+    num_strands: 10
+  12AWGTHHN:
+    material: copper
+    insulated: true
+    stranded: true
+    insulation_material: PVC
+    wire_type_code: THWN
+    cross_sect_area: 3.31 # 12 AWG
+    num_strands: 19
+    insul_volt_rating: 600
+    insul_temp_rating: 90
+
+
+
+connector_type:
+  XLR3M:
+    manufacturer: Neutrik
+    model: XLR3M
+    mounting_type: cable
+    gender: male
+    pins:
+      - 1
+      - 2
+      - 3
+  12AWGFerrule:
+    manufacturer: any
+    mounting_type: cable
+    pins:
+      - 1
+
+

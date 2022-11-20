@@ -1,0 +1,6 @@
+library_files:
+  - test1
+  - test2
+  - test3
+
+no_default_libraries: true
