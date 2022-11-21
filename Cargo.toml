@@ -12,3 +12,11 @@ log = "0.4.17"
 serde = { version = "1.0.147", features = ["derive"] }
 serde_yaml = "0.9.14"
 simple_logger = "4.0.0"
+
+[lib]
+name = "cdm_core"
+path = "src/lib.rs"
+
+[[bin]]
+name = "cli"
+path = "src/main.rs"
