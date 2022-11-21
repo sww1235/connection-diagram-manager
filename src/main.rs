@@ -2,9 +2,13 @@ use std::path::PathBuf;
 
 use clap::Parser;
 
-use log::LevelFilter;
+use log::{debug, LevelFilter};
 
 use simple_logger::SimpleLogger;
+
+use std::fs::File;
+
+use cdm_core::datatypes;
 
 mod config;
 
@@ -48,9 +52,26 @@ fn main() {
         }
     };
 
-    println! {"{:?}", config}
+    debug! {"{:?}", config}
 
     //TODO: Parse project directory
+
+    let data_file = File::open(
+        cli.project_directory
+            .join("src")
+            .join("library.yaml")
+            .as_path(),
+    )
+    .expect("failed to open library file");
+
+    let data: datatypes::Data = match datatypes::data_parser(data_file) {
+        Ok(data) => data,
+        Err(e) => {
+            panic! {"failure to parse datafile. Error: {}", e}
+        }
+    };
+
+    println! {"{:?}", data}
 }
 
 #[derive(Parser)]
