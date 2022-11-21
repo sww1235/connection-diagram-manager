@@ -1,4 +1,4 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct Svg(String);
+pub struct Svg(Option<String>);
