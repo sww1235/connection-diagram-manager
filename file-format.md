@@ -183,9 +183,9 @@ cable_type: # dictonary of all available raw cable types.
 		cable_type_code: <str>		# SOOW, FC, FCC, TC, MC, AC, MC, UF, PLTC, MV, etc
 		cross_sect_area: <float>	# specified in mm^2. Outer area of cable
 		cross_section: <str>		# oval, circular, siamese
-		height: <float>				# height of cable if oval or siamese
-		width: <float>				# width of cable if oval or siamese
-		diameter: <float>			# diameter of cable if circular
+		height: <float>				# height of cable if oval or siamese, specified in mm
+		width: <float>				# width of cable if oval or siamese, specified in mm
+		diameter: <float>			# diameter of cable if circular, specified in mm
 
 		layer: # list of shields and insulation layers on outside of cable
 			layer_nbr: <int>			# counted from inside to outside of cable

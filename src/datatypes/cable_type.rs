@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use std::fmt;
+
 use std::collections::HashMap;
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct CableType {
@@ -33,4 +35,54 @@ pub struct CableLayer {
     pub volt_rating: Option<f64>,
     pub temp_rating: Option<f64>,
     pub color: Option<String>,
+}
+
+impl fmt::Display for CableType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Cable Type:")?;
+        if let Some(txt) = &self.manufacturer {
+            write!(f, "Manufacturer: {}", txt)?;
+        }
+        if let Some(txt) = &self.model {
+            write!(f, "Model: {}", txt)?;
+        }
+        if let Some(txt) = &self.part_number {
+            write!(f, "Part Number: {}", txt)?;
+        }
+        if let Some(txt) = &self.manufacturer_part_number {
+            write!(f, "Manufacturer Part Number: {}", txt)?;
+        }
+        if let Some(txt) = &self.supplier {
+            write!(f, "Supplier: {}", txt)?;
+        }
+        if let Some(txt) = &self.supplier_part_number {
+            write!(f, "Supplier Part Number: {}", txt)?;
+        }
+        if let Some(txt) = &self.cable_type_code {
+            write!(f, "Cable Type: {}", txt)?;
+        }
+        if let Some(txt) = &self.cross_sect_area {
+            write!(f, "Cross Sectional Area: {:.2} mm^2", txt)?;
+        }
+        if let Some(txt) = &self.cross_section {
+            write!(f, "Cross Section: {}", txt)?;
+        }
+        if let Some(txt) = &self.height {
+            write!(f, "Height: {} mm", txt)?;
+        }
+        if let Some(txt) = &self.width {
+            write!(f, "Width: {} mm", txt)?;
+        }
+        if let Some(txt) = &self.diameter {
+            write!(f, "Diameter: {} mm", txt)?;
+        }
+        //TODO: implement loops here to print all layers of cable
+        //if let Some(txt) = &self.model {
+        //    write!(f, "Model: {}", txt)?;
+        //}
+        //if let Some(txt) = &self.model {
+        //    write!(f, "Model: {}", txt)?;
+        //}
+        Ok(())
+    }
 }
