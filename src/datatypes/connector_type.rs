@@ -28,59 +28,59 @@ pub struct ConnectorType {
 }
 impl fmt::Display for ConnectorType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Connector Type:")?;
+        writeln!(f, "Connector Type:")?;
         if let Some(foo) = &self.manufacturer {
-            write!(f, "Manufacturer: {}", foo)?;
+            writeln!(f, "Manufacturer: {}", foo)?;
         }
         if let Some(foo) = &self.model {
-            write!(f, "Model: {}", foo)?;
+            writeln!(f, "Model: {}", foo)?;
         }
         if let Some(foo) = &self.part_number {
-            write!(f, "Part Number: {}", foo)?;
+            writeln!(f, "Part Number: {}", foo)?;
         }
         if let Some(foo) = &self.manufacturer_part_number {
-            write!(f, "Manufacturer Part Number: {}", foo)?;
+            writeln!(f, "Manufacturer Part Number: {}", foo)?;
         }
         if let Some(foo) = &self.supplier {
-            write!(f, "Supplier: {}", foo)?;
+            writeln!(f, "Supplier: {}", foo)?;
         }
         if let Some(foo) = &self.supplier_part_number {
-            write!(f, "Supplier Part Number: {}", foo)?;
+            writeln!(f, "Supplier Part Number: {}", foo)?;
         }
         if let Some(foo) = &self.description {
-            write!(f, "Description: {}", foo)?;
+            writeln!(f, "Description: {}", foo)?;
         }
         if let Some(foo) = &self.mount_type {
-            write!(f, "Mount Type: {}", foo)?;
+            writeln!(f, "Mount Type: {}", foo)?;
         }
         if let Some(foo) = &self.panel_cutout {
-            write!(f, "Panel Cutout: {}", foo)?;
+            writeln!(f, "Panel Cutout: {}", foo)?;
         }
         if let Some(foo) = &self.gender {
-            write!(f, "Gender: {}", foo)?;
+            writeln!(f, "Gender: {}", foo)?;
         }
         if let Some(foo) = &self.height {
-            write!(f, "Height: {:.2} mm", foo)?;
+            writeln!(f, "Height: {:.2} mm", foo)?;
         }
         if let Some(foo) = &self.width {
-            write!(f, "Width: {:.2} mm", foo)?;
+            writeln!(f, "Width: {:.2} mm", foo)?;
         }
         if let Some(foo) = &self.diameter {
-            write!(f, "Diameter: {:.2} mm", foo)?;
+            writeln!(f, "Diameter: {:.2} mm", foo)?;
         }
         if let Some(foo) = &self.pin_count {
-            write!(f, "Pin Count: {}", foo)?;
+            writeln!(f, "Pin Count: {}", foo)?;
         }
         //TODO: implement loop here to print all pins
         //if let Some(foo) = &self.pins {
-        //    write!(f, "Panel Cutout: {}", foo)?;
+        //    writeln!(f, "Panel Cutout: {}", foo)?;
         //}
         //TODO: implement loops here to print all layers of cable
         //if let Some(foo) = &self.model {
-        //    write!(f, "Model: {}", foo)?;
+        //    writeln!(f, "Model: {}", foo)?;
         //}
         //if let Some(foo) = &self.model {
-        //    write!(f, "Model: {}", foo)?;
+        //    writeln!(f, "Model: {}", foo)?;
         //}
         //TODO: implement svg validation rules here
         Ok(())

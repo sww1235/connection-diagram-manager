@@ -12,21 +12,21 @@ pub struct EquipmentConnector {
 }
 impl fmt::Display for EquipmentConnector {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Equipment Connector:")?;
+        writeln!(f, "Equipment Connector:")?;
         if let Some(foo) = &self.connector {
-            write!(f, "Connector: {}", foo)?;
+            writeln!(f, "Connector: {}", foo)?;
         }
         if let Some(foo) = &self.direction {
-            write!(f, "Direction: {}", foo)?;
+            writeln!(f, "Direction: {}", foo)?;
         }
         if let Some(foo) = &self.face {
-            write!(f, "Face: {}", foo)?;
+            writeln!(f, "Face: {}", foo)?;
         }
         if let Some(foo) = &self.x {
-            write!(f, "X coordinate: {}", foo)?;
+            writeln!(f, "X coordinate: {}", foo)?;
         }
         if let Some(foo) = &self.y {
-            write!(f, "Y coordinate: {}", foo)?;
+            writeln!(f, "Y coordinate: {}", foo)?;
         }
         Ok(())
     }

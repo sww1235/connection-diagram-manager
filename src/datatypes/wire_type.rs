@@ -23,64 +23,64 @@ pub struct WireType {
 }
 impl fmt::Display for WireType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Wire Type:")?;
+        writeln!(f, "Wire Type:")?;
         if let Some(foo) = &self.manufacturer {
-            write!(f, "Manufacturer: {}", foo)?;
+            writeln!(f, "Manufacturer: {}", foo)?;
         }
         if let Some(foo) = &self.model {
-            write!(f, "Model: {}", foo)?;
+            writeln!(f, "Model: {}", foo)?;
         }
         if let Some(foo) = &self.part_number {
-            write!(f, "Part Number: {}", foo)?;
+            writeln!(f, "Part Number: {}", foo)?;
         }
         if let Some(foo) = &self.manufacturer_part_number {
-            write!(f, "Manufacturer Part Number: {}", foo)?;
+            writeln!(f, "Manufacturer Part Number: {}", foo)?;
         }
         if let Some(foo) = &self.supplier {
-            write!(f, "Supplier: {}", foo)?;
+            writeln!(f, "Supplier: {}", foo)?;
         }
         if let Some(foo) = &self.supplier_part_number {
-            write!(f, "Supplier Part Number: {}", foo)?;
+            writeln!(f, "Supplier Part Number: {}", foo)?;
         }
         if let Some(foo) = &self.conductor_material {
-            write!(f, "Conductor Material: {}", foo)?;
+            writeln!(f, "Conductor Material: {}", foo)?;
         }
         if let Some(foo) = &self.insulated {
-            write!(f, "Insulated: {}", foo)?;
+            writeln!(f, "Insulated: {}", foo)?;
         }
         if let Some(foo) = &self.insulation_material {
-            write!(f, "Insulation Material: {}", foo)?;
+            writeln!(f, "Insulation Material: {}", foo)?;
         }
         if let Some(foo) = &self.wire_type_code {
-            write!(f, "Wire Type Code: {}", foo)?;
+            writeln!(f, "Wire Type Code: {}", foo)?;
         }
         if let Some(foo) = &self.cross_sect_area {
             if f.alternate() {
                 //TODO: implement mm^2 to AWG conversion, with auht and kcm display
-                write!(f, "Cross Sectional Area: {} AWG", foo)?;
+                writeln!(f, "Cross Sectional Area: {} AWG", foo)?;
             } else {
-                write!(f, "Cross Sectional Area: {:.2} mm^2", foo)?;
+                writeln!(f, "Cross Sectional Area: {:.2} mm^2", foo)?;
             }
         }
         if let Some(foo) = &self.stranded {
-            write!(f, "Stranded: {}", foo)?;
+            writeln!(f, "Stranded: {}", foo)?;
         }
         if let Some(foo) = &self.num_strands {
-            write!(f, "Number of Strands: {}", foo)?;
+            writeln!(f, "Number of Strands: {}", foo)?;
         }
         if let Some(foo) = &self.strand_cross_sect_area {
             if f.alternate() {
                 //TODO: implement mm^2 to AWG conversion, with auht and kcm display
-                write!(f, "Strand Cross Sectional Area: {} AWG", foo)?;
+                writeln!(f, "Strand Cross Sectional Area: {} AWG", foo)?;
             } else {
-                write!(f, "Strand Cross Sectional Area: {:.2} mm^2", foo)?;
+                writeln!(f, "Strand Cross Sectional Area: {:.2} mm^2", foo)?;
             }
         }
         if let Some(foo) = &self.insul_volt_rating {
-            write!(f, "Insulation Voltage Rating: {}V", foo)?;
+            writeln!(f, "Insulation Voltage Rating: {}V", foo)?;
         }
         if let Some(foo) = &self.insul_temp_rating {
-            write!(f, "Insulation Temperature Rating: {}℃", foo)?;
+            writeln!(f, "Insulation Temperature Rating: {}℃", foo)?;
         }
         Ok(())
     }

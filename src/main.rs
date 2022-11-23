@@ -71,7 +71,7 @@ fn main() {
         }
     };
 
-    println! {"{:?}", data}
+    println! {"{}", data}
 }
 
 #[derive(Parser)]

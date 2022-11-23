@@ -15,30 +15,30 @@ pub struct LocationType {
 }
 impl fmt::Display for LocationType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Connector Type:")?;
+        writeln!(f, "Connector Type:")?;
         if let Some(foo) = &self.manufacturer {
-            write!(f, "Manufacturer: {}", foo)?;
+            writeln!(f, "Manufacturer: {}", foo)?;
         }
         if let Some(foo) = &self.model {
-            write!(f, "Model: {}", foo)?;
+            writeln!(f, "Model: {}", foo)?;
         }
         if let Some(foo) = &self.part_number {
-            write!(f, "Part Number: {}", foo)?;
+            writeln!(f, "Part Number: {}", foo)?;
         }
         if let Some(foo) = &self.manufacturer_part_number {
-            write!(f, "Manufacturer Part Number: {}", foo)?;
+            writeln!(f, "Manufacturer Part Number: {}", foo)?;
         }
         if let Some(foo) = &self.supplier {
-            write!(f, "Supplier: {}", foo)?;
+            writeln!(f, "Supplier: {}", foo)?;
         }
         if let Some(foo) = &self.supplier_part_number {
-            write!(f, "Supplier Part Number: {}", foo)?;
+            writeln!(f, "Supplier Part Number: {}", foo)?;
         }
         if let Some(foo) = &self.description {
-            write!(f, "Description: {}", foo)?;
+            writeln!(f, "Description: {}", foo)?;
         }
         if let Some(foo) = &self.material {
-            write!(f, "Material: {}", foo)?;
+            writeln!(f, "Material: {}", foo)?;
         }
         Ok(())
     }
