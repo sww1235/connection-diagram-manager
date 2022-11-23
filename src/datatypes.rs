@@ -10,7 +10,7 @@ pub mod wire_type;
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::fs::{self, File};
+use std::fs::{self};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Data {

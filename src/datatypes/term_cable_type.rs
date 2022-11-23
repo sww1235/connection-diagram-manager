@@ -1,6 +1,8 @@
 use super::{cable_type, connector_type, wire_type};
 use serde::{Deserialize, Serialize};
 
+use std::fmt;
+
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct TermCableType {
     pub manufacturer: Option<String>,
@@ -9,6 +11,7 @@ pub struct TermCableType {
     pub manufacturer_part_number: Option<String>,
     pub supplier: Option<String>,
     pub supplier_part_number: Option<String>,
+    pub description: Option<String>,
     #[serde(rename = "cable_type")]
     pub cable: Option<cable_type::CableType>,
     #[serde(rename = "wire_type")]
@@ -31,4 +34,46 @@ pub struct TermCableConnectorTermination {
 pub struct TermCableConnector {
     pub connector_type: Option<connector_type::ConnectorType>,
     pub terminations: Option<TermCableConnectorTermination>,
+}
+impl fmt::Display for TermCableType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Connector Type:")?;
+        if let Some(foo) = &self.manufacturer {
+            write!(f, "Manufacturer: {}", foo)?;
+        }
+        if let Some(foo) = &self.model {
+            write!(f, "Model: {}", foo)?;
+        }
+        if let Some(foo) = &self.part_number {
+            write!(f, "Part Number: {}", foo)?;
+        }
+        if let Some(foo) = &self.manufacturer_part_number {
+            write!(f, "Manufacturer Part Number: {}", foo)?;
+        }
+        if let Some(foo) = &self.supplier {
+            write!(f, "Supplier: {}", foo)?;
+        }
+        if let Some(foo) = &self.supplier_part_number {
+            write!(f, "Supplier Part Number: {}", foo)?;
+        }
+        if let Some(foo) = &self.description {
+            write!(f, "Description: {}", foo)?;
+        }
+        if let Some(foo) = &self.cable {
+            write!(f, "Cable Type: {}", foo)?;
+        }
+        if let Some(foo) = &self.wire {
+            write!(f, "Wire Type: {}", foo)?;
+        }
+        if let Some(foo) = &self.nominal_length {
+            //TODO: implement units functions to do proper conversions
+            write!(f, "Nominal Length: {}mm", foo)?;
+        }
+        if let Some(foo) = &self.actual_length {
+            //TODO: implement units functions to do proper conversions
+            write!(f, "Actual Length: {} mm", foo)?;
+        }
+        //TODO: implement loops for cable ends.
+        Ok(())
+    }
 }

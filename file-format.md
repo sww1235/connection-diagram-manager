@@ -57,7 +57,7 @@ connector_type: # dictionary of all available connector types
 		manufacturer: <str>			# manufacturer name
 		model: <str>				# connector model description
 		description: <str>			# free text field for larger descriptions of connectors
-		mounting_type: <str>		# cable, pcb through hole, pcb surface mount, panel
+		mount_type: <str>			# cable, pcb through hole, pcb surface mount, panel
 		panel_cutout: <str>			# D, A, etc. optional
 		pn: <str>					# [internal] part number
 		mpn: <str>					# manufacturer part number

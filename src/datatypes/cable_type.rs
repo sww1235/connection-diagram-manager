@@ -40,48 +40,53 @@ pub struct CableLayer {
 impl fmt::Display for CableType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Cable Type:")?;
-        if let Some(txt) = &self.manufacturer {
-            write!(f, "Manufacturer: {}", txt)?;
+        if let Some(foo) = &self.manufacturer {
+            write!(f, "Manufacturer: {}", foo)?;
         }
-        if let Some(txt) = &self.model {
-            write!(f, "Model: {}", txt)?;
+        if let Some(foo) = &self.model {
+            write!(f, "Model: {}", foo)?;
         }
-        if let Some(txt) = &self.part_number {
-            write!(f, "Part Number: {}", txt)?;
+        if let Some(foo) = &self.part_number {
+            write!(f, "Part Number: {}", foo)?;
         }
-        if let Some(txt) = &self.manufacturer_part_number {
-            write!(f, "Manufacturer Part Number: {}", txt)?;
+        if let Some(foo) = &self.manufacturer_part_number {
+            write!(f, "Manufacturer Part Number: {}", foo)?;
         }
-        if let Some(txt) = &self.supplier {
-            write!(f, "Supplier: {}", txt)?;
+        if let Some(foo) = &self.supplier {
+            write!(f, "Supplier: {}", foo)?;
         }
-        if let Some(txt) = &self.supplier_part_number {
-            write!(f, "Supplier Part Number: {}", txt)?;
+        if let Some(foo) = &self.supplier_part_number {
+            write!(f, "Supplier Part Number: {}", foo)?;
         }
-        if let Some(txt) = &self.cable_type_code {
-            write!(f, "Cable Type: {}", txt)?;
+        if let Some(foo) = &self.cable_type_code {
+            write!(f, "Cable Type: {}", foo)?;
         }
-        if let Some(txt) = &self.cross_sect_area {
-            write!(f, "Cross Sectional Area: {:.2} mm^2", txt)?;
+        if let Some(foo) = &self.cross_sect_area {
+            if f.alternate() {
+                //TODO: implement mm^2 to awg conversion function. include function for changing units
+                write!(f, "Cross Sectional Area: {:.2} AWG", foo)?;
+            } else {
+                write!(f, "Cross Sectional Area: {:.2} mm^2", foo)?;
+            }
         }
-        if let Some(txt) = &self.cross_section {
-            write!(f, "Cross Section: {}", txt)?;
+        if let Some(foo) = &self.cross_section {
+            write!(f, "Cross Section: {}", foo)?;
         }
-        if let Some(txt) = &self.height {
-            write!(f, "Height: {} mm", txt)?;
+        if let Some(foo) = &self.height {
+            write!(f, "Height: {:.2} mm", foo)?;
         }
-        if let Some(txt) = &self.width {
-            write!(f, "Width: {} mm", txt)?;
+        if let Some(foo) = &self.width {
+            write!(f, "Width: {:.2} mm", foo)?;
         }
-        if let Some(txt) = &self.diameter {
-            write!(f, "Diameter: {} mm", txt)?;
+        if let Some(foo) = &self.diameter {
+            write!(f, "Diameter: {:.2} mm", foo)?;
         }
         //TODO: implement loops here to print all layers of cable
-        //if let Some(txt) = &self.model {
-        //    write!(f, "Model: {}", txt)?;
+        //if let Some(foo) = &self.model {
+        //    write!(f, "Model: {}", foo)?;
         //}
-        //if let Some(txt) = &self.model {
-        //    write!(f, "Model: {}", txt)?;
+        //if let Some(foo) = &self.model {
+        //    write!(f, "Model: {}", foo)?;
         //}
         Ok(())
     }
