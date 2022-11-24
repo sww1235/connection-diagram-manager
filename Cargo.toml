@@ -18,5 +18,5 @@ name = "cdm_core"
 path = "src/lib.rs"
 
 [[bin]]
-name = "cli"
+name = "cdm_cli"
 path = "src/main.rs"

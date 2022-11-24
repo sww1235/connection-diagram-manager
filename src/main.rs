@@ -1,3 +1,10 @@
+//! # Connection Diagram Manager Command Line Interface (`cdm_cli`)
+//!
+//! `cdm_cli` is a command line interface for Connection Diagram Manager
+//! that allows for basic operations directly, as well as launching both
+//! a TUI and a proper GUI.
+
+#![warn(missing_docs)]
 use std::path::PathBuf;
 
 use clap::Parser;
