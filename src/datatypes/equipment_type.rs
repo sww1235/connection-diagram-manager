@@ -22,39 +22,39 @@ pub struct EquipmentType {
 impl fmt::Display for EquipmentType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Equipment Type:")?;
-        if let Some(foo) = &self.manufacturer {
-            write!(f, "Manufacturer: {}", foo)?;
+        if let Some(manufacturer) = &self.manufacturer {
+            write!(f, "Manufacturer: {}", manufacturer)?;
         }
-        if let Some(foo) = &self.model {
-            write!(f, "Model: {}", foo)?;
+        if let Some(model) = &self.model {
+            write!(f, "Model: {}", model)?;
         }
-        if let Some(foo) = &self.part_number {
-            write!(f, "Part Number: {}", foo)?;
+        if let Some(part_number) = &self.part_number {
+            write!(f, "Part Number: {}", part_number)?;
         }
-        if let Some(foo) = &self.manufacturer_part_number {
-            write!(f, "Manufacturer Part Number: {}", foo)?;
+        if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
+            write!(f, "Manufacturer Part Number: {}", manufacturer_part_number)?;
         }
-        if let Some(foo) = &self.supplier {
-            write!(f, "Supplier: {}", foo)?;
+        if let Some(supplier) = &self.supplier {
+            write!(f, "Supplier: {}", supplier)?;
         }
-        if let Some(foo) = &self.supplier_part_number {
-            write!(f, "Supplier Part Number: {}", foo)?;
+        if let Some(supplier_part_number) = &self.supplier_part_number {
+            write!(f, "Supplier Part Number: {}", supplier_part_number)?;
         }
-        if let Some(foo) = &self.description {
-            write!(f, "Description: {}", foo)?;
+        if let Some(description) = &self.description {
+            write!(f, "Description: {}", description)?;
         }
-        if let Some(foo) = &self.mount_type {
-            if foo.len() == 1 {
-                write!(f, "Mount Type: {}", foo[0])?;
+        if let Some(mount_type) = &self.mount_type {
+            if mount_type.len() == 1 {
+                write!(f, "Mount Type: {}", mount_type[0])?;
             } else {
                 write!(f, "Mount Types:")?;
-                for foo_item in foo.iter() {
-                    write!(f, "\t- {}", foo_item)?;
+                for mount_type_item in mount_type.iter() {
+                    write!(f, "\t- {}", mount_type_item)?;
                 }
             }
         }
-        if let Some(foo) = &self.equip_type {
-            write!(f, "Equipment Type: {}", foo)?;
+        if let Some(equip_type) = &self.equip_type {
+            write!(f, "Equipment Type: {}", equip_type)?;
         }
         //TODO: implement loops over faces and connectors
         //TODO: implement svg validation rules here

@@ -38,40 +38,40 @@ pub struct TermCableConnector {
 impl fmt::Display for TermCableType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Connector Type:")?;
-        if let Some(foo) = &self.manufacturer {
-            write!(f, "Manufacturer: {}", foo)?;
+        if let Some(manufacturer) = &self.manufacturer {
+            write!(f, "Manufacturer: {}", manufacturer)?;
         }
-        if let Some(foo) = &self.model {
-            write!(f, "Model: {}", foo)?;
+        if let Some(model) = &self.model {
+            write!(f, "Model: {}", model)?;
         }
-        if let Some(foo) = &self.part_number {
-            write!(f, "Part Number: {}", foo)?;
+        if let Some(part_number) = &self.part_number {
+            write!(f, "Part Number: {}", part_number)?;
         }
-        if let Some(foo) = &self.manufacturer_part_number {
-            write!(f, "Manufacturer Part Number: {}", foo)?;
+        if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
+            write!(f, "Manufacturer Part Number: {}", manufacturer_part_number)?;
         }
-        if let Some(foo) = &self.supplier {
-            write!(f, "Supplier: {}", foo)?;
+        if let Some(supplier) = &self.supplier {
+            write!(f, "Supplier: {}", supplier)?;
         }
-        if let Some(foo) = &self.supplier_part_number {
-            write!(f, "Supplier Part Number: {}", foo)?;
+        if let Some(supplier_part_number) = &self.supplier_part_number {
+            write!(f, "Supplier Part Number: {}", supplier_part_number)?;
         }
-        if let Some(foo) = &self.description {
-            write!(f, "Description: {}", foo)?;
+        if let Some(description) = &self.description {
+            write!(f, "Description: {}", description)?;
         }
-        if let Some(foo) = &self.cable {
-            write!(f, "Cable Type: {}", foo)?;
+        if let Some(cable) = &self.cable {
+            write!(f, "Cable Type: {}", cable)?;
         }
-        if let Some(foo) = &self.wire {
-            write!(f, "Wire Type: {}", foo)?;
+        if let Some(wire) = &self.wire {
+            write!(f, "Wire Type: {}", wire)?;
         }
-        if let Some(foo) = &self.nominal_length {
+        if let Some(nominal_length) = &self.nominal_length {
             //TODO: implement units functions to do proper conversions
-            write!(f, "Nominal Length: {}mm", foo)?;
+            write!(f, "Nominal Length: {}mm", nominal_length)?;
         }
-        if let Some(foo) = &self.actual_length {
+        if let Some(actual_length) = &self.actual_length {
             //TODO: implement units functions to do proper conversions
-            write!(f, "Actual Length: {} mm", foo)?;
+            write!(f, "Actual Length: {} mm", actual_length)?;
         }
         //TODO: implement loops for cable ends.
         Ok(())

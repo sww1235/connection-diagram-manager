@@ -13,20 +13,20 @@ pub struct EquipmentConnector {
 impl fmt::Display for EquipmentConnector {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Equipment Connector:")?;
-        if let Some(foo) = &self.connector {
-            writeln!(f, "Connector: {}", foo)?;
+        if let Some(connector) = &self.connector {
+            writeln!(f, "Connector: {}", connector)?;
         }
-        if let Some(foo) = &self.direction {
-            writeln!(f, "Direction: {}", foo)?;
+        if let Some(direction) = &self.direction {
+            writeln!(f, "Direction: {}", direction)?;
         }
-        if let Some(foo) = &self.face {
-            writeln!(f, "Face: {}", foo)?;
+        if let Some(face) = &self.face {
+            writeln!(f, "Face: {}", face)?;
         }
-        if let Some(foo) = &self.x {
-            writeln!(f, "X coordinate: {}", foo)?;
+        if let Some(x) = &self.x {
+            writeln!(f, "X coordinate: {}", x)?;
         }
-        if let Some(foo) = &self.y {
-            writeln!(f, "Y coordinate: {}", foo)?;
+        if let Some(y) = &self.y {
+            writeln!(f, "Y coordinate: {}", y)?;
         }
         Ok(())
     }

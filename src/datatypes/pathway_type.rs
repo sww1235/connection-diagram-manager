@@ -20,38 +20,39 @@ pub struct PathwayType {
 impl fmt::Display for PathwayType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Connector Type:")?;
-        if let Some(foo) = &self.manufacturer {
-            writeln!(f, "Manufacturer: {}", foo)?;
+        if let Some(manufacturer) = &self.manufacturer {
+            writeln!(f, "Manufacturer: {}", manufacturer)?;
         }
-        if let Some(foo) = &self.model {
-            writeln!(f, "Model: {}", foo)?;
+        if let Some(model) = &self.model {
+            writeln!(f, "Model: {}", model)?;
         }
-        if let Some(foo) = &self.part_number {
-            writeln!(f, "Part Number: {}", foo)?;
+        if let Some(part_number) = &self.part_number {
+            writeln!(f, "Part Number: {}", part_number)?;
         }
-        if let Some(foo) = &self.manufacturer_part_number {
-            writeln!(f, "Manufacturer Part Number: {}", foo)?;
+        if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
+            writeln!(f, "Manufacturer Part Number: {}", manufacturer_part_number)?;
         }
-        if let Some(foo) = &self.supplier {
-            writeln!(f, "Supplier: {}", foo)?;
+        if let Some(supplier) = &self.supplier {
+            writeln!(f, "Supplier: {}", supplier)?;
         }
-        if let Some(foo) = &self.supplier_part_number {
-            writeln!(f, "Supplier Part Number: {}", foo)?;
+        if let Some(supplier_part_number) = &self.supplier_part_number {
+            writeln!(f, "Supplier Part Number: {}", supplier_part_number)?;
         }
-        if let Some(foo) = &self.description {
-            writeln!(f, "Description: {}", foo)?;
+        if let Some(description) = &self.description {
+            writeln!(f, "Description: {}", description)?;
         }
-        if let Some(foo) = &self.size {
-            writeln!(f, "Size: {}", foo)?;
+        if let Some(size) = &self.size {
+            writeln!(f, "Size: {}", size)?;
         }
-        if let Some(foo) = &self.trade_size {
-            writeln!(f, "Trade Size: {}", foo)?;
+        if let Some(trade_size) = &self.trade_size {
+            writeln!(f, "Trade Size: {}", trade_size)?;
         }
-        if let Some(foo) = &self.cross_sect_area {
-            writeln!(f, "Cross Sectional Area: {:.2} mm^2", foo)?;
+        //TODO: implement unit conversion function
+        if let Some(cross_sect_area) = &self.cross_sect_area {
+            writeln!(f, "Cross Sectional Area: {:.2} mm^2", cross_sect_area)?;
         }
-        if let Some(foo) = &self.material {
-            writeln!(f, "Material: {}", foo)?;
+        if let Some(material) = &self.material {
+            writeln!(f, "Material: {}", material)?;
         }
         Ok(())
     }
