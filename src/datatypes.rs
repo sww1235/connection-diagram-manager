@@ -1,11 +1,20 @@
+///`cable_type` represents a cable with multiple cores
 pub mod cable_type;
+/// `connector_type` represents a connector
 pub mod connector_type;
+/// `equipment_connector represents a connector instance on a piece of equipment
 pub mod equipment_connector;
+/// `equipment_type` represents a type of equipment
 pub mod equipment_type;
+/// `location_type` represents a type of location
 pub mod location_type;
+/// `pathway_type` represents a type of pathway for wires or cables
 pub mod pathway_type;
+/// `svg` represents a complete SVG image
 pub mod svg;
+/// `term_cable_type` represents a cable that has connectors assembled on to it
 pub mod term_cable_type;
+/// `wire_type` represents an individual wire with optional insulation
 pub mod wire_type;
 
 use serde::{Deserialize, Serialize};
@@ -13,6 +22,13 @@ use std::collections::HashMap;
 use std::fmt;
 use std::fs::{self};
 
+/// `Data` represents all data that can be parsed from one source file.
+/// the `append` method allows a `Data` struct to be appended onto another one
+/// by merging the invididual hashmaps. This allows you to have one main
+/// variable in your main function that holds all the data for your program
+///
+/// The reason all this data has to live in one struct, is to allow the
+/// YAML document to be deserialized correctly.
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Data {
     #[serde(rename = "wire_type")]
@@ -32,6 +48,13 @@ pub struct Data {
     //TODO: create structs for individual values
 }
 
+impl Data {
+    //https://users.rust-lang.org/t/merge-two-structs/68889
+    //https://stackoverflow.com/questions/27244465/merge-two-hashmaps-in-rust
+    /// `append` merges the inner hashmaps of 2 `Data` structs
+    pub fn append(&mut self, other: Data) {}
+}
+/// `data_parser` deserializes a provided file handle into a Data Struct
 pub fn data_parser(data_file: fs::File) -> Result<Data, serde_yaml::Error> {
     let data: Data = serde_yaml::from_reader(data_file)?;
     Ok(data)

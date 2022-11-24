@@ -155,7 +155,8 @@ wire_type:	# dictonary of all available wire types.
 		insulated: <bool>
 		insulation_material: <str>	# PVC, Nylon, thermoplastic, etc
 		wire_type_code: <str>		# THWN, XHHN, etc
-		cross_sect_area: <float>	# specified in mm^2.
+		overall_cross_sect_area: <float> # including insulation, specified in mm^2
+		conductor_ cross_sect_area: <float>	# the cross sectional area of the conductor, specified in mm^2.
 		stranded: <bool>
 		num_strands: <int>			# number of strands if cable is stranded. defaults to 1 if cable is solid
 		insul_volt_rating: <float>	# voltage rating of insulation.

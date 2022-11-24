@@ -2,23 +2,54 @@ use serde::{Deserialize, Serialize};
 
 use std::fmt;
 
+/// `WireType` represents a particular type of wire
+///
+/// Not all fields have to be populated, and some are
+/// mainly provided for logical reasons rather than
+/// functional (model/part number/manufacturer part number
+/// may all be equivalent in some cases)
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct WireType {
+    /// The manufacturer of the wire
     pub manufacturer: Option<String>,
+    /// The model or type of wire
     pub model: Option<String>,
+    /// The part number of this wire type
     pub part_number: Option<String>,
+    /// The part number assigned by the manufacturer
     pub manufacturer_part_number: Option<String>,
+    /// Where this wire was purchased from
     pub supplier: Option<String>,
+    /// The part number the supplier uses
     pub supplier_part_number: Option<String>,
+    /// The material the conductor or central element
+    /// of the wire is made out of
+    //TODO: rename this to account for fiber optics
     pub conductor_material: Option<String>,
+    /// If the wire is insulated
     pub insulated: Option<bool>,
+    /// What material the wire is insulated with
     pub insulation_material: Option<String>,
+    /// The standard wire type code (THHN, XHHW, SIS, etc)
     pub wire_type_code: Option<String>,
-    pub cross_sect_area: Option<f64>,
+    /// Conductor cross sectional area.
+    /// specified in mm^2
+    pub conductor_cross_sect_area: Option<f64>,
+    /// Overall wire cross sectional area, incluidng insulation.
+    /// specified in mm^2
+    pub overall_cross_sect_area: Option<f64>,
+    /// If conductor is stranded
     pub stranded: Option<bool>,
+    /// How many strands is conductor made of
     pub num_strands: Option<u64>,
+    /// cross sectional area of individual strand.
+    /// specified in mm^2
     pub strand_cross_sect_area: Option<f64>,
+    /// Insulation voltage rating.
+    /// Specified in volts
     pub insul_volt_rating: Option<u64>,
+    /// Insulation temperature rating.
+    /// Specified in ℃
     pub insul_temp_rating: Option<u64>,
 }
 impl fmt::Display for WireType {
@@ -54,13 +85,28 @@ impl fmt::Display for WireType {
         if let Some(wire_type_code) = &self.wire_type_code {
             writeln!(f, "Wire Type Code: {}", wire_type_code)?;
         }
-        if let Some(cross_sect_area) = &self.cross_sect_area {
+        if let Some(conductor_cross_sect_area) = &self.conductor_cross_sect_area {
             if f.alternate() {
                 //TODO: implement mm^2 to AWG conversion, with auht and kcm display
-                writeln!(f, "Cross Sectional Area: {} AWG", cross_sect_area)?;
+                writeln!(
+                    f,
+                    "Conductor Cross Sectional Area: {} AWG",
+                    conductor_cross_sect_area
+                )?;
             } else {
-                writeln!(f, "Cross Sectional Area: {:.2} mm^2", cross_sect_area)?;
+                writeln!(
+                    f,
+                    "Conductor Cross Sectional Area: {:.2} mm^2",
+                    conductor_cross_sect_area
+                )?;
             }
+        }
+        if let Some(overall_cross_sect_area) = &self.overall_cross_sect_area {
+            writeln!(
+                f,
+                "Overall Cross Sectional Area: {:.2} mm^2",
+                overall_cross_sect_area
+            )?;
         }
         if let Some(stranded) = &self.stranded {
             writeln!(f, "Stranded: {}", stranded)?;
