@@ -17,6 +17,10 @@ pub mod term_cable_type;
 /// `wire_type` represents an individual wire with optional insulation
 pub mod wire_type;
 
+/// `equipment` represents an instance of an EquipmentType. This is a physical item
+/// you hold in your hand.
+pub mod equipment;
+
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt;
