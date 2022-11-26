@@ -19,6 +19,9 @@ pub struct Equipment {
     //actual equipment type
     /// The type of equipment of the instance
     pub equip_type: Option<equipment_type::EquipmentType>,
+    /// The string key of the instance_type. Converted into the actual type during the validation
+    /// step of the parsing.
+    equip_type_string: Option<String>,
     /// The structured name of the equipment
     pub identifier: Option<String>,
     /// The particular mounting type of this instance
@@ -60,6 +63,7 @@ pub struct Equipment {
     /// Specified in ℃
     pub insul_temp_rating: Option<u64>,
 }
+
 impl fmt::Display for Equipment {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Wire Type:")?;

@@ -6,10 +6,11 @@ All file formats are currently based on YAML, (and inspired by
 Connection Diagram Manager uses a directory structure to represent an
 individual project. All YAML files in the `src` subdirectory will be parsed for
 any of the following information. It can be all in one file, or split up into
-multiple files. There can be multiple instances of each top level dictionary
-which are parsed and combined as much as possible. If there are unique values
-that conflict, the user will be notified with the file names and line numbers
-that caused the conflict.
+multiple files. Each file must not contain duplicate top level dictonaries due
+to parsing limitations, howeverthey can be duplicated across multiple files. (I
+didn't want to write a custom deserializer). If there are unique values that
+conflict, the user will be notified with the file names and line numbers that
+caused the conflict.
 
 In addition, additional files can be specified in the project config
 file that can contain a limited subset of top level dictionaries that contain
