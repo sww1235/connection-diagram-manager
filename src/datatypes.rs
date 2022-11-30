@@ -63,19 +63,25 @@ struct Data {
 /// `Datastore` represents all data that is read from all source files
 #[derive(Serialize, Debug, Default)]
 pub struct Datastore {
-    /// contains all
+    /// contains all wire types read in from file, and/or added in via program logic
     #[serde(rename = "wire_type")]
     pub wire_types: HashMap<String, wire_type::WireType>,
+    /// contains all cable types read in from file, and/or added in via program logic
     #[serde(rename = "cable_type")]
     pub cable_types: HashMap<String, cable_type::CableType>,
+    /// contains all terminated cable types read in from file, and/or added in via program logic
     #[serde(rename = "term_cable_type")]
     pub term_cable_types: HashMap<String, term_cable_type::TermCableType>,
+    /// contains all location types read in from file, and/or added in via program logic
     #[serde(rename = "location_type")]
     pub location_types: HashMap<String, location_type::LocationType>,
+    /// contains all connector types read in from file, and/or added in via program logic
     #[serde(rename = "connector_type")]
     pub connector_types: HashMap<String, connector_type::ConnectorType>,
+    /// contains all equipment types read in from file, and/or added in via program logic
     #[serde(rename = "equipment_type")]
     pub equipment_types: HashMap<String, equipment_type::EquipmentType>,
+    /// contains all pathway types read in from file
     #[serde(rename = "pathway_type")]
     pub pathway_types: HashMap<String, pathway_type::PathwayType>,
     //TODO: create structs for individual values
@@ -177,7 +183,7 @@ fn proj_dir_parse_inner(
             proj_dir_parse_inner(path, datastore)?;
         } else if path.is_file() {
             let data = data_parser(File::open(&path)?)?;
-            Datastore::append(datastore, data, Some(path));
+            datastore.append(data, Some(path));
         }
     }
     Ok(())

@@ -2,28 +2,68 @@ use super::svg;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 //TODO: Make some of these fields enums
+/// `ConnectorType` represents a particular type of connector.
+///
+/// Connector can represent more than just a metal or plastic blob on the end of a cable, it can
+/// represent a screw terminal on a piece of equipment or a hole for wire to be entered in.
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct ConnectorType {
+    /// Manufacturer of Connector
     pub manufacturer: Option<String>,
+    /// Model of Connector
     pub model: Option<String>,
+    /// Part Number of Connector
     pub part_number: Option<String>,
+    /// Manufacturer's Part Number
     pub manufacturer_part_number: Option<String>,
+    /// Supplier of Connector
     pub supplier: Option<String>,
+    /// Supplier's Part Number
     pub supplier_part_number: Option<String>,
+    /// Optional text description
     pub description: Option<String>,
+    /// Mounting method of connector
+    ///
+    /// Cable, PCB through hole, PCB surface mout, panel
     pub mount_type: Option<String>,
+    /// Panel Cutout of connector if it is panel mounted
+    ///
+    /// D, A, etc
     pub panel_cutout: Option<String>,
+    /// Gender of connector
+    ///
+    /// Male, Female, RPMale, RPFemale, Hermaphrodidic, unknown
     pub gender: Option<String>,
+    /// height of connector in mm
     pub height: Option<f64>,
+    /// width of connector in mm
     pub width: Option<f64>,
+    /// depth of connector in mm
     pub depth: Option<f64>,
+    /// diameter of circular connectors in mm
     pub diameter: Option<f64>,
+    //TODO: rethink how pins are specified. Maybe have a pin/contact type, with pin number, label, signal
+    //type, etc
+    /// total number of pins, if omitted, will be set to length of list below
     pub pin_count: Option<u64>,
+    /// list of pin numbers/names
+    ///
+    /// if omitted, is autofilled with [1,2,3, ..., pincount]
     pub pins: Option<Vec<String>>,
+    /// if omitted, is autofilled with blanks
     pub pin_labels: Option<Vec<String>>,
+    /// colors assigned to pins
+    ///
+    /// goes in order of pin count/pin list, if fewer colors are specified than pins, end of list
+    /// will have no colors specified.
     pub pin_colors: Option<Vec<String>>,
+    /// signal type of each pin.
+    /// goes in order of pin count/pin list, if fewer colors are specified than pins, end of list
+    /// will have no colors specified.
     pub pin_signal_type: Option<Vec<String>>,
+    /// overall diagram of connector TODO: figure out what angle this should be
     pub visual_rep: Option<svg::Svg>,
+    /// representation of pin
     pub pin_visual_rep: Option<svg::Svg>,
 }
 impl fmt::Display for ConnectorType {

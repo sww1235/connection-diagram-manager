@@ -4,19 +4,40 @@ use std::collections::HashMap;
 
 use std::fmt;
 //TODO: Make some of these fields enums
+/// EquipmentType represents a type of equipment
+///
+/// Anything from a rackmount piece of gear to an outlet or terminal block
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct EquipmentType {
+    /// Manufacturer of Equipment
     pub manufacturer: Option<String>,
+    /// Model of Equipment
     pub model: Option<String>,
+    /// Part Number of Equipment
     pub part_number: Option<String>,
+    /// Manufacturer's Part Number
     pub manufacturer_part_number: Option<String>,
+    /// Supplier of Equipment
     pub supplier: Option<String>,
+    /// Supplier's Part Number
     pub supplier_part_number: Option<String>,
+    /// Optional text description
     pub description: Option<String>,
+    // TODO maybe make this just one string and require different equipmentType records per
+    // mounting type
+    /// List of mounting options for equipment
     pub mount_type: Option<Vec<String>>,
+    /// Equipment Type (audio, video, mix, lighting, networking, patch panel, power)
     pub equip_type: Option<String>,
+    /// TODO: create a separate face type
+    /// faces represents a visual representation of each face of a piece of equipment
     pub faces: Option<HashMap<String, svg::Svg>>,
+    /// visual representation of the equipment
+    // TODO: figure out what angle to standardize on, or
+    // just rely on the face vis_rep
     pub visual_rep: Option<svg::Svg>,
+    /// list of connectors in equipment. Contains position data for the connectors
+    // TODO: Merge into face type
     pub connectors: Option<HashMap<String, equipment_connector::EquipmentConnector>>,
 }
 impl fmt::Display for EquipmentType {

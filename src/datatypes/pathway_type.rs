@@ -2,19 +2,34 @@ use serde::{Deserialize, Serialize};
 
 use std::fmt;
 
+/// PathwayType represents a route for wires and cables to take from one
+/// [`LocationType`](super::location_type::LocationType) to another.
+///
+/// Examples of Pathways include, conduit, cable tray, free air
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct PathwayType {
+    /// Manufacturer of PathwayType
     pub manufacturer: Option<String>,
+    /// Model of PathwayType
     pub model: Option<String>,
+    /// Part Number of Pathway Type
     pub part_number: Option<String>,
+    /// Manufacturer's Part Number of Pathway Type
     pub manufacturer_part_number: Option<String>,
+    /// Supplier of Pathway Type
     pub supplier: Option<String>,
+    /// Supplier's Part Number of Pathway Type
     pub supplier_part_number: Option<String>,
+    /// Optional description text
     pub description: Option<String>,
+    /// actual size of pathway
     pub size: Option<String>,
+    /// Trade Size of pathway
     pub trade_size: Option<String>,
     //TODO: add in height, width, etc
+    /// Inner cross sectional area of pathway
     pub cross_sect_area: Option<f64>,
+    /// Main material of pathway
     pub material: Option<String>,
 }
 impl fmt::Display for PathwayType {
