@@ -15,9 +15,7 @@ use simple_logger::SimpleLogger;
 
 use cdm_core::datatypes;
 
-mod config;
-
-use config::Config;
+use cdm_core::config::Config;
 //https://stackoverflow.com/questions/66799905/how-to-make-some-structs-fields-mandatory-to-fill-and-others-optional-in-rust
 fn main() {
     //parse command line flags

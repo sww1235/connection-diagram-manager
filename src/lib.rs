@@ -3,6 +3,9 @@
 //! of the program
 
 #![warn(missing_docs)]
+/// `config` contains configuration structs that are used for
+/// the application binaries
+pub mod config;
 /// `datatypes` contains all custom types for the
 /// `cdm_core` library.
 ///
