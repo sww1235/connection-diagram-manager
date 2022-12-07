@@ -9,10 +9,14 @@ use serde::{Deserialize, Serialize};
 
 // debug allows easy printing
 // TODO: implement better display functionality
+/// `Config` represents configuration options for the various cdm binary programs
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Config {
-    library_files: Vec<PathBuf>,
-    no_default_libraries: bool,
+    /// `library_files` contains an optional list of additional files to read into the main
+    /// [`Datastore`](crate::datatypes::Datastore)
+    pub library_files: Vec<PathBuf>,
+    /// `no_default_libraries` prevents loading of default libraries provided with the application
+    pub no_default_libraries: bool,
 }
 
 fn read_config_file(project_directory: &Path) -> Option<fs::File> {
@@ -82,6 +86,7 @@ fn read_config_file(project_directory: &Path) -> Option<fs::File> {
     }
 }
 impl Config {
+    /// `parse_config` reads and selects the correct config file within the project directory
     pub fn parse_config(project_directory: &Path) -> Result<Self, serde_yaml::Error> {
         let config_file = match read_config_file(project_directory) {
             Some(file) => Some(file),
