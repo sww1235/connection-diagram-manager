@@ -21,14 +21,13 @@ pub mod wire_type;
 /// you hold in your hand.
 pub mod equipment;
 
+use log::{trace, warn};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt;
 use std::fs::{self, File};
 use std::io;
 use std::path;
-
-use log::trace;
 
 /// `Data` represents all data that can be parsed from one source file.
 ///
@@ -92,27 +91,100 @@ impl Datastore {
     //https://stackoverflow.com/questions/27244465/merge-two-hashmaps-in-rust
     /// `append` takes a `Data` struct and merges it into a `Datastore` struct
     /// while also de-Optioning it
-    fn append(&mut self, other: Data, filepath: Option<path::PathBuf>) {
+    fn append(&mut self, other: Data, filepath: path::PathBuf) {
         // wire_types
         if let Some(wire_types) = other.wire_types {
             for (k, v) in wire_types {
                 if self.wire_types.contains_key(&k) {
+                    warn! {"WireType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
                     //TODO: do something: ignore dupe, prompt user for merge, try to merge
                     //automatically
                 } else {
-                    trace! {"Inserted key: {:?}, value: {:?} into main datastore.",k,v}
+                    trace! {"Inserted WireType : {}, value: {:#?} into main datastore.",k,v}
                     self.wire_types.insert(k, v);
                 }
             }
-        } // wire_types
+        }
+        // cable_types
         if let Some(cable_types) = other.cable_types {
             for (k, v) in cable_types {
                 if self.cable_types.contains_key(&k) {
+                    warn! {"CableType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
                     //TODO: do something: ignore dupe, prompt user for merge, try to merge
                     //automatically
                 } else {
-                    trace! {"Inserted key: {:?}, value: {:?} into main datastore.",k,v}
+                    trace! {"Inserted CableType: {}, value: {:#?} into main datastore.",k,v}
                     self.cable_types.insert(k, v);
+                }
+            }
+        }
+
+        // term_cable_types
+        if let Some(term_cable_types) = other.term_cable_types {
+            for (k, v) in term_cable_types {
+                if self.term_cable_types.contains_key(&k) {
+                    warn! {"TermCableType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted TermCableType: {}, value: {:#?} into main datastore.",k,v}
+                    self.term_cable_types.insert(k, v);
+                }
+            }
+        }
+
+        // location_types
+        if let Some(location_types) = other.location_types {
+            for (k, v) in location_types {
+                if self.location_types.contains_key(&k) {
+                    warn! {"LocationType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted LocationType: {}, value: {:#?} into main datastore.",k,v}
+                    self.location_types.insert(k, v);
+                }
+            }
+        }
+
+        // connector_types
+        if let Some(connector_types) = other.connector_types {
+            for (k, v) in connector_types {
+                if self.connector_types.contains_key(&k) {
+                    warn! {"ConnectorType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted ConnectorType: {}, value: {:#?} into main datastore.",k,v}
+                    self.connector_types.insert(k, v);
+                }
+            }
+        }
+
+        // equipment_types
+        if let Some(equipment_types) = other.equipment_types {
+            for (k, v) in equipment_types {
+                if self.equipment_types.contains_key(&k) {
+                    warn! {"EquipmentType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted EquipmentType: {}, value: {:#?} into main datastore.",k,v}
+                    self.equipment_types.insert(k, v);
+                }
+            }
+        }
+
+        // pathway_types
+        if let Some(pathway_types) = other.pathway_types {
+            for (k, v) in pathway_types {
+                if self.pathway_types.contains_key(&k) {
+                    warn! {"PathwayType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted PathwayType: {}, value: {:#?} into main datastore.",k,v}
+                    self.pathway_types.insert(k, v);
                 }
             }
         }
@@ -141,6 +213,7 @@ fn data_parser(data_file: fs::File) -> Result<Data, serde_yaml::Error> {
 }
 /// ParserError wraps serde_yaml::Error and io::Error to allow them both to be returned from one
 /// function
+#[derive(Debug)]
 pub enum ParserError {
     /// Wrapper for serde_yaml::Error
     YamlError(serde_yaml::Error),
@@ -148,13 +221,22 @@ pub enum ParserError {
     IOError(io::Error),
 }
 
+impl fmt::Display for ParserError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "{}", self)?;
+        Ok(())
+    }
+}
+
 impl From<serde_yaml::Error> for ParserError {
     fn from(err: serde_yaml::Error) -> ParserError {
+        trace! {"{}", err}
         ParserError::YamlError(err)
     }
 }
 impl From<io::Error> for ParserError {
     fn from(err: io::Error) -> ParserError {
+        trace! {"{}", err}
         ParserError::IOError(err)
     }
 }
@@ -185,6 +267,10 @@ fn proj_dir_parse_inner(
             let data = data_parser(File::open(&path)?)?;
             datastore.append(data, Some(path));
         }
+    } else {
+        trace! {"path at else: {}", path.display()}
+        return Ok(());
+        //panic! {"this shouldn't ever happen"}
     }
     Ok(())
 }
