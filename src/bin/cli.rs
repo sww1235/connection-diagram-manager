@@ -57,9 +57,14 @@ fn main() {
 
     debug! {"{:#?}", config}
 
-    let mut datastore = datatypes::parse_project_dir(cli.project_directory);
+    let mut datastore = match datatypes::parse_project_dir(cli.project_directory) {
+        Ok(datastore) => datastore,
+        Err(e) => {
+            panic! {"Failure to read in project directory. Error: {}", e}
+        }
+    };
 
-    //println! {"{:#?}", data}
+    println! {"{:#?}", datastore}
 }
 
 #[derive(Parser)]
