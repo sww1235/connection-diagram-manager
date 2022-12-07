@@ -257,18 +257,26 @@ fn proj_dir_parse_inner(
     inner_dir: path::PathBuf,
     datastore: &mut Datastore,
 ) -> Result<(), ParserError> {
-    for entry in fs::read_dir(inner_dir)? {
-        let entry = entry?; // read_dir returns result
-        let path = entry.path();
-
-        if path.is_dir() {
+    let ext = match inner_dir.extension() {
+        Some(ext) => match ext.to_str() {
+            Some(ext) => ext,
+            None => panic! {"os_str failed to parse to valid utf-8"},
+        },
+        None => "",
+    };
+    if inner_dir.is_file() && (ext == "yaml" || ext == "yml") {
+        trace! {"path at is_file: {}", inner_dir.display()}
+        let data = data_parser(File::open(&inner_dir)?)?;
+        datastore.append(data, inner_dir);
+    } else if inner_dir.is_dir() {
+        for entry in fs::read_dir(inner_dir)? {
+            let entry = entry?; // read_dir returns result
+            let path = entry.path();
+            trace! {"path of entry in inner_dir: {}", path.display()}
             proj_dir_parse_inner(path, datastore)?;
-        } else if path.is_file() {
-            let data = data_parser(File::open(&path)?)?;
-            datastore.append(data, Some(path));
         }
     } else {
-        trace! {"path at else: {}", path.display()}
+        trace! {"path at else: {}", inner_dir.display()}
         return Ok(());
         //panic! {"this shouldn't ever happen"}
     }
