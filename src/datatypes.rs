@@ -228,35 +228,38 @@ impl fmt::Display for ParserError {
     }
 }
 
-impl From<serde_yaml::Error> for ParserError {
-    fn from(err: serde_yaml::Error) -> ParserError {
-        trace! {"{}", err}
-        ParserError::YamlError(err)
-    }
-}
-impl From<io::Error> for ParserError {
-    fn from(err: io::Error) -> ParserError {
-        trace! {"{}", err}
-        ParserError::IOError(err)
-    }
-}
+//impl From<serde_yaml::Error> for ParserError {
+//    fn from(err: serde_yaml::Error) -> ParserError {
+//        trace! {"{}", err}
+//        ParserError::YamlError(err)
+//    }
+//}
+//impl From<io::Error> for ParserError {
+//    fn from(err: io::Error) -> ParserError {
+//        trace! {"{}", err}
+//        ParserError::IOError(err)
+//    }
+//}
 
 /// `project_dir_parser` takes in a project directory and parses all source files found within
-pub fn parse_project_dir(project_dir: path::PathBuf) -> Result<Datastore, ParserError> {
+pub fn parse_project_dir(project_dir: path::PathBuf) -> Result<Datastore, io::Error> {
     let mut datastore = Datastore::new();
     if project_dir.as_path().is_dir() {
         proj_dir_parse_inner(project_dir, &mut datastore)?;
+        Ok(datastore)
     } else {
+        Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            format! {"Provided filepath not a directory {}", project_dir.display()},
+        ))
         //TODO: return is not directory error
     }
-
-    Ok(datastore)
 }
 
 fn proj_dir_parse_inner(
     inner_dir: path::PathBuf,
     datastore: &mut Datastore,
-) -> Result<(), ParserError> {
+) -> Result<(), io::Error> {
     let ext = match inner_dir.extension() {
         Some(ext) => match ext.to_str() {
             Some(ext) => ext,
@@ -266,13 +269,23 @@ fn proj_dir_parse_inner(
     };
     if inner_dir.is_file() && (ext == "yaml" || ext == "yml") {
         trace! {"path at is_file: {}", inner_dir.display()}
-        let data = data_parser(File::open(&inner_dir)?)?;
+        let file_handle = File::open(&inner_dir)?;
+        let data = match data_parser(file_handle) {
+            Ok(data) => data,
+            Err(error) => {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    format! {"Parsing yaml file {} failed: {}", inner_dir.display(), error},
+                ))
+            }
+        };
         datastore.append(data, inner_dir);
     } else if inner_dir.is_dir() {
-        for entry in fs::read_dir(inner_dir)? {
+        for entry in fs::read_dir(&inner_dir)? {
             let entry = entry?; // read_dir returns result
             let path = entry.path();
             trace! {"path of entry in inner_dir: {}", path.display()}
+            trace! {"{}", inner_dir.display()}
             proj_dir_parse_inner(path, datastore)?;
         }
     } else {
@@ -280,6 +293,7 @@ fn proj_dir_parse_inner(
         return Ok(());
         //panic! {"this shouldn't ever happen"}
     }
+
     Ok(())
 }
 
