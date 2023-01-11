@@ -29,12 +29,12 @@ use std::fs::{self, File};
 use std::io;
 use std::path;
 
-/// `Data` represents all data that can be parsed from one source file.
+/// `DataFile` represents all data that can be parsed from one source file.
 ///
 /// The reason all this data has to live in one struct, is to allow the
 /// YAML document to be deserialized correctly.
 #[derive(Serialize, Deserialize, Debug, Default)]
-struct Data {
+struct DataFile {
     /// stores all WireTypes read in from file
     #[serde(rename = "wire_type")]
     wire_types: Option<HashMap<String, wire_type::WireType>>,
@@ -91,7 +91,7 @@ impl Datastore {
     //https://stackoverflow.com/questions/27244465/merge-two-hashmaps-in-rust
     /// `append` takes a `Data` struct and merges it into a `Datastore` struct
     /// while also de-Optioning it
-    fn append(&mut self, other: Data, filepath: path::PathBuf) {
+    fn append(&mut self, other: DataFile, filepath: path::PathBuf) {
         // wire_types
         if let Some(wire_types) = other.wire_types {
             for (k, v) in wire_types {
@@ -206,8 +206,8 @@ impl Datastore {
 }
 
 /// `data_parser` deserializes a provided file handle into a Data Struct
-fn data_parser(data_file: fs::File) -> Result<Data, serde_yaml::Error> {
-    let data: Data = serde_yaml::from_reader(data_file)?;
+fn data_parser(data_file: fs::File) -> Result<DataFile, serde_yaml::Error> {
+    let data: DataFile = serde_yaml::from_reader(data_file)?;
     //TODO: validate data and translate to actual types from strings
     Ok(data)
 }
@@ -297,7 +297,7 @@ fn proj_dir_parse_inner(
     Ok(())
 }
 
-impl fmt::Display for Data {
+impl fmt::Display for DataFile {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if let Some(wire_types) = &self.wire_types {
             for (k, v) in wire_types {
