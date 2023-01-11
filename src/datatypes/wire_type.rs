@@ -2,6 +2,8 @@ use serde::{Deserialize, Serialize};
 
 use std::fmt;
 
+//TODO: move insulation color from wire to wire_type
+
 /// `WireType` represents a particular type of wire
 ///
 /// Not all fields have to be populated, and some are

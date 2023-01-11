@@ -4,6 +4,8 @@ use std::fmt;
 
 use std::collections::HashMap;
 
+use super::wire_type;
+
 // TODO: allow for multiple cables inside cable
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has one
 /// core, then it is a wire, not a cable.
@@ -42,14 +44,16 @@ pub struct CableType {
     /// vector of exterior insulation/shielding layers
     pub layers: Option<Vec<CableLayer>>,
 }
+//https://stackoverflow.com/questions/67594909/multiple-possible-types-for-a-serializable-structs-field
+//
 
-/// `CableCore` represents an individual conductor, strength member or optical fiber in a cable
-#[derive(Serialize, Deserialize, Debug, Default)]
-pub struct CableCore {
-    /// cable or wire type. TODO: change this to struct type
-    pub core_type: Option<String>,
-    /// insulation color of core
-    pub color: Option<String>,
+/// `CableCore` represents an individual conductor, strength member or optical fiber in a cable.
+#[derive(Serialize, Deserialize, Debug)]
+pub enum CableCore {
+    /// `WireType`
+    WireType(wire_type::WireType),
+    /// `CableType`
+    CableType(CableType),
 }
 
 /// `CableLayer` represents an insulation or shield layer of the entire cable
@@ -57,14 +61,14 @@ pub struct CableCore {
 pub struct CableLayer {
     /// layer number, counted from inside to outside of cable, 1 indexed
     pub layer_number: Option<u64>,
-    /// Insulation, Semiconductor, shield, screen, concentric neutral
+    /// Insulation, Semiconductor, shield, screen, concentric neutral. TODO: change this to Enum
     pub layer_type: Option<String>,
     /// `Material of CableLayer`
     pub material: Option<String>,
     /// Voltage rating for insuation layer
-    pub volt_rating: Option<f64>,
+    pub volt_rating: Option<u64>,
     /// Temperature rating for insulation layer, specified in C TODO: fix this with proper unicode
-    pub temp_rating: Option<f64>,
+    pub temp_rating: Option<u64>,
     /// color of CableLayer
     pub color: Option<String>,
 }
