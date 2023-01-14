@@ -4,12 +4,19 @@
 //! that allows for basic operations directly, as well as launching both
 //! a TUI and a proper GUI.
 
+//TODO:
+//- change datafile parsing to parse individual files, and keep track of which files, which
+//values came from.
+//- restrict library info and src info from being in the same file.
+//- separate out file parsing data structures from actual data structures used in program
+//- Use RC and refcell for recursive multiple owner references
+
 #![warn(missing_docs)]
 use std::path::PathBuf;
 
 use std::collections::HashMap;
 
-use cdm_core::datatypes::{
+use cdm_core::datatypes::internal_types::{
     cable_type::{CableCore, CableLayer, CableType},
     wire_type::WireType,
 };
@@ -20,7 +27,7 @@ use log::{debug, error, LevelFilter};
 
 use simple_logger::SimpleLogger;
 
-use cdm_core::datatypes::{self, Datastore};
+use cdm_core::datatypes::internal_types::{self, Datastore};
 
 use cdm_core::config::Config;
 //https://stackoverflow.com/questions/66799905/how-to-make-some-structs-fields-mandatory-to-fill-and-others-optional-in-rust
@@ -64,16 +71,16 @@ fn main() {
 
     debug! {"{:#?}", config}
 
-    let mut datastore = match datatypes::parse_project_dir(cli.project_directory) {
-        Ok(datastore) => datastore,
-        Err(e) => {
-            //TODO: better handle errors here
-            error! {"Failure to read in project directory. Error: {}", e}
-            return;
-        }
-    };
+    //let mut datastore = match datatypes::parse_project_dir(cli.project_directory) {
+    //    Ok(datastore) => datastore,
+    //    Err(e) => {
+    //        //TODO: better handle errors here
+    //        error! {"Failure to read in project directory. Error: {}", e}
+    //        return;
+    //    }
+    //};
 
-    println! {"{:#?}", datastore}
+    //println! {"{:#?}", datastore}
 
     let mut datastore2 = Datastore::new();
 
