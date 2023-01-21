@@ -1,13 +1,14 @@
-use super::{equipment_connector, svg};
-use serde::{Deserialize, Serialize};
+use super::{equipment_connector::EquipmentConnector, svg::Svg};
 use std::collections::HashMap;
 
+use std::cell::RefCell;
 use std::fmt;
+use std::rc::Rc;
 //TODO: Make some of these fields enums
 /// EquipmentType represents a type of equipment
 ///
 /// Anything from a rackmount piece of gear to an outlet or terminal block
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Debug, Default)]
 pub struct EquipmentType {
     /// Manufacturer of Equipment
     pub manufacturer: Option<String>,

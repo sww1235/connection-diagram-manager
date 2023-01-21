@@ -1,5 +1,3 @@
-use serde::{Deserialize, Serialize};
-
 use std::fmt;
 
 //TODO: create physical location stuff
@@ -7,7 +5,7 @@ use std::fmt;
 ///
 /// Examples of LocationType include junction boxes, racks, panels, etc.
 /// It does not include places these are located.
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Debug, Default)]
 pub struct LocationType {
     /// Manufacturer of LocationType
     pub manufacturer: Option<String>,

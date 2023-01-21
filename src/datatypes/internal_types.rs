@@ -60,8 +60,8 @@ struct DataFile {
 }
 
 /// `Datastore` represents all data that is read from all source files
-#[derive(Serialize, Debug, Default)]
-pub struct Datastore {
+#[derive(Debug, Default)]
+pub struct Library {
     /// contains all wire types read in from file, and/or added in via program logic
     #[serde(rename = "wire_type")]
     pub wire_types: HashMap<String, wire_type::WireType>,

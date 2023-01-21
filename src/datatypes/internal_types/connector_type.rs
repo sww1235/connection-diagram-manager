@@ -1,12 +1,15 @@
 use super::svg;
-use serde::{Deserialize, Serialize};
+
+use std::cell::RefCell;
 use std::fmt;
+use std::rc::Rc;
+
 //TODO: Make some of these fields enums
 /// `ConnectorType` represents a particular type of connector.
 ///
 /// Connector can represent more than just a metal or plastic blob on the end of a cable, it can
 /// represent a screw terminal on a piece of equipment or a hole for wire to be entered in.
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Debug, Default)]
 pub struct ConnectorType {
     /// Manufacturer of Connector
     pub manufacturer: Option<String>,
