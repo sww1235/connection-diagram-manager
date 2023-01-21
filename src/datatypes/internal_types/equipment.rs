@@ -17,6 +17,8 @@ pub struct Equipment {
     //TODO figure out how to convert from
     //string specified in yaml file to
     //actual equipment type
+    /// Internal `id` of equipment instance
+    pub id: String,
     /// The type of equipment of the instance
     pub equip_type: Option<equipment_type::EquipmentType>,
     /// The string key of the instance_type. Converted into the actual type during the validation

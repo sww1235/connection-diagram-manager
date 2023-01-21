@@ -10,6 +10,8 @@ use std::rc::Rc;
 /// Anything from a rackmount piece of gear to an outlet or terminal block
 #[derive(Debug, Default)]
 pub struct EquipmentType {
+    /// Internal ID of `EquipmentType`
+    pub id: String,
     /// Manufacturer of Equipment
     pub manufacturer: Option<String>,
     /// Model of Equipment

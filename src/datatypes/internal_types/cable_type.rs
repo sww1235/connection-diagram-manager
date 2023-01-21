@@ -2,6 +2,7 @@ use super::super::util_types::CrossSection;
 use super::wire_type::WireType;
 
 use std::cell::RefCell;
+use std::fmt;
 use std::rc::Rc;
 
 // TODO: allow for multiple cables inside cable
@@ -9,6 +10,8 @@ use std::rc::Rc;
 /// core, then it is a wire, not a cable.
 #[derive(Debug, Default)]
 pub struct CableType {
+    /// Unique ID of `CableType`
+    pub id: String,
     /// Manufacturer of Cable
     pub manufacturer: Option<String>,
     /// Model of Cable

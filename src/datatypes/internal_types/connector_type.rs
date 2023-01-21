@@ -11,6 +11,8 @@ use std::rc::Rc;
 /// represent a screw terminal on a piece of equipment or a hole for wire to be entered in.
 #[derive(Debug, Default)]
 pub struct ConnectorType {
+    /// Internal ID of ConnectorType
+    pub id: String,
     /// Manufacturer of Connector
     pub manufacturer: Option<String>,
     /// Model of Connector

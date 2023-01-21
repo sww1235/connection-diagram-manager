@@ -5,6 +5,8 @@ use std::fmt;
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
 #[derive(Debug, Default)]
 pub struct TermCableType {
+    /// Internal ID of `TermCableType`
+    pub id: String,
     /// Manufacturer of Terminated cable
     pub manufacturer: Option<String>,
     /// Model of Terminated Cable
