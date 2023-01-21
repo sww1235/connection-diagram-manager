@@ -33,7 +33,7 @@ pub struct CableType {
     /// Cable cross section shape
     ///
     /// Oval, circular, siamese
-    pub cross_section: Option<String>,
+    pub cross_section: Option<CrossSection>,
     /// height of cable in mm
     pub height: Option<f64>,
     /// width of cable in mm
@@ -41,20 +41,20 @@ pub struct CableType {
     /// diameter of cable in mm
     pub diameter: Option<f64>,
     /// map of cores in cable
-    pub cable_core: Option<HashMap<String, CableCore>>,
+    pub cable_core: Option<Vec<CableCore>>,
     /// vector of exterior insulation/shielding layers
     pub layers: Option<Vec<CableLayer>>,
 }
+
 //https://stackoverflow.com/questions/67594909/multiple-possible-types-for-a-serializable-structs-field
 //
-
 /// `CableCore` represents an individual conductor, strength member or optical fiber in a cable.
 #[derive(Debug)]
 pub enum CableCore {
     /// `WireType`
-    WireType(wire_type::WireType),
+    WireType(Rc<RefCell<WireType>>),
     /// `CableType`
-    CableType(CableType),
+    CableType(Rc<RefCell<CableType>>),
 }
 
 /// `CableLayer` represents an insulation or shield layer of the entire cable

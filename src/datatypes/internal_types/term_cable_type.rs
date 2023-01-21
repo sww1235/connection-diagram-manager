@@ -1,6 +1,8 @@
 use super::{cable_type::CableType, connector_type::ConnectorType, wire_type::WireType};
 
+use std::cell::RefCell;
 use std::fmt;
+use std::rc::Rc;
 
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
 #[derive(Debug, Default)]
@@ -56,9 +58,9 @@ pub struct TermCableConnectorTermination {
 #[derive(Debug, Default)]
 pub struct TermCableConnector {
     /// connector_type represents the connector type that is on the end of a TermCable
-    pub connector_type: Option<connector_type::ConnectorType>,
+    pub connector_type: Option<Rc<RefCell<ConnectorType>>>,
     /// terminations represents the pin/core mapping for this connector
-    pub terminations: Option<TermCableConnectorTermination>,
+    pub terminations: Option<Rc<RefCell<TermCableConnectorTermination>>>,
 }
 impl fmt::Display for TermCableType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -84,11 +86,11 @@ impl fmt::Display for TermCableType {
         if let Some(description) = &self.description {
             write!(f, "Description: {}", description)?;
         }
-        if let Some(cable) = &self.cable {
-            write!(f, "Cable Type: {}", cable)?;
-        }
-        if let Some(wire) = &self.wire {
-            write!(f, "Wire Type: {}", wire)?;
+        if let Some(wire_cable) = &self.wire_cable {
+            match wire_cable {
+                WireCable::CableType(cable) => write!(f, "Cable Type: {}", cable.borrow())?,
+                WireCable::WireType(wire) => write!(f, "Wire Type: {}", wire.borrow())?,
+            }
         }
         if let Some(nominal_length) = &self.nominal_length {
             //TODO: implement units functions to do proper conversions
