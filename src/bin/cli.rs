@@ -14,11 +14,15 @@
 #![warn(missing_docs)]
 use std::path::PathBuf;
 
-use std::collections::HashMap;
+use std::cell::RefCell;
+use std::rc::Rc;
 
-use cdm_core::datatypes::internal_types::{
-    cable_type::{CableCore, CableLayer, CableType},
-    wire_type::WireType,
+use cdm_core::datatypes::{
+    internal_types::{
+        cable_type::{CableCore, CableLayer, CableType},
+        wire_type::WireType,
+    },
+    util_types::CrossSection,
 };
 
 use clap::Parser;
@@ -27,7 +31,7 @@ use log::{debug, error, LevelFilter};
 
 use simple_logger::SimpleLogger;
 
-use cdm_core::datatypes::internal_types::{self, Datastore};
+use cdm_core::datatypes::internal_types::{self, Library};
 
 use cdm_core::config::Config;
 //https://stackoverflow.com/questions/66799905/how-to-make-some-structs-fields-mandatory-to-fill-and-others-optional-in-rust
@@ -82,9 +86,10 @@ fn main() {
 
     //println! {"{:#?}", datastore}
 
-    let mut datastore2 = Datastore::new();
+    let mut datastore2 = Library::new();
 
-    let wire_type1 = WireType {
+    let SWTHHN12BK = Rc::new(RefCell::new(WireType {
+        id: "SWTHHN12BK".to_string(),
         manufacturer: Some("Southwire".to_string()),
         model: Some("test1".to_string()),
         part_number: Some("12324".to_string()),
@@ -102,9 +107,55 @@ fn main() {
         strand_cross_sect_area: Some(0.5),
         insul_volt_rating: Some(600),
         insul_temp_rating: Some(90),
-    };
+        insul_color: Some("Black".to_string()),
+    }));
 
-    let wire_type2 = WireType {
+    let SWTHHN12WT = Rc::new(RefCell::new(WireType {
+        id: "SWTHHN12WT".to_string(),
+        manufacturer: Some("Southwire".to_string()),
+        model: Some("test1".to_string()),
+        part_number: Some("12324".to_string()),
+        manufacturer_part_number: Some("2o2sdfasd".to_string()),
+        supplier: Some("Digikey".to_string()),
+        supplier_part_number: Some("23974732adf".to_string()),
+        conductor_material: Some("copper".to_string()),
+        insulated: Some(true),
+        insulation_material: Some("PVC".to_string()),
+        wire_type_code: Some("THHN".to_string()),
+        conductor_cross_sect_area: Some(10.0),
+        overall_cross_sect_area: Some(12.0),
+        stranded: Some(true),
+        num_strands: Some(7),
+        strand_cross_sect_area: Some(0.5),
+        insul_volt_rating: Some(600),
+        insul_temp_rating: Some(90),
+        insul_color: Some("White".to_string()),
+    }));
+
+    let SWTHHN12GN = Rc::new(RefCell::new(WireType {
+        id: "SWTHHN12GN".to_string(),
+        manufacturer: Some("Southwire".to_string()),
+        model: Some("test1".to_string()),
+        part_number: Some("12324".to_string()),
+        manufacturer_part_number: Some("2o2sdfasd".to_string()),
+        supplier: Some("Digikey".to_string()),
+        supplier_part_number: Some("23974732adf".to_string()),
+        conductor_material: Some("copper".to_string()),
+        insulated: Some(true),
+        insulation_material: Some("PVC".to_string()),
+        wire_type_code: Some("THHN".to_string()),
+        conductor_cross_sect_area: Some(10.0),
+        overall_cross_sect_area: Some(12.0),
+        stranded: Some(true),
+        num_strands: Some(7),
+        strand_cross_sect_area: Some(0.5),
+        insul_volt_rating: Some(600),
+        insul_temp_rating: Some(90),
+        insul_color: Some("Green".to_string()),
+    }));
+
+    let SOOWINT12BK = Rc::new(RefCell::new(WireType {
+        id: "SOOWINT12BK".to_string(),
         manufacturer: None,
         model: None,
         part_number: None,
@@ -122,9 +173,55 @@ fn main() {
         strand_cross_sect_area: Some(0.5),
         insul_volt_rating: Some(600),
         insul_temp_rating: Some(90),
-    };
+        insul_color: Some("Black".to_string()),
+    }));
 
-    let wire_type3 = WireType {
+    let SOOWINT12WT = Rc::new(RefCell::new(WireType {
+        id: "SOOWINT12WT".to_string(),
+        manufacturer: None,
+        model: None,
+        part_number: None,
+        manufacturer_part_number: None,
+        supplier: None,
+        supplier_part_number: None,
+        conductor_material: Some("copper".to_string()),
+        insulated: Some(true),
+        insulation_material: Some("Rubber".to_string()),
+        wire_type_code: None,
+        conductor_cross_sect_area: Some(10.0),
+        overall_cross_sect_area: Some(12.0),
+        stranded: Some(true),
+        num_strands: Some(7),
+        strand_cross_sect_area: Some(0.5),
+        insul_volt_rating: Some(600),
+        insul_temp_rating: Some(90),
+        insul_color: Some("White".to_string()),
+    }));
+
+    let SOOWINT12GN = Rc::new(RefCell::new(WireType {
+        id: "SOOWINT12GN".to_string(),
+        manufacturer: None,
+        model: None,
+        part_number: None,
+        manufacturer_part_number: None,
+        supplier: None,
+        supplier_part_number: None,
+        conductor_material: Some("copper".to_string()),
+        insulated: Some(true),
+        insulation_material: Some("Rubber".to_string()),
+        wire_type_code: None,
+        conductor_cross_sect_area: Some(10.0),
+        overall_cross_sect_area: Some(12.0),
+        stranded: Some(true),
+        num_strands: Some(7),
+        strand_cross_sect_area: Some(0.5),
+        insul_volt_rating: Some(600),
+        insul_temp_rating: Some(90),
+        insul_color: Some("Green".to_string()),
+    }));
+
+    let PVCINT18BK = Rc::new(RefCell::new(WireType {
+        id: "PVCINT18BK".to_string(),
         manufacturer: None,
         model: None,
         part_number: None,
@@ -142,9 +239,11 @@ fn main() {
         strand_cross_sect_area: Some(0.01),
         insul_volt_rating: Some(600),
         insul_temp_rating: Some(60),
-    };
+        insul_color: Some("Black".to_string()),
+    }));
 
-    let cable_type1 = CableType {
+    let SWSOOW123 = Rc::new(RefCell::new(CableType {
+        id: "SWSOOW12-3".to_string(),
         manufacturer: Some("Southwire".to_string()),
         model: Some("test2".to_string()),
         part_number: Some("1sadfas2324".to_string()),
@@ -153,15 +252,15 @@ fn main() {
         supplier_part_number: Some("23974732aaadf".to_string()),
         cable_type_code: Some("SOOW".to_string()),
         cross_sect_area: Some(40.0),
-        cross_section: Some("Circular".to_string()),
+        cross_section: Some(CrossSection::Circular),
         height: Some(12.0),
         width: Some(12.0),
         diameter: Some(12.0),
-        cable_core: Some(HashMap::from([
-            ("black".to_string(), CableCore::WireType(wire_type2)),
-            ("white".to_string(), CableCore::WireType(wire_type2)),
-            ("green".to_string(), CableCore::WireType(wire_type2)),
-        ])),
+        cable_core: Some(vec![
+            CableCore::WireType(SOOWINT12BK.clone()),
+            CableCore::WireType(SOOWINT12WT.clone()),
+            CableCore::WireType(SOOWINT12GN.clone()),
+        ]),
         layers: Some(vec![CableLayer {
             layer_number: Some(1),
             layer_type: Some("Insulation".to_string()),
@@ -170,15 +269,19 @@ fn main() {
             temp_rating: Some(90),
             color: Some("Black".to_string()),
         }]),
-    };
+    }));
 
-    datastore2
-        .wire_types
-        .insert("THHN12".to_string(), wire_type1);
-    datastore2
-        .wire_types
-        .insert("SOOWInternal".to_string(), wire_type2);
+    datastore2.wire_types.push(SWTHHN12BK.clone());
+    datastore2.wire_types.push(SWTHHN12WT.clone());
+    datastore2.wire_types.push(SWTHHN12GN.clone());
+    datastore2.wire_types.push(SOOWINT12BK.clone());
+    datastore2.wire_types.push(SOOWINT12WT.clone());
+    datastore2.wire_types.push(SOOWINT12GN.clone());
+    datastore2.wire_types.push(SWTHHN12GN.clone());
+    datastore2.wire_types.push(SWTHHN12GN.clone());
+    datastore2.wire_types.push(PVCINT18BK.clone());
 
+    datastore2.cable_types.push(SWSOOW123.clone());
     //cable_type
     //term_cable_type
     //location_type
