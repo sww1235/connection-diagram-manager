@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
-#[derive(Serialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct TermCableType {
     /// Manufacturer of Terminated cable
     pub manufacturer: Option<String>,
@@ -22,20 +22,20 @@ pub struct TermCableType {
     pub description: Option<String>,
     /// Underlying cable type of Terminated Cable
     #[serde(rename = "cable_type")]
-    pub cable: Option<cable_type::CableType>,
+    pub cable: Option<String>,
     /// Underlying wire type of Terminated Cable
     #[serde(rename = "wire_type")]
-    pub wire: Option<wire_type::WireType>,
+    pub wire: Option<String>,
     /// Nominal Length of Terminated Cable
     pub nominal_length: Option<u64>,
     /// Actual Length of Terminated Cable
     pub actual_length: Option<u64>,
     /// One end of Terminated Cable.
     #[serde(rename = "term_cable_connector")]
-    pub end1: Option<Vec<TermCableConnector>>,
+    pub end1: Option<Vec<String>>,
     /// The other end of Terminated Cable
     #[serde(rename = "term_cable_connector")]
-    pub end2: Option<Vec<TermCableConnector>>,
+    pub end2: Option<Vec<String>>,
 }
 
 /// TermCableConnectorTermination represents the connections between a pin of an individual
@@ -52,7 +52,7 @@ pub struct TermCableConnectorTermination {
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct TermCableConnector {
     /// connector_type represents the connector type that is on the end of a TermCable
-    pub connector_type: Option<connector_type::ConnectorType>,
+    pub connector_type: Option<String>,
     /// terminations represents the pin/core mapping for this connector
     pub terminations: Option<TermCableConnectorTermination>,
 }
