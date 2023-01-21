@@ -1,10 +1,5 @@
-use serde::{Deserialize, Serialize};
-
-use std::fmt;
-
-use std::collections::HashMap;
-
-use super::wire_type;
+use super::super::util_types::CrossSection;
+use super::wire_type::WireType;
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -12,7 +7,7 @@ use std::rc::Rc;
 // TODO: allow for multiple cables inside cable
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has one
 /// core, then it is a wire, not a cable.
-#[derive(Serialize, Debug, Default)]
+#[derive(Debug, Default)]
 pub struct CableType {
     /// Manufacturer of Cable
     pub manufacturer: Option<String>,
@@ -51,7 +46,7 @@ pub struct CableType {
 //
 
 /// `CableCore` represents an individual conductor, strength member or optical fiber in a cable.
-#[derive(Serialize, Debug)]
+#[derive(Debug)]
 pub enum CableCore {
     /// `WireType`
     WireType(wire_type::WireType),
@@ -60,7 +55,7 @@ pub enum CableCore {
 }
 
 /// `CableLayer` represents an insulation or shield layer of the entire cable
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Debug, Default)]
 pub struct CableLayer {
     /// layer number, counted from inside to outside of cable, 1 indexed
     pub layer_number: Option<u64>,

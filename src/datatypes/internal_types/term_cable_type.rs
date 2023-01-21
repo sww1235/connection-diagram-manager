@@ -1,10 +1,9 @@
-use super::{cable_type, connector_type, wire_type};
-use serde::{Deserialize, Serialize};
+use super::{cable_type::CableType, connector_type::ConnectorType, wire_type::WireType};
 
 use std::fmt;
 
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
-#[derive(Serialize, Debug, Default)]
+#[derive(Debug, Default)]
 pub struct TermCableType {
     /// Manufacturer of Terminated cable
     pub manufacturer: Option<String>,
@@ -20,27 +19,30 @@ pub struct TermCableType {
     pub supplier_part_number: Option<String>,
     /// Optional text description of Terminated Cable
     pub description: Option<String>,
-    /// Underlying cable type of Terminated Cable
-    #[serde(rename = "cable_type")]
-    pub cable: Option<cable_type::CableType>,
-    /// Underlying wire type of Terminated Cable
-    #[serde(rename = "wire_type")]
-    pub wire: Option<wire_type::WireType>,
+    /// Underlying wire or cable type of Terminated Cable
+    pub wire_cable: Option<WireCable>,
     /// Nominal Length of Terminated Cable
     pub nominal_length: Option<u64>,
     /// Actual Length of Terminated Cable
     pub actual_length: Option<u64>,
     /// One end of Terminated Cable.
-    #[serde(rename = "term_cable_connector")]
-    pub end1: Option<Vec<TermCableConnector>>,
+    pub end1: Option<Vec<Rc<RefCell<TermCableConnector>>>>,
     /// The other end of Terminated Cable
-    #[serde(rename = "term_cable_connector")]
-    pub end2: Option<Vec<TermCableConnector>>,
+    pub end2: Option<Vec<Rc<RefCell<TermCableConnector>>>>,
+}
+
+/// `WireCable` allows either a `WireType` or `CableType` to be the root of a `TermCableType`
+#[derive(Debug)]
+pub enum WireCable {
+    /// CableType
+    CableType(Rc<RefCell<CableType>>),
+    /// WireType
+    WireType(Rc<RefCell<WireType>>),
 }
 
 /// TermCableConnectorTermination represents the connections between a pin of an individual
 /// TermCableConnector and the individual core of the cable.
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Debug, Default)]
 pub struct TermCableConnectorTermination {
     /// Core represents which individual wire inside a cable this pin is connected to
     pub core: Option<u64>,
@@ -49,7 +51,7 @@ pub struct TermCableConnectorTermination {
 }
 
 /// TermCableConnector represents a connector on one end of a TermCable
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Debug, Default)]
 pub struct TermCableConnector {
     /// connector_type represents the connector type that is on the end of a TermCable
     pub connector_type: Option<connector_type::ConnectorType>,

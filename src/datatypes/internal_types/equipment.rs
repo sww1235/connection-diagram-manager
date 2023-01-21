@@ -1,6 +1,6 @@
-use serde::{Deserialize, Serialize};
-
+use std::cell::RefCell;
 use std::fmt;
+use std::rc::Rc;
 
 use super::equipment_type;
 
@@ -11,7 +11,7 @@ use super::equipment_type;
 /// mainly provided for logical reasons rather than
 /// functional (model/part number/manufacturer part number
 /// may all be equivalent in some cases)
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Debug, Default)]
 
 pub struct Equipment {
     //TODO figure out how to convert from

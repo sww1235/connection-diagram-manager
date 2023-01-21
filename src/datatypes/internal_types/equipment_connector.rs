@@ -1,10 +1,12 @@
-use super::connector_type;
-use serde::{Deserialize, Serialize};
+use super::connector_type::ConnectorType;
+
+use std::cell::RefCell;
 use std::fmt;
+use std::rc::Rc;
 //TODO: Make some of these fields enums
 /// EquipmentConnector represents an instance of a [`ConnectorType`](super::connector_type::ConnectorType) in
 /// a EquipmentType
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Debug, Default)]
 pub struct EquipmentConnector {
     /// ConnectorType
     pub connector: Option<connector_type::ConnectorType>,

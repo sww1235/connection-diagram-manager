@@ -1,5 +1,3 @@
-use serde::{Deserialize, Serialize};
-
 use std::fmt;
 
 //TODO: move insulation color from wire to wire_type
@@ -10,7 +8,7 @@ use std::fmt;
 /// mainly provided for logical reasons rather than
 /// functional (model/part number/manufacturer part number
 /// may all be equivalent in some cases)
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Debug, Default)]
 pub struct WireType {
     /// The manufacturer of the wire
     pub manufacturer: Option<String>,
