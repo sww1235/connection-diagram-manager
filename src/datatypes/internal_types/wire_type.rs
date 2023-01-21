@@ -10,6 +10,8 @@ use std::fmt;
 /// may all be equivalent in some cases)
 #[derive(Debug, Default)]
 pub struct WireType {
+    /// Internal ID of `WireType`
+    pub id: String,
     /// The manufacturer of the wire
     pub manufacturer: Option<String>,
     /// The model or type of wire
@@ -51,6 +53,8 @@ pub struct WireType {
     /// Insulation temperature rating.
     /// Specified in ℃
     pub insul_temp_rating: Option<u64>,
+    /// Insulation Color
+    pub insul_color: Option<String>,
 }
 impl fmt::Display for WireType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

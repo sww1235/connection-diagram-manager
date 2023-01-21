@@ -7,6 +7,8 @@ use std::fmt;
 /// It does not include places these are located.
 #[derive(Debug, Default)]
 pub struct LocationType {
+    /// Internal ID of `LocationType`
+    pub id: String,
     /// Manufacturer of LocationType
     pub manufacturer: Option<String>,
     /// Model of LocationType
