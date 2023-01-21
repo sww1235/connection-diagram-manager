@@ -21,10 +21,14 @@ pub mod wire_type;
 /// you hold in your hand.
 pub mod equipment;
 
+use log::{trace, warn};
+
 use std::cell::RefCell;
 use std::rc::Rc;
 
-/// `Datastore` represents all data that is read from all source files
+use super::file_types::DataFile;
+
+/// `Library` represents all library data used in program
 #[derive(Debug, Default)]
 pub struct Library {
     /// contains all wire types read in from file, and/or added in via program logic
@@ -41,6 +45,11 @@ pub struct Library {
     pub equipment_types: Vec<Rc<RefCell<equipment_type::EquipmentType>>>,
     /// contains all pathway types read in from file
     pub pathway_types: Vec<Rc<RefCell<pathway_type::PathwayType>>>,
+}
+
+/// `Project` represents all project specific data used in program
+#[derive(Debug, Default)]
+pub struct Project {
     //TODO: create structs for individual values
 }
 
@@ -57,5 +66,207 @@ impl Library {
             pathway_types: Vec::new(),
         };
         datastore
+    }
+    /// inserts the correct values from a datafile into a `Library` struct
+    pub fn from_datafile(&mut self, datafile: DataFile) {
+        // wire_types
+        if let Some(wire_types) = datafile.wire_types {
+            for (k, v) in wire_types {
+                //TODO: need to check if key == ID for each element of vector, maybe switch back to
+                //hashmaps for performance reasons?
+                if self.wire_types.contains_key(&k) {
+                    warn! {"WireType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted WireType : {}, value: {:#?} into main datastore.",k,v}
+                    self.wire_types.insert(k, v);
+                }
+            }
+        }
+        // cable_types
+        if let Some(cable_types) = datafile.cable_types {
+            for (k, v) in cable_types {
+                if self.cable_types.contains_key(&k) {
+                    warn! {"CableType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted CableType: {}, value: {:#?} into main datastore.",k,v}
+                    self.cable_types.insert(k, v);
+                }
+            }
+        }
+
+        // term_cable_types
+        if let Some(term_cable_types) = datafile.term_cable_types {
+            for (k, v) in term_cable_types {
+                if self.term_cable_types.contains_key(&k) {
+                    warn! {"TermCableType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted TermCableType: {}, value: {:#?} into main datastore.",k,v}
+                    self.term_cable_types.insert(k, v);
+                }
+            }
+        }
+
+        // location_types
+        if let Some(location_types) = datafile.location_types {
+            for (k, v) in location_types {
+                if self.location_types.contains_key(&k) {
+                    warn! {"LocationType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted LocationType: {}, value: {:#?} into main datastore.",k,v}
+                    self.location_types.insert(k, v);
+                }
+            }
+        }
+
+        // connector_types
+        if let Some(connector_types) = datafile.connector_types {
+            for (k, v) in connector_types {
+                if self.connector_types.contains_key(&k) {
+                    warn! {"ConnectorType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted ConnectorType: {}, value: {:#?} into main datastore.",k,v}
+                    self.connector_types.insert(k, v);
+                }
+            }
+        }
+
+        // equipment_types
+        if let Some(equipment_types) = datafile.equipment_types {
+            for (k, v) in equipment_types {
+                if self.equipment_types.contains_key(&k) {
+                    warn! {"EquipmentType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted EquipmentType: {}, value: {:#?} into main datastore.",k,v}
+                    self.equipment_types.insert(k, v);
+                }
+            }
+        }
+
+        // pathway_types
+        if let Some(pathway_types) = datafile.pathway_types {
+            for (k, v) in pathway_types {
+                if self.pathway_types.contains_key(&k) {
+                    warn! {"PathwayType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted PathwayType: {}, value: {:#?} into main datastore.",k,v}
+                    self.pathway_types.insert(k, v);
+                }
+            }
+        }
+    }
+}
+
+impl Project {
+    pub fn from_datafile(&mut self, datafile: DataFile) {
+        // wire_types
+        if let Some(wire_types) = datafile.wire_types {
+            for (k, v) in wire_types {
+                if self.wire_types.contains_key(&k) {
+                    warn! {"WireType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted WireType : {}, value: {:#?} into main datastore.",k,v}
+                    self.wire_types.insert(k, v);
+                }
+            }
+        }
+        // cable_types
+        if let Some(cable_types) = datafile.cable_types {
+            for (k, v) in cable_types {
+                if self.cable_types.contains_key(&k) {
+                    warn! {"CableType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted CableType: {}, value: {:#?} into main datastore.",k,v}
+                    self.cable_types.insert(k, v);
+                }
+            }
+        }
+
+        // term_cable_types
+        if let Some(term_cable_types) = datafile.term_cable_types {
+            for (k, v) in term_cable_types {
+                if self.term_cable_types.contains_key(&k) {
+                    warn! {"TermCableType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted TermCableType: {}, value: {:#?} into main datastore.",k,v}
+                    self.term_cable_types.insert(k, v);
+                }
+            }
+        }
+
+        // location_types
+        if let Some(location_types) = datafile.location_types {
+            for (k, v) in location_types {
+                if self.location_types.contains_key(&k) {
+                    warn! {"LocationType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted LocationType: {}, value: {:#?} into main datastore.",k,v}
+                    self.location_types.insert(k, v);
+                }
+            }
+        }
+
+        // connector_types
+        if let Some(connector_types) = datafile.connector_types {
+            for (k, v) in connector_types {
+                if self.connector_types.contains_key(&k) {
+                    warn! {"ConnectorType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted ConnectorType: {}, value: {:#?} into main datastore.",k,v}
+                    self.connector_types.insert(k, v);
+                }
+            }
+        }
+
+        // equipment_types
+        if let Some(equipment_types) = datafile.equipment_types {
+            for (k, v) in equipment_types {
+                if self.equipment_types.contains_key(&k) {
+                    warn! {"EquipmentType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted EquipmentType: {}, value: {:#?} into main datastore.",k,v}
+                    self.equipment_types.insert(k, v);
+                }
+            }
+        }
+
+        // pathway_types
+        if let Some(pathway_types) = datafile.pathway_types {
+            for (k, v) in pathway_types {
+                if self.pathway_types.contains_key(&k) {
+                    warn! {"PathwayType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, filepath.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted PathwayType: {}, value: {:#?} into main datastore.",k,v}
+                    self.pathway_types.insert(k, v);
+                }
+            }
+        }
     }
 }
