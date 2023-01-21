@@ -31,7 +31,7 @@ use log::{debug, error, LevelFilter};
 
 use simple_logger::SimpleLogger;
 
-use cdm_core::datatypes::internal_types::{self, Library};
+use cdm_core::datatypes::internal_types::{Library, Project};
 
 use cdm_core::config::Config;
 //https://stackoverflow.com/questions/66799905/how-to-make-some-structs-fields-mandatory-to-fill-and-others-optional-in-rust
@@ -86,7 +86,19 @@ fn main() {
 
     //println! {"{:#?}", datastore}
 
-    let mut datastore2 = Library::new();
+    let mut lib2 = Library::new();
+
+    let mut project = Project::new();
+
+    // will be vector of DataFiles
+    let dataFiles = match file_types::parse_project_dir(cli.project_directory) {
+        Ok(datastore) => datastore,
+        Err(e) => {
+            //TODO: better handle errors here
+            error! {"Failure to read in project directory. Error: {}", e}
+            return;
+        }
+    };
 
     let SWTHHN12BK = Rc::new(RefCell::new(WireType {
         id: "SWTHHN12BK".to_string(),
@@ -271,17 +283,17 @@ fn main() {
         }]),
     }));
 
-    datastore2.wire_types.push(SWTHHN12BK.clone());
-    datastore2.wire_types.push(SWTHHN12WT.clone());
-    datastore2.wire_types.push(SWTHHN12GN.clone());
-    datastore2.wire_types.push(SOOWINT12BK.clone());
-    datastore2.wire_types.push(SOOWINT12WT.clone());
-    datastore2.wire_types.push(SOOWINT12GN.clone());
-    datastore2.wire_types.push(SWTHHN12GN.clone());
-    datastore2.wire_types.push(SWTHHN12GN.clone());
-    datastore2.wire_types.push(PVCINT18BK.clone());
+    lib2.wire_types.push(SWTHHN12BK.clone());
+    lib2.wire_types.push(SWTHHN12WT.clone());
+    lib2.wire_types.push(SWTHHN12GN.clone());
+    lib2.wire_types.push(SOOWINT12BK.clone());
+    lib2.wire_types.push(SOOWINT12WT.clone());
+    lib2.wire_types.push(SOOWINT12GN.clone());
+    lib2.wire_types.push(SWTHHN12GN.clone());
+    lib2.wire_types.push(SWTHHN12GN.clone());
+    lib2.wire_types.push(PVCINT18BK.clone());
 
-    datastore2.cable_types.push(SWSOOW123.clone());
+    lib2.cable_types.push(SWSOOW123.clone());
     //cable_type
     //term_cable_type
     //location_type
