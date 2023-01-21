@@ -34,14 +34,14 @@ pub struct EquipmentType {
     pub equip_type: Option<String>,
     /// TODO: create a separate face type
     /// faces represents a visual representation of each face of a piece of equipment
-    pub faces: Option<HashMap<String, svg::Svg>>,
+    pub faces: Option<HashMap<String, Svg>>,
     /// visual representation of the equipment
     // TODO: figure out what angle to standardize on, or
     // just rely on the face vis_rep
-    pub visual_rep: Option<svg::Svg>,
+    pub visual_rep: Option<Svg>,
     /// list of connectors in equipment. Contains position data for the connectors
     // TODO: Merge into face type
-    pub connectors: Option<HashMap<String, equipment_connector::EquipmentConnector>>,
+    pub connectors: Option<Vec<Rc<RefCell<EquipmentConnector>>>>,
 }
 impl fmt::Display for EquipmentType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

@@ -47,29 +47,50 @@ pub struct ConnectorType {
     pub depth: Option<f64>,
     /// diameter of circular connectors in mm
     pub diameter: Option<f64>,
-    //TODO: rethink how pins are specified. Maybe have a pin/contact type, with pin number, label, signal
-    //type, etc
-    /// total number of pins, if omitted, will be set to length of list below
-    pub pin_count: Option<u64>,
-    /// list of pin numbers/names
-    ///
-    /// if omitted, is autofilled with [1,2,3, ..., pincount]
-    pub pins: Option<Vec<String>>,
-    /// if omitted, is autofilled with blanks
-    pub pin_labels: Option<Vec<String>>,
-    /// colors assigned to pins
-    ///
-    /// goes in order of pin count/pin list, if fewer colors are specified than pins, end of list
-    /// will have no colors specified.
-    pub pin_colors: Option<Vec<String>>,
-    /// signal type of each pin.
-    /// goes in order of pin count/pin list, if fewer colors are specified than pins, end of list
-    /// will have no colors specified.
-    pub pin_signal_type: Option<Vec<String>>,
+    /// connector pins. Pin index is not guaranteed to be the same
+    pub pins: Vec<Rc<RefCell<ConnectorPin>>>,
     /// overall diagram of connector TODO: figure out what angle this should be
     pub visual_rep: Option<svg::Svg>,
-    /// representation of pin
-    pub pin_visual_rep: Option<svg::Svg>,
+}
+
+/// Represents an individual pin in a connector
+#[derive(Debug, Default)]
+pub struct ConnectorPin {
+    /// Pin number or identifier in connector
+    pub id: Option<String>,
+    /// Pin label or name
+    pub label: Option<String>,
+    /// Pin signal type
+    pub signal_type: Option<String>,
+    /// Pin color
+    pub color: Option<String>,
+    /// visual representation of an individual pin
+    pub visual_rep: Option<svg::Svg>,
+    /// gender of pin
+    pub gender: Option<String>,
+}
+
+impl fmt::Display for ConnectorPin {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "Pin:")?;
+        if let Some(id) = &self.id {
+            writeln!(f, "Pin ID: {}", id)?;
+        }
+        if let Some(label) = &self.label {
+            writeln!(f, "Pin Label: {}", label)?;
+        }
+        if let Some(signal_type) = &self.signal_type {
+            writeln!(f, "Pin Signal Type: {}", signal_type)?;
+        }
+        if let Some(color) = &self.color {
+            writeln!(f, "Pin Color: {}", color)?;
+        }
+        if let Some(gender) = &self.gender {
+            writeln!(f, "Pin Gender: {}", gender)?;
+        }
+        //TODO: provide a way of showing visual representation
+        Ok(())
+    }
 }
 impl fmt::Display for ConnectorType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -113,19 +134,12 @@ impl fmt::Display for ConnectorType {
         if let Some(diameter) = &self.diameter {
             writeln!(f, "Diameter: {:.2} mm", diameter)?;
         }
-        if let Some(pin_count) = &self.pin_count {
-            writeln!(f, "Pin Count: {}", pin_count)?;
+        for pin in &self.pins {
+            writeln!(f, "{}", pin.borrow())?;
         }
         //TODO: implement loop here to print all pins
         //if let Some() = &self.pins {
         //    writeln!(f, "Panel Cutout: {}", )?;
-        //}
-        //TODO: implement loops here to print all layers of cable
-        //if let Some() = &self.model {
-        //    writeln!(f, "Model: {}", )?;
-        //}
-        //if let Some() = &self.model {
-        //    writeln!(f, "Model: {}", )?;
         //}
         //TODO: implement svg validation rules here
         Ok(())

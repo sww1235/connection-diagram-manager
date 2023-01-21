@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::fmt;
 use std::rc::Rc;
 
-use super::equipment_type;
+use super::equipment_type::EquipmentType;
 
 /// `Equipment` represents a particular instance of an `EquipmentType`.
 /// This is the physical unit you would hold in your hand
@@ -20,7 +20,7 @@ pub struct Equipment {
     /// Internal `id` of equipment instance
     pub id: String,
     /// The type of equipment of the instance
-    pub equip_type: Option<equipment_type::EquipmentType>,
+    pub equip_type: Option<Rc<RefCell<EquipmentType>>>,
     /// The string key of the instance_type. Converted into the actual type during the validation
     /// step of the parsing.
     equip_type_string: Option<String>,
@@ -70,23 +70,23 @@ impl fmt::Display for Equipment {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Wire Type:")?;
         if let Some(equip_type) = &self.equip_type {
-            if let Some(manufacturer) = &equip_type.manufacturer {
+            if let Some(manufacturer) = &equip_type.borrow().manufacturer {
                 writeln!(f, "Manufacturer: {}", manufacturer)?;
             }
             //TODO: Decide how much data from Equiptype we want to display for instance
-            if let Some(model) = &equip_type.model {
+            if let Some(model) = &equip_type.borrow().model {
                 writeln!(f, "Model: {}", model)?;
             }
-            if let Some(part_number) = &equip_type.part_number {
+            if let Some(part_number) = &equip_type.borrow().part_number {
                 writeln!(f, "Part Number: {}", part_number)?;
             }
-            if let Some(manufacturer_part_number) = &equip_type.manufacturer_part_number {
+            if let Some(manufacturer_part_number) = &equip_type.borrow().manufacturer_part_number {
                 writeln!(f, "Manufacturer Part Number: {}", manufacturer_part_number)?;
             }
-            if let Some(supplier) = &equip_type.supplier {
+            if let Some(supplier) = &equip_type.borrow().supplier {
                 writeln!(f, "Supplier: {}", supplier)?;
             }
-            if let Some(supplier_part_number) = &equip_type.supplier_part_number {
+            if let Some(supplier_part_number) = &equip_type.borrow().supplier_part_number {
                 writeln!(f, "Supplier Part Number: {}", supplier_part_number)?;
             }
         }

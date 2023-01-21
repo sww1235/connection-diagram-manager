@@ -8,8 +8,9 @@ use std::rc::Rc;
 /// a EquipmentType
 #[derive(Debug, Default)]
 pub struct EquipmentConnector {
+    /// Internal ID of `EquipmentConnector`
     /// ConnectorType
-    pub connector: Option<connector_type::ConnectorType>,
+    pub connector: Option<Rc<RefCell<ConnectorType>>>,
     /// electrical direction, used for basic rule mapping, (input, output, power input, power
     /// output, bidirectiona, passive)
     pub direction: Option<String>,
@@ -25,7 +26,7 @@ impl fmt::Display for EquipmentConnector {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Equipment Connector:")?;
         if let Some(connector) = &self.connector {
-            writeln!(f, "Connector: {}", connector)?;
+            writeln!(f, "Connector: {}", connector.borrow())?;
         }
         if let Some(direction) = &self.direction {
             writeln!(f, "Direction: {}", direction)?;
