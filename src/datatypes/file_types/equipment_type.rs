@@ -1,6 +1,5 @@
-use super::{equipment_connector, svg};
+use super::svg::Svg;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 use std::fmt;
 //TODO: Make some of these fields enums
@@ -23,23 +22,42 @@ pub struct EquipmentType {
     pub supplier_part_number: Option<String>,
     /// Optional text description
     pub description: Option<String>,
-    // TODO maybe make this just one string and require different equipmentType records per
-    // mounting type
     /// List of mounting options for equipment
-    pub mount_type: Option<Vec<String>>,
+    pub mount_type: Option<String>,
     /// Equipment Type (audio, video, mix, lighting, networking, patch panel, power)
     pub equip_type: Option<String>,
-    /// TODO: create a separate face type
-    /// faces represents a visual representation of each face of a piece of equipment
-    pub faces: Option<HashMap<String, svg::Svg>>,
+    pub faces: Option<Vec<EquipFace>>,
     /// visual representation of the equipment
     // TODO: figure out what angle to standardize on, or
     // just rely on the face vis_rep
-    pub visual_rep: Option<svg::Svg>,
-    /// list of connectors in equipment. Contains position data for the connectors
-    // TODO: Merge into face type
-    pub connectors: Option<HashMap<String, equipment_connector::EquipmentConnector>>,
+    pub visual_rep: Option<Svg>,
 }
+
+/// `EquipFace` represents one physical face of equipment.
+///
+/// May have 2 faces for something like a patch panel, or 6 for a cube, or 1 for an unrolled
+/// sphere, etc.
+#[derive(Debug, Default, Serialize, Deserialize)]
+pub struct EquipFace {
+    name: String,
+    vis_rep: Option<Svg>,
+    connectors: Option<Vec<EquipConnector>>,
+}
+/// EquipmentConnector represents an instance of a [`ConnectorType`](super::connector_type::ConnectorType) in
+/// a EquipmentType
+#[derive(Debug, Default, Serialize, Deserialize)]
+pub struct EquipConnector {
+    /// ConnectorType
+    pub connector: Option<String>,
+    /// electrical direction, used for basic rule mapping, (input, output, power input, power
+    /// output, bidirectiona, passive)
+    pub direction: Option<String>,
+    /// location of connector on face from left of visrep. Origin is bottom left
+    pub x: Option<u64>,
+    /// location of connector on face from bottom of visrep. Origin is bottom left
+    pub y: Option<u64>,
+}
+
 impl fmt::Display for EquipmentType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Equipment Type:")?;
@@ -65,14 +83,7 @@ impl fmt::Display for EquipmentType {
             write!(f, "Description: {}", description)?;
         }
         if let Some(mount_type) = &self.mount_type {
-            if mount_type.len() == 1 {
-                write!(f, "Mount Type: {}", mount_type[0])?;
-            } else {
-                write!(f, "Mount Types:")?;
-                for mount_type_item in mount_type.iter() {
-                    write!(f, "\t- {}", mount_type_item)?;
-                }
-            }
+            write!(f, "Mount Type: {}", mount_type)?;
         }
         if let Some(equip_type) = &self.equip_type {
             write!(f, "Equipment Type: {}", equip_type)?;

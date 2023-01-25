@@ -1,15 +1,17 @@
-use super::{equipment_connector::EquipmentConnector, svg::Svg};
-use std::collections::HashMap;
+use super::connector_type::ConnectorType;
+use super::svg::Svg;
 
 use std::cell::RefCell;
 use std::fmt;
 use std::rc::Rc;
+
 //TODO: Make some of these fields enums
 /// EquipmentType represents a type of equipment
 ///
 /// Anything from a rackmount piece of gear to an outlet or terminal block
 #[derive(Debug, Default)]
 pub struct EquipmentType {
+    //TODO: add dimensions here
     /// Internal ID of `EquipmentType`
     pub id: String,
     /// Manufacturer of Equipment
@@ -26,22 +28,68 @@ pub struct EquipmentType {
     pub supplier_part_number: Option<String>,
     /// Optional text description
     pub description: Option<String>,
-    // TODO maybe make this just one string and require different equipmentType records per
-    // mounting type
     /// List of mounting options for equipment
-    pub mount_type: Option<Vec<String>>,
+    pub mount_type: Option<String>,
     /// Equipment Type (audio, video, mix, lighting, networking, patch panel, power)
     pub equip_type: Option<String>,
-    /// TODO: create a separate face type
     /// faces represents a visual representation of each face of a piece of equipment
-    pub faces: Option<HashMap<String, Svg>>,
+    pub faces: Option<Vec<EquipFace>>,
     /// visual representation of the equipment
     // TODO: figure out what angle to standardize on, or
     // just rely on the face vis_rep
     pub visual_rep: Option<Svg>,
-    /// list of connectors in equipment. Contains position data for the connectors
-    // TODO: Merge into face type
-    pub connectors: Option<Vec<Rc<RefCell<EquipmentConnector>>>>,
+}
+
+/// `EquipFace` represents one physical face of equipment.
+///
+/// May have 2 faces for something like a patch panel, or 6 for a cube, or 1 for an unrolled
+/// sphere, etc.
+#[derive(Debug, Default)]
+pub struct EquipFace {
+    name: String,
+    vis_rep: Option<Svg>,
+    connectors: Option<Vec<EquipConnector>>,
+}
+
+//TODO: Make some of these fields enums
+/// EquipmentConnector represents an instance of a [`ConnectorType`](super::connector_type::ConnectorType) in
+/// a EquipmentType
+#[derive(Debug, Default)]
+pub struct EquipConnector {
+    /// Internal ID of `EquipmentConnector`
+    /// ConnectorType
+    pub connector: Option<Rc<RefCell<ConnectorType>>>,
+    /// electrical direction, used for basic rule mapping, (input, output, power input, power
+    /// output, bidirectiona, passive)
+    pub direction: Option<String>,
+    /// which face the connector is on
+    // TODO: refactor this into a face struct
+    pub face: Option<String>,
+    /// location of connector on face from left of visrep. Origin is bottom left
+    pub x: Option<u64>,
+    /// location of connector on face from bottom of visrep. Origin is bottom left
+    pub y: Option<u64>,
+}
+impl fmt::Display for EquipConnector {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "Equipment Connector:")?;
+        if let Some(connector) = &self.connector {
+            writeln!(f, "Connector: {}", connector.borrow())?;
+        }
+        if let Some(direction) = &self.direction {
+            writeln!(f, "Direction: {}", direction)?;
+        }
+        if let Some(face) = &self.face {
+            writeln!(f, "Face: {}", face)?;
+        }
+        if let Some(x) = &self.x {
+            writeln!(f, "X coordinate: {}", x)?;
+        }
+        if let Some(y) = &self.y {
+            writeln!(f, "Y coordinate: {}", y)?;
+        }
+        Ok(())
+    }
 }
 impl fmt::Display for EquipmentType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -68,14 +116,7 @@ impl fmt::Display for EquipmentType {
             write!(f, "Description: {}", description)?;
         }
         if let Some(mount_type) = &self.mount_type {
-            if mount_type.len() == 1 {
-                write!(f, "Mount Type: {}", mount_type[0])?;
-            } else {
-                write!(f, "Mount Types:")?;
-                for mount_type_item in mount_type.iter() {
-                    write!(f, "\t- {}", mount_type_item)?;
-                }
-            }
+            write!(f, "Mount Type: {}", mount_type)?;
         }
         if let Some(equip_type) = &self.equip_type {
             write!(f, "Equipment Type: {}", equip_type)?;
