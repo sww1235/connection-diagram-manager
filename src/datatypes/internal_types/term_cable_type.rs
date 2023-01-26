@@ -24,15 +24,15 @@ pub struct TermCableType {
     /// Optional text description of Terminated Cable
     pub description: Option<String>,
     /// Underlying wire or cable type of Terminated Cable
-    pub wire_cable: Option<WireCable>,
+    pub wire_cable: WireCable,
     /// Nominal Length of Terminated Cable
     pub nominal_length: Option<u64>,
     /// Actual Length of Terminated Cable
     pub actual_length: Option<u64>,
     /// One end of Terminated Cable.
-    pub end1: Option<Vec<Rc<RefCell<TermCableConnector>>>>,
+    pub end1: Vec<TermCableConnector>,
     /// The other end of Terminated Cable
-    pub end2: Option<Vec<Rc<RefCell<TermCableConnector>>>>,
+    pub end2: Vec<TermCableConnector>,
 }
 
 /// `WireCable` allows either a `WireType` or `CableType` to be the root of a `TermCableType`
@@ -42,6 +42,12 @@ pub enum WireCable {
     CableType(Rc<RefCell<CableType>>),
     /// WireType
     WireType(Rc<RefCell<WireType>>),
+}
+// have to implement default for this for some weird reason
+impl Default for WireCable {
+    fn default() -> Self {
+        WireCable::WireType(Rc::new(RefCell::new(WireType::new())))
+    }
 }
 
 /// TermCableConnectorTermination represents the connections between a pin of an individual
@@ -58,9 +64,9 @@ pub struct TermCableConnectorTermination {
 #[derive(Debug, Default)]
 pub struct TermCableConnector {
     /// connector_type represents the connector type that is on the end of a TermCable
-    pub connector_type: Option<Rc<RefCell<ConnectorType>>>,
+    pub connector_type: Rc<RefCell<ConnectorType>>,
     /// terminations represents the pin/core mapping for this connector
-    pub terminations: Option<Rc<RefCell<TermCableConnectorTermination>>>,
+    pub terminations: Option<Vec<TermCableConnectorTermination>>,
 }
 impl fmt::Display for TermCableType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -86,11 +92,9 @@ impl fmt::Display for TermCableType {
         if let Some(description) = &self.description {
             write!(f, "Description: {}", description)?;
         }
-        if let Some(wire_cable) = &self.wire_cable {
-            match wire_cable {
-                WireCable::CableType(cable) => write!(f, "Cable Type: {}", cable.borrow())?,
-                WireCable::WireType(wire) => write!(f, "Wire Type: {}", wire.borrow())?,
-            }
+        match &self.wire_cable {
+            WireCable::CableType(cable) => write!(f, "Cable Type: {}", cable.borrow())?,
+            WireCable::WireType(wire) => write!(f, "Wire Type: {}", wire.borrow())?,
         }
         if let Some(nominal_length) = &self.nominal_length {
             //TODO: implement units functions to do proper conversions

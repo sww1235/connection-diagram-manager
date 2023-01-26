@@ -174,9 +174,7 @@ cable_type: # dictonary of all available raw cable types.
 	<str>:	# cable type designator (must be unique)
 		core:	# dictionary of wire or cable cores inside cable.
 				# strength members are treated as a wire
-			<str>: # identifier of individual core. Must be unique per cable type
-				type: <str>			# identifier of wire or cable type of the core
-				color: <str>		# color of individual core insulation
+			<str>: <str> # identifier of individual core. Must be unique per cable_type: identifier of wire/cable type that core is
 		manufacturer: <str>
 		pn: <str>					# [internal] part number
 		mpn: <str>					# manufacturer part number
@@ -234,6 +232,12 @@ location_type:	# dictionary of available location types
 		mpn: <str>					# manufacturer part number
 		supplier: <str>				# supplier
 		spn: <str>					# supplier part number
+		width: <float>				# overall width of location, specified in mm
+		height: <float>				# overall height of location, specified in mm
+		depth: <float>				# overall depth of location, specified in mm
+		usableWidth: <float>		# usable internal width of location, specified in mm
+		usableDepth: <float>		# usable internal depth of location, specified in mm
+		usableHeight: <float>		# usable internal height of location, specified in mm.
 
 
 
@@ -270,7 +274,7 @@ equipment:		# dictionary of equipment defined in project
 		description: <str>			# optional description
 
 
-wire_cable:		# dictonary of all wires, cables and term_cables defined in project
+wire_cables:		# dictonary of all wires, cables and term_cables defined in project
 				# wires and cables can only have two ends, but each end can have
 				# a fan out or split with multiple connectors
 				#
@@ -304,14 +308,14 @@ wire_cable:		# dictonary of all wires, cables and term_cables defined in project
 									# must be specified
 
 
-pathway:		# dictonary of pathways defined in project
+pathways:		# dictonary of pathways defined in project
 	<str>:		# unique ID of pathway
 		type: <str>					# ID of pathway type
 		identifier: <str>			# structured name
 		description: <str>			# optional description
 		length: <float>				# length in meters
 
-location:		# dictionary of locations defined in project
+locations:		# dictionary of locations defined in project
 				# locations may have sublocations defined in them.
 				# examples of sublocations would be coordinate pairs on a backplane,
 				# individual DIN rails on a backplane, and then the distance along the DIN rail
@@ -324,12 +328,6 @@ location:		# dictionary of locations defined in project
 		type: <str>					# ID of location type
 		identifier: <str>			# structured name
 		description: <str>			# optional description
-		width: <float>				# overall width of location, specified in mm
-		height: <float>				# overall height of location, specified in mm
-		depth: <float>				# overall depth of location, specified in mm
-		usableWidth: <float>		# usable internal width of location, specified in mm
-		usableDepth: <float>		# usable internal depth of location, specified in mm
-		usableHeight: <float>		# usable internal height of location, specified in mm.
 		phyiscalLocation: <str>		# street address, coordinates, description
 		sublocations:				# dictionary  of sublocations
 			id:	<str>				# unique id of location, no recursion

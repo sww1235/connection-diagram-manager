@@ -2,6 +2,7 @@ use super::super::util_types::CrossSection;
 use super::wire_type::WireType;
 
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
@@ -29,25 +30,25 @@ pub struct CableType {
     /// SOOW, NM, USE, etc
     pub cable_type_code: Option<String>,
     /// Cable cross sectional area, in mm^2
-    pub cross_sect_area: Option<f64>,
+    pub cross_sect_area: f64,
     /// Cable cross section shape
     ///
     /// Oval, circular, siamese
-    pub cross_section: Option<CrossSection>,
+    pub cross_section: CrossSection,
     /// height of cable in mm
-    pub height: Option<f64>,
+    pub height: f64,
     /// width of cable in mm
-    pub width: Option<f64>,
+    pub width: f64,
     /// diameter of cable in mm
     pub diameter: Option<f64>,
     /// map of cores in cable
-    pub cable_core: Option<Vec<CableCore>>,
+    pub cable_core: HashMap<String, CableCore>,
     /// vector of exterior insulation/shielding layers
-    pub layers: Option<Vec<CableLayer>>,
+    pub insul_layers: Vec<CableLayer>,
 }
 
 //https://stackoverflow.com/questions/67594909/multiple-possible-types-for-a-serializable-structs-field
-//
+
 /// `CableCore` represents an individual conductor, strength member or optical fiber in a cable.
 #[derive(Debug)]
 pub enum CableCore {
@@ -98,23 +99,16 @@ impl fmt::Display for CableType {
         if let Some(cable_type_code) = &self.cable_type_code {
             writeln!(f, "Cable Type: {}", cable_type_code)?;
         }
-        if let Some(cross_sect_area) = &self.cross_sect_area {
-            if f.alternate() {
-                //TODO: implement mm^2 to awg conversion function. include function for changing units
-                writeln!(f, "Cross Sectional Area: {:.2} AWG", cross_sect_area)?;
-            } else {
-                writeln!(f, "Cross Sectional Area: {:.2} mm^2", cross_sect_area)?;
-            }
+        if f.alternate() {
+            //TODO: implement mm^2 to awg conversion function. include function for changing units
+            writeln!(f, "Cross Sectional Area: {:.2} AWG", &self.cross_sect_area)?;
+        } else {
+            writeln!(f, "Cross Sectional Area: {:.2} mm^2", &self.cross_sect_area)?;
         }
-        if let Some(cross_section) = &self.cross_section {
-            writeln!(f, "Cross Section: {}", cross_section)?;
-        }
-        if let Some(height) = &self.height {
-            writeln!(f, "Height: {:.2} mm", height)?;
-        }
-        if let Some(width) = &self.width {
-            writeln!(f, "Width: {:.2} mm", width)?;
-        }
+
+        writeln!(f, "Cross Section: {}", &self.cross_section)?;
+        writeln!(f, "Height: {:.2} mm", &self.height)?;
+        writeln!(f, "Width: {:.2} mm", &self.width)?;
         if let Some(diameter) = &self.diameter {
             writeln!(f, "Diameter: {:.2} mm", diameter)?;
         }

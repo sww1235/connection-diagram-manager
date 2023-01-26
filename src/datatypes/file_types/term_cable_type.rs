@@ -1,4 +1,3 @@
-use super::{cable_type, connector_type, wire_type};
 use serde::{Deserialize, Serialize};
 
 use std::fmt;
@@ -32,10 +31,10 @@ pub struct TermCableType {
     pub actual_length: Option<u64>,
     /// One end of Terminated Cable.
     #[serde(rename = "term_cable_connector")]
-    pub end1: Option<Vec<String>>,
+    pub end1: Vec<TermCableConnector>,
     /// The other end of Terminated Cable
     #[serde(rename = "term_cable_connector")]
-    pub end2: Option<Vec<String>>,
+    pub end2: Vec<TermCableConnector>,
 }
 
 /// TermCableConnectorTermination represents the connections between a pin of an individual
@@ -52,9 +51,9 @@ pub struct TermCableConnectorTermination {
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct TermCableConnector {
     /// connector_type represents the connector type that is on the end of a TermCable
-    pub connector_type: Option<String>,
+    pub connector_type: String,
     /// terminations represents the pin/core mapping for this connector
-    pub terminations: Option<TermCableConnectorTermination>,
+    pub terminations: Option<Vec<TermCableConnectorTermination>>,
 }
 impl fmt::Display for TermCableType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

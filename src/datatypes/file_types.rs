@@ -2,8 +2,6 @@
 pub mod cable_type;
 /// `connector_type` represents a connector
 pub mod connector_type;
-/// `equipment_connector represents a connector instance on a piece of equipment
-pub mod equipment_connector;
 /// `equipment_type` represents a type of equipment
 pub mod equipment_type;
 /// `location_type` represents a type of location
@@ -20,6 +18,12 @@ pub mod wire_type;
 /// `equipment` represents an instance of an EquipmentType. This is a physical item
 /// you hold in your hand.
 pub mod equipment;
+/// `location` represents an instance of a `LocationType`
+pub mod location;
+/// `pathway` represents an instance of a `PathwayType`
+pub mod pathway;
+/// `wire_cable` represents an instance of a `WireType`, `CableType`, or `TermCableType`
+pub mod wire_cable;
 
 use log::trace;
 use serde::{Deserialize, Serialize};
@@ -59,7 +63,18 @@ pub struct DataFile {
     /// stores all PathwayTypes read in from file
     #[serde(rename = "pathway_type")]
     pub pathway_types: Option<HashMap<String, pathway_type::PathwayType>>,
-    //TODO: create structs for individual values
+    /// stores all wires and cables read in from file
+    #[serde(rename = "wire_cable")]
+    pub wire_cables: Option<HashMap<String, wire_cable::WireCable>>,
+    /// stores all locations read in from file
+    #[serde(rename = "location")]
+    pub locations: Option<HashMap<String, location::Location>>,
+    /// stores all equipment instances read in from file
+    #[serde(rename = "equipment")]
+    pub equipment: Option<HashMap<String, equipment::Equipment>>,
+    /// stores all pathway instances read in from file
+    #[serde(rename = "pathways")]
+    pub pathways: Option<HashMap<String, pathway::Pathway>>,
 }
 
 /// `data_parser` deserializes a provided file handle into a Data Struct
@@ -97,7 +112,7 @@ fn proj_dir_parse_inner(
     if inner_dir.is_file() && (ext == "yaml" || ext == "yml") {
         trace! {"path at is_file: {}", inner_dir.display()}
         let file_handle = File::open(&inner_dir)?;
-        let data = match data_parser(file_handle) {
+        let mut data = match data_parser(file_handle) {
             Ok(data) => data,
             Err(error) => {
                 return Err(io::Error::new(
