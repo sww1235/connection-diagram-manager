@@ -57,17 +57,32 @@ term_cable_type:
 
 
 cable_type:
+  MIC:
+    cable_core:
+      1: 18AWGINSUL
+      2: 18AWGINSUL
+      3: 18AWGBARE
+    manufacturer: Belden
+    diameter: 6.35 # 0.25in
+    height: 6.35
+    width: 6.35
+    cross_sect_area: 5.0
+    cross_section: circular
+    insul_layers:
+      - layer_nbr: 1
+        type: insulation
+        material: nylon
   2MIC:
-    core:
-      1:
-        type: MIC
-        color: Red
-      2:
-        type: MIC
-        color: Green
+    cable_core:
+      1: MIC
+      2: MIC
     manufacturer: Belden
     diameter: 8
-    layer:
+    height: 8
+    width: 8
+    cross_sect_area: 10.0
+    cross_section: Circular
+    insul_layers:
       - layer_nbr: 2
         type: insulation
         material: nylon
@@ -75,23 +90,6 @@ cable_type:
         type: screen
         material: copper
 
-  MIC:
-    core:
-      1:
-        type: 18AWGINSUL
-        color: Black
-      2:
-        type: 18AWGINSUL
-        color: Blue
-      3:
-        type: 18AWGBARE
-        color: Clear
-    manufacturer: Belden
-    diameter: 6.35 # 0.25in
-    layer:
-      - layer_nbr: 1
-        type: insulation
-        material: nylon
 
 
 
@@ -129,14 +127,27 @@ connector_type:
     model: XLR3M
     mounting_type: cable
     gender: male
+    visual_rep: ___
     pins:
-      - 1
-      - 2
-      - 3
+      - connector_pin:
+          id: 1
+          label: 1
+          gender: Male 
+      - connector_pin:
+          id: 2
+          label: 2
+          gender: Male
+      - connector_pin:
+          id: 3
+          label: 3
+          gender: Male
   12AWGFerrule:
     manufacturer: any
     mounting_type: cable
+    visual_rep: ____
     pins:
-      - 1
+      - connector_pin:
+          id: 1
+          label: 1
 
 
