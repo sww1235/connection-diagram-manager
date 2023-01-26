@@ -1,8 +1,6 @@
-use super::svg;
+use super::svg::Svg;
 
-use std::cell::RefCell;
 use std::fmt;
-use std::rc::Rc;
 
 //TODO: Make some of these fields enums
 /// `ConnectorType` represents a particular type of connector.
@@ -47,13 +45,15 @@ pub struct ConnectorType {
     pub depth: Option<f64>,
     /// diameter of circular connectors in mm
     pub diameter: Option<f64>,
-    /// connector pins. Pin index is not guaranteed to be the same
-    pub pins: Vec<Rc<RefCell<ConnectorPin>>>,
+    /// pins inside connector.
+    ///
+    /// Pin index is not guaranteed to be the same. Use `ConnectorPin.id` for confirming equality.
+    pub pins: Vec<ConnectorPin>,
     /// overall diagram of connector TODO: figure out what angle this should be
-    pub visual_rep: Option<svg::Svg>,
+    pub visual_rep: Svg,
 }
 
-/// Represents an individual pin in a connector
+/// Represents an individual pin in a `ConnectorType`
 #[derive(Debug, Default)]
 pub struct ConnectorPin {
     /// Pin number or identifier in connector
@@ -65,7 +65,7 @@ pub struct ConnectorPin {
     /// Pin color
     pub color: Option<String>,
     /// visual representation of an individual pin
-    pub visual_rep: Option<svg::Svg>,
+    pub visual_rep: Option<Svg>,
     /// gender of pin
     pub gender: Option<String>,
 }
@@ -135,7 +135,7 @@ impl fmt::Display for ConnectorType {
             writeln!(f, "Diameter: {:.2} mm", diameter)?;
         }
         for pin in &self.pins {
-            writeln!(f, "{}", pin.borrow())?;
+            writeln!(f, "{}", pin)?;
         }
         //TODO: implement loop here to print all pins
         //if let Some() = &self.pins {

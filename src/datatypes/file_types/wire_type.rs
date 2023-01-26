@@ -29,7 +29,7 @@ pub struct WireType {
     //TODO: rename this to account for fiber optics
     pub conductor_material: Option<String>,
     /// If the wire is insulated
-    pub insulated: Option<bool>,
+    pub insulated: bool,
     /// What material the wire is insulated with
     pub insulation_material: Option<String>,
     /// The standard wire type code (THHN, XHHW, SIS, etc)
@@ -41,7 +41,7 @@ pub struct WireType {
     /// specified in mm^2
     pub overall_cross_sect_area: Option<f64>,
     /// If conductor is stranded
-    pub stranded: Option<bool>,
+    pub stranded: bool,
     /// How many strands is conductor made of
     pub num_strands: Option<u64>,
     /// cross sectional area of individual strand.
@@ -53,6 +53,8 @@ pub struct WireType {
     /// Insulation temperature rating.
     /// Specified in ℃
     pub insul_temp_rating: Option<u64>,
+    /// Insulation color
+    pub insul_color: Option<String>,
 }
 impl fmt::Display for WireType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -78,9 +80,7 @@ impl fmt::Display for WireType {
         if let Some(conductor_material) = &self.conductor_material {
             writeln!(f, "Conductor Material: {}", conductor_material)?;
         }
-        if let Some(insulated) = &self.insulated {
-            writeln!(f, "Insulated: {}", insulated)?;
-        }
+        writeln!(f, "Insulated: {}", &self.insulated)?;
         if let Some(insulation_material) = &self.insulation_material {
             writeln!(f, "Insulation Material: {}", insulation_material)?;
         }
@@ -110,9 +110,7 @@ impl fmt::Display for WireType {
                 overall_cross_sect_area
             )?;
         }
-        if let Some(stranded) = &self.stranded {
-            writeln!(f, "Stranded: {}", stranded)?;
-        }
+        writeln!(f, "Stranded: {}", &self.stranded)?;
         if let Some(num_strands) = &self.num_strands {
             writeln!(f, "Number of Strands: {}", num_strands)?;
         }
@@ -137,6 +135,9 @@ impl fmt::Display for WireType {
         }
         if let Some(insul_temp_rating) = &self.insul_temp_rating {
             writeln!(f, "Insulation Temperature Rating: {}℃", insul_temp_rating)?;
+        }
+        if let Some(insul_color) = &self.insul_color {
+            writeln!(f, "Insulation Color: {}", insul_color)?;
         }
         Ok(())
     }

@@ -1,11 +1,12 @@
 use std::fmt;
 
 /// Cross section of wire or cable
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub enum CrossSection {
     /// A wire or cable with an oval or flat cross section
     Oval,
     /// A wire or cable with a circular cross section
+    #[default]
     Circular,
     /// A cable consisting of 2 or more wires/cables bonded to each other not inside the same
     /// external jacket.

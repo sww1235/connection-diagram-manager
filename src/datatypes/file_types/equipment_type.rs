@@ -3,9 +3,11 @@ use serde::{Deserialize, Serialize};
 
 use std::fmt;
 //TODO: Make some of these fields enums
-/// EquipmentType represents a type of equipment
+/// EquipmentType represents a type of equipment.
 ///
-/// Anything from a rackmount piece of gear to an outlet or terminal block
+/// Anything from a rackmount piece of gear to an outlet or terminal block. This represents
+/// something that is off the shelf, or at least self contained and does not have internal
+/// connections that needs to be known to this tool.
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct EquipmentType {
     /// Manufacturer of Equipment
@@ -26,29 +28,33 @@ pub struct EquipmentType {
     pub mount_type: Option<String>,
     /// Equipment Type (audio, video, mix, lighting, networking, patch panel, power)
     pub equip_type: Option<String>,
+    /// `faces` contains representations of each face of the equipment
+    ///
+    /// May have 2 faces for something like a patch panel, or 6 for a cube, or 1 for an unrolled
+    /// sphere, etc.
     pub faces: Option<Vec<EquipFace>>,
     /// visual representation of the equipment
     // TODO: figure out what angle to standardize on, or
     // just rely on the face vis_rep
-    pub visual_rep: Option<Svg>,
+    pub visual_rep: Svg,
 }
 
 /// `EquipFace` represents one physical face of equipment.
-///
-/// May have 2 faces for something like a patch panel, or 6 for a cube, or 1 for an unrolled
-/// sphere, etc.
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct EquipFace {
-    name: String,
-    vis_rep: Option<Svg>,
-    connectors: Option<Vec<EquipConnector>>,
+    /// Name of face
+    pub name: String,
+    /// Visual representation of face in SVG format, without connectors
+    pub vis_rep: Option<Svg>,
+    /// all connectors on face
+    pub connectors: Option<Vec<EquipConnector>>,
 }
-/// EquipmentConnector represents an instance of a [`ConnectorType`](super::connector_type::ConnectorType) in
-/// a EquipmentType
+/// `EquipmentConnector` represents an instance of a [`ConnectorType`](super::connector_type::ConnectorType) in
+/// a `EquipmentType`
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct EquipConnector {
     /// ConnectorType
-    pub connector: Option<String>,
+    pub connector: String,
     /// electrical direction, used for basic rule mapping, (input, output, power input, power
     /// output, bidirectiona, passive)
     pub direction: Option<String>,
@@ -56,6 +62,23 @@ pub struct EquipConnector {
     pub x: Option<u64>,
     /// location of connector on face from bottom of visrep. Origin is bottom left
     pub y: Option<u64>,
+}
+
+impl fmt::Display for EquipConnector {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "Equipment Connector:")?;
+        writeln!(f, "Connector: {}", &self.connector)?;
+        if let Some(direction) = &self.direction {
+            writeln!(f, "Direction: {}", direction)?;
+        }
+        if let Some(x) = &self.x {
+            writeln!(f, "X coordinate: {}", x)?;
+        }
+        if let Some(y) = &self.y {
+            writeln!(f, "Y coordinate: {}", y)?;
+        }
+        Ok(())
+    }
 }
 
 impl fmt::Display for EquipmentType {

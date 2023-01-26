@@ -37,7 +37,7 @@ pub struct EquipmentType {
     /// visual representation of the equipment
     // TODO: figure out what angle to standardize on, or
     // just rely on the face vis_rep
-    pub visual_rep: Option<Svg>,
+    pub visual_rep: Svg,
 }
 
 /// `EquipFace` represents one physical face of equipment.
@@ -46,9 +46,12 @@ pub struct EquipmentType {
 /// sphere, etc.
 #[derive(Debug, Default)]
 pub struct EquipFace {
-    name: String,
-    vis_rep: Option<Svg>,
-    connectors: Option<Vec<EquipConnector>>,
+    /// Name/ID of equipment face
+    pub name: String,
+    /// visual representation of equipment face, without connectors
+    pub vis_rep: Option<Svg>,
+    /// all connectors that are on this face of equipment
+    pub connectors: Option<Vec<EquipConnector>>,
 }
 
 //TODO: Make some of these fields enums
@@ -58,13 +61,10 @@ pub struct EquipFace {
 pub struct EquipConnector {
     /// Internal ID of `EquipmentConnector`
     /// ConnectorType
-    pub connector: Option<Rc<RefCell<ConnectorType>>>,
+    pub connector: Rc<RefCell<ConnectorType>>,
     /// electrical direction, used for basic rule mapping, (input, output, power input, power
     /// output, bidirectiona, passive)
     pub direction: Option<String>,
-    /// which face the connector is on
-    // TODO: refactor this into a face struct
-    pub face: Option<String>,
     /// location of connector on face from left of visrep. Origin is bottom left
     pub x: Option<u64>,
     /// location of connector on face from bottom of visrep. Origin is bottom left
@@ -73,14 +73,9 @@ pub struct EquipConnector {
 impl fmt::Display for EquipConnector {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Equipment Connector:")?;
-        if let Some(connector) = &self.connector {
-            writeln!(f, "Connector: {}", connector.borrow())?;
-        }
+        writeln!(f, "Connector: {}", &self.connector.borrow())?;
         if let Some(direction) = &self.direction {
             writeln!(f, "Direction: {}", direction)?;
-        }
-        if let Some(face) = &self.face {
-            writeln!(f, "Face: {}", face)?;
         }
         if let Some(x) = &self.x {
             writeln!(f, "X coordinate: {}", x)?;

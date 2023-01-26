@@ -25,6 +25,18 @@ pub struct LocationType {
     pub description: Option<String>,
     /// Main material of LocationType
     pub material: Option<String>,
+    /// Width of locationType
+    pub width: Option<f64>,
+    /// Height of locationType
+    pub height: Option<f64>,
+    /// Depth of locationType
+    pub depth: Option<f64>,
+    /// Usable Width of locationType
+    pub usable_width: Option<f64>,
+    /// Usable Height of locationType
+    pub usable_height: Option<f64>,
+    /// Usable Depth of locationType
+    pub usable_depth: Option<f64>,
 }
 impl fmt::Display for LocationType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -52,6 +64,24 @@ impl fmt::Display for LocationType {
         }
         if let Some(material) = &self.material {
             writeln!(f, "Material: {}", material)?;
+        }
+        if let Some(width) = &self.width {
+            writeln!(f, "Width: {}", width)?;
+        }
+        if let Some(height) = &self.height {
+            writeln!(f, "Height: {}", height)?;
+        }
+        if let Some(depth) = &self.depth {
+            writeln!(f, "Depth: {}", depth)?;
+        }
+        if let Some(usable_width) = &self.usable_width {
+            writeln!(f, "Usable Width: {}", usable_width)?;
+        }
+        if let Some(usable_height) = &self.usable_height {
+            writeln!(f, "Usable Height: {}", usable_height)?;
+        }
+        if let Some(usable_depth) = &self.usable_depth {
+            writeln!(f, "Usable Depth: {}", usable_depth)?;
         }
         Ok(())
     }

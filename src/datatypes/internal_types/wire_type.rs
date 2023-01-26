@@ -29,7 +29,7 @@ pub struct WireType {
     //TODO: rename this to account for fiber optics
     pub conductor_material: Option<String>,
     /// If the wire is insulated
-    pub insulated: Option<bool>,
+    pub insulated: bool,
     /// What material the wire is insulated with
     pub insulation_material: Option<String>,
     /// The standard wire type code (THHN, XHHW, SIS, etc)
@@ -41,7 +41,7 @@ pub struct WireType {
     /// specified in mm^2
     pub overall_cross_sect_area: Option<f64>,
     /// If conductor is stranded
-    pub stranded: Option<bool>,
+    pub stranded: bool,
     /// How many strands is conductor made of
     pub num_strands: Option<u64>,
     /// cross sectional area of individual strand.
@@ -56,6 +56,34 @@ pub struct WireType {
     /// Insulation Color
     pub insul_color: Option<String>,
 }
+
+impl WireType {
+    /// Creates a new `WireType`
+    pub fn new() -> Self {
+        WireType {
+            id: String::new(),
+            manufacturer: None,
+            model: None,
+            part_number: None,
+            manufacturer_part_number: None,
+            supplier: None,
+            supplier_part_number: None,
+            conductor_material: None,
+            insulated: false,
+            insulation_material: None,
+            wire_type_code: None,
+            conductor_cross_sect_area: None,
+            overall_cross_sect_area: None,
+            stranded: false,
+            num_strands: None,
+            strand_cross_sect_area: None,
+            insul_volt_rating: None,
+            insul_temp_rating: None,
+            insul_color: None,
+        }
+    }
+}
+
 impl fmt::Display for WireType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Wire Type:")?;
@@ -80,9 +108,7 @@ impl fmt::Display for WireType {
         if let Some(conductor_material) = &self.conductor_material {
             writeln!(f, "Conductor Material: {}", conductor_material)?;
         }
-        if let Some(insulated) = &self.insulated {
-            writeln!(f, "Insulated: {}", insulated)?;
-        }
+        writeln!(f, "Insulated: {}", &self.insulated)?;
         if let Some(insulation_material) = &self.insulation_material {
             writeln!(f, "Insulation Material: {}", insulation_material)?;
         }
@@ -112,9 +138,7 @@ impl fmt::Display for WireType {
                 overall_cross_sect_area
             )?;
         }
-        if let Some(stranded) = &self.stranded {
-            writeln!(f, "Stranded: {}", stranded)?;
-        }
+        writeln!(f, "Stranded: {}", &self.stranded)?;
         if let Some(num_strands) = &self.num_strands {
             writeln!(f, "Number of Strands: {}", num_strands)?;
         }
