@@ -6,7 +6,7 @@ use std::fmt;
 ///
 /// Connector can represent more than just a metal or plastic blob on the end of a cable, it can
 /// represent a screw terminal on a piece of equipment or a hole for wire to be entered in.
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct ConnectorType {
     /// Manufacturer of Connector
     pub manufacturer: Option<String>,
@@ -51,7 +51,7 @@ pub struct ConnectorType {
 }
 
 /// Represents an individual pin in a `ConnectorType`
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct ConnectorPin {
     /// Pin number or identifier in connector
     pub id: Option<String>,
@@ -71,19 +71,19 @@ impl fmt::Display for ConnectorPin {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Pin:")?;
         if let Some(id) = &self.id {
-            writeln!(f, "Pin ID: {}", id)?;
+            writeln!(f, "\tPin ID: {}", id)?;
         }
         if let Some(label) = &self.label {
-            writeln!(f, "Pin Label: {}", label)?;
+            writeln!(f, "\tPin Label: {}", label)?;
         }
         if let Some(signal_type) = &self.signal_type {
-            writeln!(f, "Pin Signal Type: {}", signal_type)?;
+            writeln!(f, "\tPin Signal Type: {}", signal_type)?;
         }
         if let Some(color) = &self.color {
-            writeln!(f, "Pin Color: {}", color)?;
+            writeln!(f, "\tPin Color: {}", color)?;
         }
         if let Some(gender) = &self.gender {
-            writeln!(f, "Pin Gender: {}", gender)?;
+            writeln!(f, "\tPin Gender: {}", gender)?;
         }
         //TODO: provide a way of showing visual representation
         Ok(())
@@ -93,45 +93,49 @@ impl fmt::Display for ConnectorType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Connector Type:")?;
         if let Some(manufacturer) = &self.manufacturer {
-            writeln!(f, "Manufacturer: {}", manufacturer)?;
+            writeln!(f, "\tManufacturer: {}", manufacturer)?;
         }
         if let Some(model) = &self.model {
-            writeln!(f, "Model: {}", model)?;
+            writeln!(f, "\tModel: {}", model)?;
         }
         if let Some(part_number) = &self.part_number {
-            writeln!(f, "Part Number: {}", part_number)?;
+            writeln!(f, "\tPart Number: {}", part_number)?;
         }
         if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
-            writeln!(f, "Manufacturer Part Number: {}", manufacturer_part_number)?;
+            writeln!(
+                f,
+                "\tManufacturer Part Number: {}",
+                manufacturer_part_number
+            )?;
         }
         if let Some(supplier) = &self.supplier {
-            writeln!(f, "Supplier: {}", supplier)?;
+            writeln!(f, "\tSupplier: {}", supplier)?;
         }
         if let Some(supplier_part_number) = &self.supplier_part_number {
-            writeln!(f, "Supplier Part Number: {}", supplier_part_number)?;
+            writeln!(f, "\tSupplier Part Number: {}", supplier_part_number)?;
         }
         if let Some(description) = &self.description {
-            writeln!(f, "Description: {}", description)?;
+            writeln!(f, "\tDescription: {}", description)?;
         }
         if let Some(mount_type) = &self.mount_type {
-            writeln!(f, "Mount Type: {}", mount_type)?;
+            writeln!(f, "\tMount Type: {}", mount_type)?;
         }
         if let Some(panel_cutout) = &self.panel_cutout {
-            writeln!(f, "Panel Cutout: {}", panel_cutout)?;
+            writeln!(f, "\tPanel Cutout: {}", panel_cutout)?;
         }
         if let Some(gender) = &self.gender {
-            writeln!(f, "Gender: {}", gender)?;
+            writeln!(f, "\tGender: {}", gender)?;
         }
         if let Some(height) = &self.height {
-            writeln!(f, "Height: {:.2} mm", height)?;
+            writeln!(f, "\tHeight: {:.2} mm", height)?;
         }
         if let Some(width) = &self.width {
-            writeln!(f, "Width: {:.2} mm", width)?;
+            writeln!(f, "\tWidth: {:.2} mm", width)?;
         }
         if let Some(diameter) = &self.diameter {
-            writeln!(f, "Diameter: {:.2} mm", diameter)?;
+            writeln!(f, "\tDiameter: {:.2} mm", diameter)?;
         }
-        writeln!(f, "Pin Count: {}", self.pins.len())?;
+        writeln!(f, "\tPin Count: {}", self.pins.len())?;
         //TODO: implement loop here to print all pins
         //if let Some() = &self.pins {
         //    writeln!(f, "Panel Cutout: {}", )?;

@@ -152,10 +152,10 @@ impl Library {
                             width: cable_types[k].width,
                             diameter: cable_types[k].diameter,
                             cross_section: {
-                                match cable_types[k].cross_section.as_str() {
-                                   "Oval" => CrossSection::Oval,
-                                   "Circular" => CrossSection::Circular,
-                                   "Siamese" => CrossSection::Siamese,
+                                match cable_types[k].cross_section.to_uppercase().as_str() {
+                                   "OVAL" => CrossSection::Oval,
+                                   "CIRCULAR" => CrossSection::Circular,
+                                   "SIAMESE" => CrossSection::Siamese,
                                    //TODO: handle this better
                                    _ => panic! {"Cross Section: {} in CableType: {} in file: {} not recognized. Check your spelling and try again.",cable_types[k].cross_section, k, datafile.file_path.display() }
                                 }
@@ -180,10 +180,6 @@ impl Library {
                                 cable_core_map
                     },
                     insul_layers: {
-
-
-
-
                         let mut new_layers = Vec::new();
                         for layer in &cable_types[k].insul_layers {
                             let new_layer = cable_type::CableLayer {
@@ -194,15 +190,9 @@ impl Library {
                                     temp_rating: layer.temp_rating,
                                     color: layer.color.clone(),
                                 };
-
-
-
                         new_layers.push(new_layer);
                         }
                         new_layers
-
-
-
                     },
                         })),
                     );
@@ -210,6 +200,128 @@ impl Library {
             }
         }
 
+        // pathway_types
+        if let Some(pathway_types) = datafile.pathway_types {
+            for (k, v) in &pathway_types {
+                if self.pathway_types.contains_key(k) {
+                    warn! {"PathwayType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted PathwayType: {}, value: {:#?} into main datastore.",k,v}
+                    self.pathway_types.insert(
+                        k.to_string(),
+                        Rc::new(RefCell::new(pathway_type::PathwayType {
+                            id: k.to_string(),
+                            manufacturer: pathway_types[k].manufacturer.clone(),
+                            model: pathway_types[k].model.clone(),
+                            part_number: pathway_types[k].part_number.clone(),
+                            manufacturer_part_number: pathway_types[k]
+                                .manufacturer_part_number
+                                .clone(),
+                            supplier: pathway_types[k].supplier.clone(),
+                            supplier_part_number: pathway_types[k].supplier_part_number.clone(),
+                            description: pathway_types[k].description.clone(),
+                            size: pathway_types[k].size.clone(),
+                            trade_size: pathway_types[k].trade_size.clone(),
+                            cross_sect_area: pathway_types[k].cross_sect_area.clone(),
+                            material: pathway_types[k].material.clone(),
+                        })),
+                    );
+                }
+            }
+        }
+        // location_types
+        if let Some(location_types) = datafile.location_types {
+            for (k, v) in &location_types {
+                if self.location_types.contains_key(k) {
+                    warn! {"LocationType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted LocationType: {}, value: {:#?} into main datastore.",k,v}
+                    self.location_types.insert(
+                        k.to_string(),
+                        Rc::new(RefCell::new(location_type::LocationType {
+                            id: k.to_string(),
+                            manufacturer: location_types[k].manufacturer.clone(),
+                            model: location_types[k].model.clone(),
+                            part_number: location_types[k].part_number.clone(),
+                            manufacturer_part_number: location_types[k]
+                                .manufacturer_part_number
+                                .clone(),
+                            supplier: location_types[k].supplier.clone(),
+                            supplier_part_number: location_types[k].supplier_part_number.clone(),
+                            description: location_types[k].description.clone(),
+                            material: location_types[k].material.clone(),
+                            height: location_types[k].height,
+                            width: location_types[k].width,
+                            depth: location_types[k].depth,
+                            usable_width: location_types[k].usable_width,
+                            usable_height: location_types[k].usable_height,
+                            usable_depth: location_types[k].usable_depth,
+                        })),
+                    );
+                }
+            }
+        }
+
+        // connector_types
+        if let Some(connector_types) = datafile.connector_types {
+            for (k, v) in &connector_types {
+                if self.connector_types.contains_key(k) {
+                    warn! {"ConnectorType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted ConnectorType: {}, value: {:#?} into main datastore.",k,v}
+                    self.connector_types.insert(
+                        k.to_string(),
+                        Rc::new(RefCell::new(connector_type::ConnectorType {
+                            id: k.to_string(),
+                            manufacturer: connector_types[k].manufacturer.clone(),
+                            model: connector_types[k].model.clone(),
+                            part_number: connector_types[k].part_number.clone(),
+                            manufacturer_part_number: connector_types[k]
+                                .manufacturer_part_number
+                                .clone(),
+                            supplier: connector_types[k].supplier.clone(),
+                            supplier_part_number: connector_types[k].supplier_part_number.clone(),
+                            description: connector_types[k].description.clone(),
+                            mount_type: connector_types[k].mount_type.clone(),
+                            panel_cutout: connector_types[k].panel_cutout.clone(),
+                            gender: connector_types[k].gender.clone(),
+                            height: connector_types[k].height,
+                            width: connector_types[k].width,
+                            depth: connector_types[k].depth,
+                            diameter: connector_types[k].diameter,
+                            pins: {
+                                let mut new_pins = Vec::new();
+                                for pin in &connector_types[k].pins {
+                                    let new_pin = connector_type::ConnectorPin {
+                                        id: pin.id.clone(),
+                                        label: pin.label.clone(),
+                                        signal_type: pin.signal_type.clone(),
+                                        color: pin.color.clone(),
+                                        visual_rep: {
+                                            if let Some(vis_rep) = pin.visual_rep.clone() {
+                                                Some(Svg::from(vis_rep))
+                                            } else {
+                                                None
+                                            }
+                                        },
+                                        gender: pin.gender.clone(),
+                                    };
+                                    new_pins.push(new_pin);
+                                }
+                                new_pins
+                            },
+                            visual_rep: Svg::from(connector_types[k].visual_rep.clone()),
+                        })),
+                    );
+                }
+            }
+        }
         // term_cable_types
         if let Some(term_cable_types) = datafile.term_cable_types {
             for (k, v) in &term_cable_types {
@@ -323,98 +435,6 @@ panic!{"WireType: {} in TermCableType: {} specified in datafile: {} is not found
             }
         }
 
-        // location_types
-        if let Some(location_types) = datafile.location_types {
-            for (k, v) in &location_types {
-                if self.location_types.contains_key(k) {
-                    warn! {"LocationType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
-                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
-                    //automatically
-                } else {
-                    trace! {"Inserted LocationType: {}, value: {:#?} into main datastore.",k,v}
-                    self.location_types.insert(
-                        k.to_string(),
-                        Rc::new(RefCell::new(location_type::LocationType {
-                            id: k.to_string(),
-                            manufacturer: location_types[k].manufacturer.clone(),
-                            model: location_types[k].model.clone(),
-                            part_number: location_types[k].part_number.clone(),
-                            manufacturer_part_number: location_types[k]
-                                .manufacturer_part_number
-                                .clone(),
-                            supplier: location_types[k].supplier.clone(),
-                            supplier_part_number: location_types[k].supplier_part_number.clone(),
-                            description: location_types[k].description.clone(),
-                            material: location_types[k].material.clone(),
-                            height: location_types[k].height,
-                            width: location_types[k].width,
-                            depth: location_types[k].depth,
-                            usable_width: location_types[k].usable_width,
-                            usable_height: location_types[k].usable_height,
-                            usable_depth: location_types[k].usable_depth,
-                        })),
-                    );
-                }
-            }
-        }
-
-        // connector_types
-        if let Some(connector_types) = datafile.connector_types {
-            for (k, v) in &connector_types {
-                if self.connector_types.contains_key(k) {
-                    warn! {"ConnectorType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
-                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
-                    //automatically
-                } else {
-                    trace! {"Inserted ConnectorType: {}, value: {:#?} into main datastore.",k,v}
-                    self.connector_types.insert(
-                        k.to_string(),
-                        Rc::new(RefCell::new(connector_type::ConnectorType {
-                            id: k.to_string(),
-                            manufacturer: connector_types[k].manufacturer.clone(),
-                            model: connector_types[k].model.clone(),
-                            part_number: connector_types[k].part_number.clone(),
-                            manufacturer_part_number: connector_types[k]
-                                .manufacturer_part_number
-                                .clone(),
-                            supplier: connector_types[k].supplier.clone(),
-                            supplier_part_number: connector_types[k].supplier_part_number.clone(),
-                            description: connector_types[k].description.clone(),
-                            mount_type: connector_types[k].mount_type.clone(),
-                            panel_cutout: connector_types[k].panel_cutout.clone(),
-                            gender: connector_types[k].gender.clone(),
-                            height: connector_types[k].height,
-                            width: connector_types[k].width,
-                            depth: connector_types[k].depth,
-                            diameter: connector_types[k].diameter,
-                            pins: {
-                                let mut new_pins = Vec::new();
-                                for pin in &connector_types[k].pins {
-                                    let new_pin = connector_type::ConnectorPin {
-                                        id: pin.id.clone(),
-                                        label: pin.label.clone(),
-                                        signal_type: pin.signal_type.clone(),
-                                        color: pin.color.clone(),
-                                        visual_rep: {
-                                            if let Some(vis_rep) = pin.visual_rep.clone() {
-                                                Some(Svg::from(vis_rep))
-                                            } else {
-                                                None
-                                            }
-                                        },
-                                        gender: pin.gender.clone(),
-                                    };
-                                    new_pins.push(new_pin);
-                                }
-                                new_pins
-                            },
-                            visual_rep: Svg::from(connector_types[k].visual_rep.clone()),
-                        })),
-                    );
-                }
-            }
-        }
-
         // equipment_types
         if let Some(equipment_types) = datafile.equipment_types {
             for (k, v) in &equipment_types {
@@ -485,38 +505,6 @@ panic!{"WireType: {} in TermCableType: {} specified in datafile: {} is not found
                 }
             }
         }
-
-        // pathway_types
-        if let Some(pathway_types) = datafile.pathway_types {
-            for (k, v) in &pathway_types {
-                if self.pathway_types.contains_key(k) {
-                    warn! {"PathwayType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
-                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
-                    //automatically
-                } else {
-                    trace! {"Inserted PathwayType: {}, value: {:#?} into main datastore.",k,v}
-                    self.pathway_types.insert(
-                        k.to_string(),
-                        Rc::new(RefCell::new(pathway_type::PathwayType {
-                            id: k.to_string(),
-                            manufacturer: pathway_types[k].manufacturer.clone(),
-                            model: pathway_types[k].model.clone(),
-                            part_number: pathway_types[k].part_number.clone(),
-                            manufacturer_part_number: pathway_types[k]
-                                .manufacturer_part_number
-                                .clone(),
-                            supplier: pathway_types[k].supplier.clone(),
-                            supplier_part_number: pathway_types[k].supplier_part_number.clone(),
-                            description: pathway_types[k].description.clone(),
-                            size: pathway_types[k].size.clone(),
-                            trade_size: pathway_types[k].trade_size.clone(),
-                            cross_sect_area: pathway_types[k].cross_sect_area.clone(),
-                            material: pathway_types[k].material.clone(),
-                        })),
-                    );
-                }
-            }
-        }
     }
 }
 
@@ -536,7 +524,7 @@ impl Project {
     /// within, into the `Project` struct this method is called on. It will check `Library` for
     /// defined types to assign as references within the various project data imported from
     /// `datafile`
-    pub fn from_datafile(&mut self, datafile: DataFile, library: Library) {
+    pub fn from_datafile(&mut self, datafile: DataFile, library: &Library) {
         // wire_cables
         if let Some(wire_cables) = datafile.wire_cables {
             for (k, v) in &wire_cables {

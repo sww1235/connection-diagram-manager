@@ -7,7 +7,7 @@ use std::fmt;
 ///
 /// Examples of LocationType include junction boxes, racks, panels, etc.
 /// It does not include places these are located.
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct LocationType {
     /// Manufacturer of LocationType
     pub manufacturer: Option<String>,

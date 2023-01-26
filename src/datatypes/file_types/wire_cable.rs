@@ -6,7 +6,7 @@ use std::fmt;
 
 /// `WireCable` represents a particular instance of a `WireType`, `CableType` or `TermCableType`.
 /// It represents a physical item.
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct WireCable {
     /// Internal `id` of wire or cable instance
     pub id: String,

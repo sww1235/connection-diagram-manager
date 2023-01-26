@@ -8,7 +8,7 @@ use std::fmt;
 /// Anything from a rackmount piece of gear to an outlet or terminal block. This represents
 /// something that is off the shelf, or at least self contained and does not have internal
 /// connections that needs to be known to this tool.
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct EquipmentType {
     /// Manufacturer of Equipment
     pub manufacturer: Option<String>,
@@ -40,7 +40,7 @@ pub struct EquipmentType {
 }
 
 /// `EquipFace` represents one physical face of equipment.
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct EquipFace {
     /// Name of face
     pub name: String,
@@ -51,7 +51,7 @@ pub struct EquipFace {
 }
 /// `EquipmentConnector` represents an instance of a [`ConnectorType`](super::connector_type::ConnectorType) in
 /// a `EquipmentType`
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct EquipConnector {
     /// ConnectorType
     pub connector: String,

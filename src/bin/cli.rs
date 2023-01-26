@@ -83,18 +83,7 @@ fn main() {
 
     debug! {"{:#?}", config}
 
-    //let mut datastore = match datatypes::parse_project_dir(cli.project_directory) {
-    //    Ok(datastore) => datastore,
-    //    Err(e) => {
-    //        //TODO: better handle errors here
-    //        error! {"Failure to read in project directory. Error: {}", e}
-    //        return;
-    //    }
-    //};
-
-    //println! {"{:#?}", datastore}
-
-    let mut lib2 = Library::new();
+    let mut lib = Library::new();
 
     let mut project = Project::new();
 
@@ -107,6 +96,20 @@ fn main() {
             return;
         }
     };
+
+    let mut lib2 = Library::new();
+    let mut proj2 = Project::new();
+    for datafile in &data_files {
+        println! {"{}", datafile};
+        lib2.from_datafile(datafile.clone());
+    }
+
+    for datafile in &data_files {
+        proj2.from_datafile(datafile.clone(), &lib2);
+    }
+
+    println! {"{:#?}", lib2};
+    println! {"{:#?}", proj2};
 
     let SWTHHN12BK = Rc::new(RefCell::new(WireType {
         id: "SWTHHN12BK".to_string(),
@@ -302,22 +305,22 @@ fn main() {
         }],
     }));
 
-    lib2.wire_types
+    lib.wire_types
         .insert("SWTHHN12BK".to_string(), SWTHHN12BK.clone());
-    lib2.wire_types
+    lib.wire_types
         .insert("SWTHHN12WT".to_string(), SWTHHN12WT.clone());
-    lib2.wire_types
+    lib.wire_types
         .insert("SWTHHN12GN".to_string(), SWTHHN12GN.clone());
-    lib2.wire_types
+    lib.wire_types
         .insert("SOOWINT12BK".to_string(), SOOWINT12BK.clone());
-    lib2.wire_types
+    lib.wire_types
         .insert("SOOWINT12WT".to_string(), SOOWINT12WT.clone());
-    lib2.wire_types
+    lib.wire_types
         .insert("SOOWINT12GN".to_string(), SOOWINT12GN.clone());
-    lib2.wire_types
+    lib.wire_types
         .insert("PVCINT18Bk".to_string(), PVCINT18BK.clone());
 
-    lib2.cable_types
+    lib.cable_types
         .insert("SWSOOW123".to_string(), SWSOOW123.clone());
     //cable_type
     //term_cable_type

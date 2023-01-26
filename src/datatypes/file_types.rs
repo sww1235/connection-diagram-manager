@@ -37,7 +37,7 @@ use std::path;
 ///
 /// The reason all this data has to live in one struct, is to allow the
 /// YAML document to be deserialized correctly.
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct DataFile {
     /// the filepath of the file this data was read in from
     #[serde(skip)]

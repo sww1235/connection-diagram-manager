@@ -9,7 +9,7 @@ use std::fmt;
 /// mainly provided for logical reasons rather than
 /// functional (model/part number/manufacturer part number
 /// may all be equivalent in some cases)
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 
 pub struct Equipment {
     //Reminder: don't need id field here, since that is stored in hashmap key.
