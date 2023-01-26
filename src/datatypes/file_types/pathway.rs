@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 
 /// `Pathway` represents a physical instance of a pathway
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct Pathway {
     /// Internal `id` of pathway instance
     pub id: String,

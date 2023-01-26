@@ -6,7 +6,7 @@ use std::fmt;
 /// [`LocationType`](super::location_type::LocationType) to another.
 ///
 /// Examples of Pathways include, conduit, cable tray, free air
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct PathwayType {
     /// Manufacturer of PathwayType
     pub manufacturer: Option<String>,
