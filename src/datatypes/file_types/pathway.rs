@@ -22,12 +22,12 @@ impl fmt::Display for Pathway {
         writeln!(f, "Pathway Instance: {}", &self.id)?;
         writeln!(f, "Pathway Type: {}", &self.path_type)?;
         if let Some(identifier) = &self.identifier {
-            writeln!(f, "Pathway Identifier: {}", identifier)?;
+            writeln!(f, "Pathway Identifier: {identifier}")?;
         }
         writeln!(f, "Length: {}", &self.length)?;
 
         if let Some(description) = &self.description {
-            writeln!(f, "Description: {}", description)?;
+            writeln!(f, "Description: {description}")?;
         }
         Ok(())
     }

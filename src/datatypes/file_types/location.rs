@@ -24,13 +24,13 @@ impl fmt::Display for Location {
         writeln!(f, "Internal ID: {}", &self.id)?;
         writeln!(f, "LocationType: {}", &self.location_type)?;
         if let Some(identifier) = &self.identifier {
-            writeln!(f, "Location Identifier: {}", identifier)?;
+            writeln!(f, "Location Identifier: {identifier}")?;
         }
         if let Some(physical_location) = &self.physical_location {
-            writeln!(f, "Physical Location of location: {}", physical_location)?;
+            writeln!(f, "Physical Location of location: {physical_location}")?;
         }
         if let Some(description) = &self.description {
-            writeln!(f, "Description: {}", description)?;
+            writeln!(f, "Description: {description}")?;
         }
         Ok(())
     }

@@ -72,25 +72,25 @@ impl fmt::Display for TermCableType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Connector Type:")?;
         if let Some(manufacturer) = &self.manufacturer {
-            write!(f, "Manufacturer: {}", manufacturer)?;
+            write!(f, "Manufacturer: {manufacturer}")?;
         }
         if let Some(model) = &self.model {
-            write!(f, "Model: {}", model)?;
+            write!(f, "Model: {model}")?;
         }
         if let Some(part_number) = &self.part_number {
-            write!(f, "Part Number: {}", part_number)?;
+            write!(f, "Part Number: {part_number}")?;
         }
         if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
-            write!(f, "Manufacturer Part Number: {}", manufacturer_part_number)?;
+            write!(f, "Manufacturer Part Number: {manufacturer_part_number}")?;
         }
         if let Some(supplier) = &self.supplier {
-            write!(f, "Supplier: {}", supplier)?;
+            write!(f, "Supplier: {supplier}")?;
         }
         if let Some(supplier_part_number) = &self.supplier_part_number {
-            write!(f, "Supplier Part Number: {}", supplier_part_number)?;
+            write!(f, "Supplier Part Number: {supplier_part_number}")?;
         }
         if let Some(description) = &self.description {
-            write!(f, "Description: {}", description)?;
+            write!(f, "Description: {description}")?;
         }
         match &self.wire_cable {
             WireCable::CableType(cable) => write!(f, "Cable Type: {}", cable.borrow())?,
@@ -98,11 +98,11 @@ impl fmt::Display for TermCableType {
         }
         if let Some(nominal_length) = &self.nominal_length {
             //TODO: implement units functions to do proper conversions
-            write!(f, "Nominal Length: {}mm", nominal_length)?;
+            write!(f, "Nominal Length: {nominal_length}mm")?;
         }
         if let Some(actual_length) = &self.actual_length {
             //TODO: implement units functions to do proper conversions
-            write!(f, "Actual Length: {} mm", actual_length)?;
+            write!(f, "Actual Length: {actual_length} mm")?;
         }
         //TODO: implement loops for cable ends.
         Ok(())

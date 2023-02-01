@@ -69,13 +69,13 @@ impl fmt::Display for EquipConnector {
         writeln!(f, "Equipment Connector:")?;
         writeln!(f, "Connector: {}", &self.connector)?;
         if let Some(direction) = &self.direction {
-            writeln!(f, "Direction: {}", direction)?;
+            writeln!(f, "Direction: {direction}")?;
         }
         if let Some(x) = &self.x {
-            writeln!(f, "X coordinate: {}", x)?;
+            writeln!(f, "X coordinate: {x}")?;
         }
         if let Some(y) = &self.y {
-            writeln!(f, "Y coordinate: {}", y)?;
+            writeln!(f, "Y coordinate: {y}")?;
         }
         Ok(())
     }
@@ -85,31 +85,31 @@ impl fmt::Display for EquipmentType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Equipment Type:")?;
         if let Some(manufacturer) = &self.manufacturer {
-            write!(f, "Manufacturer: {}", manufacturer)?;
+            write!(f, "Manufacturer: {manufacturer}")?;
         }
         if let Some(model) = &self.model {
-            write!(f, "Model: {}", model)?;
+            write!(f, "Model: {model}")?;
         }
         if let Some(part_number) = &self.part_number {
-            write!(f, "Part Number: {}", part_number)?;
+            write!(f, "Part Number: {part_number}")?;
         }
         if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
-            write!(f, "Manufacturer Part Number: {}", manufacturer_part_number)?;
+            write!(f, "Manufacturer Part Number: {manufacturer_part_number}")?;
         }
         if let Some(supplier) = &self.supplier {
-            write!(f, "Supplier: {}", supplier)?;
+            write!(f, "Supplier: {supplier}")?;
         }
         if let Some(supplier_part_number) = &self.supplier_part_number {
-            write!(f, "Supplier Part Number: {}", supplier_part_number)?;
+            write!(f, "Supplier Part Number: {supplier_part_number}")?;
         }
         if let Some(description) = &self.description {
-            write!(f, "Description: {}", description)?;
+            write!(f, "Description: {description}")?;
         }
         if let Some(mount_type) = &self.mount_type {
-            write!(f, "Mount Type: {}", mount_type)?;
+            write!(f, "Mount Type: {mount_type}")?;
         }
         if let Some(equip_type) = &self.equip_type {
-            write!(f, "Equipment Type: {}", equip_type)?;
+            write!(f, "Equipment Type: {equip_type}")?;
         }
         //TODO: implement loops over faces and connectors
         //TODO: implement svg validation rules here

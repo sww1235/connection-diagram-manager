@@ -144,44 +144,44 @@ impl fmt::Display for DataFile {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if let Some(wire_types) = &self.wire_types {
             for (k, v) in wire_types {
-                writeln!(f, "Wire Type: {}", k)?;
-                writeln!(f, "{}", v)?;
+                writeln!(f, "Wire Type: {k}")?;
+                writeln!(f, "{v}")?;
             }
         }
         if let Some(cable_types) = &self.cable_types {
             for (k, v) in cable_types {
-                writeln!(f, "Cable Type: {}", k)?;
-                writeln!(f, "{}", v)?;
+                writeln!(f, "Cable Type: {k}")?;
+                writeln!(f, "{v}")?;
             }
         }
         if let Some(term_cable_types) = &self.term_cable_types {
             for (k, v) in term_cable_types {
-                writeln!(f, "Term Cable Type: {}", k)?;
-                writeln!(f, "{}", v)?;
+                writeln!(f, "Term Cable Type: {k}")?;
+                writeln!(f, "{v}")?;
             }
         }
         if let Some(location_types) = &self.location_types {
             for (k, v) in location_types {
-                writeln!(f, "Location Type: {}", k)?;
-                writeln!(f, "{}", v)?;
+                writeln!(f, "Location Type: {k}")?;
+                writeln!(f, "{v}")?;
             }
         }
         if let Some(connector_types) = &self.connector_types {
             for (k, v) in connector_types {
-                writeln!(f, "Connector Type: {}", k)?;
-                writeln!(f, "{}", v)?;
+                writeln!(f, "Connector Type: {k}")?;
+                writeln!(f, "{v}")?;
             }
         }
         if let Some(equipment_types) = &self.equipment_types {
             for (k, v) in equipment_types {
-                writeln!(f, "Equipment Type: {}", k)?;
-                writeln!(f, "{}", v)?;
+                writeln!(f, "Equipment Type: {k}")?;
+                writeln!(f, "{v}")?;
             }
         }
         if let Some(pathway_types) = &self.pathway_types {
             for (k, v) in pathway_types {
-                writeln!(f, "Pathway Type: {}", k)?;
-                writeln!(f, "{}", v)?;
+                writeln!(f, "Pathway Type: {k}")?;
+                writeln!(f, "{v}")?;
             }
         }
         Ok(())
