@@ -7,9 +7,6 @@
 //TODO:
 //- change datafile parsing to parse individual files, and keep track of which files, which
 //values came from.
-//- restrict library info and src info from being in the same file.
-//- separate out file parsing data structures from actual data structures used in program
-//- Use RC and refcell for recursive multiple owner references
 
 #![warn(missing_docs)]
 #![warn(clippy::correctness)]

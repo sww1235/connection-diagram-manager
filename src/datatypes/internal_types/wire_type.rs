@@ -1,7 +1,5 @@
 use std::fmt;
 
-//TODO: move insulation color from wire to wire_type
-
 /// `WireType` represents a particular type of wire
 ///
 /// Not all fields have to be populated, and some are
@@ -26,8 +24,7 @@ pub struct WireType {
     pub supplier_part_number: Option<String>,
     /// The material the conductor or central element
     /// of the wire is made out of
-    //TODO: rename this to account for fiber optics
-    pub conductor_material: Option<String>,
+    pub material: Option<String>,
     /// If the wire is insulated
     pub insulated: bool,
     /// What material the wire is insulated with
@@ -68,7 +65,7 @@ impl WireType {
             manufacturer_part_number: None,
             supplier: None,
             supplier_part_number: None,
-            conductor_material: None,
+            material: None,
             insulated: false,
             insulation_material: None,
             wire_type_code: None,
@@ -105,8 +102,8 @@ impl fmt::Display for WireType {
         if let Some(supplier_part_number) = &self.supplier_part_number {
             writeln!(f, "Supplier Part Number: {supplier_part_number}")?;
         }
-        if let Some(conductor_material) = &self.conductor_material {
-            writeln!(f, "Conductor Material: {conductor_material}")?;
+        if let Some(material) = &self.material {
+            writeln!(f, "Conductor Material: {material}")?;
         }
         writeln!(f, "Insulated: {}", &self.insulated)?;
         if let Some(insulation_material) = &self.insulation_material {
