@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Config {
     /// `library_files` contains an optional list of additional files to read into the main
-    /// [`Datastore`](crate::datatypes::Datastore)
+    /// [`Library`](crate::datatypes::internal_types::Library)
     pub library_files: Vec<PathBuf>,
     /// `no_default_libraries` prevents loading of default libraries provided with the application
     pub no_default_libraries: bool,
