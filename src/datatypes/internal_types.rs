@@ -76,7 +76,7 @@ pub struct Project {
 impl Library {
     ///Initializes an empty `Library`
     pub fn new() -> Self {
-        let newlib = Library {
+        Library {
             wire_types: HashMap::new(),
             cable_types: HashMap::new(),
             term_cable_types: HashMap::new(),
@@ -84,8 +84,7 @@ impl Library {
             connector_types: HashMap::new(),
             equipment_types: HashMap::new(),
             pathway_types: HashMap::new(),
-        };
-        newlib
+        }
     }
     /// inserts the correct values from a datafile into a `Library` struct
     pub fn from_datafile(&mut self, datafile: DataFile) {
@@ -224,7 +223,8 @@ impl Library {
                             description: pathway_types[k].description.clone(),
                             size: pathway_types[k].size.clone(),
                             trade_size: pathway_types[k].trade_size.clone(),
-                            cross_sect_area: pathway_types[k].cross_sect_area.clone(),
+                            // no clone needed since numeric types have easy copy implementation
+                            cross_sect_area: pathway_types[k].cross_sect_area,
                             material: pathway_types[k].material.clone(),
                         })),
                     );
@@ -303,13 +303,7 @@ impl Library {
                                         label: pin.label.clone(),
                                         signal_type: pin.signal_type.clone(),
                                         color: pin.color.clone(),
-                                        visual_rep: {
-                                            if let Some(vis_rep) = pin.visual_rep.clone() {
-                                                Some(Svg::from(vis_rep))
-                                            } else {
-                                                None
-                                            }
-                                        },
+                                        visual_rep: pin.visual_rep.clone().map(Svg::from),
                                         gender: pin.gender.clone(),
                                     };
                                     new_pins.push(new_pin);
@@ -344,11 +338,13 @@ impl Library {
                             wire_cable: {
 
                                 if term_cable_types[k].wire.is_some() && term_cable_types[k].cable.is_some() {
-                                    panic! {"Both wire and cable values of TermCableType {} are specified. Please correct this.", k}
+                                    panic! {"Both wire and cable values of TermCableType {k} are specified. Please correct this."}
                                 } else if term_cable_types[k].wire.is_none() && term_cable_types[k].cable.is_none() {
 
-                                    panic! {"Neither wire or cable values of TermCableType {} are specified. Please correct this.", k}
+                                    panic! {"Neither wire or cable values of TermCableType {k} are specified. Please correct this."}
                                 } else {
+                                    #[allow(clippy::collapsible_else_if)] // This would change the
+                                                                          // meaning of the logic
                                     if let Some(wire_type) = term_cable_types[k].wire.clone() {
                                         if self.wire_types.contains_key(&wire_type) {
                                             term_cable_type::WireCable::WireType(self.wire_types[&wire_type].clone())
@@ -365,7 +361,7 @@ panic!{"WireType: {} in TermCableType: {} specified in datafile: {} is not found
 
                                         } else {
                                         //TODO: fix this
-                                    panic! {"Neither wire or cable values of TermCableType {} are specified. Please correct this.", k}
+                                    panic! {"Neither wire or cable values of TermCableType {k} are specified. Please correct this."}
                                     }
                                 }
                             },
@@ -462,14 +458,7 @@ panic!{"WireType: {} in TermCableType: {} specified in datafile: {} is not found
                                    for face in faces {
                                        let new_face = equipment_type::EquipFace {
                                             name: face.name.to_string(),
-                                            vis_rep: {
-
-                                                if let Some(vis_rep) = face.vis_rep.clone() {
-                                                    Some(Svg::from(vis_rep))
-                                                } else {
-                                                    None
-                                                }
-                                            },
+                                            vis_rep: face.vis_rep.clone().map(Svg::from),
                                             connectors: {
                                               if let Some(connectors) = &face.connectors {
                                                 let mut new_connectors = Vec::new();
@@ -511,13 +500,12 @@ panic!{"WireType: {} in TermCableType: {} specified in datafile: {} is not found
 impl Project {
     ///Initializes an empty `Project`
     pub fn new() -> Self {
-        let newproj = Project {
+        Project {
             locations: HashMap::new(),
             equipment: HashMap::new(),
             pathways: HashMap::new(),
             wire_cables: HashMap::new(),
-        };
-        newproj
+        }
     }
 
     /// `from_datafile` takes a `DataFile` and a `Library` and imports all Project data found

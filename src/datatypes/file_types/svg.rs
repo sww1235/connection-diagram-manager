@@ -8,6 +8,6 @@ pub struct Svg(pub String);
 
 impl From<IntSvg> for Svg {
     fn from(int_svg: IntSvg) -> Self {
-        Svg { 0: int_svg.0 }
+        Svg(int_svg.0)
     }
 }
