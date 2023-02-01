@@ -109,7 +109,7 @@ impl Library {
                                 .clone(),
                             supplier: wire_types[k].supplier.clone(),
                             supplier_part_number: wire_types[k].supplier_part_number.clone(),
-                            conductor_material: wire_types[k].conductor_material.clone(),
+                            material: wire_types[k].material.clone(),
                             insulated: wire_types[k].insulated,
                             insulation_material: wire_types[k].insulation_material.clone(),
                             wire_type_code: wire_types[k].wire_type_code.clone(),

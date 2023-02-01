@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt;
 
-// TODO: allow for multiple cables inside cable
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has one
 /// core, then it is a wire, not a cable.
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
@@ -72,10 +71,7 @@ impl fmt::Display for CableType {
             writeln!(f, "\tPart Number: {part_number}")?;
         }
         if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
-            writeln!(
-                f,
-                "\tManufacturer Part Number: {manufacturer_part_number}"
-            )?;
+            writeln!(f, "\tManufacturer Part Number: {manufacturer_part_number}")?;
         }
         if let Some(supplier) = &self.supplier {
             writeln!(f, "\tSupplier: {supplier}")?;

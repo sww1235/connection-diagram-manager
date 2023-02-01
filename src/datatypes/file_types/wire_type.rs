@@ -26,8 +26,7 @@ pub struct WireType {
     pub supplier_part_number: Option<String>,
     /// The material the conductor or central element
     /// of the wire is made out of
-    //TODO: rename this to account for fiber optics
-    pub conductor_material: Option<String>,
+    pub material: Option<String>,
     /// If the wire is insulated
     pub insulated: bool,
     /// What material the wire is insulated with
@@ -69,10 +68,7 @@ impl fmt::Display for WireType {
             writeln!(f, "\tPart Number: {part_number}")?;
         }
         if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
-            writeln!(
-                f,
-                "\tManufacturer Part Number: {manufacturer_part_number}"
-            )?;
+            writeln!(f, "\tManufacturer Part Number: {manufacturer_part_number}")?;
         }
         if let Some(supplier) = &self.supplier {
             writeln!(f, "\tSupplier: {supplier}")?;
@@ -80,8 +76,8 @@ impl fmt::Display for WireType {
         if let Some(supplier_part_number) = &self.supplier_part_number {
             writeln!(f, "\tSupplier Part Number: {supplier_part_number}")?;
         }
-        if let Some(conductor_material) = &self.conductor_material {
-            writeln!(f, "\tConductor Material: {conductor_material}")?;
+        if let Some(material) = &self.material {
+            writeln!(f, "\tConductor Material: {material}")?;
         }
         writeln!(f, "\tInsulated: {}", &self.insulated)?;
         if let Some(insulation_material) = &self.insulation_material {

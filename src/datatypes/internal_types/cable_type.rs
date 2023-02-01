@@ -6,7 +6,6 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
-// TODO: allow for multiple cables inside cable
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has one
 /// core, then it is a wire, not a cable.
 #[derive(Debug, Default)]
