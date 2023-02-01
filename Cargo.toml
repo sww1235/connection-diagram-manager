@@ -3,6 +3,8 @@ name = "connection-diagram-manager-rust"
 version = "0.1.0"
 authors = ["Stephen Walker-Weinshenker"]
 edition = "2021"
+repository = "https://github.com/sww1235/connection-diagram-manager-rust"
+description = "Connection Diagram Manager and visualizer"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
