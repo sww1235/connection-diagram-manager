@@ -32,16 +32,16 @@ impl fmt::Display for Equipment {
 
         writeln!(f, "Equipment Type String: {}", &self.equipment_type)?;
         if let Some(identifier) = &self.identifier {
-            writeln!(f, "Identifier: {}", identifier)?;
+            writeln!(f, "Identifier: {identifier}")?;
         }
         if let Some(mounting_type) = &self.mounting_type {
-            writeln!(f, "Mounting Type: {}", mounting_type)?;
+            writeln!(f, "Mounting Type: {mounting_type}")?;
         }
         if let Some(location) = &self.location {
-            writeln!(f, "Location: {}", location)?;
+            writeln!(f, "Location: {location}")?;
         }
         if let Some(description) = &self.description {
-            writeln!(f, "Description: {}", description)?;
+            writeln!(f, "Description: {description}")?;
         }
         Ok(())
     }

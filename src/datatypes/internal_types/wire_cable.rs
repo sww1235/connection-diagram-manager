@@ -50,97 +50,97 @@ impl fmt::Display for WireCable {
             WireCableType::CableType(cable_type) => {
                 writeln!(f, "Cable Instance:")?;
                 if let Some(manufacturer) = cable_type.borrow().manufacturer.clone() {
-                    writeln!(f, "Manufacturer: {}", manufacturer)?;
+                    writeln!(f, "Manufacturer: {manufacturer}")?;
                 }
                 //TODO: Decide how much data from Equiptype we want to display for instance
                 if let Some(model) = cable_type.borrow().model.clone() {
-                    writeln!(f, "Model: {}", model)?;
+                    writeln!(f, "Model: {model}")?;
                 }
                 if let Some(part_number) = cable_type.borrow().part_number.clone() {
-                    writeln!(f, "Part Number: {}", part_number)?;
+                    writeln!(f, "Part Number: {part_number}")?;
                 }
                 if let Some(manufacturer_part_number) =
                     cable_type.borrow().manufacturer_part_number.clone()
                 {
-                    writeln!(f, "Manufacturer Part Number: {}", manufacturer_part_number)?;
+                    writeln!(f, "Manufacturer Part Number: {manufacturer_part_number}")?;
                 }
                 if let Some(supplier) = cable_type.borrow().supplier.clone() {
-                    writeln!(f, "Supplier: {}", supplier)?;
+                    writeln!(f, "Supplier: {supplier}")?;
                 }
                 if let Some(supplier_part_number) = cable_type.borrow().supplier_part_number.clone()
                 {
-                    writeln!(f, "Supplier Part Number: {}", supplier_part_number)?;
+                    writeln!(f, "Supplier Part Number: {supplier_part_number}")?;
                 }
                 if let Some(length) = &self.length {
-                    writeln!(f, "Length: {}", length)?;
+                    writeln!(f, "Length: {length}")?;
                 }
             }
             WireCableType::TermCableType(term_cable_type) => {
                 writeln!(f, "TermCable Instance:")?;
                 if let Some(manufacturer) = term_cable_type.borrow().manufacturer.clone() {
-                    writeln!(f, "Manufacturer: {}", manufacturer)?;
+                    writeln!(f, "Manufacturer: {manufacturer}")?;
                 }
                 //TODO: Decide how much data from Equiptype we want to display for instance
                 if let Some(model) = term_cable_type.borrow().model.clone() {
-                    writeln!(f, "Model: {}", model)?;
+                    writeln!(f, "Model: {model}")?;
                 }
                 if let Some(part_number) = term_cable_type.borrow().part_number.clone() {
-                    writeln!(f, "Part Number: {}", part_number)?;
+                    writeln!(f, "Part Number: {part_number}")?;
                 }
                 if let Some(manufacturer_part_number) =
                     term_cable_type.borrow().manufacturer_part_number.clone()
                 {
-                    writeln!(f, "Manufacturer Part Number: {}", manufacturer_part_number)?;
+                    writeln!(f, "Manufacturer Part Number: {manufacturer_part_number}")?;
                 }
                 if let Some(supplier) = term_cable_type.borrow().supplier.clone() {
-                    writeln!(f, "Supplier: {}", supplier)?;
+                    writeln!(f, "Supplier: {supplier}")?;
                 }
                 if let Some(supplier_part_number) =
                     term_cable_type.borrow().supplier_part_number.clone()
                 {
-                    writeln!(f, "Supplier Part Number: {}", supplier_part_number)?;
+                    writeln!(f, "Supplier Part Number: {supplier_part_number}")?;
                 }
                 if let Some(length) = term_cable_type.borrow().actual_length {
-                    writeln!(f, "Actual Length: {}", length)?;
+                    writeln!(f, "Actual Length: {length}")?;
                 }
             }
             WireCableType::WireType(wire_type) => {
                 writeln!(f, "Wire Instance:")?;
                 if let Some(manufacturer) = wire_type.borrow().manufacturer.clone() {
-                    writeln!(f, "Manufacturer: {}", manufacturer)?;
+                    writeln!(f, "Manufacturer: {manufacturer}")?;
                 }
                 //TODO: Decide how much data from Equiptype we want to display for instance
                 if let Some(model) = wire_type.borrow().model.clone() {
-                    writeln!(f, "Model: {}", model)?;
+                    writeln!(f, "Model: {model}")?;
                 }
                 if let Some(part_number) = wire_type.borrow().part_number.clone() {
-                    writeln!(f, "Part Number: {}", part_number)?;
+                    writeln!(f, "Part Number: {part_number}")?;
                 }
                 if let Some(manufacturer_part_number) =
                     wire_type.borrow().manufacturer_part_number.clone()
                 {
-                    writeln!(f, "Manufacturer Part Number: {}", manufacturer_part_number)?;
+                    writeln!(f, "Manufacturer Part Number: {manufacturer_part_number}")?;
                 }
                 if let Some(supplier) = wire_type.borrow().supplier.clone() {
-                    writeln!(f, "Supplier: {}", supplier)?;
+                    writeln!(f, "Supplier: {supplier}")?;
                 }
                 if let Some(supplier_part_number) = wire_type.borrow().supplier_part_number.clone()
                 {
-                    writeln!(f, "Supplier Part Number: {}", supplier_part_number)?;
+                    writeln!(f, "Supplier Part Number: {supplier_part_number}")?;
                 }
                 if let Some(length) = &self.length {
-                    writeln!(f, "Length: {}", length)?;
+                    writeln!(f, "Length: {length}")?;
                 }
             }
         }
         if let Some(identifier) = &self.identifier {
-            writeln!(f, "Equipment Identifier: {}", identifier)?;
+            writeln!(f, "Equipment Identifier: {identifier}")?;
         }
         if let Some(pathway) = &self.pathway {
             writeln!(f, "Pathway: {}", pathway.borrow())?;
         }
         if let Some(description) = &self.description {
-            writeln!(f, "Description: {}", description)?;
+            writeln!(f, "Description: {description}")?;
         }
         Ok(())
     }

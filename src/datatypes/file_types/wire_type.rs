@@ -60,88 +60,82 @@ impl fmt::Display for WireType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Wire Type:")?;
         if let Some(manufacturer) = &self.manufacturer {
-            writeln!(f, "\tManufacturer: {}", manufacturer)?;
+            writeln!(f, "\tManufacturer: {manufacturer}")?;
         }
         if let Some(model) = &self.model {
-            writeln!(f, "\tModel: {}", model)?;
+            writeln!(f, "\tModel: {model}")?;
         }
         if let Some(part_number) = &self.part_number {
-            writeln!(f, "\tPart Number: {}", part_number)?;
+            writeln!(f, "\tPart Number: {part_number}")?;
         }
         if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
             writeln!(
                 f,
-                "\tManufacturer Part Number: {}",
-                manufacturer_part_number
+                "\tManufacturer Part Number: {manufacturer_part_number}"
             )?;
         }
         if let Some(supplier) = &self.supplier {
-            writeln!(f, "\tSupplier: {}", supplier)?;
+            writeln!(f, "\tSupplier: {supplier}")?;
         }
         if let Some(supplier_part_number) = &self.supplier_part_number {
-            writeln!(f, "\tSupplier Part Number: {}", supplier_part_number)?;
+            writeln!(f, "\tSupplier Part Number: {supplier_part_number}")?;
         }
         if let Some(conductor_material) = &self.conductor_material {
-            writeln!(f, "\tConductor Material: {}", conductor_material)?;
+            writeln!(f, "\tConductor Material: {conductor_material}")?;
         }
         writeln!(f, "\tInsulated: {}", &self.insulated)?;
         if let Some(insulation_material) = &self.insulation_material {
-            writeln!(f, "\tInsulation Material: {}", insulation_material)?;
+            writeln!(f, "\tInsulation Material: {insulation_material}")?;
         }
         if let Some(wire_type_code) = &self.wire_type_code {
-            writeln!(f, "\tWire Type Code: {}", wire_type_code)?;
+            writeln!(f, "\tWire Type Code: {wire_type_code}")?;
         }
         if let Some(conductor_cross_sect_area) = &self.conductor_cross_sect_area {
             if f.alternate() {
                 //TODO: implement mm^2 to AWG conversion, with auht and kcm display
                 writeln!(
                     f,
-                    "\tConductor Cross Sectional Area: {} AWG",
-                    conductor_cross_sect_area
+                    "\tConductor Cross Sectional Area: {conductor_cross_sect_area} AWG"
                 )?;
             } else {
                 writeln!(
                     f,
-                    "\tConductor Cross Sectional Area: {:.2} mm^2",
-                    conductor_cross_sect_area
+                    "\tConductor Cross Sectional Area: {conductor_cross_sect_area:.2} mm^2"
                 )?;
             }
         }
         if let Some(overall_cross_sect_area) = &self.overall_cross_sect_area {
             writeln!(
                 f,
-                "\tOverall Cross Sectional Area: {:.2} mm^2",
-                overall_cross_sect_area
+                "\tOverall Cross Sectional Area: {overall_cross_sect_area:.2} mm^2"
             )?;
         }
         writeln!(f, "\tStranded: {}", &self.stranded)?;
         if let Some(num_strands) = &self.num_strands {
-            writeln!(f, "\tNumber of Strands: {}", num_strands)?;
+            writeln!(f, "\tNumber of Strands: {num_strands}")?;
         }
         if let Some(strand_cross_sect_area) = &self.strand_cross_sect_area {
             if f.alternate() {
                 //TODO: implement mm^2 to AWG conversion, with auht and kcm display
                 writeln!(
                     f,
-                    "\tStrand Cross Sectional Area: {} AWG",
-                    strand_cross_sect_area
+                    "\tStrand Cross Sectional Area: {strand_cross_sect_area} AWG"
                 )?;
             } else {
                 writeln!(
                     f,
-                    "\tStrand Cross Sectional Area: {:.2} mm^2",
-                    strand_cross_sect_area
+                    "\tStrand Cross Sectional Area: {strand_cross_sect_area:.2} mm^2"
                 )?;
             }
         }
         if let Some(insul_volt_rating) = &self.insul_volt_rating {
-            writeln!(f, "\tInsulation Voltage Rating: {}V", insul_volt_rating)?;
+            writeln!(f, "\tInsulation Voltage Rating: {insul_volt_rating}V")?;
         }
         if let Some(insul_temp_rating) = &self.insul_temp_rating {
-            writeln!(f, "\tInsulation Temperature Rating: {}℃", insul_temp_rating)?;
+            writeln!(f, "\tInsulation Temperature Rating: {insul_temp_rating}℃")?;
         }
         if let Some(insul_color) = &self.insul_color {
-            writeln!(f, "\tInsulation Color: {}", insul_color)?;
+            writeln!(f, "\tInsulation Color: {insul_color}")?;
         }
         Ok(())
     }

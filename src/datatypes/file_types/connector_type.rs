@@ -71,19 +71,19 @@ impl fmt::Display for ConnectorPin {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Pin:")?;
         if let Some(id) = &self.id {
-            writeln!(f, "\tPin ID: {}", id)?;
+            writeln!(f, "\tPin ID: {id}")?;
         }
         if let Some(label) = &self.label {
-            writeln!(f, "\tPin Label: {}", label)?;
+            writeln!(f, "\tPin Label: {label}")?;
         }
         if let Some(signal_type) = &self.signal_type {
-            writeln!(f, "\tPin Signal Type: {}", signal_type)?;
+            writeln!(f, "\tPin Signal Type: {signal_type}")?;
         }
         if let Some(color) = &self.color {
-            writeln!(f, "\tPin Color: {}", color)?;
+            writeln!(f, "\tPin Color: {color}")?;
         }
         if let Some(gender) = &self.gender {
-            writeln!(f, "\tPin Gender: {}", gender)?;
+            writeln!(f, "\tPin Gender: {gender}")?;
         }
         //TODO: provide a way of showing visual representation
         Ok(())
@@ -93,47 +93,46 @@ impl fmt::Display for ConnectorType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Connector Type:")?;
         if let Some(manufacturer) = &self.manufacturer {
-            writeln!(f, "\tManufacturer: {}", manufacturer)?;
+            writeln!(f, "\tManufacturer: {manufacturer}")?;
         }
         if let Some(model) = &self.model {
-            writeln!(f, "\tModel: {}", model)?;
+            writeln!(f, "\tModel: {model}")?;
         }
         if let Some(part_number) = &self.part_number {
-            writeln!(f, "\tPart Number: {}", part_number)?;
+            writeln!(f, "\tPart Number: {part_number}")?;
         }
         if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
             writeln!(
                 f,
-                "\tManufacturer Part Number: {}",
-                manufacturer_part_number
+                "\tManufacturer Part Number: {manufacturer_part_number}"
             )?;
         }
         if let Some(supplier) = &self.supplier {
-            writeln!(f, "\tSupplier: {}", supplier)?;
+            writeln!(f, "\tSupplier: {supplier}")?;
         }
         if let Some(supplier_part_number) = &self.supplier_part_number {
-            writeln!(f, "\tSupplier Part Number: {}", supplier_part_number)?;
+            writeln!(f, "\tSupplier Part Number: {supplier_part_number}")?;
         }
         if let Some(description) = &self.description {
-            writeln!(f, "\tDescription: {}", description)?;
+            writeln!(f, "\tDescription: {description}")?;
         }
         if let Some(mount_type) = &self.mount_type {
-            writeln!(f, "\tMount Type: {}", mount_type)?;
+            writeln!(f, "\tMount Type: {mount_type}")?;
         }
         if let Some(panel_cutout) = &self.panel_cutout {
-            writeln!(f, "\tPanel Cutout: {}", panel_cutout)?;
+            writeln!(f, "\tPanel Cutout: {panel_cutout}")?;
         }
         if let Some(gender) = &self.gender {
-            writeln!(f, "\tGender: {}", gender)?;
+            writeln!(f, "\tGender: {gender}")?;
         }
         if let Some(height) = &self.height {
-            writeln!(f, "\tHeight: {:.2} mm", height)?;
+            writeln!(f, "\tHeight: {height:.2} mm")?;
         }
         if let Some(width) = &self.width {
-            writeln!(f, "\tWidth: {:.2} mm", width)?;
+            writeln!(f, "\tWidth: {width:.2} mm")?;
         }
         if let Some(diameter) = &self.diameter {
-            writeln!(f, "\tDiameter: {:.2} mm", diameter)?;
+            writeln!(f, "\tDiameter: {diameter:.2} mm")?;
         }
         writeln!(f, "\tPin Count: {}", self.pins.len())?;
         //TODO: implement loop here to print all pins

@@ -63,29 +63,28 @@ impl fmt::Display for CableType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Cable Type:")?;
         if let Some(manufacturer) = &self.manufacturer {
-            writeln!(f, "\tManufacturer: {}", manufacturer)?;
+            writeln!(f, "\tManufacturer: {manufacturer}")?;
         }
         if let Some(model) = &self.model {
-            writeln!(f, "\tModel: {}", model)?;
+            writeln!(f, "\tModel: {model}")?;
         }
         if let Some(part_number) = &self.part_number {
-            writeln!(f, "\tPart Number: {}", part_number)?;
+            writeln!(f, "\tPart Number: {part_number}")?;
         }
         if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
             writeln!(
                 f,
-                "\tManufacturer Part Number: {}",
-                manufacturer_part_number
+                "\tManufacturer Part Number: {manufacturer_part_number}"
             )?;
         }
         if let Some(supplier) = &self.supplier {
-            writeln!(f, "\tSupplier: {}", supplier)?;
+            writeln!(f, "\tSupplier: {supplier}")?;
         }
         if let Some(supplier_part_number) = &self.supplier_part_number {
-            writeln!(f, "\tSupplier Part Number: {}", supplier_part_number)?;
+            writeln!(f, "\tSupplier Part Number: {supplier_part_number}")?;
         }
         if let Some(cable_type_code) = &self.cable_type_code {
-            writeln!(f, "\tCable Type: {}", cable_type_code)?;
+            writeln!(f, "\tCable Type: {cable_type_code}")?;
         }
         if f.alternate() {
             //TODO: implement mm^2 to awg conversion function. include function for changing units
@@ -105,7 +104,7 @@ impl fmt::Display for CableType {
         writeln!(f, "\tHeight: {:.2} mm", &self.height)?;
         writeln!(f, "\tWidth: {:.2} mm", &self.width)?;
         if let Some(diameter) = &self.diameter {
-            writeln!(f, "\tDiameter: {:.2} mm", diameter)?;
+            writeln!(f, "\tDiameter: {diameter:.2} mm")?;
         }
         //TODO: implement loops here to print all layers of cable
         //if let Some() = &self.model {
