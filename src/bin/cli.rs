@@ -120,10 +120,10 @@ fn main() {
 
     // check if project_directory was specified and even exists
 
-    assert! { !cli.project_directory.exists(),
+    assert! { cli.project_directory.exists(),
     "Project directory specified: {} does not exist", cli.project_directory.display()}
 
-    assert! {!cli.project_directory.is_dir(),
+    assert! {cli.project_directory.is_dir(),
     "Project directory specified: {} is not a directory", cli.project_directory.display()}
 
     let config = match Config::parse_config(cli.project_directory.as_path()) {
