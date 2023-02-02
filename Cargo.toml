@@ -23,3 +23,7 @@ path = "src/lib.rs"
 [[bin]]
 name = "cdm_cli"
 path = "src/bin/cli.rs"
+
+[[bin]]
+name = "cdm_gui"
+path = "src/bin/gui.rs"
