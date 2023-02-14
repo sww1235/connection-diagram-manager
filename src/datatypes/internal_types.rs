@@ -755,6 +755,20 @@ mod tests {
         )
     }
 
+    // TODO:  testing ideas (for both project and library):
+    // - test import of datafile containing each individual object
+    // - test import of basic datafile, minimal amount of data necessary
+    // - test import of full datafile, with multiple defined dictionary entries for each dictionary
+    // - test failure of multiple of the top level dicts defined in one file
+    // - test to make sure only one of wire, cable, termcable is set in project parsing, both
+    // positive and negative
+    // - test importing a cable/termcable type with a missing wiretype (also for equipment, etc)
+    // - test complicated term_cable
+    // - test all project datatypes with both present and absent library values
+    // - test all panics
+    // - test library types that refer to each other, make sure objects are always parsed in
+    // correct order
+    // - same with project types, except with both library and project assets
     #[test]
     fn read_datafile_library() {}
 
