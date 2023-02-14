@@ -6,7 +6,7 @@ use std::fmt;
 /// mainly provided for logical reasons rather than
 /// functional (model/part number/manufacturer part number
 /// may all be equivalent in some cases)
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct WireType {
     /// Internal ID of `WireType`
     pub id: String,

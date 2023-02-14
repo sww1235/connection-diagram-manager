@@ -4,7 +4,7 @@ use std::fmt;
 /// [`LocationType`](super::location_type::LocationType) to another.
 ///
 /// Examples of Pathways include, conduit, cable tray, free air
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct PathwayType {
     /// Internal ID of `PathwayType`
     pub id: String,

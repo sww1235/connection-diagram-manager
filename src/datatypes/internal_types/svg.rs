@@ -1,7 +1,7 @@
 use super::super::file_types::svg::Svg as FileSvg;
 
 /// Svg represents a full SVG image
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub struct Svg(pub String);
 
 impl From<FileSvg> for Svg {

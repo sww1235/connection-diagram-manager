@@ -5,7 +5,7 @@ use std::fmt;
 use std::rc::Rc;
 
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct TermCableType {
     /// Internal ID of `TermCableType`
     pub id: String,
@@ -36,7 +36,7 @@ pub struct TermCableType {
 }
 
 /// `WireCable` allows either a `WireType` or `CableType` to be the root of a `TermCableType`
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum WireCable {
     /// CableType
     CableType(Rc<RefCell<CableType>>),
@@ -52,7 +52,7 @@ impl Default for WireCable {
 
 /// TermCableConnectorTermination represents the connections between a pin of an individual
 /// TermCableConnector and the individual core of the cable.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct TermCableConnectorTermination {
     /// Core represents which individual wire inside a cable this pin is connected to
     pub core: Option<u64>,
@@ -61,7 +61,7 @@ pub struct TermCableConnectorTermination {
 }
 
 /// TermCableConnector represents a connector on one end of a TermCable
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct TermCableConnector {
     /// connector_type represents the connector type that is on the end of a TermCable
     pub connector_type: Rc<RefCell<ConnectorType>>,

@@ -5,7 +5,7 @@ use std::fmt;
 ///
 /// Examples of LocationType include junction boxes, racks, panels, etc.
 /// It does not include places these are located.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct LocationType {
     /// Internal ID of `LocationType`
     pub id: String,

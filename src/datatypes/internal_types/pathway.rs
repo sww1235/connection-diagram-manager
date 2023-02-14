@@ -5,7 +5,7 @@ use std::rc::Rc;
 use super::pathway_type::PathwayType;
 
 /// `Pathway` represents a physical instance of a pathway
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct Pathway {
     /// Internal `id` of pathway instance
     pub id: String,

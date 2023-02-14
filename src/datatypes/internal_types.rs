@@ -36,10 +36,8 @@ use super::util_types::CrossSection;
 use cable_type::CableCore;
 use svg::Svg;
 
-//TODO: maybe switch these vectors to hashmaps for ease of lookup
-
 /// `Library` represents all library data used in program
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct Library {
     /// contains all wire types read in from file, and/or added in via program logic
     pub wire_types: HashMap<String, Rc<RefCell<wire_type::WireType>>>,
@@ -58,7 +56,7 @@ pub struct Library {
 }
 
 /// `Project` represents all project specific data used in program
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct Project {
     /// `equipment` contains all equipment instances read in from files, and/or added in via program logic
     pub equipment: HashMap<String, Rc<RefCell<equipment::Equipment>>>,
@@ -661,7 +659,21 @@ panic!{"TermCableType: {} in WireCable: {} specified in datafile: {} is not foun
                                        },
                                        identifier: equipment[k].identifier.clone(),
                                        mounting_type: equipment[k].mounting_type.clone(),
-                                       location: equipment[k].location.clone(),
+                                       location: {
+                                                  // clone string here to avoid moving value out of hashmap.
+                                           if let Some(file_location) = equipment[k].location.clone() {
+                                                if self.locations.contains_key(&file_location) {
+                                                    Some(self.locations[k].clone())
+                                                } else {
+                                                    //TODO: handle this more intelligently
+
+                                        panic! {"Location: {} is assigned to Equipment: {} in datafile: {}, that doesn't exist in any library either read in from datafile, or added via program logic. Check your spelling", k, file_location, datafile.file_path.display()}
+                                           }
+
+                                           } else {
+                                               None
+                                           }
+                                       },
                                        description: equipment[k].description.clone(),
                                     }
                                 )
@@ -706,4 +718,46 @@ panic!{"TermCableType: {} in WireCable: {} specified in datafile: {} is not foun
             }
         }
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use std::collections::HashMap;
+
+    #[test]
+    fn new_library() {
+        assert_eq!(
+            Library::new(),
+            Library {
+                wire_types: HashMap::new(),
+                cable_types: HashMap::new(),
+                term_cable_types: HashMap::new(),
+                location_types: HashMap::new(),
+                connector_types: HashMap::new(),
+                equipment_types: HashMap::new(),
+                pathway_types: HashMap::new(),
+            }
+        )
+    }
+
+    #[test]
+    fn new_project() {
+        assert_eq!(
+            Project::new(),
+            Project {
+                locations: HashMap::new(),
+                equipment: HashMap::new(),
+                pathways: HashMap::new(),
+                wire_cables: HashMap::new(),
+            }
+        )
+    }
+
+    #[test]
+    fn read_datafile_library() {}
+
+    #[test]
+    fn read_datafile_project() {}
 }

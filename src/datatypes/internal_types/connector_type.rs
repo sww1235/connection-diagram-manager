@@ -7,7 +7,7 @@ use std::fmt;
 ///
 /// Connector can represent more than just a metal or plastic blob on the end of a cable, it can
 /// represent a screw terminal on a piece of equipment or a hole for wire to be entered in.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct ConnectorType {
     /// Internal ID of ConnectorType
     pub id: String,
@@ -54,7 +54,7 @@ pub struct ConnectorType {
 }
 
 /// Represents an individual pin in a `ConnectorType`
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct ConnectorPin {
     /// Pin number or identifier in connector
     pub id: Option<String>,

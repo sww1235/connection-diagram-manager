@@ -2,8 +2,6 @@ use serde::{Deserialize, Serialize};
 
 use std::fmt;
 
-//TODO: maybe split this up into separate structs
-
 /// `WireCable` represents a particular instance of a `WireType`, `CableType` or `TermCableType`.
 /// It represents a physical item.
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]

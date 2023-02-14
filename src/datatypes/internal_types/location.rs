@@ -5,7 +5,7 @@ use std::rc::Rc;
 use super::location_type::LocationType;
 
 /// `Location` represents a physical instance of a pathway
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct Location {
     /// Internal `id` of location instance
     pub id: String,

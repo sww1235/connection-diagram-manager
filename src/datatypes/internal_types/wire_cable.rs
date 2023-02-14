@@ -10,7 +10,7 @@ use super::{
 
 /// `WireCable` represents a particular instance of a `WireType`, `CableType` or `TermCableType`.
 /// It represents a physical item.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct WireCable {
     /// Internal `id` of wire or cable instance
     pub id: String,
@@ -27,7 +27,7 @@ pub struct WireCable {
 }
 /// `WireCableType` allows a `WireCable` to store a reference to either a `WireType`, `CableType`
 /// or `TermCableType`
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum WireCableType {
     /// `CableType`
     CableType(Rc<RefCell<CableType>>),

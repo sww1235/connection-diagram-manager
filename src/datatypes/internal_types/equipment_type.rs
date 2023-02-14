@@ -9,7 +9,7 @@ use std::rc::Rc;
 /// EquipmentType represents a type of equipment
 ///
 /// Anything from a rackmount piece of gear to an outlet or terminal block
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct EquipmentType {
     //TODO: add dimensions here
     /// Internal ID of `EquipmentType`
@@ -44,7 +44,7 @@ pub struct EquipmentType {
 ///
 /// May have 2 faces for something like a patch panel, or 6 for a cube, or 1 for an unrolled
 /// sphere, etc.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct EquipFace {
     /// Name/ID of equipment face
     pub name: String,
@@ -57,7 +57,7 @@ pub struct EquipFace {
 //TODO: Make some of these fields enums
 /// EquipmentConnector represents an instance of a [`ConnectorType`](super::connector_type::ConnectorType) in
 /// a EquipmentType
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct EquipConnector {
     /// Internal ID of `EquipmentConnector`
     /// ConnectorType
