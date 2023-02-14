@@ -2,11 +2,11 @@ use std::cell::RefCell;
 use std::fmt;
 use std::rc::Rc;
 
-use super::equipment_type::EquipmentType;
+use super::{equipment_type::EquipmentType, location::Location};
 
 /// `Equipment` represents a particular instance of an `EquipmentType`.
 /// This is the physical unit you would hold in your hand
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct Equipment {
     /// Internal `id` of equipment instance
     pub id: String,
@@ -18,7 +18,7 @@ pub struct Equipment {
     /// must be in list of mounting types defined in `equip_type.mounting_type`
     pub mounting_type: Option<String>,
     /// The individual location
-    pub location: Option<String>, //TODO: Change to Option<location::Location>
+    pub location: Option<Rc<RefCell<Location>>>,
     /// Description
     pub description: Option<String>,
 }
@@ -52,7 +52,7 @@ impl fmt::Display for Equipment {
             writeln!(f, "Mounting Type: {mounting_type}")?;
         }
         if let Some(location) = &self.location {
-            writeln!(f, "Location: {location}")?;
+            writeln!(f, "Location: {}", location.borrow())?;
         }
         if let Some(description) = &self.description {
             writeln!(f, "Description: {description}")?;

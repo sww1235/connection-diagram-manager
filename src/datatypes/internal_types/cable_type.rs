@@ -8,7 +8,7 @@ use std::rc::Rc;
 
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has one
 /// core, then it is a wire, not a cable.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct CableType {
     /// Unique ID of `CableType`
     pub id: String,
@@ -49,7 +49,7 @@ pub struct CableType {
 //https://stackoverflow.com/questions/67594909/multiple-possible-types-for-a-serializable-structs-field
 
 /// `CableCore` represents an individual conductor, strength member or optical fiber in a cable.
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum CableCore {
     /// `WireType`
     WireType(Rc<RefCell<WireType>>),
@@ -58,7 +58,7 @@ pub enum CableCore {
 }
 
 /// `CableLayer` represents an insulation or shield layer of the entire cable
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct CableLayer {
     /// layer number, counted from inside to outside of cable, 1 indexed
     pub layer_number: Option<u64>,
