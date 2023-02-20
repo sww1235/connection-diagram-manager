@@ -71,6 +71,14 @@ pub struct Project {
     pub locations: HashMap<String, Rc<RefCell<location::Location>>>,
 }
 
+/// `Mergable` indicates that an object has the necessary utilities to merge itself with another
+/// instance of the same object type.
+pub trait Mergable {
+    /// `merge_prompt` assists the user in merging 2 object instances by prompting the user with
+    /// the difference between the object, field by field, and providing sensible defaults.
+    fn merge_prompt(&mut self, other: &Self) -> Self;
+}
+
 impl Library {
     ///Initializes an empty `Library`
     pub fn new() -> Self {
@@ -86,6 +94,24 @@ impl Library {
     }
     /// inserts the correct values from a datafile into a `Library` struct
     pub fn from_datafile(&mut self, datafile: DataFile) {
+        struct ObjectsToCheck {
+            wire_types: Vec<wire_type::WireType>,
+            cable_types: Vec<cable_type::CableType>,
+            term_cable_types: Vec<term_cable_type::TermCableType>,
+            location_types: Vec<location_type::LocationType>,
+            connector_types: Vec<connector_type::ConnectorType>,
+            equipment_types: Vec<equipment_type::EquipmentType>,
+            pathway_types: Vec<pathway_type::PathwayType>,
+        }
+        let mut new_objects = ObjectsToCheck {
+            wire_types: Vec::new(),
+            cable_types: Vec::new(),
+            term_cable_types: Vec::new(),
+            location_types: Vec::new(),
+            connector_types: Vec::new(),
+            equipment_types: Vec::new(),
+            pathway_types: Vec::new(),
+        };
         // wire_types
         if let Some(wire_types) = datafile.wire_types {
             for (k, v) in &wire_types {
