@@ -55,7 +55,7 @@ pub struct WireType {
 }
 
 impl WireType {
-    /// Creates a new `WireType`
+    /// Creates an empty instance of `WireType`
     pub fn new() -> Self {
         WireType {
             id: String::new(),
