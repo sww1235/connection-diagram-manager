@@ -36,9 +36,18 @@ pub struct CableType {
     /// diameter of cable in mm
     pub diameter: Option<f64>,
     /// map of cores in cable
-    pub cable_core: HashMap<String, String>,
+    pub cable_core: HashMap<String, CableCore>,
     /// vector of exterior insulation/shielding layers
     pub insul_layers: Vec<CableLayer>,
+}
+
+/// `CableCore` represents a core of a cable
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+pub struct CableCore {
+    /// `type_str` contains the string ID of the wire/cable that is represented by cablecore
+    pub type_str: String,
+    /// `is_wire` indicates if this cableCore is a wire or cable
+    pub is_wire: bool,
 }
 
 /// `CableLayer` represents an insulation or shield layer of the entire cable

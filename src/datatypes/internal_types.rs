@@ -185,18 +185,26 @@ impl Library {
                             },
                             cable_core: {
                                let mut cable_core_map = HashMap::new();
-                                for (core_id, core_type_str) in &cable_types[k].cable_core {
+                                for (core_id, core) in &cable_types[k].cable_core {
                                     //TODO: this could result in issues where the cable type is in
                                     //the file, but not read before it is checked for here.
-                                if self.wire_types.contains_key(core_type_str) {
-                                    cable_core_map.insert(core_id.to_string(), CableCore::WireType(self.wire_types[core_type_str].clone()));
+                                if core.is_wire && self.wire_types.contains_key(&core.type_str) {
+                                    cable_core_map.insert(core_id.to_string(), CableCore::WireType(self.wire_types[&core.type_str].clone()));
 
-                                } else if self.cable_types.contains_key(core_type_str) {
-                                    cable_core_map.insert(core_id.to_string(), CableCore::CableType(self.cable_types[core_type_str].clone()));
+                                } else if !core.is_wire && self.cable_types.contains_key(&core.type_str) {
+                                    cable_core_map.insert(core_id.to_string(), CableCore::CableType(self.cable_types[&core.type_str].clone()));
 
                                 } else {
-                                    //TODO: handle this more gracefully
-                                    panic!{"can't find CableCore Type: {} referenced in CableType: {} in datafile: {}, in any file or library imported into Project.", core_type_str, k, datafile.file_path.display()}
+                                    warn!{"can't find CableCore Type: {} referenced in CableType: {} in datafile: {}, in any file or library imported into Project. Creating empty struct for now", core.type_str, k, datafile.file_path.display()}
+                                    if core.is_wire {
+                                        let new_wire_type = Rc::new(RefCell::new(wire_type::WireType::new()));
+                                        new_wire_type.borrow_mut().id = core_id.to_string();
+                                        cable_core_map.insert(core_id.to_string(), CableCore::WireType(new_wire_type.clone()));
+                                    } else {
+                                        let new_cable_type = Rc::new(RefCell::new(cable_type::CableType::new()));
+                                        new_cable_type.borrow_mut().id = core_id.to_string();
+                                        cable_core_map.insert(core_id.to_string(), CableCore::CableType(new_cable_type.clone()));
+                                    }
                                 }
 
                                 }
@@ -372,7 +380,9 @@ impl Library {
                                     if let Some(wire_type) = term_cable_types[k].wire.clone() {
                                         if self.wire_types.contains_key(&wire_type) {
                                             term_cable_type::WireCable::WireType(self.wire_types[&wire_type].clone())
-                                        } else {panic!{"WireType: {} in TermCableType: {} specified in datafile: {} is not found in any library either read from datafiles, or implemented in program logic. Check your spelling", wire_type, k, datafile.file_path.display()}}
+                                        } else {
+
+                                            panic!{"WireType: {} in TermCableType: {} specified in datafile: {} is not found in any library either read from datafiles, or implemented in program logic. Check your spelling", wire_type, k, datafile.file_path.display()}}
 
 
                                     } else if let Some(cable_type) = &term_cable_types[k].cable {

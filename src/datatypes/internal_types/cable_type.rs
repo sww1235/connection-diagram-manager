@@ -74,6 +74,28 @@ pub struct CableLayer {
     pub color: Option<String>,
 }
 
+impl CableType {
+    /// Creates an empty instance of `CableType`
+    pub fn new() -> Self {
+        CableType {
+            id: String::new(),
+            manufacturer: None,
+            model: None,
+            part_number: None,
+            manufacturer_part_number: None,
+            supplier: None,
+            supplier_part_number: None,
+            cable_type_code: None,
+            cross_sect_area: 0.0,
+            cross_section: CrossSection::default(),
+            height: 0.0,
+            width: 0.0,
+            diameter: None,
+            cable_core: HashMap::new(),
+            insul_layers: Vec::new(),
+        }
+    }
+}
 impl fmt::Display for CableType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Cable Type:")?;

@@ -174,7 +174,9 @@ cable_type: # dictonary of all available raw cable types.
 	<str>:	# cable type designator (must be unique)
 		core:	# dictionary of wire or cable cores inside cable.
 				# strength members are treated as a wire
-			<str>: <str> # identifier of individual core. Must be unique per cable_type: identifier of wire/cable type that core is
+			<str>: # identifier of individual core. Must be unique per cable_type.
+				type: <str>			# identifier of wire/cable type that core is
+				is_wire: <bool>		# is this core a wire?
 		manufacturer: <str>
 		pn: <str>					# [internal] part number
 		mpn: <str>					# manufacturer part number
@@ -189,7 +191,7 @@ cable_type: # dictonary of all available raw cable types.
 
 		layer: # list of shields and insulation layers on outside of cable
 			layer_nbr: <int>			# counted from inside to outside of cable
-			type: <str>				# insulation, semiconductor, shield, screen, concentric neutral
+			layer_type: <str>				# insulation, semiconductor, shield, screen, concentric neutral
 			material: <str>
 			volt_rating: <float>	# voltage rating for insulation layer
 			temp_rating: <float>	# temp rating for insulation layer. Specified in degrees centigrade
@@ -211,14 +213,14 @@ term_cable_type:	# dictionary of available manufactuered cables,
 	  nom_length: <float>		# nominal length in meters
 	  length: <float>			# actual length in meters
 	  end1:						# dictionary of connectors attached to term cable
-		- type: <str>			# ID of connector type
+		- connector_type: <str>			# ID of connector type
 		  termination:			# dictionary of core to connector pin mappings for each connector
 								# manual termination between pin and core must be specified
 			- core: <str>
 			  pin: <str>
 
 	  end2:						# dictionary of connectors attached to term cable
-		- type: <str>			# ID of connector type
+		- connector_type: <str>			# ID of connector type
 		  termination:			# dictionary of core to connector pin mappings for each connector
 								# manual termination between pin and core must be specified
 			- core: <str>
