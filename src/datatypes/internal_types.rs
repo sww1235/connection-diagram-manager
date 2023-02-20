@@ -92,26 +92,20 @@ impl Library {
             pathway_types: HashMap::new(),
         }
     }
-    /// inserts the correct values from a datafile into a `Library` struct
-    pub fn from_datafile(&mut self, datafile: DataFile) {
-        struct ObjectsToCheck {
-            wire_types: Vec<wire_type::WireType>,
-            cable_types: Vec<cable_type::CableType>,
-            term_cable_types: Vec<term_cable_type::TermCableType>,
-            location_types: Vec<location_type::LocationType>,
-            connector_types: Vec<connector_type::ConnectorType>,
-            equipment_types: Vec<equipment_type::EquipmentType>,
-            pathway_types: Vec<pathway_type::PathwayType>,
+    /// `from_datafiles` converts between the textual representation of datafiles, and the struct
+    /// object representation of the internal objects
+    pub fn from_datafiles(&mut self, datafiles: Vec<DataFile>) {
+        // parse all datafiles
+        for datafile in datafiles {
+            self.from_datafile(datafile)
         }
-        let mut new_objects = ObjectsToCheck {
-            wire_types: Vec::new(),
-            cable_types: Vec::new(),
-            term_cable_types: Vec::new(),
-            location_types: Vec::new(),
-            connector_types: Vec::new(),
-            equipment_types: Vec::new(),
-            pathway_types: Vec::new(),
-        };
+        for (_, wire_type) in &self.wire_types {
+            //TODO: check for empty objects
+        }
+    }
+
+    /// inserts the correct values from a datafile into a `Library` struct
+    fn from_datafile(&mut self, datafile: DataFile) {
         // wire_types
         if let Some(wire_types) = datafile.wire_types {
             for (k, v) in &wire_types {
@@ -541,12 +535,23 @@ impl Project {
             wire_cables: HashMap::new(),
         }
     }
+    /// `from_datafiles` converts between the textual representation of datafiles, and the struct
+    /// object representation of the internal objects
+    pub fn from_datafiles(&mut self, datafiles: Vec<DataFile>, library: &Library) {
+        // parse all datafiles
+        for datafile in datafiles {
+            self.from_datafile(datafile, library)
+        }
+        for (_, wire_cable) in &self.wire_cables {
+            //TODO: check for empty objects
+        }
+    }
 
     /// `from_datafile` takes a `DataFile` and a `Library` and imports all Project data found
     /// within, into the `Project` struct this method is called on. It will check `Library` for
     /// defined types to assign as references within the various project data imported from
     /// `datafile`
-    pub fn from_datafile(&mut self, datafile: DataFile, library: &Library) {
+    fn from_datafile(&mut self, datafile: DataFile, library: &Library) {
         // wire_cables
         if let Some(wire_cables) = datafile.wire_cables {
             for (k, v) in &wire_cables {
