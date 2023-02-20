@@ -12,9 +12,9 @@ pub mod pathway_type;
 pub mod svg;
 /// `term_cable_type` represents a cable that has connectors assembled on to it
 pub mod term_cable_type;
-/// `wire_type` represents an individual wire with optional insulation
-pub mod wire_type;
 
+/// `cable` represents an instance of a `CableType`, or `TermCableType`
+pub mod cable;
 /// `equipment` represents an instance of an EquipmentType. This is a physical item
 /// you hold in your hand.
 pub mod equipment;
@@ -22,8 +22,6 @@ pub mod equipment;
 pub mod location;
 /// `pathway` represents an instance of a `PathwayType`
 pub mod pathway;
-/// `wire_cable` represents an instance of a `WireType`, `CableType`, or `TermCableType`
-pub mod wire_cable;
 
 use log::trace;
 use serde::{Deserialize, Serialize};
@@ -43,8 +41,6 @@ pub struct DataFile {
     #[serde(skip)]
     pub file_path: path::PathBuf,
     /// stores all WireTypes read in from file
-    #[serde(rename = "wire_type")]
-    pub wire_types: Option<HashMap<String, wire_type::WireType>>,
     /// stores all CableTypes read in from file
     #[serde(rename = "cable_type")]
     pub cable_types: Option<HashMap<String, cable_type::CableType>>,
@@ -64,8 +60,8 @@ pub struct DataFile {
     #[serde(rename = "pathway_type")]
     pub pathway_types: Option<HashMap<String, pathway_type::PathwayType>>,
     /// stores all wires and cables read in from file
-    #[serde(rename = "wire_cable")]
-    pub wire_cables: Option<HashMap<String, wire_cable::WireCable>>,
+    #[serde(rename = "cable")]
+    pub cables: Option<HashMap<String, cable::Cable>>,
     /// stores all locations read in from file
     #[serde(rename = "location")]
     pub locations: Option<HashMap<String, location::Location>>,
@@ -142,12 +138,6 @@ fn proj_dir_parse_inner(
 
 impl fmt::Display for DataFile {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        if let Some(wire_types) = &self.wire_types {
-            for (k, v) in wire_types {
-                writeln!(f, "Wire Type: {k}")?;
-                writeln!(f, "{v}")?;
-            }
-        }
         if let Some(cable_types) = &self.cable_types {
             for (k, v) in cable_types {
                 writeln!(f, "Cable Type: {k}")?;
@@ -184,6 +174,7 @@ impl fmt::Display for DataFile {
                 writeln!(f, "{v}")?;
             }
         }
+        //TODO: add in project datatypes here
         Ok(())
     }
 }

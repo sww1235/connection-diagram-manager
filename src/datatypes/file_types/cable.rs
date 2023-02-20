@@ -2,14 +2,14 @@ use serde::{Deserialize, Serialize};
 
 use std::fmt;
 
-/// `WireCable` represents a particular instance of a `WireType`, `CableType` or `TermCableType`.
+///TODO: split out termcable from this mess
+
+/// `Cable` represents a particular instance of a `CableType` or `TermCableType`.
 /// It represents a physical item.
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
-pub struct WireCable {
-    /// Internal `id` of wire or cable instance
+pub struct Cable {
+    /// Internal `id` of cable instance
     pub id: String,
-    /// The type of wire of this instance
-    pub wire: Option<String>,
     /// The type of cable of this instance
     pub cable: Option<String>,
     /// The type of term_cable of this instance
@@ -24,11 +24,8 @@ pub struct WireCable {
     pub pathway: Option<String>,
 }
 
-impl fmt::Display for WireCable {
+impl fmt::Display for Cable {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        if let Some(wire) = &self.wire {
-            writeln!(f, "WireType: {wire}")?;
-        }
         if let Some(cable) = &self.cable {
             writeln!(f, "CableType: {cable}")?;
         }

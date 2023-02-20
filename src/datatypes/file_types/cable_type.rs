@@ -36,7 +36,7 @@ pub struct CableType {
     /// diameter of cable in mm
     pub diameter: Option<f64>,
     /// map of cores in cable
-    pub cable_core: HashMap<String, String>,
+    pub cable_core: Option<HashMap<String, String>>,
     /// vector of exterior insulation/shielding layers
     pub insul_layers: Vec<CableLayer>,
 }

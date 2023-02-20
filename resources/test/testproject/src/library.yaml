@@ -89,12 +89,6 @@ cable_type:
       - layer_nbr: 1
         type: screen
         material: copper
-
-
-
-
-
-wire_type:
   18AWGINSUL:
     material: copper
     insulation_material: nylon
@@ -120,7 +114,6 @@ wire_type:
     insul_temp_rating: 90
 
 
-
 connector_type:
   XLR3M:
     manufacturer: Neutrik
@@ -132,7 +125,7 @@ connector_type:
       - connector_pin:
           id: 1
           label: 1
-          gender: Male 
+          gender: Male
       - connector_pin:
           id: 2
           label: 2
