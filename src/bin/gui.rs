@@ -147,14 +147,9 @@ fn main() {
 
     let mut lib2 = Library::new();
     let mut proj2 = Project::new();
-    for datafile in &data_files {
-        println! {"{datafile}"};
-        lib2.from_datafile(datafile.clone());
-    }
+    lib2.from_datafiles(data_files.clone());
 
-    for datafile in &data_files {
-        proj2.from_datafile(datafile.clone(), &lib2);
-    }
+    proj2.from_datafiles(data_files.clone(), &lib2);
 
     println! {"{lib2:#?}"};
     println! {"{proj2:#?}"};
