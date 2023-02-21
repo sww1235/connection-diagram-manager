@@ -70,6 +70,30 @@ pub struct ConnectorPin {
     pub gender: Option<String>,
 }
 
+impl ConnectorType {
+    pub fn new() -> Self {
+        Self {
+            id: String::new(),
+            manufacturer: None,
+            model: None,
+            part_number: None,
+            manufacturer_part_number: None,
+            supplier: None,
+            supplier_part_number: None,
+            description: None,
+            mount_type: None,
+            panel_cutout: None,
+            gender: None,
+            height: 0.0,
+            width: 0.0,
+            depth: 0.0,
+            diameter: None,
+            pins: Vec::new(),
+            visual_rep: Svg::new(),
+        }
+    }
+}
+
 impl fmt::Display for ConnectorPin {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Pin:")?;

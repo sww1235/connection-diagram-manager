@@ -77,7 +77,7 @@ pub struct CableLayer {
 impl CableType {
     /// Creates an empty instance of `CableType`
     pub fn new() -> Self {
-        CableType {
+        Self {
             id: String::new(),
             manufacturer: None,
             model: None,

@@ -14,6 +14,6 @@ impl Svg {
     /// `new()` creates a new SVG
     pub fn new() -> Self {
         //TODO: actually have this be a blank SVG
-        Svg(String::new())
+        Self(String::new())
     }
 }
