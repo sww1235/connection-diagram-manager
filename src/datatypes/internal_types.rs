@@ -25,7 +25,7 @@ pub mod pathway;
 /// `wire_cable` represents an instance of either a `WireType`, `CableType` or `TermCableType`
 pub mod wire_cable;
 
-use log::{trace, warn};
+use log::{error, trace, warn};
 
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -79,6 +79,8 @@ pub trait Mergable {
     fn merge_prompt(&mut self, other: &Self) -> Self;
 }
 
+//TODO: need to add datafile reference to each internal_type struct so each appropriate datafile
+//can be updated with new serialized data
 impl Library {
     ///Initializes an empty `Library`
     pub fn new() -> Self {
@@ -112,7 +114,12 @@ impl Library {
                 if self.wire_types.contains_key(k) {
                     //TODO: do something: ignore dupe, prompt user for merge, try to merge
                     //automatically
-                    warn! {"WireType: {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
+                    warn! {concat!{
+                        "WireType: {} with contents: {:#?} ",
+                        "has already been loaded. Found again ",
+                        "in file {}. Check this and merge if necessary"},
+                        k, v, datafile.file_path.display()
+                    }
                 } else {
                     trace! {"Inserted WireType: {}, value: {:#?} into main library.",k,v}
                     self.wire_types.insert(
@@ -148,7 +155,13 @@ impl Library {
         if let Some(cable_types) = datafile.cable_types {
             for (k, v) in &cable_types {
                 if self.cable_types.contains_key(k) {
-                    warn! {"CableType: {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
+                    warn! {concat!{
+                        "CableType: {} with contents: {:#?} ",
+                        "has already been loaded. Found again in ",
+                        "file {}. Check this and merge if necessary"},
+                        k, v, datafile.file_path.display()
+                    }
+
                     //TODO: do something: ignore dupe, prompt user for merge, try to merge
                     //automatically
                 } else {
@@ -174,7 +187,12 @@ impl Library {
                                    "CIRCULAR" => CrossSection::Circular,
                                    "SIAMESE" => CrossSection::Siamese,
                                    //TODO: handle this better
-                                   _ => panic! {"Cross Section: {} in CableType: {} in file: {} not recognized. Check your spelling and try again.",cable_types[k].cross_section, k, datafile.file_path.display() }
+                                   _ => panic! {concat!{
+                                       "Cross Section: {} in CableType: {} ",
+                                       "in file: {} not recognized. ",
+                                        "Check your spelling and try again."}
+                                       ,cable_types[k].cross_section, k, datafile.file_path.display()
+                                   }
                                 }
                             },
                             cable_core: {
@@ -229,7 +247,11 @@ impl Library {
         if let Some(pathway_types) = datafile.pathway_types {
             for (k, v) in &pathway_types {
                 if self.pathway_types.contains_key(k) {
-                    warn! {"PathwayType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
+                    warn! {concat!{"PathwayType : {} with ",
+                    "contents: {:#?} has already been ",
+                    "loaded. Found again in file {}. ",
+                    "Check this and merge if necessary"},
+                    k, v, datafile.file_path.display()}
                     //TODO: do something: ignore dupe, prompt user for merge, try to merge
                     //automatically
                 } else {
@@ -261,7 +283,11 @@ impl Library {
         if let Some(location_types) = datafile.location_types {
             for (k, v) in &location_types {
                 if self.location_types.contains_key(k) {
-                    warn! {"LocationType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
+                    warn! {concat!{"LocationType : {} with ",
+                    "contents: {:#?} has already been loaded. ",
+                    "Found again in file {}. Check this ",
+                    "and merge if necessary"},
+                    k, v, datafile.file_path.display()}
                     //TODO: do something: ignore dupe, prompt user for merge, try to merge
                     //automatically
                 } else {
@@ -296,7 +322,12 @@ impl Library {
         if let Some(connector_types) = datafile.connector_types {
             for (k, v) in &connector_types {
                 if self.connector_types.contains_key(k) {
-                    warn! {"ConnectorType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
+                    warn! {concat!{
+                        "ConnectorType : {} with contents: ",
+                        "{:#?} has already been loaded. Found ",
+                        "again in file {}. Check this and merge if necessary"
+                    },
+                    k, v, datafile.file_path.display()}
                     //TODO: do something: ignore dupe, prompt user for merge, try to merge
                     //automatically
                 } else {
@@ -346,7 +377,11 @@ impl Library {
         if let Some(term_cable_types) = datafile.term_cable_types {
             for (k, v) in &term_cable_types {
                 if self.term_cable_types.contains_key(k) {
-                    warn! {"TermCableType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
+                    warn! {concat!{
+                        "TermCableType : {} with contents: ",
+                        "{:#?} has already been loaded. ",
+                        "Found again in file {}. Check this and merge if necessary"},
+                    k, v, datafile.file_path.display()}
                     //TODO: do something: ignore dupe, prompt user for merge, try to merge
                     //automatically
                 } else {
@@ -364,16 +399,22 @@ impl Library {
                             wire_cable: {
 
                                 if term_cable_types[k].wire.is_some() && term_cable_types[k].cable.is_some() {
-                                    panic! {"Both wire and cable values of TermCableType {k} are specified. Please correct this."}
+                                    panic! {concat!{
+                                        "Both wire and cable ",
+                                         "values of TermCableType {} ",
+                                         "are specified. Please correct this."}, k}
                                 } else if term_cable_types[k].wire.is_none() && term_cable_types[k].cable.is_none() {
 
-                                    panic! {"Neither wire or cable values of TermCableType {k} are specified. Please correct this."}
+                                    panic! {concat!{
+                                        "Neither wire or cable ",
+                                        "values of TermCableType {} ",
+                                        "are specified. Please correct this."}, k}
                                 } else {
                                     #[allow(clippy::collapsible_else_if)] // This would change the
                                                                           // meaning of the logic
-                                    if let Some(wire_type) = term_cable_types[k].wire.clone() {
-                                        if self.wire_types.contains_key(&wire_type) {
-                                            term_cable_type::WireCable::WireType(self.wire_types[&wire_type].clone())
+                                    if let Some(wire_type_id) = term_cable_types[k].wire.clone() {
+                                        if self.wire_types.contains_key(&wire_type_id) {
+                                            term_cable_type::WireCable::WireType(self.wire_types[&wire_type_id].clone())
                                         } else {
 
                                             panic!{"WireType: {} in TermCableType: {} specified in datafile: {} is not found in any library either read from datafiles, or implemented in program logic. Check your spelling", wire_type, k, datafile.file_path.display()}}
@@ -381,15 +422,19 @@ impl Library {
 
                                     } else if let Some(cable_type) = &term_cable_types[k].cable {
 
-                                        if self.cable_types.contains_key(cable_type) {
-                                            term_cable_type::WireCable::CableType(self.cable_types[cable_type].clone())
+                                        if self.cable_types.contains_key(cable_type_id) {
+                                            term_cable_type::WireCable::CableType(
+                                                self.cable_types[cable_type_id].clone())
                                         } else {
 panic!{"WireType: {} in TermCableType: {} specified in datafile: {} is not found in any library either read from datafiles, or implemented in program logic. Check your spelling", cable_type, k, datafile.file_path.display()}}
 
 
                                         } else {
                                         //TODO: fix this
-                                    panic! {"Neither wire or cable values of TermCableType {k} are specified. Please correct this."}
+                                    panic! {concat!{
+                                        "Neither wire or cable ",
+                                        "values of TermCableType {} ",
+                                        "are specified. Please correct this."}, k}
                                     }
                                 }
                             },
@@ -463,7 +508,11 @@ panic!{"WireType: {} in TermCableType: {} specified in datafile: {} is not found
         if let Some(equipment_types) = datafile.equipment_types {
             for (k, v) in &equipment_types {
                 if self.equipment_types.contains_key(k) {
-                    warn! {"EquipmentType : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
+                    warn! {concat!{"EquipmentType : {} with ",
+                    "contents: {:#?} has already been loaded. ",
+                    "Found again in file {}. ",
+                    "Check this and merge if necessary"},
+                    k, v, datafile.file_path.display()}
                     //TODO: do something: ignore dupe, prompt user for merge, try to merge
                     //automatically
                 } else {
@@ -552,11 +601,50 @@ impl Project {
     /// defined types to assign as references within the various project data imported from
     /// `datafile`
     fn from_datafile(&mut self, datafile: DataFile, library: &Library) {
+        // pathway
+        if let Some(pathways) = datafile.pathways {
+            for (k, v) in &pathways {
+                if self.pathways.contains_key(k) {
+                    warn! {"Pathway : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
+                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
+                    //automatically
+                } else {
+                    trace! {"Inserted Pathway: {}, value: {:#?} into main datastore.",k,v}
+                    self.pathways.insert(k.to_string(),
+                        Rc::new(
+                            RefCell::new(
+                                pathway::Pathway {
+                                id: k.to_string(),
+                                path_type: {
+                                            if library.pathway_types.contains_key(&pathways[k].path_type) {
+                                                library.pathway_types[&pathways[k].path_type].clone()
+                                            } else {
+                                                //TODO: handle this more intelligently
+                                                panic! {"Failed to find PathwayType: {} used in Pathway: {} in file {}, in any imported library dictionary or file. Please check spelling, or add it, if this was not intentional.", pathways[k].path_type, &k, datafile.file_path.display() }
+                                            }
+                                       },
+                                       identifier: pathways[k].identifier.clone(),
+                                       description: pathways[k].description.clone(),
+                                       length: pathways[k].length,
+
+                                }
+
+                                )
+                            )
+                        );
+                }
+            }
+        }
         // wire_cables
         if let Some(wire_cables) = datafile.wire_cables {
             for (k, v) in &wire_cables {
                 if self.wire_cables.contains_key(k) {
-                    warn! {"WireCable: {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
+                    warn! {concat!{
+                        "WireCable: {} with contents: ",
+                        "{:#?} has already been loaded. ",
+                        "Found again in file {}. ",
+                        "Check this and merge if necessary"},
+                    k, v, datafile.file_path.display()}
                     //TODO: do something: ignore dupe, prompt user for merge, try to merge
                     //automatically
                 } else {
@@ -566,21 +654,29 @@ impl Project {
                         Rc::new(RefCell::new(wire_cable::WireCable {
                             id: k.to_string(),
                             ctw_type: {
-// Checking to make sure only one of wire, cable, or term_cable are set
-                                if
-                                    (wire_cables[k].wire.is_some() && wire_cables[k].cable.is_some() && wire_cables[k].term_cable.is_some())
-                                    ||
-                                    (wire_cables[k].wire.is_some() && wire_cables[k].cable.is_some())
-                                    ||
-                                    (wire_cables[k].cable.is_some() && wire_cables[k].term_cable.is_some())
-                                    ||
-                                    (wire_cables[k].wire.is_some() && wire_cables[k].term_cable.is_some())
-
+                                // Checking to make sure only one of wire, cable, or term_cable are set
+                                if (wire_cables[k].wire.is_some()
+                                    && wire_cables[k].cable.is_some()
+                                    && wire_cables[k].term_cable.is_some())
+                                    || (wire_cables[k].wire.is_some()
+                                        && wire_cables[k].cable.is_some())
+                                    || (wire_cables[k].cable.is_some()
+                                        && wire_cables[k].term_cable.is_some())
+                                    || (wire_cables[k].wire.is_some()
+                                        && wire_cables[k].term_cable.is_some())
                                 {
-                                    panic! {"More than one of wire, cable and term_cable of WireCable {} are specified. Please correct this.", &k}
-                                } else if wire_cables[k].wire.is_none() && wire_cables[k].cable.is_none() && wire_cables[k].term_cable.is_none() {
-
-                                    panic! {"Neither wire, cable or term_cable values of WireCable {} are specified. Please correct this.", &k}
+                                    panic! {concat!{
+                                    "More than one of wire, ",
+                                    "cable and term_cable of ",
+                                    "WireCable {} are specified. ",
+                                    "Please correct this."}, &k}
+                                } else if wire_cables[k].wire.is_none()
+                                    && wire_cables[k].cable.is_none()
+                                    && wire_cables[k].term_cable.is_none()
+                                {
+                                    panic! {concat!{"Neither wire, cable ",
+                                    "or term_cable values of WireCable {} ",
+                                    "are specified. Please correct this."}, &k}
                                 } else {
                                     // at this point, only one of wire, cable and term_cable should
                                     // be set.
@@ -588,40 +684,77 @@ impl Project {
                                     // clone string here to avoid moving value out of hashmap.
                                     if let Some(wire_type) = wire_cables[k].wire.clone() {
                                         if library.wire_types.contains_key(&wire_type) {
-                                            wire_cable::WireCableType::WireType(library.wire_types[&wire_type].clone())
-                                        } else {panic!{"WireType: {} in WireCable: {} specified in datafile: {} is not found in any library either read from datafiles, or implemented in program logic. Check your spelling", wire_type, k, datafile.file_path.display()}}
-
-
+                                            wire_cable::WireCableType::WireType(
+                                                library.wire_types[&wire_type].clone(),
+                                            )
+                                        } else {
+                                            // since this is project, not library, we want to error
+                                            // for types not found in library, since they should
+                                            // all have been parsed before parsing project.
+                                            panic! {concat!{
+                                            "WireType: {} in ",
+                                            "WireCable: {} specified in ",
+                                            "datafile: {} is not found in ",
+                                            "any library either read from ",
+                                            "datafiles, or implemented in program ",
+                                            "logic. Check your spelling"},
+                                            wire_type, k, datafile.file_path.display()}
+                                        }
                                     // clone string here to avoid moving value out of hashmap.
                                     } else if let Some(cable_type) = wire_cables[k].cable.clone() {
-
                                         if library.cable_types.contains_key(&cable_type) {
-                                            wire_cable::WireCableType::CableType(library.cable_types[&cable_type].clone())
+                                            wire_cable::WireCableType::CableType(
+                                                library.cable_types[&cable_type].clone(),
+                                            )
                                         } else {
-panic!{"CableType: {} in WireCable: {} specified in datafile: {} is not found in any library either read from datafiles, or implemented in program logic. Check your spelling", cable_type, k, datafile.file_path.display()}}
-
-
+                                            // since this is project, not library, we want to error
+                                            // for types not found in library, since they should
+                                            // all have been parsed before parsing project.
+                                            panic! {concat!{
+                                            "CableType: {} in ",
+                                            "WireCable: {} specified in ",
+                                            "datafile: {} is not found in ",
+                                            "any library either read from ",
+                                            "datafiles, or implemented in program ",
+                                            "logic. Check your spelling"},
+                                            cable_type, k, datafile.file_path.display()}
+                                        }
                                     // clone string here to avoid moving value out of hashmap.
-                                        } else if let Some(term_cable_type) = wire_cables[k].term_cable.clone() {
-
+                                    } else if let Some(term_cable_type) =
+                                        wire_cables[k].term_cable.clone()
+                                    {
                                         if library.term_cable_types.contains_key(&term_cable_type) {
-                                            wire_cable::WireCableType::TermCableType(library.term_cable_types[&term_cable_type].clone())
+                                            wire_cable::WireCableType::TermCableType(
+                                                library.term_cable_types[&term_cable_type].clone(),
+                                            )
                                         } else {
-panic!{"TermCableType: {} in WireCable: {} specified in datafile: {} is not found in any library either read from datafiles, or implemented in program logic. Check your spelling", term_cable_type, k, datafile.file_path.display()}}
-
-
-                                        } else {
+                                            // since this is project, not library, we want to error
+                                            // for types not found in library, since they should
+                                            // all have been parsed before parsing project.
+                                            panic! {concat!{
+                                            "TermCableType: {} in ",
+                                            "WireCable: {} specified in ",
+                                            "datafile: {} is not found in ",
+                                            "any library either read from ",
+                                            "datafiles, or implemented in program ",
+                                            "logic. Check your spelling"},
+                                             term_cable_type, k, datafile.file_path.display()}
+                                        }
+                                    } else {
                                         //TODO: fix this
-                                    panic! {"Neither wire, cable or termcable type values of WireCable {} are specified. Please correct this.", &k}
+                                        panic! {concat!{
+                                        "Neither wire, cable ",
+                                        "or termcable type values ",
+                                        "of WireCable {} are specified. ",
+                                        "Please correct this."}, &k}
                                     }
                                 }
-
                             },
                             identifier: wire_cables[k].identifier.clone(),
                             description: wire_cables[k].description.clone(),
                             length: wire_cables[k].length,
                             pathway: {
-                                    // clone string here to avoid moving value out of hashmap.
+                                // clone string here to avoid moving value out of hashmap.
                                 if let Some(pathway) = wire_cables[k].pathway.clone() {
                                     if self.pathways.contains_key(k) {
                                         Some(self.pathways[k].clone())
@@ -641,7 +774,11 @@ panic!{"TermCableType: {} in WireCable: {} specified in datafile: {} is not foun
         if let Some(locations) = datafile.locations {
             for (k, v) in &locations {
                 if self.locations.contains_key(k) {
-                    warn! {"Location: {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
+                    warn! {concat!{"Location: {} with ",
+                    "contents: {:#?} has already been ",
+                    "loaded. Found again in file {}. ",
+                    "Check this and merge if necessary"},
+                    k, v, datafile.file_path.display()}
                     //TODO: do something: ignore dupe, prompt user for merge, try to merge
                     //automatically
                 } else {
