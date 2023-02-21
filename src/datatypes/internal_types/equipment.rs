@@ -22,6 +22,19 @@ pub struct Equipment {
     /// Description
     pub description: Option<String>,
 }
+impl Equipment {
+    /// Creates an empty instance of `CableType`
+    pub fn new() -> Self {
+        Self {
+            id: String::new(),
+            equip_type: Rc::new(RefCell::new(EquipmentType::new())),
+            identifier: None,
+            mounting_type: None,
+            location: None,
+            description: None,
+        }
+    }
+}
 
 impl fmt::Display for Equipment {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

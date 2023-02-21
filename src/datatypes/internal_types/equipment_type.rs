@@ -70,6 +70,25 @@ pub struct EquipConnector {
     /// location of connector on face from bottom of visrep. Origin is bottom left
     pub y: Option<u64>,
 }
+impl EquipmentType {
+    /// Creates an empty instance of `CableType`
+    pub fn new() -> Self {
+        Self {
+            id: String::new(),
+            manufacturer: None,
+            model: None,
+            part_number: None,
+            manufacturer_part_number: None,
+            supplier: None,
+            supplier_part_number: None,
+            description: None,
+            mount_type: None,
+            equip_type: None,
+            faces: None,
+            visual_rep: Svg::new(),
+        }
+    }
+}
 impl fmt::Display for EquipConnector {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Equipment Connector:")?;

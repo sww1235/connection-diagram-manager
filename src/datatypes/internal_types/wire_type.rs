@@ -57,7 +57,7 @@ pub struct WireType {
 impl WireType {
     /// Creates an empty instance of `WireType`
     pub fn new() -> Self {
-        WireType {
+        Self {
             id: String::new(),
             manufacturer: None,
             model: None,

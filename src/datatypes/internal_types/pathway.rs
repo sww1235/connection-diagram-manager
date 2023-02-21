@@ -18,6 +18,18 @@ pub struct Pathway {
     /// length TODO: change to correct units
     pub length: f64,
 }
+impl Pathway {
+    /// Creates an empty instance of `CableType`
+    pub fn new() -> Self {
+        Self {
+            id: String::new(),
+            path_type: Rc::new(RefCell::new(PathwayType::new())),
+            identifier: None,
+            description: None,
+            length: 0.0,
+        }
+    }
+}
 
 impl fmt::Display for Pathway {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

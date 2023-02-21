@@ -43,6 +43,19 @@ impl Default for WireCableType {
         WireCableType::WireType(Rc::new(RefCell::new(WireType::new())))
     }
 }
+impl WireCable {
+    /// Creates an empty instance of `CableType`
+    pub fn new() -> Self {
+        Self {
+            id: String::new(),
+            ctw_type: WireCableType::default(),
+            identifier: None,
+            description: None,
+            length: None,
+            pathway: None,
+        }
+    }
+}
 
 impl fmt::Display for WireCable {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

@@ -26,7 +26,7 @@ pub struct TermCableType {
     /// Underlying wire or cable type of Terminated Cable
     pub wire_cable: WireCable,
     /// Nominal Length of Terminated Cable
-    pub nominal_length: Option<u64>,
+    pub nominal_length: Option<u64>, //TODO: decide if one of these should be optional or not
     /// Actual Length of Terminated Cable
     pub actual_length: Option<u64>,
     /// One end of Terminated Cable.
@@ -67,6 +67,26 @@ pub struct TermCableConnector {
     pub connector_type: Rc<RefCell<ConnectorType>>,
     /// terminations represents the pin/core mapping for this connector
     pub terminations: Option<Vec<TermCableConnectorTermination>>,
+}
+impl TermCableType {
+    /// Creates an empty instance of `CableType`
+    pub fn new() -> Self {
+        Self {
+            id: String::new(),
+            manufacturer: None,
+            model: None,
+            part_number: None,
+            manufacturer_part_number: None,
+            supplier: None,
+            supplier_part_number: None,
+            description: None,
+            wire_cable: WireCable::default(),
+            nominal_length: None,
+            actual_length: None,
+            end1: Vec::new(),
+            end2: Vec::new(),
+        }
+    }
 }
 impl fmt::Display for TermCableType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

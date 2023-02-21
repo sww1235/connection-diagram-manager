@@ -32,6 +32,25 @@ pub struct PathwayType {
     /// Main material of pathway
     pub material: Option<String>,
 }
+impl PathwayType {
+    /// Creates an empty instance of `CableType`
+    pub fn new() -> Self {
+        Self {
+            id: String::new(),
+            manufacturer: None,
+            model: None,
+            part_number: None,
+            manufacturer_part_number: None,
+            supplier: None,
+            supplier_part_number: None,
+            description: None,
+            size: None,
+            trade_size: None,
+            cross_sect_area: 0.0,
+            material: None,
+        }
+    }
+}
 impl fmt::Display for PathwayType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Connector Type:")?;

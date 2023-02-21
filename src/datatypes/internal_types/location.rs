@@ -19,6 +19,18 @@ pub struct Location {
     pub physical_location: Option<String>,
     //TODO: add sub locations
 }
+impl Location {
+    /// Creates an empty instance of `CableType`
+    pub fn new() -> Self {
+        Self {
+            id: String::new(),
+            location_type: Rc::new(RefCell::new(LocationType::new())),
+            identifier: None,
+            description: None,
+            physical_location: None,
+        }
+    }
+}
 
 impl fmt::Display for Location {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

@@ -38,6 +38,30 @@ pub struct LocationType {
     /// Usable Depth of locationType
     pub usable_depth: f64,
 }
+
+impl LocationType {
+    /// Creates an empty instance of `CableType`
+    pub fn new() -> Self {
+        Self {
+            id: String::new(),
+            manufacturer: None,
+            model: None,
+            part_number: None,
+            manufacturer_part_number: None,
+            supplier: None,
+            supplier_part_number: None,
+            description: None,
+            material: None,
+            width: 0.0,
+            height: 0.0,
+            depth: 0.0,
+            usable_width: 0.0,
+            usable_height: 0.0,
+            usable_depth: 0.0,
+        }
+    }
+}
+
 impl fmt::Display for LocationType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Connector Type:")?;
