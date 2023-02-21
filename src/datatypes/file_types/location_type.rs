@@ -26,17 +26,17 @@ pub struct LocationType {
     /// Main material of LocationType
     pub material: Option<String>,
     /// Width of locationType
-    pub width: Option<f64>,
+    pub width: f64,
     /// Height of locationType
-    pub height: Option<f64>,
+    pub height: f64,
     /// Depth of locationType
-    pub depth: Option<f64>,
+    pub depth: f64,
     /// Usable Width of locationType
-    pub usable_width: Option<f64>,
+    pub usable_width: f64,
     /// Usable Height of locationType
-    pub usable_height: Option<f64>,
+    pub usable_height: f64,
     /// Usable Depth of locationType
-    pub usable_depth: Option<f64>,
+    pub usable_depth: f64,
 }
 impl fmt::Display for LocationType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
