@@ -54,7 +54,7 @@ pub struct EquipFace {
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct EquipConnector {
     /// ConnectorType
-    pub connector: String,
+    pub connector_type: String,
     /// electrical direction, used for basic rule mapping, (input, output, power input, power
     /// output, bidirectiona, passive)
     pub direction: Option<String>,
@@ -67,7 +67,7 @@ pub struct EquipConnector {
 impl fmt::Display for EquipConnector {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Equipment Connector:")?;
-        writeln!(f, "Connector: {}", &self.connector)?;
+        writeln!(f, "Connector: {}", &self.connector_type)?;
         if let Some(direction) = &self.direction {
             writeln!(f, "Direction: {direction}")?;
         }

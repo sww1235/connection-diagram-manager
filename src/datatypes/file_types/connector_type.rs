@@ -35,11 +35,11 @@ pub struct ConnectorType {
     /// Male, Female, RPMale, RPFemale, Hermaphrodidic, unknown
     pub gender: Option<String>,
     /// height of connector in mm
-    pub height: Option<f64>,
+    pub height: f64,
     /// width of connector in mm
-    pub width: Option<f64>,
+    pub width: f64,
     /// depth of connector in mm
-    pub depth: Option<f64>,
+    pub depth: f64,
     /// diameter of circular connectors in mm
     pub diameter: Option<f64>,
     /// pins inside connector.
@@ -102,10 +102,7 @@ impl fmt::Display for ConnectorType {
             writeln!(f, "\tPart Number: {part_number}")?;
         }
         if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
-            writeln!(
-                f,
-                "\tManufacturer Part Number: {manufacturer_part_number}"
-            )?;
+            writeln!(f, "\tManufacturer Part Number: {manufacturer_part_number}")?;
         }
         if let Some(supplier) = &self.supplier {
             writeln!(f, "\tSupplier: {supplier}")?;
@@ -125,12 +122,9 @@ impl fmt::Display for ConnectorType {
         if let Some(gender) = &self.gender {
             writeln!(f, "\tGender: {gender}")?;
         }
-        if let Some(height) = &self.height {
-            writeln!(f, "\tHeight: {height:.2} mm")?;
-        }
-        if let Some(width) = &self.width {
-            writeln!(f, "\tWidth: {width:.2} mm")?;
-        }
+        writeln!(f, "\tHeight: {:.2} mm", self.height)?;
+        writeln!(f, "\tWidth: {:.2} mm", self.width)?;
+        writeln!(f, "\tDepth: {:.2} mm", self.depth)?;
         if let Some(diameter) = &self.diameter {
             writeln!(f, "\tDiameter: {diameter:.2} mm")?;
         }

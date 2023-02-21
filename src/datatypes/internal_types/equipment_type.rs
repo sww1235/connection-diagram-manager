@@ -61,7 +61,7 @@ pub struct EquipFace {
 pub struct EquipConnector {
     /// Internal ID of `EquipmentConnector`
     /// ConnectorType
-    pub connector: Rc<RefCell<ConnectorType>>,
+    pub connector_type: Rc<RefCell<ConnectorType>>,
     /// electrical direction, used for basic rule mapping, (input, output, power input, power
     /// output, bidirectiona, passive)
     pub direction: Option<String>,
@@ -73,7 +73,7 @@ pub struct EquipConnector {
 impl fmt::Display for EquipConnector {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Equipment Connector:")?;
-        writeln!(f, "Connector: {}", &self.connector.borrow())?;
+        writeln!(f, "Connector: {}", &self.connector_type.borrow())?;
         if let Some(direction) = &self.direction {
             writeln!(f, "Direction: {direction}")?;
         }

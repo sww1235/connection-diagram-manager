@@ -38,11 +38,11 @@ pub struct ConnectorType {
     /// Male, Female, RPMale, RPFemale, Hermaphrodidic, unknown
     pub gender: Option<String>,
     /// height of connector in mm
-    pub height: Option<f64>,
+    pub height: f64,
     /// width of connector in mm
-    pub width: Option<f64>,
+    pub width: f64,
     /// depth of connector in mm
-    pub depth: Option<f64>,
+    pub depth: f64,
     /// diameter of circular connectors in mm
     pub diameter: Option<f64>,
     /// pins inside connector.
@@ -125,12 +125,8 @@ impl fmt::Display for ConnectorType {
         if let Some(gender) = &self.gender {
             writeln!(f, "Gender: {gender}")?;
         }
-        if let Some(height) = &self.height {
-            writeln!(f, "Height: {height:.2} mm")?;
-        }
-        if let Some(width) = &self.width {
-            writeln!(f, "Width: {width:.2} mm")?;
-        }
+        writeln!(f, "Height: {:.2} mm", self.height)?;
+        writeln!(f, "Width: {:.2} mm", self.width)?;
         if let Some(diameter) = &self.diameter {
             writeln!(f, "Diameter: {diameter:.2} mm")?;
         }
