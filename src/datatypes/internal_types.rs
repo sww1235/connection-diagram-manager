@@ -106,7 +106,12 @@ impl Library {
         }
     }
 
-    /// inserts the correct values from a datafile into a `Library` struct
+    /// inserts the correct values from a datafile into the called upon `Library` struct
+    #[allow(clippy::wrong_self_convention)]
+    // this is not a type conversion function so does not
+    // need to follow the same rules
+    // TODO: maybe rename this to something that doesn't
+    // sound like a type conversion function
     fn from_datafile(&mut self, datafile: DataFile) {
         // wire_types
         if let Some(wire_types) = datafile.wire_types {
@@ -714,6 +719,11 @@ impl Project {
     /// within, into the `Project` struct this method is called on. It will check `Library` for
     /// defined types to assign as references within the various project data imported from
     /// `datafile`
+    #[allow(clippy::wrong_self_convention)]
+    // this is not a type conversion function so does not
+    // need to follow the same rules
+    // TODO: maybe rename this to something that doesn't
+    // sound like a type conversion function
     fn from_datafile(&mut self, datafile: DataFile, library: &Library) {
         // pathway
         if let Some(pathways) = datafile.pathways {
@@ -985,6 +995,8 @@ impl Project {
                             location: {
                                 // clone string here to avoid moving value out of hashmap.
                                 if let Some(file_location) = equipment[k].location.clone() {
+                                    #[allow(clippy::map_entry)]
+                                    // TODO: use entry mechanic to fix this, allowing for now
                                     if self.locations.contains_key(&file_location) {
                                         Some(self.locations[k].clone())
                                     } else {
