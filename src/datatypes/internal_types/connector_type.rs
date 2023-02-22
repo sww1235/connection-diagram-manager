@@ -71,6 +71,7 @@ pub struct ConnectorPin {
 }
 
 impl ConnectorType {
+    /// Creates an empty instance of `ConnectorType`
     pub fn new() -> Self {
         Self {
             id: String::new(),

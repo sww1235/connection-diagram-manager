@@ -20,7 +20,7 @@ pub struct Location {
     //TODO: add sub locations
 }
 impl Location {
-    /// Creates an empty instance of `CableType`
+    /// Creates an empty instance of `Location`
     pub fn new() -> Self {
         Self {
             id: String::new(),

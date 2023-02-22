@@ -40,7 +40,7 @@ pub struct LocationType {
 }
 
 impl LocationType {
-    /// Creates an empty instance of `CableType`
+    /// Creates an empty instance of `LocationType`
     pub fn new() -> Self {
         Self {
             id: String::new(),

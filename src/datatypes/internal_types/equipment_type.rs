@@ -71,7 +71,7 @@ pub struct EquipConnector {
     pub y: Option<u64>,
 }
 impl EquipmentType {
-    /// Creates an empty instance of `CableType`
+    /// Creates an empty instance of `EquipmentType`
     pub fn new() -> Self {
         Self {
             id: String::new(),

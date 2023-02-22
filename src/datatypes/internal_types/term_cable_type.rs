@@ -69,7 +69,7 @@ pub struct TermCableConnector {
     pub terminations: Option<Vec<TermCableConnectorTermination>>,
 }
 impl TermCableType {
-    /// Creates an empty instance of `CableType`
+    /// Creates an empty instance of `TermCableType`
     pub fn new() -> Self {
         Self {
             id: String::new(),

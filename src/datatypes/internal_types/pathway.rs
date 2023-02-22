@@ -19,7 +19,7 @@ pub struct Pathway {
     pub length: f64,
 }
 impl Pathway {
-    /// Creates an empty instance of `CableType`
+    /// Creates an empty instance of `Pathway`
     pub fn new() -> Self {
         Self {
             id: String::new(),
