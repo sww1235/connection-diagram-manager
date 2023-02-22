@@ -44,7 +44,7 @@ impl Default for WireCableType {
     }
 }
 impl WireCable {
-    /// Creates an empty instance of `CableType`
+    /// Creates an empty instance of `WireCable`
     pub fn new() -> Self {
         Self {
             id: String::new(),

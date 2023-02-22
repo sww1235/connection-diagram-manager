@@ -33,7 +33,7 @@ pub struct PathwayType {
     pub material: Option<String>,
 }
 impl PathwayType {
-    /// Creates an empty instance of `CableType`
+    /// Creates an empty instance of `PathwayType`
     pub fn new() -> Self {
         Self {
             id: String::new(),

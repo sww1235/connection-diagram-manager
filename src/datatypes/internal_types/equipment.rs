@@ -23,7 +23,7 @@ pub struct Equipment {
     pub description: Option<String>,
 }
 impl Equipment {
-    /// Creates an empty instance of `CableType`
+    /// Creates an empty instance of `Equipment`
     pub fn new() -> Self {
         Self {
             id: String::new(),
