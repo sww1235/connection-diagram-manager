@@ -116,6 +116,9 @@ fn main() {
         _ => logger.with_level(LevelFilter::Off),
     };
 
+    #[allow(clippy::unwrap_used)]
+    //TODO: investigate to see if it is worth trying to handle these
+    //errors manually
     logger.with_colors(true).init().unwrap();
 
     // check if project_directory was specified and even exists
@@ -149,7 +152,7 @@ fn main() {
     let mut proj2 = Project::new();
     lib2.from_datafiles(data_files.clone());
 
-    proj2.from_datafiles(data_files.clone(), &lib2);
+    proj2.from_datafiles(data_files, &lib2);
 
     println! {"{lib2:#?}"};
     println! {"{proj2:#?}"};
