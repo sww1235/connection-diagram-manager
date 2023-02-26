@@ -82,6 +82,7 @@ use std::path::PathBuf;
 //};
 
 // These are used in the main program logic
+#[cfg(any(feature = "cli", feature = "gui"))]
 use clap::Parser;
 
 use log::{debug, error, LevelFilter};
@@ -96,9 +97,13 @@ use cdm_core::{
     },
 };
 
+#[cfg(feature = "gui")]
+use fltk::{app, window};
+
 //https://stackoverflow.com/questions/66799905/how-to-make-some-structs-fields-mandatory-to-fill-and-others-optional-in-rust
 fn main() {
     //parse command line flags
+    #[cfg(any(feature = "cli", feature = "gui"))]
     let cli = Cli::parse();
     // initialize logging
     let mut logger = SimpleLogger::new();
@@ -122,40 +127,45 @@ fn main() {
     logger.with_colors(true).init().unwrap();
 
     // check if project_directory was specified and even exists
+    // TODO: allow for project directory to be opened via GUI
 
-    assert! {cli.project_directory.exists(),
-    "Project directory specified: {} does not exist", cli.project_directory.display()}
+    let app = App::default();
 
-    assert! {cli.project_directory.is_dir(),
-    "Project directory specified: {} is not a directory", cli.project_directory.display()}
+    let mut main_window = DoubleWindow::default();
 
-    let config = match Config::parse_config(cli.project_directory.as_path()) {
-        Ok(config) => config,
-        Err(e) => {
-            panic! {"Failure to parse config yaml file. Error: {e}"}
-        }
-    };
+    // assert! {cli.project_directory.exists(),
+    // "Project directory specified: {} does not exist", cli.project_directory.display()}
 
-    debug! {"{:#?}", config}
+    // assert! {cli.project_directory.is_dir(),
+    // "Project directory specified: {} is not a directory", cli.project_directory.display()}
 
-    // will be vector of DataFiles
-    let data_files = match file_types::parse_project_dir(cli.project_directory) {
-        Ok(datastore) => datastore,
-        Err(e) => {
-            //TODO: better handle errors here
-            error! {"Failure to read in project directory. Error: {e}"}
-            return;
-        }
-    };
+    // let config = match Config::parse_config(cli.project_directory.as_path()) {
+    //     Ok(config) => config,
+    //     Err(e) => {
+    //         panic! {"Failure to parse config yaml file. Error: {e}"}
+    //     }
+    // };
 
-    let mut lib2 = Library::new();
-    let mut proj2 = Project::new();
-    lib2.from_datafiles(data_files.clone());
+    // debug! {"{:#?}", config}
 
-    proj2.from_datafiles(data_files, &lib2);
+    // // will be vector of DataFiles
+    // let data_files = match file_types::parse_project_dir(cli.project_directory) {
+    //     Ok(datastore) => datastore,
+    //     Err(e) => {
+    //         //TODO: better handle errors here
+    //         error! {"Failure to read in project directory. Error: {e}"}
+    //         return;
+    //     }
+    // };
 
-    println! {"{lib2:#?}"};
-    println! {"{proj2:#?}"};
+    // let mut lib2 = Library::new();
+    // let mut proj2 = Project::new();
+    // lib2.from_datafiles(data_files.clone());
+
+    // proj2.from_datafiles(data_files, &lib2);
+
+    // println! {"{lib2:#?}"};
+    // println! {"{proj2:#?}"};
 
     //   let mut lib = Library::new();
     //

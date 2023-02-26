@@ -82,6 +82,7 @@ use std::path::PathBuf;
 //};
 
 // These are used in the main program logic
+#[cfg(any(feature = "cli", feature = "gui"))]
 use clap::Parser;
 
 use log::{debug, error, LevelFilter};
@@ -99,6 +100,7 @@ use cdm_core::{
 //https://stackoverflow.com/questions/66799905/how-to-make-some-structs-fields-mandatory-to-fill-and-others-optional-in-rust
 fn main() {
     //parse command line flags
+    #[cfg(any(feature = "cli", feature = "gui"))]
     let cli = Cli::parse();
     // initialize logging
     let mut logger = SimpleLogger::new();
