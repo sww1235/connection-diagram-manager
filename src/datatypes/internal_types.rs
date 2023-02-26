@@ -76,7 +76,27 @@ pub struct Project {
 pub trait Mergable {
     /// `merge_prompt` assists the user in merging 2 object instances by prompting the user with
     /// the difference between the object, field by field, and providing sensible defaults.
-    fn merge_prompt(&mut self, other: &Self) -> Self;
+    fn merge_prompt(
+        &mut self,
+        other: &Self,
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, u8>,
+    ) -> Self;
+    // pass a hashmap of string arrays, return a hashmap of integers which are the selected value
+    // index out of the array, with keys as struct field names
+}
+
+/// `Empty` indicates that an object can be checked for PartialEq to Object::new()
+pub trait Empty {
+    /// `is_empty` checks to see if self is PartialEq to Object::new()
+    fn is_empty(&self) -> bool;
+}
+
+/// `PartialEmpty` indicates that an object can be checked to be almost PartialEq to Object::new(),
+/// excepting the id field
+pub trait PartialEmpty {
+    /// `is_partial_empty` checks to see if self is almost PartialEq to Object::new() but id can be
+    /// different
+    fn is_partial_empty(&self) -> bool;
 }
 
 //TODO: need to add datafile reference to each internal_type struct so each appropriate datafile
@@ -102,6 +122,24 @@ impl Library {
             self.from_datafile(datafile)
         }
         for (_, wire_type) in &self.wire_types {
+            //TODO: check for empty objects
+        }
+        for (_, cable_type) in &self.cable_types {
+            //TODO: check for empty objects
+        }
+        for (_, term_cable_type_type) in &self.term_cable_types {
+            //TODO: check for empty objects
+        }
+        for (_, location_type) in &self.location_types {
+            //TODO: check for empty objects
+        }
+        for (_, connector_type) in &self.connector_types {
+            //TODO: check for empty objects
+        }
+        for (_, equipment_type) in &self.equipment_types {
+            //TODO: check for empty objects
+        }
+        for (_, pathway_type) in &self.pathway_types {
             //TODO: check for empty objects
         }
     }
@@ -709,6 +747,15 @@ impl Project {
         // parse all datafiles
         for datafile in datafiles {
             self.from_datafile(datafile, library)
+        }
+        for (_, location) in &self.locations {
+            //TODO: check for empty objects
+        }
+        for (_, equipment) in &self.equipment {
+            //TODO: check for empty objects
+        }
+        for (_, pathway) in &self.pathways {
+            //TODO: check for empty objects
         }
         for (_, wire_cable) in &self.wire_cables {
             //TODO: check for empty objects

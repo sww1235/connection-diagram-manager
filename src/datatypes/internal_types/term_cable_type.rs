@@ -1,9 +1,12 @@
-use super::{cable_type::CableType, connector_type::ConnectorType, wire_type::WireType};
-
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
+use super::{
+    cable_type::CableType, connector_type::ConnectorType, wire_type::WireType, Empty, Mergable,
+    PartialEmpty,
+};
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
 #[derive(Debug, Default, PartialEq)]
 pub struct TermCableType {
@@ -88,6 +91,41 @@ impl TermCableType {
         }
     }
 }
+
+impl Mergable for TermCableType {
+    fn merge_prompt(
+        &mut self,
+        other: &Self,
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, u8>,
+    ) -> Self {
+        todo!();
+    }
+}
+
+impl Empty for TermCableType {
+    fn is_empty(&self) -> bool {
+        self == &Self::new()
+    }
+}
+
+impl PartialEmpty for TermCableType {
+    fn is_partial_empty(&self) -> bool {
+        let tester = Self::new();
+        self.manufacturer == tester.manufacturer
+            && self.model == tester.model
+            && self.part_number == tester.part_number
+            && self.manufacturer_part_number == tester.manufacturer_part_number
+            && self.supplier == tester.supplier
+            && self.supplier_part_number == tester.supplier_part_number
+            && self.description == tester.description
+            && self.wire_cable == tester.wire_cable
+            && self.nominal_length == tester.nominal_length
+            && self.actual_length == tester.actual_length
+            && self.end1 == tester.end1
+            && self.end2 == tester.end2
+    }
+}
+
 impl fmt::Display for TermCableType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Connector Type:")?;

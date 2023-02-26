@@ -1,7 +1,7 @@
-use super::connector_type::ConnectorType;
-use super::svg::Svg;
+use super::{connector_type::ConnectorType, svg::Svg, Empty, Mergable, PartialEmpty};
 
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
@@ -89,6 +89,40 @@ impl EquipmentType {
         }
     }
 }
+
+impl Mergable for EquipmentType {
+    fn merge_prompt(
+        &mut self,
+        other: &Self,
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, u8>,
+    ) -> Self {
+        todo!();
+    }
+}
+
+impl Empty for EquipmentType {
+    fn is_empty(&self) -> bool {
+        self == &Self::new()
+    }
+}
+
+impl PartialEmpty for EquipmentType {
+    fn is_partial_empty(&self) -> bool {
+        let tester = Self::new();
+        self.manufacturer == tester.manufacturer
+            && self.model == tester.model
+            && self.part_number == tester.part_number
+            && self.manufacturer_part_number == tester.manufacturer_part_number
+            && self.supplier == tester.supplier
+            && self.supplier_part_number == tester.supplier_part_number
+            && self.description == tester.description
+            && self.mount_type == tester.mount_type
+            && self.equip_type == tester.equip_type
+            && self.faces == tester.faces
+            && self.visual_rep == tester.visual_rep
+    }
+}
+
 impl fmt::Display for EquipConnector {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Equipment Connector:")?;

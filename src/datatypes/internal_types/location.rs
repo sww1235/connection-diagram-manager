@@ -1,8 +1,9 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
-use super::location_type::LocationType;
+use super::{location_type::LocationType, Empty, Mergable, PartialEmpty};
 
 /// `Location` represents a physical instance of a pathway
 #[derive(Debug, Default, PartialEq)]
@@ -29,6 +30,32 @@ impl Location {
             description: None,
             physical_location: None,
         }
+    }
+}
+
+impl Mergable for Location {
+    fn merge_prompt(
+        &mut self,
+        other: &Self,
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, u8>,
+    ) -> Self {
+        todo!();
+    }
+}
+
+impl Empty for Location {
+    fn is_empty(&self) -> bool {
+        self == &Self::new()
+    }
+}
+
+impl PartialEmpty for Location {
+    fn is_partial_empty(&self) -> bool {
+        let tester = Self::new();
+        self.location_type == tester.location_type
+            && self.identifier == tester.identifier
+            && self.physical_location == tester.physical_location
+            && self.description == tester.description
     }
 }
 

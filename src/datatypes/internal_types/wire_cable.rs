@@ -1,9 +1,11 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
 use super::{
     cable_type::CableType, pathway::Pathway, term_cable_type::TermCableType, wire_type::WireType,
+    Empty, Mergable, PartialEmpty,
 };
 
 //TODO: maybe split this up into separate structs
@@ -54,6 +56,33 @@ impl WireCable {
             length: None,
             pathway: None,
         }
+    }
+}
+
+impl Mergable for WireCable {
+    fn merge_prompt(
+        &mut self,
+        other: &Self,
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, u8>,
+    ) -> Self {
+        todo!();
+    }
+}
+
+impl Empty for WireCable {
+    fn is_empty(&self) -> bool {
+        self == &Self::new()
+    }
+}
+
+impl PartialEmpty for WireCable {
+    fn is_partial_empty(&self) -> bool {
+        let tester = Self::new();
+        self.ctw_type == tester.ctw_type
+            && self.identifier == tester.identifier
+            && self.length == tester.length
+            && self.description == tester.description
+            && self.pathway == tester.pathway
     }
 }
 

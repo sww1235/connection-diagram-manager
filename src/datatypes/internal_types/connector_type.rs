@@ -1,6 +1,7 @@
-use super::svg::Svg;
-
+use std::collections::HashMap;
 use std::fmt;
+
+use super::{svg::Svg, Empty, Mergable, PartialEmpty};
 
 //TODO: Make some of these fields enums
 /// `ConnectorType` represents a particular type of connector.
@@ -92,6 +93,42 @@ impl ConnectorType {
             pins: Vec::new(),
             visual_rep: Svg::new(),
         }
+    }
+}
+impl Mergable for ConnectorType {
+    fn merge_prompt(
+        &mut self,
+        other: &Self,
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, u8>,
+    ) -> Self {
+        todo!();
+    }
+}
+
+impl Empty for ConnectorType {
+    fn is_empty(&self) -> bool {
+        self == &Self::new()
+    }
+}
+
+impl PartialEmpty for ConnectorType {
+    fn is_partial_empty(&self) -> bool {
+        let tester = Self::new();
+        self.manufacturer == tester.manufacturer
+            && self.model == tester.model
+            && self.part_number == tester.part_number
+            && self.manufacturer_part_number == tester.manufacturer_part_number
+            && self.supplier == tester.supplier
+            && self.supplier_part_number == tester.supplier_part_number
+            && self.description == tester.description
+            && self.mount_type == tester.mount_type
+            && self.panel_cutout == tester.panel_cutout
+            && self.gender == tester.gender
+            && self.height == tester.height
+            && self.width == tester.width
+            && self.diameter == tester.diameter
+            && self.pins == tester.pins
+            && self.visual_rep == tester.visual_rep
     }
 }
 

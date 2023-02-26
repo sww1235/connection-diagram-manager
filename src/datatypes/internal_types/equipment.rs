@@ -1,8 +1,9 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
-use super::{equipment_type::EquipmentType, location::Location};
+use super::{equipment_type::EquipmentType, location::Location, Empty, Mergable, PartialEmpty};
 
 /// `Equipment` represents a particular instance of an `EquipmentType`.
 /// This is the physical unit you would hold in your hand
@@ -33,6 +34,33 @@ impl Equipment {
             location: None,
             description: None,
         }
+    }
+}
+
+impl Mergable for Equipment {
+    fn merge_prompt(
+        &mut self,
+        other: &Self,
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, u8>,
+    ) -> Self {
+        todo!();
+    }
+}
+
+impl Empty for Equipment {
+    fn is_empty(&self) -> bool {
+        self == &Self::new()
+    }
+}
+
+impl PartialEmpty for Equipment {
+    fn is_partial_empty(&self) -> bool {
+        let tester = Self::new();
+        self.equip_type == tester.equip_type
+            && self.identifier == tester.identifier
+            && self.mounting_type == tester.mounting_type
+            && self.location == tester.location
+            && self.description == tester.description
     }
 }
 
