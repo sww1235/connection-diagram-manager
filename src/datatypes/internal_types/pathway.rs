@@ -1,8 +1,9 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
-use super::pathway_type::PathwayType;
+use super::{pathway_type::PathwayType, Empty, Mergable, PartialEmpty};
 
 /// `Pathway` represents a physical instance of a pathway
 #[derive(Debug, Default, PartialEq)]
@@ -28,6 +29,32 @@ impl Pathway {
             description: None,
             length: 0.0,
         }
+    }
+}
+
+impl Mergable for Pathway {
+    fn merge_prompt(
+        &mut self,
+        other: &Self,
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, u8>,
+    ) -> Self {
+        todo!();
+    }
+}
+
+impl Empty for Pathway {
+    fn is_empty(&self) -> bool {
+        self == &Self::new()
+    }
+}
+
+impl PartialEmpty for Pathway {
+    fn is_partial_empty(&self) -> bool {
+        let tester = Self::new();
+        self.path_type == tester.path_type
+            && self.identifier == tester.identifier
+            && self.length == tester.length
+            && self.description == tester.description
     }
 }
 

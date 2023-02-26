@@ -1,4 +1,7 @@
+use std::collections::HashMap;
 use std::fmt;
+
+use super::{Empty, Mergable, PartialEmpty};
 
 /// PathwayType represents a route for wires and cables to take from one
 /// [`LocationType`](super::location_type::LocationType) to another.
@@ -51,6 +54,40 @@ impl PathwayType {
         }
     }
 }
+
+impl Mergable for PathwayType {
+    fn merge_prompt(
+        &mut self,
+        other: &Self,
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, u8>,
+    ) -> Self {
+        todo!();
+    }
+}
+
+impl Empty for PathwayType {
+    fn is_empty(&self) -> bool {
+        self == &Self::new()
+    }
+}
+
+impl PartialEmpty for PathwayType {
+    fn is_partial_empty(&self) -> bool {
+        let tester = Self::new();
+        self.manufacturer == tester.manufacturer
+            && self.model == tester.model
+            && self.part_number == tester.part_number
+            && self.manufacturer_part_number == tester.manufacturer_part_number
+            && self.supplier == tester.supplier
+            && self.supplier_part_number == tester.supplier_part_number
+            && self.description == tester.description
+            && self.size == tester.size
+            && self.trade_size == tester.trade_size
+            && self.cross_sect_area == tester.cross_sect_area
+            && self.material == tester.material
+    }
+}
+
 impl fmt::Display for PathwayType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Connector Type:")?;

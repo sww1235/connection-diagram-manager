@@ -1,4 +1,7 @@
+use std::collections::HashMap;
 use std::fmt;
+
+use super::{Empty, Mergable, PartialEmpty};
 
 /// `WireType` represents a particular type of wire
 ///
@@ -78,6 +81,46 @@ impl WireType {
             insul_temp_rating: None,
             insul_color: None,
         }
+    }
+}
+
+impl Mergable for WireType {
+    fn merge_prompt(
+        &mut self,
+        other: &Self,
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, u8>,
+    ) -> Self {
+        todo!();
+    }
+}
+
+impl Empty for WireType {
+    fn is_empty(&self) -> bool {
+        self == &Self::new()
+    }
+}
+
+impl PartialEmpty for WireType {
+    fn is_partial_empty(&self) -> bool {
+        let tester = Self::new();
+        self.manufacturer == tester.manufacturer
+            && self.model == tester.model
+            && self.part_number == tester.part_number
+            && self.manufacturer_part_number == tester.manufacturer_part_number
+            && self.supplier == tester.supplier
+            && self.supplier_part_number == tester.supplier_part_number
+            && self.material == tester.material
+            && self.insulated == tester.insulated
+            && self.insulation_material == tester.insulation_material
+            && self.wire_type_code == tester.wire_type_code
+            && self.conductor_cross_sect_area == tester.conductor_cross_sect_area
+            && self.overall_cross_sect_area == tester.overall_cross_sect_area
+            && self.stranded == tester.stranded
+            && self.num_strands == tester.num_strands
+            && self.strand_cross_sect_area == tester.strand_cross_sect_area
+            && self.insul_volt_rating == tester.insul_volt_rating
+            && self.insul_temp_rating == tester.insul_temp_rating
+            && self.insul_color == tester.insul_color
     }
 }
 

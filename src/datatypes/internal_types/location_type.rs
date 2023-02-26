@@ -1,4 +1,7 @@
+use std::collections::HashMap;
 use std::fmt;
+
+use super::{Empty, Mergable, PartialEmpty};
 
 //TODO: create physical location stuff
 /// LocationType represents a type/model of location.
@@ -59,6 +62,40 @@ impl LocationType {
             usable_height: 0.0,
             usable_depth: 0.0,
         }
+    }
+}
+impl Mergable for LocationType {
+    fn merge_prompt(
+        &mut self,
+        other: &Self,
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, u8>,
+    ) -> Self {
+        todo!();
+    }
+}
+
+impl Empty for LocationType {
+    fn is_empty(&self) -> bool {
+        self == &Self::new()
+    }
+}
+
+impl PartialEmpty for LocationType {
+    fn is_partial_empty(&self) -> bool {
+        let tester = Self::new();
+        self.manufacturer == tester.manufacturer
+            && self.model == tester.model
+            && self.part_number == tester.part_number
+            && self.manufacturer_part_number == tester.manufacturer_part_number
+            && self.supplier == tester.supplier
+            && self.supplier_part_number == tester.supplier_part_number
+            && self.description == tester.description
+            && self.height == tester.height
+            && self.width == tester.width
+            && self.depth == tester.depth
+            && self.usable_height == tester.usable_height
+            && self.usable_width == tester.usable_width
+            && self.usable_depth == tester.usable_depth
     }
 }
 
