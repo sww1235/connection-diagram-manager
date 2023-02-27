@@ -22,8 +22,8 @@ serde_yaml = "0.9.14"
 simple_logger = "4.0.0"
 
 [features]
-cli = []
-gui = []
+cli = ["clap"]
+gui = ["clap", "fltk", "fltk-theme"]
 
 [lib]
 name = "cdm_core"
