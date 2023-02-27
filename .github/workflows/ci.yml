@@ -25,13 +25,13 @@ jobs:
       RUST_BACKTRACE: full
     steps:
     - uses: actions/checkout@v3
-    - name: Clippy
-      run: cargo clippy
     - name: Install dependancies
       if: matrix.os == 'ubuntu-latest'
       run: |
         apt update
         apt install libx11-dev libxext-dev libxft-dev libxinerama-dev libxcursor-dev libxrender-dev libxfixes-dev libpango1.0-dev libgl1-mesa-dev libglu1-mesa-dev g++ cmake git make
+    - name: Clippy
+      run: cargo clippy
     - name: Build Library
       run: cargo build +${{ matrix.rust }} --lib --verbose
     - name: Build CLI
