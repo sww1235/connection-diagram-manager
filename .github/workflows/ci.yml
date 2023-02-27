@@ -33,10 +33,10 @@ jobs:
     - name: Clippy
       run: cargo clippy
     - name: Build Library
-      run: cargo build +${{ matrix.rust }} --lib --verbose
+      run: cargo +${{ matrix.rust }} build --lib --verbose
     - name: Build CLI
-      run: cargo build +${{ matrix.rust }} --verbose --features cli --bin cli
+      run: cargo +${{ matrix.rust }} build --verbose --features cli --bin cli
     - name: Build GUI
-      run: cargo build +${{ matrix.rust }} --verbose --features cli,gui  --bin gui
+      run: cargo +${{ matrix.rust }} build --verbose --features cli,gui  --bin gui
         #- name: Run tests
         #run: cargo test --verbose
