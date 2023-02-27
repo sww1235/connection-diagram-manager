@@ -1,0 +1,42 @@
+# Thanks to https://infinyon.com/blog/2021/04/github-actions-best-practices/
+# for guidance
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check_and_build:
+    name: Build and Check (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        rust: [stable]
+    env:
+      RUST_BACKTRACE: full
+    steps:
+    - uses: actions/checkout@v3
+    - name: Clippy
+      run: cargo clippy
+    - name: Install dependancies
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        apt update
+        apt install libx11-dev libxext-dev libxft-dev libxinerama-dev libxcursor-dev libxrender-dev libxfixes-dev libpango1.0-dev libgl1-mesa-dev libglu1-mesa-dev g++ cmake git make
+    - name: Build Library
+      run: cargo build +${{ matrix.rust }} --lib --verbose
+    - name: Build CLI
+      run: cargo build +${{ matrix.rust }} --verbose --features cli --bin cli
+    - name: Build GUI
+      run: cargo build +${{ matrix.rust }} --verbose --features cli,gui  --bin gui
+        #- name: Run tests
+        #run: cargo test --verbose
