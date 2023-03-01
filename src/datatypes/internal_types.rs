@@ -121,26 +121,82 @@ impl Library {
         for datafile in datafiles {
             self.from_datafile(datafile)
         }
-        for (_, wire_type) in &self.wire_types {
-            //TODO: check for empty objects
+        for wire_type in self.wire_types.values() {
+            if wire_type.borrow().is_partial_empty() {
+                //TODO: Return error here instead
+                //TODO: Add in source file name here
+                panic! {
+                concat!{
+                    "WireType {} was specified in files read in ",
+                    "but no defintion was found. Please correct this.",
+                }, wire_type.borrow().id}
+            }
         }
-        for (_, cable_type) in &self.cable_types {
-            //TODO: check for empty objects
+        for cable_type in self.cable_types.values() {
+            if cable_type.borrow().is_partial_empty() {
+                //TODO: Return error here instead
+                //TODO: Add in source file name here
+                panic! {
+                concat!{
+                    "CableType {} was specified in files read in ",
+                    "but no defintion was found. Please correct this.",
+                }, cable_type.borrow().id}
+            }
         }
-        for (_, term_cable_type_type) in &self.term_cable_types {
-            //TODO: check for empty objects
+        for term_cable_type in self.term_cable_types.values() {
+            if term_cable_type.borrow().is_partial_empty() {
+                //TODO: Return error here instead
+                //TODO: Add in source file name here
+                panic! {
+                concat!{
+                    "TermCableType {} was specified in files read in ",
+                    "but no defintion was found. Please correct this.",
+                }, term_cable_type.borrow().id}
+            }
         }
-        for (_, location_type) in &self.location_types {
-            //TODO: check for empty objects
+        for location_type in self.location_types.values() {
+            if location_type.borrow().is_partial_empty() {
+                //TODO: Return error here instead
+                //TODO: Add in source file name here
+                panic! {
+                concat!{
+                    "LocationType {} was specified in files read in ",
+                    "but no defintion was found. Please correct this.",
+                }, location_type.borrow().id}
+            }
         }
-        for (_, connector_type) in &self.connector_types {
-            //TODO: check for empty objects
+        for connector_type in self.connector_types.values() {
+            if connector_type.borrow().is_partial_empty() {
+                //TODO: Return error here instead
+                //TODO: Add in source file name here
+                panic! {
+                concat!{
+                    "ConnectorType {} was specified in files read in ",
+                    "but no defintion was found. Please correct this.",
+                }, connector_type.borrow().id}
+            }
         }
-        for (_, equipment_type) in &self.equipment_types {
-            //TODO: check for empty objects
+        for equipment_type in self.equipment_types.values() {
+            if equipment_type.borrow().is_partial_empty() {
+                //TODO: Return error here instead
+                //TODO: Add in source file name here
+                panic! {
+                concat!{
+                    "EquipmentType {} was specified in files read in ",
+                    "but no defintion was found. Please correct this.",
+                }, equipment_type.borrow().id}
+            }
         }
-        for (_, pathway_type) in &self.pathway_types {
-            //TODO: check for empty objects
+        for pathway_type in self.pathway_types.values() {
+            if pathway_type.borrow().is_partial_empty() {
+                //TODO: Return error here instead
+                //TODO: Add in source file name here
+                panic! {
+                concat!{
+                    "PathwayType {} was specified in files read in ",
+                    "but no defintion was found. Please correct this.",
+                }, pathway_type.borrow().id}
+            }
         }
     }
 
@@ -748,17 +804,49 @@ impl Project {
         for datafile in datafiles {
             self.from_datafile(datafile, library)
         }
-        for (_, location) in &self.locations {
-            //TODO: check for empty objects
+        for location in self.locations.values() {
+            if location.borrow().is_partial_empty() {
+                //TODO: Return error here instead
+                //TODO: Add in source file name here
+                panic! {
+                concat!{
+                    "Location {} was specified in files read in ",
+                    "but no defintion was found. Please correct this.",
+                }, location.borrow().id}
+            }
         }
-        for (_, equipment) in &self.equipment {
-            //TODO: check for empty objects
+        for equipment in self.equipment.values() {
+            if equipment.borrow().is_partial_empty() {
+                //TODO: Return error here instead
+                //TODO: Add in source file name here
+                panic! {
+                concat!{
+                    "Equipment {} was specified in files read in ",
+                    "but no defintion was found. Please correct this.",
+                }, equipment.borrow().id}
+            }
         }
-        for (_, pathway) in &self.pathways {
-            //TODO: check for empty objects
+        for pathway in self.pathways.values() {
+            if pathway.borrow().is_partial_empty() {
+                //TODO: Return error here instead
+                //TODO: Add in source file name here
+                panic! {
+                concat!{
+                    "Pathway {} was specified in files read in ",
+                    "but no defintion was found. Please correct this.",
+                }, pathway.borrow().id}
+            }
         }
-        for (_, wire_cable) in &self.wire_cables {
-            //TODO: check for empty objects
+        for wire_cable in self.wire_cables.values() {
+            if wire_cable.borrow().is_partial_empty() {
+                //TODO: Return error here instead
+                //TODO: Add in source file name here
+                panic! {
+                concat!{
+                    "WireCable {} was specified in files read in ",
+                    "but no defintion was found. Please correct this.",
+                }, wire_cable.borrow().id}
+            }
         }
     }
 
