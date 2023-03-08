@@ -58,7 +58,7 @@ pub struct ConnectorType {
 #[derive(Debug, Default, PartialEq)]
 pub struct ConnectorPin {
     /// Pin number or identifier in connector
-    pub id: Option<String>,
+    pub id: String,
     /// Pin label or name
     pub label: Option<String>,
     /// Pin signal type
@@ -135,9 +135,7 @@ impl PartialEmpty for ConnectorType {
 impl fmt::Display for ConnectorPin {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Pin:")?;
-        if let Some(id) = &self.id {
-            writeln!(f, "Pin ID: {id}")?;
-        }
+        writeln!(f, "Pin ID: {}", self.id)?;
         if let Some(label) = &self.label {
             writeln!(f, "Pin Label: {label}")?;
         }

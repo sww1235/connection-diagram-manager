@@ -268,7 +268,7 @@ impl Library {
                     // need to build cable_core first, so we can insert into self.cable_types if
                     // needed.
                     let mut cable_core_map = HashMap::new();
-                    for (core_id, core) in &cable_types[k].cable_core {
+                    for (core_id, core) in &cable_types[k].cable_cores {
                         //TODO: this could result in issues where the cable type is in
                         //the file, but not read before it is checked for here.
                         if core.is_wire && self.wire_types.contains_key(&core.type_str) {
@@ -351,7 +351,7 @@ impl Library {
                             },
                             // cable_core_map defined above main struct definition to avoid multiple mutable
                             // borrows of self.cable_types
-                            cable_core: cable_core_map,
+                            cable_cores: cable_core_map,
                             insul_layers: {
                                 let mut new_layers = Vec::new();
                                 for layer in &cable_types[k].insul_layers {

@@ -36,7 +36,7 @@ pub struct CableType {
     /// diameter of cable in mm
     pub diameter: Option<f64>,
     /// map of cores in cable
-    pub cable_core: HashMap<String, CableCore>,
+    pub cable_cores: HashMap<String, CableCore>,
     /// vector of exterior insulation/shielding layers
     pub insul_layers: Vec<CableLayer>,
 }
@@ -54,9 +54,9 @@ pub struct CableCore {
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct CableLayer {
     /// layer number, counted from inside to outside of cable, 1 indexed
-    pub layer_number: Option<u64>,
+    pub layer_number: u64,
     /// Insulation, Semiconductor, shield, screen, concentric neutral. TODO: change this to Enum
-    pub layer_type: Option<String>,
+    pub layer_type: String,
     /// `Material of CableLayer`
     pub material: Option<String>,
     /// Voltage rating for insuation layer

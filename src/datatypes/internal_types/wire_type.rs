@@ -36,10 +36,10 @@ pub struct WireType {
     pub wire_type_code: Option<String>,
     /// Conductor cross sectional area.
     /// specified in mm^2
-    pub conductor_cross_sect_area: Option<f64>,
+    pub conductor_cross_sect_area: f64,
     /// Overall wire cross sectional area, incluidng insulation.
     /// specified in mm^2
-    pub overall_cross_sect_area: Option<f64>,
+    pub overall_cross_sect_area: f64,
     /// If conductor is stranded
     pub stranded: bool,
     /// How many strands is conductor made of
@@ -72,8 +72,8 @@ impl WireType {
             insulated: false,
             insulation_material: None,
             wire_type_code: None,
-            conductor_cross_sect_area: None,
-            overall_cross_sect_area: None,
+            conductor_cross_sect_area: 0.0,
+            overall_cross_sect_area: 0.0,
             stranded: false,
             num_strands: None,
             strand_cross_sect_area: None,
@@ -155,26 +155,25 @@ impl fmt::Display for WireType {
         if let Some(wire_type_code) = &self.wire_type_code {
             writeln!(f, "Wire Type Code: {wire_type_code}")?;
         }
-        if let Some(conductor_cross_sect_area) = &self.conductor_cross_sect_area {
-            if f.alternate() {
-                //TODO: implement mm^2 to AWG conversion, with auht and kcm display
-                writeln!(
-                    f,
-                    "Conductor Cross Sectional Area: {conductor_cross_sect_area} AWG"
-                )?;
-            } else {
-                writeln!(
-                    f,
-                    "Conductor Cross Sectional Area: {conductor_cross_sect_area:.2} mm^2"
-                )?;
-            }
-        }
-        if let Some(overall_cross_sect_area) = &self.overall_cross_sect_area {
+        if f.alternate() {
+            //TODO: implement mm^2 to AWG conversion, with auht and kcm display
             writeln!(
                 f,
-                "Overall Cross Sectional Area: {overall_cross_sect_area:.2} mm^2"
+                "Conductor Cross Sectional Area: {} AWG",
+                self.conductor_cross_sect_area
+            )?;
+        } else {
+            writeln!(
+                f,
+                "Conductor Cross Sectional Area: {:.2} mm^2",
+                self.conductor_cross_sect_area
             )?;
         }
+        writeln!(
+            f,
+            "Overall Cross Sectional Area: {:.2} mm^2",
+            self.overall_cross_sect_area
+        )?;
         writeln!(f, "Stranded: {}", &self.stranded)?;
         if let Some(num_strands) = &self.num_strands {
             writeln!(f, "Number of Strands: {num_strands}")?;

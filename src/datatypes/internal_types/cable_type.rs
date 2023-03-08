@@ -42,7 +42,7 @@ pub struct CableType {
     /// diameter of cable in mm
     pub diameter: Option<f64>,
     /// map of cores in cable
-    pub cable_core: HashMap<String, CableCore>,
+    pub cable_cores: HashMap<String, CableCore>,
     /// vector of exterior insulation/shielding layers
     pub insul_layers: Vec<CableLayer>,
 }
@@ -62,9 +62,9 @@ pub enum CableCore {
 #[derive(Debug, Default, PartialEq)]
 pub struct CableLayer {
     /// layer number, counted from inside to outside of cable, 1 indexed
-    pub layer_number: Option<u64>,
+    pub layer_number: u64,
     /// Insulation, Semiconductor, shield, screen, concentric neutral. TODO: change this to Enum
-    pub layer_type: Option<String>,
+    pub layer_type: String,
     /// `Material of CableLayer`
     pub material: Option<String>,
     /// Voltage rating for insuation layer
@@ -92,7 +92,7 @@ impl CableType {
             height: 0.0,
             width: 0.0,
             diameter: None,
-            cable_core: HashMap::new(),
+            cable_cores: HashMap::new(),
             insul_layers: Vec::new(),
         }
     }
@@ -129,7 +129,7 @@ impl PartialEmpty for CableType {
             && self.height == tester.height
             && self.width == tester.width
             && self.diameter == tester.diameter
-            && self.cable_core == tester.cable_core
+            && self.cable_cores == tester.cable_cores
             && self.insul_layers == tester.insul_layers
     }
 }

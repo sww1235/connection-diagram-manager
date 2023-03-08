@@ -59,9 +59,9 @@ pub struct EquipConnector {
     /// output, bidirectiona, passive)
     pub direction: Option<String>,
     /// location of connector on face from left of visrep. Origin is bottom left
-    pub x: Option<u64>,
+    pub x: u64,
     /// location of connector on face from bottom of visrep. Origin is bottom left
-    pub y: Option<u64>,
+    pub y: u64,
 }
 
 impl fmt::Display for EquipConnector {
@@ -71,12 +71,8 @@ impl fmt::Display for EquipConnector {
         if let Some(direction) = &self.direction {
             writeln!(f, "Direction: {direction}")?;
         }
-        if let Some(x) = &self.x {
-            writeln!(f, "X coordinate: {x}")?;
-        }
-        if let Some(y) = &self.y {
-            writeln!(f, "Y coordinate: {y}")?;
-        }
+        writeln!(f, "X coordinate: {}", self.x)?;
+        writeln!(f, "Y coordinate: {}", self.y)?;
         Ok(())
     }
 }

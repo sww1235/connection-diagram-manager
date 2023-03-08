@@ -54,7 +54,7 @@ pub struct ConnectorType {
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct ConnectorPin {
     /// Pin number or identifier in connector
-    pub id: Option<String>,
+    pub id: String,
     /// Pin label or name
     pub label: Option<String>,
     /// Pin signal type
@@ -70,9 +70,7 @@ pub struct ConnectorPin {
 impl fmt::Display for ConnectorPin {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Pin:")?;
-        if let Some(id) = &self.id {
-            writeln!(f, "\tPin ID: {id}")?;
-        }
+        writeln!(f, "\tPin ID: {}", self.id)?;
         if let Some(label) = &self.label {
             writeln!(f, "\tPin Label: {label}")?;
         }
