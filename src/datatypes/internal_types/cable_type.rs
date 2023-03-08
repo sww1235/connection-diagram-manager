@@ -50,7 +50,7 @@ pub struct CableType {
 //https://stackoverflow.com/questions/67594909/multiple-possible-types-for-a-serializable-structs-field
 
 /// `CableCore` represents an individual conductor, strength member or optical fiber in a cable.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum CableCore {
     /// `WireType`
     WireType(Rc<RefCell<WireType>>),
@@ -59,7 +59,7 @@ pub enum CableCore {
 }
 
 /// `CableLayer` represents an insulation or shield layer of the entire cable
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, Clone)]
 pub struct CableLayer {
     /// layer number, counted from inside to outside of cable, 1 indexed
     pub layer_number: u64,
@@ -102,9 +102,298 @@ impl Mergable for CableType {
     fn merge_prompt(
         &mut self,
         other: &Self,
-        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, u8>,
-    ) -> Self {
-        todo!();
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
+    ) {
+        //TODO: maybe check for partial_empty/empty here on other
+        let mut input_map: HashMap<String, [String; 2]> = HashMap::new();
+        if self.id != other.id {
+            panic! {"attempting to merge structs with different IDs. This shouldn't have happened."}
+        }
+        if self.manufacturer != other.manufacturer {
+            input_map.insert(
+                "Manufacturer".to_string(),
+                [
+                    {
+                        if let Some(manufacturer) = self.manufacturer.clone() {
+                            manufacturer
+                        } else {
+                            String::new()
+                        }
+                    },
+                    {
+                        if let Some(manufacturer) = other.manufacturer.clone() {
+                            manufacturer
+                        } else {
+                            String::new()
+                        }
+                    },
+                ],
+            );
+        }
+        if self.model != other.model {
+            input_map.insert(
+                "Model".to_string(),
+                [
+                    {
+                        if let Some(model) = self.model.clone() {
+                            model
+                        } else {
+                            String::new()
+                        }
+                    },
+                    {
+                        if let Some(model) = other.model.clone() {
+                            model
+                        } else {
+                            String::new()
+                        }
+                    },
+                ],
+            );
+        }
+        if self.part_number != other.part_number {
+            input_map.insert(
+                "Part Number".to_string(),
+                [
+                    {
+                        if let Some(part_number) = self.part_number.clone() {
+                            part_number
+                        } else {
+                            String::new()
+                        }
+                    },
+                    {
+                        if let Some(part_number) = other.part_number.clone() {
+                            part_number
+                        } else {
+                            String::new()
+                        }
+                    },
+                ],
+            );
+        }
+        if self.manufacturer_part_number != other.manufacturer_part_number {
+            input_map.insert(
+                "Manufacturer Part Number".to_string(),
+                [
+                    {
+                        if let Some(manufacturer_part_number) =
+                            self.manufacturer_part_number.clone()
+                        {
+                            manufacturer_part_number
+                        } else {
+                            String::new()
+                        }
+                    },
+                    {
+                        if let Some(manufacturer_part_number) =
+                            other.manufacturer_part_number.clone()
+                        {
+                            manufacturer_part_number
+                        } else {
+                            String::new()
+                        }
+                    },
+                ],
+            );
+        }
+        if self.supplier != other.supplier {
+            input_map.insert(
+                "Supplier".to_string(),
+                [
+                    {
+                        if let Some(supplier) = self.supplier.clone() {
+                            supplier
+                        } else {
+                            String::new()
+                        }
+                    },
+                    {
+                        if let Some(supplier) = other.supplier.clone() {
+                            supplier
+                        } else {
+                            String::new()
+                        }
+                    },
+                ],
+            );
+        }
+        if self.supplier_part_number != other.supplier_part_number {
+            input_map.insert(
+                "Supplier Part Number".to_string(),
+                [
+                    {
+                        if let Some(supplier_part_number) = self.supplier_part_number.clone() {
+                            supplier_part_number
+                        } else {
+                            String::new()
+                        }
+                    },
+                    {
+                        if let Some(supplier_part_number) = other.supplier_part_number.clone() {
+                            supplier_part_number
+                        } else {
+                            String::new()
+                        }
+                    },
+                ],
+            );
+        }
+        if self.cable_type_code != other.cable_type_code {
+            input_map.insert(
+                "Cable Type Code".to_string(),
+                [
+                    {
+                        if let Some(cable_type_code) = self.cable_type_code.clone() {
+                            cable_type_code
+                        } else {
+                            String::new()
+                        }
+                    },
+                    {
+                        if let Some(cable_type_code) = other.cable_type_code.clone() {
+                            cable_type_code
+                        } else {
+                            String::new()
+                        }
+                    },
+                ],
+            );
+        }
+        if self.cross_sect_area != other.cross_sect_area {
+            input_map.insert(
+                "Cross Sectional Area".to_string(),
+                [
+                    self.cross_sect_area.to_string(),
+                    other.cross_sect_area.to_string(),
+                ],
+            );
+        }
+        if self.cross_section != other.cross_section {
+            input_map.insert(
+                "Cross Section".to_string(),
+                [
+                    self.cross_section.to_string(),
+                    other.cross_section.to_string(),
+                ],
+            );
+        }
+        if self.height != other.height {
+            input_map.insert(
+                "Height".to_string(),
+                [self.height.to_string(), other.height.to_string()],
+            );
+        }
+        if self.width != other.width {
+            input_map.insert(
+                "Width".to_string(),
+                [self.width.to_string(), other.width.to_string()],
+            );
+        }
+        if self.diameter != other.diameter {
+            input_map.insert(
+                "Diameter".to_string(),
+                [
+                    {
+                        if let Some(diameter) = self.diameter {
+                            diameter.to_string()
+                        } else {
+                            String::new()
+                        }
+                    },
+                    {
+                        if let Some(diameter) = other.diameter {
+                            diameter.to_string()
+                        } else {
+                            String::new()
+                        }
+                    },
+                ],
+            );
+        }
+        if self.cable_cores != other.cable_cores {
+            let mut self_string = String::new();
+            let mut other_string = String::new();
+            for core in self.cable_cores.keys() {
+                self_string = self_string + core + "\t"
+            }
+            for core in other.cable_cores.keys() {
+                other_string = other_string + core
+            }
+            input_map.insert("Cable Cores".to_string(), [self_string, other_string]);
+        }
+        if self.insul_layers != other.insul_layers {
+            let mut self_string = String::new();
+            let mut other_string = String::new();
+            for layer in &self.insul_layers {
+                self_string.push('(');
+                if let Some(material) = &layer.material {
+                    self_string.push_str(material.as_str());
+                }
+                self_string.push_str(", ");
+                if let Some(color) = &layer.color {
+                    self_string.push_str(color.as_str());
+                }
+                self_string.push_str(")\t")
+            }
+            for layer in &other.insul_layers {
+                other_string.push('(');
+                if let Some(material) = &layer.material {
+                    other_string.push_str(material.as_str());
+                }
+                other_string.push_str(", ");
+                if let Some(color) = &layer.color {
+                    other_string.push_str(color.as_str());
+                }
+                other_string.push_str(")\t");
+            }
+            input_map.insert("Insulation Layers".to_string(), [self_string, other_string]);
+        }
+
+        let results = prompt_fn(input_map);
+        // false means don't replace value in self struct
+        if results["Manufacturer"] {
+            self.manufacturer = other.manufacturer.clone();
+        }
+        if results["Model"] {
+            self.model = other.model.clone();
+        }
+        if results["Part Number"] {
+            self.part_number = other.part_number.clone();
+        }
+        if results["Manufacturer Part Number"] {
+            self.manufacturer_part_number = other.manufacturer_part_number.clone();
+        }
+        if results["Supplier"] {
+            self.supplier = other.supplier.clone();
+        }
+        if results["Supplier Part Number"] {
+            self.supplier_part_number = other.supplier_part_number.clone();
+        }
+        if results["Cable Type Code"] {
+            self.cable_type_code = other.cable_type_code.clone();
+        }
+        if results["Cross Sectional Area"] {
+            self.cross_sect_area = other.cross_sect_area;
+        }
+        if results["Cross Section"] {
+            self.cross_section = other.cross_section.clone();
+        }
+        if results["Height"] {
+            self.height = other.height;
+        }
+        if results["Width"] {
+            self.width = other.width;
+        }
+        if results["Diameter"] {
+            self.diameter = other.diameter;
+        }
+        if results["Cable Cores"] {
+            self.cable_cores = other.cable_cores.clone();
+        }
+        if results["Insulation Layers"] {
+            self.insul_layers = other.insul_layers.clone();
+        }
     }
 }
 

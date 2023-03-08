@@ -79,8 +79,8 @@ pub trait Mergable {
     fn merge_prompt(
         &mut self,
         other: &Self,
-        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, u8>,
-    ) -> Self;
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
+    );
     // pass a hashmap of string arrays, return a hashmap of integers which are the selected value
     // index out of the array, with keys as struct field names
 }

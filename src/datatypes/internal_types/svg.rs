@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fmt;
 
 use super::super::file_types::svg::Svg as FileSvg;
 use super::{Empty, Mergable, PartialEmpty};
@@ -15,9 +16,9 @@ impl From<FileSvg> for Svg {
 impl Mergable for Svg {
     fn merge_prompt(
         &mut self,
-        other: &Self,
-        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, u8>,
-    ) -> Self {
+        _other: &Self,
+        _prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
+    ) {
         todo!();
     }
 }
@@ -40,5 +41,13 @@ impl Svg {
     pub fn new() -> Self {
         //TODO: actually have this be a blank SVG
         Self(String::new())
+    }
+}
+
+impl fmt::Display for Svg {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        //TODO: fix this to be proper for SVG
+        writeln!(f, "{}", self.0)?;
+        Ok(())
     }
 }

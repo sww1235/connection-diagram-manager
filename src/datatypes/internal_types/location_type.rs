@@ -68,9 +68,275 @@ impl Mergable for LocationType {
     fn merge_prompt(
         &mut self,
         other: &Self,
-        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, u8>,
-    ) -> Self {
-        todo!();
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
+    ) {
+        //TODO: maybe check for partial_empty/empty here on other
+        let mut input_map: HashMap<String, [String; 2]> = HashMap::new();
+        if self.id != other.id {
+            panic! {"attempting to merge structs with different IDs. This shouldn't have happened."}
+        }
+        if self.manufacturer != other.manufacturer {
+            input_map.insert(
+                "Manufacturer".to_string(),
+                [
+                    {
+                        if let Some(manufacturer) = self.manufacturer.clone() {
+                            manufacturer
+                        } else {
+                            String::new()
+                        }
+                    },
+                    {
+                        if let Some(manufacturer) = other.manufacturer.clone() {
+                            manufacturer
+                        } else {
+                            String::new()
+                        }
+                    },
+                ],
+            );
+        }
+        if self.model != other.model {
+            input_map.insert(
+                "Model".to_string(),
+                [
+                    {
+                        if let Some(model) = self.model.clone() {
+                            model
+                        } else {
+                            String::new()
+                        }
+                    },
+                    {
+                        if let Some(model) = other.model.clone() {
+                            model
+                        } else {
+                            String::new()
+                        }
+                    },
+                ],
+            );
+        }
+        if self.part_number != other.part_number {
+            input_map.insert(
+                "Part Number".to_string(),
+                [
+                    {
+                        if let Some(part_number) = self.part_number.clone() {
+                            part_number
+                        } else {
+                            String::new()
+                        }
+                    },
+                    {
+                        if let Some(part_number) = other.part_number.clone() {
+                            part_number
+                        } else {
+                            String::new()
+                        }
+                    },
+                ],
+            );
+        }
+        if self.manufacturer_part_number != other.manufacturer_part_number {
+            input_map.insert(
+                "Manufacturer Part Number".to_string(),
+                [
+                    {
+                        if let Some(manufacturer_part_number) =
+                            self.manufacturer_part_number.clone()
+                        {
+                            manufacturer_part_number
+                        } else {
+                            String::new()
+                        }
+                    },
+                    {
+                        if let Some(manufacturer_part_number) =
+                            other.manufacturer_part_number.clone()
+                        {
+                            manufacturer_part_number
+                        } else {
+                            String::new()
+                        }
+                    },
+                ],
+            );
+        }
+        if self.supplier != other.supplier {
+            input_map.insert(
+                "Supplier".to_string(),
+                [
+                    {
+                        if let Some(supplier) = self.supplier.clone() {
+                            supplier
+                        } else {
+                            String::new()
+                        }
+                    },
+                    {
+                        if let Some(supplier) = other.supplier.clone() {
+                            supplier
+                        } else {
+                            String::new()
+                        }
+                    },
+                ],
+            );
+        }
+        if self.supplier_part_number != other.supplier_part_number {
+            input_map.insert(
+                "Supplier Part Number".to_string(),
+                [
+                    {
+                        if let Some(supplier_part_number) = self.supplier_part_number.clone() {
+                            supplier_part_number
+                        } else {
+                            String::new()
+                        }
+                    },
+                    {
+                        if let Some(supplier_part_number) = other.supplier_part_number.clone() {
+                            supplier_part_number
+                        } else {
+                            String::new()
+                        }
+                    },
+                ],
+            );
+        }
+        if self.description != other.description {
+            input_map.insert(
+                "Description".to_string(),
+                [
+                    {
+                        if let Some(description) = self.description.clone() {
+                            description
+                        } else {
+                            String::new()
+                        }
+                    },
+                    {
+                        if let Some(description) = other.description.clone() {
+                            description
+                        } else {
+                            String::new()
+                        }
+                    },
+                ],
+            );
+        }
+        if self.material != other.material {
+            input_map.insert(
+                "Material".to_string(),
+                [
+                    {
+                        if let Some(material) = self.material.clone() {
+                            material
+                        } else {
+                            String::new()
+                        }
+                    },
+                    {
+                        if let Some(material) = other.material.clone() {
+                            material
+                        } else {
+                            String::new()
+                        }
+                    },
+                ],
+            );
+        }
+        if self.height != other.height {
+            input_map.insert(
+                "Height".to_string(),
+                [self.height.to_string(), other.height.to_string()],
+            );
+        }
+        if self.width != other.width {
+            input_map.insert(
+                "Width".to_string(),
+                [self.width.to_string(), other.width.to_string()],
+            );
+        }
+        if self.depth != other.depth {
+            input_map.insert(
+                "Depth".to_string(),
+                [self.depth.to_string(), other.depth.to_string()],
+            );
+        }
+        if self.usable_height != other.usable_height {
+            input_map.insert(
+                "Usable Height".to_string(),
+                [
+                    self.usable_height.to_string(),
+                    other.usable_height.to_string(),
+                ],
+            );
+        }
+        if self.usable_width != other.usable_width {
+            input_map.insert(
+                "Usable Width".to_string(),
+                [
+                    self.usable_width.to_string(),
+                    other.usable_width.to_string(),
+                ],
+            );
+        }
+        if self.usable_depth != other.usable_depth {
+            input_map.insert(
+                "Usable Depth".to_string(),
+                [
+                    self.usable_depth.to_string(),
+                    other.usable_depth.to_string(),
+                ],
+            );
+        }
+
+        let results = prompt_fn(input_map);
+        // false means don't replace value in self struct
+        if results["Manufacturer"] {
+            self.manufacturer = other.manufacturer.clone();
+        }
+        if results["Model"] {
+            self.model = other.model.clone();
+        }
+        if results["Part Number"] {
+            self.part_number = other.part_number.clone();
+        }
+        if results["Manufacturer Part Number"] {
+            self.manufacturer_part_number = other.manufacturer_part_number.clone();
+        }
+        if results["Supplier"] {
+            self.supplier = other.supplier.clone();
+        }
+        if results["Supplier Part Number"] {
+            self.supplier_part_number = other.supplier_part_number.clone();
+        }
+        if results["Description"] {
+            self.description = other.description.clone();
+        }
+        if results["Material"] {
+            self.material = other.material.clone();
+        }
+        if results["Height"] {
+            self.height = other.height;
+        }
+        if results["Width"] {
+            self.width = other.width;
+        }
+        if results["Depth"] {
+            self.depth = other.depth;
+        }
+        if results["Usable Height"] {
+            self.usable_height = other.usable_height;
+        }
+        if results["Usable Width"] {
+            self.usable_width = other.usable_width;
+        }
+        if results["Usable Depth"] {
+            self.usable_depth = other.usable_depth;
+        }
     }
 }
 
