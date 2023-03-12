@@ -116,10 +116,14 @@ impl Library {
     }
     /// `from_datafiles` converts between the textual representation of datafiles, and the struct
     /// object representation of the internal objects
-    pub fn from_datafiles(&mut self, datafiles: Vec<DataFile>) {
+    pub fn from_datafiles(
+        &mut self,
+        datafiles: Vec<DataFile>,
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
+    ) {
         // parse all datafiles
         for datafile in datafiles {
-            self.from_datafile(datafile)
+            self.from_datafile(datafile, prompt_fn)
         }
         for wire_type in self.wire_types.values() {
             if wire_type.borrow().is_partial_empty() {
@@ -206,169 +210,170 @@ impl Library {
     // need to follow the same rules
     // TODO: maybe rename this to something that doesn't
     // sound like a type conversion function
-    fn from_datafile(&mut self, datafile: DataFile) {
+    fn from_datafile(
+        &mut self,
+        datafile: DataFile,
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
+    ) {
         // wire_types
         if let Some(wire_types) = datafile.wire_types {
             for (k, v) in &wire_types {
+                let new_wire_type = wire_type::WireType {
+                    id: k.to_string(),
+                    manufacturer: wire_types[k].manufacturer.clone(),
+                    model: wire_types[k].model.clone(),
+                    part_number: wire_types[k].part_number.clone(),
+                    manufacturer_part_number: wire_types[k].manufacturer_part_number.clone(),
+                    supplier: wire_types[k].supplier.clone(),
+                    supplier_part_number: wire_types[k].supplier_part_number.clone(),
+                    material: wire_types[k].material.clone(),
+                    insulated: wire_types[k].insulated,
+                    insulation_material: wire_types[k].insulation_material.clone(),
+                    wire_type_code: wire_types[k].wire_type_code.clone(),
+                    conductor_cross_sect_area: wire_types[k].conductor_cross_sect_area,
+                    overall_cross_sect_area: wire_types[k].overall_cross_sect_area,
+                    stranded: wire_types[k].stranded,
+                    num_strands: wire_types[k].num_strands,
+                    strand_cross_sect_area: wire_types[k].strand_cross_sect_area,
+                    insul_volt_rating: wire_types[k].insul_volt_rating,
+                    insul_temp_rating: wire_types[k].insul_temp_rating,
+                    insul_color: wire_types[k].insul_color.clone(),
+                };
                 if self.wire_types.contains_key(k) {
-                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
-                    //automatically
-                    warn! {concat!{
+                    trace! {concat!{
                         "WireType: {} with contents: {:#?} ",
                         "has already been loaded. Found again ",
-                        "in file {}. Check this and merge if necessary"},
+                        "in file {}. Prompting to merge"},
                         k, v, datafile.file_path.display()
                     }
+                    self.wire_types[k]
+                        .borrow_mut()
+                        .merge_prompt(&new_wire_type, prompt_fn);
                 } else {
                     trace! {"Inserted WireType: {}, value: {:#?} into main library.",k,v}
-                    self.wire_types.insert(
-                        k.to_string(),
-                        Rc::new(RefCell::new(wire_type::WireType {
-                            id: k.to_string(),
-                            manufacturer: wire_types[k].manufacturer.clone(),
-                            model: wire_types[k].model.clone(),
-                            part_number: wire_types[k].part_number.clone(),
-                            manufacturer_part_number: wire_types[k]
-                                .manufacturer_part_number
-                                .clone(),
-                            supplier: wire_types[k].supplier.clone(),
-                            supplier_part_number: wire_types[k].supplier_part_number.clone(),
-                            material: wire_types[k].material.clone(),
-                            insulated: wire_types[k].insulated,
-                            insulation_material: wire_types[k].insulation_material.clone(),
-                            wire_type_code: wire_types[k].wire_type_code.clone(),
-                            conductor_cross_sect_area: wire_types[k].conductor_cross_sect_area,
-                            overall_cross_sect_area: wire_types[k].overall_cross_sect_area,
-                            stranded: wire_types[k].stranded,
-                            num_strands: wire_types[k].num_strands,
-                            strand_cross_sect_area: wire_types[k].strand_cross_sect_area,
-                            insul_volt_rating: wire_types[k].insul_volt_rating,
-                            insul_temp_rating: wire_types[k].insul_temp_rating,
-                            insul_color: wire_types[k].insul_color.clone(),
-                        })),
-                    );
+                    self.wire_types
+                        .insert(k.to_string(), Rc::new(RefCell::new(new_wire_type)));
                 }
             }
         }
         // cable_types
         if let Some(cable_types) = datafile.cable_types {
             for (k, v) in &cable_types {
+                // need to build cable_core first, so we can insert into self.cable_types if
+                // needed.
+                let mut cable_core_map = HashMap::new();
+                for (core_id, core) in &cable_types[k].cable_cores {
+                    //TODO: this could result in issues where the cable type is in
+                    //the file, but not read before it is checked for here.
+                    if core.is_wire && self.wire_types.contains_key(&core.type_str) {
+                        cable_core_map.insert(
+                            core_id.to_string(),
+                            CableCore::WireType(self.wire_types[&core.type_str].clone()),
+                        );
+                    } else if !core.is_wire && self.cable_types.contains_key(&core.type_str) {
+                        cable_core_map.insert(
+                            core_id.to_string(),
+                            CableCore::CableType(self.cable_types[&core.type_str].clone()),
+                        );
+                    } else {
+                        warn! {concat!{
+                            "can't find CableCore Type: {} ",
+                            "referenced in CableType: {} in ",
+                            "datafile: {}, in any file or ",
+                            "library imported into Project. ",
+                            "Creating empty object for now"},
+                            core.type_str, k, datafile.file_path.display()
+                        }
+                        if core.is_wire {
+                            let new_wire_type = Rc::new(RefCell::new(wire_type::WireType::new()));
+                            // need to set id of wire type correctly. type_str not
+                            // core_id
+                            new_wire_type.borrow_mut().id = core.type_str.to_string();
+                            // insert new_wire_type as core into cable_core_map
+                            cable_core_map.insert(
+                                core_id.to_string(),
+                                CableCore::WireType(new_wire_type.clone()),
+                            );
+                            // also insert new_wire_type into library
+                            self.wire_types
+                                .insert(core.type_str.to_string(), new_wire_type.clone());
+                        } else {
+                            //cable type
+                            let new_cable_type =
+                                Rc::new(RefCell::new(cable_type::CableType::new()));
+                            new_cable_type.borrow_mut().id = core.type_str.to_string();
+                            // insert new_cable_type as core into cable_core_map
+                            cable_core_map.insert(
+                                core_id.to_string(),
+                                CableCore::CableType(new_cable_type.clone()),
+                            );
+                            // also insert new_cable_type into library
+                            self.cable_types
+                                .insert(core.type_str.to_string(), new_cable_type.clone());
+                        }
+                    }
+                }
+                let new_cable_type = cable_type::CableType {
+                    id: k.to_string(),
+                    manufacturer: cable_types[k].manufacturer.clone(),
+                    model: cable_types[k].model.clone(),
+                    part_number: cable_types[k].part_number.clone(),
+                    manufacturer_part_number: cable_types[k].manufacturer_part_number.clone(),
+                    supplier: cable_types[k].supplier.clone(),
+                    supplier_part_number: cable_types[k].supplier_part_number.clone(),
+                    cable_type_code: cable_types[k].cable_type_code.clone(),
+                    cross_sect_area: cable_types[k].cross_sect_area,
+                    height: cable_types[k].height,
+                    width: cable_types[k].width,
+                    diameter: cable_types[k].diameter,
+                    cross_section: {
+                        match cable_types[k].cross_section.to_uppercase().as_str() {
+                            "OVAL" => CrossSection::Oval,
+                            "CIRCULAR" => CrossSection::Circular,
+                            "SIAMESE" => CrossSection::Siamese,
+                            //TODO: handle this better
+                            _ => panic! {concat!{
+                                "Cross Section: {} in CableType: {} ",
+                                "in file: {} not recognized. ",
+                                 "Check your spelling and try again."}
+                                ,cable_types[k].cross_section, k, datafile.file_path.display()
+                            },
+                        }
+                    },
+                    // cable_core_map defined above main struct definition to avoid multiple mutable
+                    // borrows of self.cable_types
+                    cable_cores: cable_core_map,
+                    insul_layers: {
+                        let mut new_layers = Vec::new();
+                        for layer in &cable_types[k].insul_layers {
+                            let new_layer = cable_type::CableLayer {
+                                layer_number: layer.layer_number,
+                                layer_type: layer.layer_type.clone(),
+                                material: layer.material.clone(),
+                                volt_rating: layer.volt_rating,
+                                temp_rating: layer.temp_rating,
+                                color: layer.color.clone(),
+                            };
+                            new_layers.push(new_layer);
+                        }
+                        new_layers
+                    },
+                };
                 if self.cable_types.contains_key(k) {
-                    warn! {concat!{
+                    trace! {concat!{
                         "CableType: {} with contents: {:#?} ",
                         "has already been loaded. Found again in ",
                         "file {}. Check this and merge if necessary"},
                         k, v, datafile.file_path.display()
                     }
-
-                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
-                    //automatically
+                    self.cable_types[k]
+                        .borrow_mut()
+                        .merge_prompt(&new_cable_type, prompt_fn);
                 } else {
                     trace! {"Inserted CableType: {}, value: {:#?} into main datastore.",k,v}
-                    // need to build cable_core first, so we can insert into self.cable_types if
-                    // needed.
-                    let mut cable_core_map = HashMap::new();
-                    for (core_id, core) in &cable_types[k].cable_cores {
-                        //TODO: this could result in issues where the cable type is in
-                        //the file, but not read before it is checked for here.
-                        if core.is_wire && self.wire_types.contains_key(&core.type_str) {
-                            cable_core_map.insert(
-                                core_id.to_string(),
-                                CableCore::WireType(self.wire_types[&core.type_str].clone()),
-                            );
-                        } else if !core.is_wire && self.cable_types.contains_key(&core.type_str) {
-                            cable_core_map.insert(
-                                core_id.to_string(),
-                                CableCore::CableType(self.cable_types[&core.type_str].clone()),
-                            );
-                        } else {
-                            warn! {concat!{
-                                "can't find CableCore Type: {} ",
-                                "referenced in CableType: {} in ",
-                                "datafile: {}, in any file or ",
-                                "library imported into Project. ",
-                                "Creating empty object for now"},
-                                core.type_str, k, datafile.file_path.display()
-                            }
-                            if core.is_wire {
-                                let new_wire_type =
-                                    Rc::new(RefCell::new(wire_type::WireType::new()));
-                                // need to set id of wire type correctly. type_str not
-                                // core_id
-                                new_wire_type.borrow_mut().id = core.type_str.to_string();
-                                // insert new_wire_type as core into cable_core_map
-                                cable_core_map.insert(
-                                    core_id.to_string(),
-                                    CableCore::WireType(new_wire_type.clone()),
-                                );
-                                // also insert new_wire_type into library
-                                self.wire_types
-                                    .insert(core.type_str.to_string(), new_wire_type.clone());
-                            } else {
-                                //cable type
-                                let new_cable_type =
-                                    Rc::new(RefCell::new(cable_type::CableType::new()));
-                                new_cable_type.borrow_mut().id = core.type_str.to_string();
-                                // insert new_cable_type as core into cable_core_map
-                                cable_core_map.insert(
-                                    core_id.to_string(),
-                                    CableCore::CableType(new_cable_type.clone()),
-                                );
-                                // also insert new_cable_type into library
-                                self.cable_types
-                                    .insert(core.type_str.to_string(), new_cable_type.clone());
-                            }
-                        }
-                    }
-                    self.cable_types.insert(
-                        k.to_string(),
-                        Rc::new(RefCell::new(cable_type::CableType {
-                            id: k.to_string(),
-                            manufacturer: cable_types[k].manufacturer.clone(),
-                            model: cable_types[k].model.clone(),
-                            part_number: cable_types[k].part_number.clone(),
-                            manufacturer_part_number: cable_types[k].manufacturer_part_number.clone(),
-                            supplier: cable_types[k].supplier.clone(),
-                            supplier_part_number: cable_types[k].supplier_part_number.clone(),
-                            cable_type_code: cable_types[k].cable_type_code.clone(),
-                            cross_sect_area: cable_types[k].cross_sect_area,
-                            height: cable_types[k].height,
-                            width: cable_types[k].width,
-                            diameter: cable_types[k].diameter,
-                            cross_section: {
-                                match cable_types[k].cross_section.to_uppercase().as_str() {
-                                   "OVAL" => CrossSection::Oval,
-                                   "CIRCULAR" => CrossSection::Circular,
-                                   "SIAMESE" => CrossSection::Siamese,
-                                   //TODO: handle this better
-                                   _ => panic! {concat!{
-                                       "Cross Section: {} in CableType: {} ",
-                                       "in file: {} not recognized. ",
-                                        "Check your spelling and try again."}
-                                       ,cable_types[k].cross_section, k, datafile.file_path.display()
-                                   }
-                                }
-                            },
-                            // cable_core_map defined above main struct definition to avoid multiple mutable
-                            // borrows of self.cable_types
-                            cable_cores: cable_core_map,
-                            insul_layers: {
-                                let mut new_layers = Vec::new();
-                                for layer in &cable_types[k].insul_layers {
-                                    let new_layer = cable_type::CableLayer {
-                                            layer_number: layer.layer_number,
-                                            layer_type: layer.layer_type.clone(),
-                                            material: layer.material.clone(),
-                                            volt_rating: layer.volt_rating,
-                                            temp_rating: layer.temp_rating,
-                                            color: layer.color.clone(),
-                                        };
-                                new_layers.push(new_layer);
-                                }
-                                new_layers
-                            },
-                        })),
-                    );
+
+                    self.cable_types
+                        .insert(k.to_string(), Rc::new(RefCell::new(new_cable_type)));
                 }
             }
         }
@@ -376,74 +381,70 @@ impl Library {
         // pathway_types
         if let Some(pathway_types) = datafile.pathway_types {
             for (k, v) in &pathway_types {
+                let new_pathway_type = pathway_type::PathwayType {
+                    id: k.to_string(),
+                    manufacturer: pathway_types[k].manufacturer.clone(),
+                    model: pathway_types[k].model.clone(),
+                    part_number: pathway_types[k].part_number.clone(),
+                    manufacturer_part_number: pathway_types[k].manufacturer_part_number.clone(),
+                    supplier: pathway_types[k].supplier.clone(),
+                    supplier_part_number: pathway_types[k].supplier_part_number.clone(),
+                    description: pathway_types[k].description.clone(),
+                    size: pathway_types[k].size.clone(),
+                    trade_size: pathway_types[k].trade_size.clone(),
+                    // no clone needed since numeric types have easy copy implementation
+                    cross_sect_area: pathway_types[k].cross_sect_area,
+                    material: pathway_types[k].material.clone(),
+                };
                 if self.pathway_types.contains_key(k) {
-                    warn! {concat!{"PathwayType : {} with ",
+                    trace! {concat!{"PathwayType : {} with ",
                     "contents: {:#?} has already been ",
                     "loaded. Found again in file {}. ",
                     "Check this and merge if necessary"},
                     k, v, datafile.file_path.display()}
-                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
-                    //automatically
+                    self.pathway_types[k]
+                        .borrow_mut()
+                        .merge_prompt(&new_pathway_type, prompt_fn);
                 } else {
                     trace! {"Inserted PathwayType: {}, value: {:#?} into main datastore.",k,v}
-                    self.pathway_types.insert(
-                        k.to_string(),
-                        Rc::new(RefCell::new(pathway_type::PathwayType {
-                            id: k.to_string(),
-                            manufacturer: pathway_types[k].manufacturer.clone(),
-                            model: pathway_types[k].model.clone(),
-                            part_number: pathway_types[k].part_number.clone(),
-                            manufacturer_part_number: pathway_types[k]
-                                .manufacturer_part_number
-                                .clone(),
-                            supplier: pathway_types[k].supplier.clone(),
-                            supplier_part_number: pathway_types[k].supplier_part_number.clone(),
-                            description: pathway_types[k].description.clone(),
-                            size: pathway_types[k].size.clone(),
-                            trade_size: pathway_types[k].trade_size.clone(),
-                            // no clone needed since numeric types have easy copy implementation
-                            cross_sect_area: pathway_types[k].cross_sect_area,
-                            material: pathway_types[k].material.clone(),
-                        })),
-                    );
+                    self.pathway_types
+                        .insert(k.to_string(), Rc::new(RefCell::new(new_pathway_type)));
                 }
             }
         }
         // location_types
         if let Some(location_types) = datafile.location_types {
             for (k, v) in &location_types {
+                let new_location_type = location_type::LocationType {
+                    id: k.to_string(),
+                    manufacturer: location_types[k].manufacturer.clone(),
+                    model: location_types[k].model.clone(),
+                    part_number: location_types[k].part_number.clone(),
+                    manufacturer_part_number: location_types[k].manufacturer_part_number.clone(),
+                    supplier: location_types[k].supplier.clone(),
+                    supplier_part_number: location_types[k].supplier_part_number.clone(),
+                    description: location_types[k].description.clone(),
+                    material: location_types[k].material.clone(),
+                    height: location_types[k].height,
+                    width: location_types[k].width,
+                    depth: location_types[k].depth,
+                    usable_width: location_types[k].usable_width,
+                    usable_height: location_types[k].usable_height,
+                    usable_depth: location_types[k].usable_depth,
+                };
                 if self.location_types.contains_key(k) {
-                    warn! {concat!{"LocationType : {} with ",
+                    trace! {concat!{"LocationType : {} with ",
                     "contents: {:#?} has already been loaded. ",
                     "Found again in file {}. Check this ",
                     "and merge if necessary"},
                     k, v, datafile.file_path.display()}
-                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
-                    //automatically
+                    self.location_types[k]
+                        .borrow_mut()
+                        .merge_prompt(&new_location_type, prompt_fn);
                 } else {
                     trace! {"Inserted LocationType: {}, value: {:#?} into main datastore.",k,v}
-                    self.location_types.insert(
-                        k.to_string(),
-                        Rc::new(RefCell::new(location_type::LocationType {
-                            id: k.to_string(),
-                            manufacturer: location_types[k].manufacturer.clone(),
-                            model: location_types[k].model.clone(),
-                            part_number: location_types[k].part_number.clone(),
-                            manufacturer_part_number: location_types[k]
-                                .manufacturer_part_number
-                                .clone(),
-                            supplier: location_types[k].supplier.clone(),
-                            supplier_part_number: location_types[k].supplier_part_number.clone(),
-                            description: location_types[k].description.clone(),
-                            material: location_types[k].material.clone(),
-                            height: location_types[k].height,
-                            width: location_types[k].width,
-                            depth: location_types[k].depth,
-                            usable_width: location_types[k].usable_width,
-                            usable_height: location_types[k].usable_height,
-                            usable_depth: location_types[k].usable_depth,
-                        })),
-                    );
+                    self.location_types
+                        .insert(k.to_string(), Rc::new(RefCell::new(new_location_type)));
                 }
             }
         }
@@ -451,250 +452,262 @@ impl Library {
         // connector_types
         if let Some(connector_types) = datafile.connector_types {
             for (k, v) in &connector_types {
+                let new_connector_type = connector_type::ConnectorType {
+                    id: k.to_string(),
+                    manufacturer: connector_types[k].manufacturer.clone(),
+                    model: connector_types[k].model.clone(),
+                    part_number: connector_types[k].part_number.clone(),
+                    manufacturer_part_number: connector_types[k].manufacturer_part_number.clone(),
+                    supplier: connector_types[k].supplier.clone(),
+                    supplier_part_number: connector_types[k].supplier_part_number.clone(),
+                    description: connector_types[k].description.clone(),
+                    mount_type: connector_types[k].mount_type.clone(),
+                    panel_cutout: connector_types[k].panel_cutout.clone(),
+                    gender: connector_types[k].gender.clone(),
+                    height: connector_types[k].height,
+                    width: connector_types[k].width,
+                    depth: connector_types[k].depth,
+                    diameter: connector_types[k].diameter,
+                    pins: {
+                        let mut new_pins = Vec::new();
+                        for pin in &connector_types[k].pins {
+                            let new_pin = connector_type::ConnectorPin {
+                                id: pin.id.clone(),
+                                label: pin.label.clone(),
+                                signal_type: pin.signal_type.clone(),
+                                color: pin.color.clone(),
+                                visual_rep: pin.visual_rep.clone().map(Svg::from),
+                                gender: pin.gender.clone(),
+                            };
+                            new_pins.push(new_pin);
+                        }
+                        new_pins
+                    },
+                    visual_rep: Svg::from(connector_types[k].visual_rep.clone()),
+                };
                 if self.connector_types.contains_key(k) {
-                    warn! {concat!{
+                    trace! {concat!{
                         "ConnectorType : {} with contents: ",
                         "{:#?} has already been loaded. Found ",
                         "again in file {}. Check this and merge if necessary"
                     },
                     k, v, datafile.file_path.display()}
-                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
-                    //automatically
+                    self.connector_types[k]
+                        .borrow_mut()
+                        .merge_prompt(&new_connector_type, prompt_fn);
                 } else {
                     trace! {"Inserted ConnectorType: {}, value: {:#?} into main datastore.",k,v}
-                    self.connector_types.insert(
-                        k.to_string(),
-                        Rc::new(RefCell::new(connector_type::ConnectorType {
-                            id: k.to_string(),
-                            manufacturer: connector_types[k].manufacturer.clone(),
-                            model: connector_types[k].model.clone(),
-                            part_number: connector_types[k].part_number.clone(),
-                            manufacturer_part_number: connector_types[k]
-                                .manufacturer_part_number
-                                .clone(),
-                            supplier: connector_types[k].supplier.clone(),
-                            supplier_part_number: connector_types[k].supplier_part_number.clone(),
-                            description: connector_types[k].description.clone(),
-                            mount_type: connector_types[k].mount_type.clone(),
-                            panel_cutout: connector_types[k].panel_cutout.clone(),
-                            gender: connector_types[k].gender.clone(),
-                            height: connector_types[k].height,
-                            width: connector_types[k].width,
-                            depth: connector_types[k].depth,
-                            diameter: connector_types[k].diameter,
-                            pins: {
-                                let mut new_pins = Vec::new();
-                                for pin in &connector_types[k].pins {
-                                    let new_pin = connector_type::ConnectorPin {
-                                        id: pin.id.clone(),
-                                        label: pin.label.clone(),
-                                        signal_type: pin.signal_type.clone(),
-                                        color: pin.color.clone(),
-                                        visual_rep: pin.visual_rep.clone().map(Svg::from),
-                                        gender: pin.gender.clone(),
-                                    };
-                                    new_pins.push(new_pin);
-                                }
-                                new_pins
-                            },
-                            visual_rep: Svg::from(connector_types[k].visual_rep.clone()),
-                        })),
-                    );
+                    self.connector_types
+                        .insert(k.to_string(), Rc::new(RefCell::new(new_connector_type)));
                 }
             }
         }
         // term_cable_types
         if let Some(term_cable_types) = datafile.term_cable_types {
             for (k, v) in &term_cable_types {
+                let new_term_cable_type = term_cable_type::TermCableType {
+                    id: k.to_string(),
+                    manufacturer: term_cable_types[k].manufacturer.clone(),
+                    model: term_cable_types[k].model.clone(),
+                    part_number: term_cable_types[k].part_number.clone(),
+                    manufacturer_part_number: term_cable_types[k].manufacturer_part_number.clone(),
+                    supplier: term_cable_types[k].supplier.clone(),
+                    supplier_part_number: term_cable_types[k].supplier_part_number.clone(),
+                    description: term_cable_types[k].description.clone(),
+                    wire_cable: {
+                        if term_cable_types[k].wire.is_some() && term_cable_types[k].cable.is_some()
+                        {
+                            panic! {concat!{
+                            "Both wire and cable ",
+                             "values of TermCableType {} ",
+                             "are specified. Please correct this."}, k}
+                        } else if term_cable_types[k].wire.is_none()
+                            && term_cable_types[k].cable.is_none()
+                        {
+                            panic! {concat!{
+                            "Neither wire or cable ",
+                            "values of TermCableType {} ",
+                            "are specified. Please correct this."}, k}
+                        } else {
+                            #[allow(clippy::collapsible_else_if)] // This would change the
+                            // meaning of the logic
+                            if let Some(wire_type_id) = term_cable_types[k].wire.clone() {
+                                if self.wire_types.contains_key(&wire_type_id) {
+                                    term_cable_type::WireCable::WireType(
+                                        self.wire_types[&wire_type_id].clone(),
+                                    )
+                                } else {
+                                    warn! {concat!{
+                                        "WireType: {} in TermCableType: ",
+                                        "{} specified in datafile: {} is not ",
+                                        "found in any library either read from ",
+                                        "datafiles, or implemented in program ",
+                                        "logic. Creating empty object for now"},
+                                        wire_type_id, k, datafile.file_path.display()
+                                    }
+                                    let new_wire_type =
+                                        Rc::new(RefCell::new(wire_type::WireType::new()));
+                                    new_wire_type.borrow_mut().id = wire_type_id.to_string();
+                                    // first insert new_wire_type into library
+                                    self.wire_types
+                                        .insert(wire_type_id.to_string(), new_wire_type.clone());
+                                    // then return reference to insert into struct field
+                                    term_cable_type::WireCable::WireType(new_wire_type.clone())
+                                }
+                            } else if let Some(cable_type_id) = &term_cable_types[k].cable {
+                                if self.cable_types.contains_key(cable_type_id) {
+                                    term_cable_type::WireCable::CableType(
+                                        self.cable_types[cable_type_id].clone(),
+                                    )
+                                } else {
+                                    warn! {concat!{
+                                        "WireType: {} in TermCableType: ",
+                                        "{} specified in datafile: {} is not ",
+                                        "found in any library either read from ",
+                                        "datafiles, or implemented in program ",
+                                        "logic. Creating empty object for now"},
+                                        cable_type_id, k, datafile.file_path.display()
+                                    }
+                                    let new_cable_type =
+                                        Rc::new(RefCell::new(cable_type::CableType::new()));
+                                    new_cable_type.borrow_mut().id = cable_type_id.to_string();
+                                    // insert new_cable_type into library
+                                    self.cable_types
+                                        .insert(cable_type_id.to_string(), new_cable_type.clone());
+                                    // then return reference to insert into struct field
+                                    term_cable_type::WireCable::CableType(new_cable_type.clone())
+                                }
+                            } else {
+                                //TODO: fix this
+                                panic! {concat!{
+                                "Neither wire or cable ",
+                                "values of TermCableType {} ",
+                                "are specified. Please correct this."}, k}
+                            }
+                        }
+                    },
+                    nominal_length: term_cable_types[k].nominal_length,
+                    actual_length: term_cable_types[k].actual_length,
+                    end1: {
+                        let mut new_end1 = Vec::new();
+                        for connector in &term_cable_types[k].end1 {
+                            let new_connector = term_cable_type::TermCableConnector {
+                                connector_type: {
+                                    if self.connector_types.contains_key(&connector.connector_type)
+                                    {
+                                        self.connector_types[&connector.connector_type].clone()
+                                    } else {
+                                        warn! {concat!{
+                                        "End 1 of TermCableType: {} ",
+                                        "in datafile: {}, contains ",
+                                        "ConnectorType: {} that does ",
+                                        "not exist in any library data, ",
+                                        "either read from file, or ",
+                                        "created via program logic. ",
+                                        "Creating empty object for now."},
+                                        k, datafile.file_path.display(),
+                                        &connector.connector_type}
+                                        let new_connector_type = Rc::new(RefCell::new(
+                                            connector_type::ConnectorType::new(),
+                                        ));
+                                        // insert new_connector_type into library
+                                        self.connector_types.insert(
+                                            connector.connector_type.to_string(),
+                                            new_connector_type.clone(),
+                                        );
+                                        // then return reference to insert into struct
+                                        // field
+                                        new_connector_type.clone()
+                                    }
+                                },
+                                terminations: {
+                                    if let Some(terminations) = &connector.terminations {
+                                        let mut new_terminations = Vec::new();
+                                        for termination in terminations {
+                                            let new_termination =
+                                                term_cable_type::TermCableConnectorTermination {
+                                                    core: termination.core,
+                                                    pin: termination.pin,
+                                                };
+                                            new_terminations.push(new_termination);
+                                        }
+                                        Some(new_terminations)
+                                    } else {
+                                        None
+                                    }
+                                },
+                            };
+                            new_end1.push(new_connector);
+                        }
+                        new_end1
+                    },
+                    end2: {
+                        let mut new_end2 = Vec::new();
+                        for connector in &term_cable_types[k].end2 {
+                            let new_connector = term_cable_type::TermCableConnector {
+                                connector_type: {
+                                    if self.connector_types.contains_key(&connector.connector_type)
+                                    {
+                                        self.connector_types[&connector.connector_type].clone()
+                                    } else {
+                                        warn! {concat!{
+                                        "End 2 of TermCableType: {} ",
+                                        "in datafile: {}, contains ",
+                                        "ConnectorType: {} that does ",
+                                        "not exist in any library data, ",
+                                        "either read from file, or ",
+                                        "created via program logic. ",
+                                        "Creating empty object for now."},
+                                        k, datafile.file_path.display(),
+                                        &connector.connector_type}
+                                        let new_connector_type = Rc::new(RefCell::new(
+                                            connector_type::ConnectorType::new(),
+                                        ));
+                                        // insert new_connector_type into library
+                                        self.connector_types.insert(
+                                            connector.connector_type.to_string(),
+                                            new_connector_type.clone(),
+                                        );
+                                        // then return reference to insert into struct
+                                        // field
+                                        new_connector_type.clone()
+                                    }
+                                },
+                                terminations: {
+                                    if let Some(terminations) = &connector.terminations {
+                                        let mut new_terminations = Vec::new();
+                                        for termination in terminations {
+                                            let new_termination =
+                                                term_cable_type::TermCableConnectorTermination {
+                                                    core: termination.core,
+                                                    pin: termination.pin,
+                                                };
+                                            new_terminations.push(new_termination);
+                                        }
+                                        Some(new_terminations)
+                                    } else {
+                                        None
+                                    }
+                                },
+                            };
+                            new_end2.push(new_connector);
+                        }
+                        new_end2
+                    },
+                };
                 if self.term_cable_types.contains_key(k) {
-                    warn! {concat!{
+                    trace! {concat!{
                         "TermCableType : {} with contents: ",
                         "{:#?} has already been loaded. ",
                         "Found again in file {}. Check this and merge if necessary"},
                     k, v, datafile.file_path.display()}
-                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
-                    //automatically
+                    self.term_cable_types[k]
+                        .borrow_mut()
+                        .merge_prompt(&new_term_cable_type, prompt_fn);
                 } else {
                     trace! {"Inserted TermCableType: {}, value: {:#?} into main datastore.",k,v}
-                    self.term_cable_types.insert(k.to_string(),
-                        Rc::new(RefCell::new(term_cable_type::TermCableType {
-                            id: k.to_string(),
-                            manufacturer: term_cable_types[k].manufacturer.clone(),
-                            model: term_cable_types[k].model.clone(),
-                            part_number: term_cable_types[k].part_number.clone(),
-                            manufacturer_part_number: term_cable_types[k].manufacturer_part_number.clone(),
-                            supplier: term_cable_types[k].supplier.clone(),
-                            supplier_part_number: term_cable_types[k].supplier_part_number.clone(),
-                            description: term_cable_types[k].description.clone(),
-                            wire_cable: {
-
-                                if term_cable_types[k].wire.is_some() && term_cable_types[k].cable.is_some() {
-                                    panic! {concat!{
-                                        "Both wire and cable ",
-                                         "values of TermCableType {} ",
-                                         "are specified. Please correct this."}, k}
-                                } else if term_cable_types[k].wire.is_none() && term_cable_types[k].cable.is_none() {
-
-                                    panic! {concat!{
-                                        "Neither wire or cable ",
-                                        "values of TermCableType {} ",
-                                        "are specified. Please correct this."}, k}
-                                } else {
-                                    #[allow(clippy::collapsible_else_if)] // This would change the
-                                                                          // meaning of the logic
-                                    if let Some(wire_type_id) = term_cable_types[k].wire.clone() {
-                                        if self.wire_types.contains_key(&wire_type_id) {
-                                            term_cable_type::WireCable::WireType(self.wire_types[&wire_type_id].clone())
-                                        } else {
-                                            warn!{concat!{
-                                                "WireType: {} in TermCableType: ",
-                                                "{} specified in datafile: {} is not ",
-                                                "found in any library either read from ",
-                                                "datafiles, or implemented in program ",
-                                                "logic. Creating empty object for now"},
-                                                wire_type_id, k, datafile.file_path.display()
-                                            }
-                                            let new_wire_type = Rc::new(RefCell::new(
-                                                    wire_type::WireType::new()));
-                                            new_wire_type.borrow_mut().id = wire_type_id.to_string();
-                                            // first insert new_wire_type into library
-                                            self.wire_types.insert(wire_type_id.to_string(),
-                                            new_wire_type.clone());
-                                            // then return reference to insert into struct field
-                                            term_cable_type::WireCable::WireType(new_wire_type.clone())
-                                        }
-
-                                    } else if let Some(cable_type_id) = &term_cable_types[k].cable {
-
-                                        if self.cable_types.contains_key(cable_type_id) {
-                                            term_cable_type::WireCable::CableType(
-                                                self.cable_types[cable_type_id].clone())
-                                        } else {
-                                            warn!{concat!{
-                                                "WireType: {} in TermCableType: ",
-                                                "{} specified in datafile: {} is not ",
-                                                "found in any library either read from ",
-                                                "datafiles, or implemented in program ",
-                                                "logic. Creating empty object for now"},
-                                                cable_type_id, k, datafile.file_path.display()
-                                            }
-                                            let new_cable_type = Rc::new(RefCell::new(
-                                                    cable_type::CableType::new()));
-                                            new_cable_type.borrow_mut().id = cable_type_id.to_string();
-                                            // insert new_cable_type into library
-                                            self.cable_types.insert(cable_type_id.to_string(),
-                                                new_cable_type.clone());
-                                            // then return reference to insert into struct field
-                                            term_cable_type::WireCable::CableType(new_cable_type.clone())
-                                            }
-                                        } else {
-                                        //TODO: fix this
-                                    panic! {concat!{
-                                        "Neither wire or cable ",
-                                        "values of TermCableType {} ",
-                                        "are specified. Please correct this."}, k}
-                                    }
-                                }
-                            },
-                            nominal_length: term_cable_types[k].nominal_length,
-                            actual_length:  term_cable_types[k].actual_length,
-                            end1:  {
-                                let mut new_end1 = Vec::new();
-                                for connector in &term_cable_types[k].end1 {
-                                   let new_connector = term_cable_type::TermCableConnector {
-                                        connector_type: {
-                                            if self.connector_types.contains_key(&connector.connector_type) {
-                                                self.connector_types[&connector.connector_type].clone()
-                                            } else {
-                                                warn! {concat!{
-                                                    "End 1 of TermCableType: {} ",
-                                                    "in datafile: {}, contains ",
-                                                    "ConnectorType: {} that does ",
-                                                    "not exist in any library data, ",
-                                                    "either read from file, or ",
-                                                    "created via program logic. ",
-                                                    "Creating empty object for now."},
-                                                    k, datafile.file_path.display(),
-                                                    &connector.connector_type}
-                                                let new_connector_type = Rc::new(RefCell::new(
-                                                        connector_type::ConnectorType::new()));
-                                                // insert new_connector_type into library
-                                                self.connector_types.insert(
-                                                    connector.connector_type.to_string(),
-                                                    new_connector_type.clone());
-                                                // then return reference to insert into struct
-                                                // field
-                                                new_connector_type.clone()
-
-                                            }
-                                        },
-                                        terminations: {
-                                        if let Some(terminations) = &connector.terminations {
-                                            let mut new_terminations = Vec::new();
-                                            for termination in terminations {
-                                                let new_termination = term_cable_type::TermCableConnectorTermination {
-                                                    core: termination.core,
-                                                    pin: termination.pin,
-                                                };
-                                                new_terminations.push(new_termination);
-                                            }
-                                            Some(new_terminations)
-                                        } else {None}
-                                        },
-                                   };
-                                   new_end1.push(new_connector);
-                                }
-                            new_end1
-                            },
-                            end2: {
-                                let mut new_end2 = Vec::new();
-                                for connector in &term_cable_types[k].end2 {
-                                   let new_connector = term_cable_type::TermCableConnector {
-                                        connector_type: {
-                                            if self.connector_types.contains_key(&connector.connector_type) {
-                                                self.connector_types[&connector.connector_type].clone()
-                                            } else {
-                                                warn! {concat!{
-                                                    "End 2 of TermCableType: {} ",
-                                                    "in datafile: {}, contains ",
-                                                    "ConnectorType: {} that does ",
-                                                    "not exist in any library data, ",
-                                                    "either read from file, or ",
-                                                    "created via program logic. ",
-                                                    "Creating empty object for now."},
-                                                    k, datafile.file_path.display(),
-                                                    &connector.connector_type}
-                                                let new_connector_type = Rc::new(RefCell::new(
-                                                        connector_type::ConnectorType::new()));
-                                                // insert new_connector_type into library
-                                                self.connector_types.insert(
-                                                    connector.connector_type.to_string(),
-                                                    new_connector_type.clone());
-                                                // then return reference to insert into struct
-                                                // field
-                                                new_connector_type.clone()
-                                            }
-                                        },
-                                        terminations: {
-                                        if let Some(terminations) = &connector.terminations {
-                                            let mut new_terminations = Vec::new();
-                                            for termination in terminations {
-                                                let new_termination = term_cable_type::TermCableConnectorTermination {
-                                                    core: termination.core,
-                                                    pin: termination.pin,
-                                                };
-                                                new_terminations.push(new_termination);
-                                            }
-                                            Some(new_terminations)
-                                        } else {None}
-                                        },
-                                   };
-                                   new_end2.push(new_connector);
-                                }
-                            new_end2
-                            },
-                    },
-                        )));
+                    self.term_cable_types
+                        .insert(k.to_string(), Rc::new(RefCell::new(new_term_cable_type)));
                 }
             }
         }
@@ -702,60 +715,57 @@ impl Library {
         // equipment_types
         if let Some(equipment_types) = datafile.equipment_types {
             for (k, v) in &equipment_types {
-                if self.equipment_types.contains_key(k) {
-                    warn! {concat!{"EquipmentType : {} with ",
-                    "contents: {:#?} has already been loaded. ",
-                    "Found again in file {}. ",
-                    "Check this and merge if necessary"},
-                    k, v, datafile.file_path.display()}
-                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
-                    //automatically
-                } else {
-                    trace! {"Inserted EquipmentType: {}, value: {:#?} into main datastore.",k,v}
-                    self.equipment_types.insert(k.to_string(),
-                        Rc::new(RefCell::new(equipment_type::EquipmentType {
-                            id: k.to_string(),
-                            manufacturer: equipment_types[k].manufacturer.clone(),
-                            model: equipment_types[k].model.clone(),
-                            part_number: equipment_types[k].part_number.clone(),
-                            manufacturer_part_number: equipment_types[k].manufacturer_part_number.clone(),
-                            supplier: equipment_types[k].supplier.clone(),
-                            supplier_part_number: equipment_types[k].supplier_part_number.clone(),
-                            description: equipment_types[k].description.clone(),
-                            mount_type: equipment_types[k].mount_type.clone(),
-                            equip_type: equipment_types[k].equip_type.clone(),
-                            faces: {
-                                if let Some(faces) = &equipment_types[k].faces {
-                                    let mut new_faces = Vec::new();
-                                   for face in faces {
-                                       let new_face = equipment_type::EquipFace {
-                                            name: face.name.to_string(),
-                                            vis_rep: face.vis_rep.clone().map(Svg::from),
-                                            connectors: {
-                                              if let Some(connectors) = &face.connectors {
-                                                let mut new_connectors = Vec::new();
-                                                for connector in connectors {
-                                                    let new_connector = equipment_type::EquipConnector {
+                let new_equipment_type = equipment_type::EquipmentType {
+                    id: k.to_string(),
+                    manufacturer: equipment_types[k].manufacturer.clone(),
+                    model: equipment_types[k].model.clone(),
+                    part_number: equipment_types[k].part_number.clone(),
+                    manufacturer_part_number: equipment_types[k].manufacturer_part_number.clone(),
+                    supplier: equipment_types[k].supplier.clone(),
+                    supplier_part_number: equipment_types[k].supplier_part_number.clone(),
+                    description: equipment_types[k].description.clone(),
+                    mount_type: equipment_types[k].mount_type.clone(),
+                    equip_type: equipment_types[k].equip_type.clone(),
+                    faces: {
+                        if let Some(faces) = &equipment_types[k].faces {
+                            let mut new_faces = Vec::new();
+                            for face in faces {
+                                let new_face = equipment_type::EquipFace {
+                                    name: face.name.to_string(),
+                                    vis_rep: face.vis_rep.clone().map(Svg::from),
+                                    connectors: {
+                                        if let Some(connectors) = &face.connectors {
+                                            let mut new_connectors = Vec::new();
+                                            for connector in connectors {
+                                                let new_connector =
+                                                    equipment_type::EquipConnector {
                                                         connector_type: {
-                                                            if self.connector_types.contains_key(&connector.connector_type) {
-                                                                self.connector_types[&connector.connector_type].clone()
+                                                            if self.connector_types.contains_key(
+                                                                &connector.connector_type,
+                                                            ) {
+                                                                self.connector_types
+                                                                    [&connector.connector_type]
+                                                                    .clone()
                                                             } else {
                                                                 warn! {concat!{
-                                                                    "ConnectorType: {} in Equipment: {} ",
-                                                                    "from datafile: {}, not found ",
-                                                                    "in any library data, ",
-                                                                    "either read from file, or ",
-                                                                    "created via program logic. ",
-                                                                    "Creating empty object for now."},
-                                                                    &connector.connector_type,
-                                                                    k, datafile.file_path.display()
-                                                                    }
+                                                                "ConnectorType: {} in Equipment: {} ",
+                                                                "from datafile: {}, not found ",
+                                                                "in any library data, ",
+                                                                "either read from file, or ",
+                                                                "created via program logic. ",
+                                                                "Creating empty object for now."},
+                                                                &connector.connector_type,
+                                                                k, datafile.file_path.display()
+                                                                }
                                                                 let new_connector_type = Rc::new(RefCell::new(
                                                                         connector_type::ConnectorType::new()));
                                                                 // insert new_connector_type into library
                                                                 self.connector_types.insert(
-                                                                    connector.connector_type.to_string(),
-                                                                    new_connector_type.clone());
+                                                                    connector
+                                                                        .connector_type
+                                                                        .to_string(),
+                                                                    new_connector_type.clone(),
+                                                                );
                                                                 // then return reference to insert into struct
                                                                 // field
                                                                 new_connector_type.clone()
@@ -765,22 +775,36 @@ impl Library {
                                                         x: connector.x,
                                                         y: connector.y,
                                                     };
-                                                    new_connectors.push(new_connector);
-                                                }
-                                               Some(new_connectors)
-                                              } else {None}
-                                            },
-                                       };
-                                    new_faces.push(new_face);
-                                   }
-                                    Some(new_faces)
-                                } else {
-                                    None
-                                }
-                            },
-                            visual_rep: Svg::from(equipment_types[k].visual_rep.clone()),
-                        },
-                    )));
+                                                new_connectors.push(new_connector);
+                                            }
+                                            Some(new_connectors)
+                                        } else {
+                                            None
+                                        }
+                                    },
+                                };
+                                new_faces.push(new_face);
+                            }
+                            Some(new_faces)
+                        } else {
+                            None
+                        }
+                    },
+                    visual_rep: Svg::from(equipment_types[k].visual_rep.clone()),
+                };
+                if self.equipment_types.contains_key(k) {
+                    trace! {concat!{"EquipmentType : {} with ",
+                    "contents: {:#?} has already been loaded. ",
+                    "Found again in file {}. ",
+                    "Check this and merge if necessary"},
+                    k, v, datafile.file_path.display()}
+                    self.equipment_types[k]
+                        .borrow_mut()
+                        .merge_prompt(&new_equipment_type, prompt_fn);
+                } else {
+                    trace! {"Inserted EquipmentType: {}, value: {:#?} into main datastore.",k,v}
+                    self.equipment_types
+                        .insert(k.to_string(), Rc::new(RefCell::new(new_equipment_type)));
                 }
             }
         }
@@ -799,10 +823,15 @@ impl Project {
     }
     /// `from_datafiles` converts between the textual representation of datafiles, and the struct
     /// object representation of the internal objects
-    pub fn from_datafiles(&mut self, datafiles: Vec<DataFile>, library: &Library) {
+    pub fn from_datafiles(
+        &mut self,
+        datafiles: Vec<DataFile>,
+        library: &Library,
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
+    ) {
         // parse all datafiles
         for datafile in datafiles {
-            self.from_datafile(datafile, library)
+            self.from_datafile(datafile, library, prompt_fn)
         }
         for location in self.locations.values() {
             if location.borrow().is_partial_empty() {
@@ -859,233 +888,244 @@ impl Project {
     // need to follow the same rules
     // TODO: maybe rename this to something that doesn't
     // sound like a type conversion function
-    fn from_datafile(&mut self, datafile: DataFile, library: &Library) {
+    fn from_datafile(
+        &mut self,
+        datafile: DataFile,
+        library: &Library,
+        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
+    ) {
         // pathway
         if let Some(pathways) = datafile.pathways {
             for (k, v) in &pathways {
+                let new_pathway = pathway::Pathway {
+                    id: k.to_string(),
+                    path_type: {
+                        if library.pathway_types.contains_key(&pathways[k].path_type) {
+                            library.pathway_types[&pathways[k].path_type].clone()
+                        } else {
+                            // since this is project, not library, we want to error
+                            // for types not found in library, since they should
+                            // all have been parsed before parsing project.
+                            panic! {concat!{
+                            "PathwayType: {} in ",
+                            "Pathway: {} specified in ",
+                            "datafile: {} is not found in ",
+                            "any library either read from ",
+                            "datafiles, or implemented in program ",
+                            "logic. Check your spelling"},
+                            pathways[k].path_type, &k, datafile.file_path.display()}
+                        }
+                    },
+                    identifier: pathways[k].identifier.clone(),
+                    description: pathways[k].description.clone(),
+                    length: pathways[k].length,
+                };
                 if self.pathways.contains_key(k) {
-                    warn! {"Pathway : {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
-                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
-                    //automatically
+                    trace! {concat!{"Pathway : {} with contents: ",
+                    "{:#?} has already been loaded. Found again ",
+                    "in file {}. Check this and merge if necessary"
+                    }, k, v, datafile.file_path.display()}
+                    self.pathways[k]
+                        .borrow_mut()
+                        .merge_prompt(&new_pathway, prompt_fn);
                 } else {
                     trace! {"Inserted Pathway: {}, value: {:#?} into main datastore.",k,v}
-                    self.pathways.insert(k.to_string(),
-                        Rc::new(
-                            RefCell::new(
-                                pathway::Pathway {
-                                id: k.to_string(),
-                                path_type: {
-                                            if library.pathway_types.contains_key(&pathways[k].path_type) {
-                                                library.pathway_types[&pathways[k].path_type].clone()
-                                            } else {
-                                                //TODO: handle this more intelligently
-                                                panic! {"Failed to find PathwayType: {} used in Pathway: {} in file {}, in any imported library dictionary or file. Please check spelling, or add it, if this was not intentional.", pathways[k].path_type, &k, datafile.file_path.display() }
-                                            }
-                                       },
-                                       identifier: pathways[k].identifier.clone(),
-                                       description: pathways[k].description.clone(),
-                                       length: pathways[k].length,
-
-                                }
-
-                                )
-                            )
-                        );
+                    self.pathways
+                        .insert(k.to_string(), Rc::new(RefCell::new(new_pathway)));
                 }
             }
         }
         // wire_cables
         if let Some(wire_cables) = datafile.wire_cables {
             for (k, v) in &wire_cables {
+                let new_wire_cable = wire_cable::WireCable {
+                    id: k.to_string(),
+                    ctw_type: {
+                        // Checking to make sure only one of wire, cable, or term_cable are set
+                        if (wire_cables[k].wire.is_some()
+                            && wire_cables[k].cable.is_some()
+                            && wire_cables[k].term_cable.is_some())
+                            || (wire_cables[k].wire.is_some() && wire_cables[k].cable.is_some())
+                            || (wire_cables[k].cable.is_some()
+                                && wire_cables[k].term_cable.is_some())
+                            || (wire_cables[k].wire.is_some()
+                                && wire_cables[k].term_cable.is_some())
+                        {
+                            panic! {concat!{
+                            "More than one of wire, ",
+                            "cable and term_cable of ",
+                            "WireCable {} are specified. ",
+                            "Please correct this."}, &k}
+                        } else if wire_cables[k].wire.is_none()
+                            && wire_cables[k].cable.is_none()
+                            && wire_cables[k].term_cable.is_none()
+                        {
+                            panic! {concat!{"Neither wire, cable ",
+                            "or term_cable values of WireCable {} ",
+                            "are specified. Please correct this."}, &k}
+                        } else {
+                            // at this point, only one of wire, cable and term_cable should
+                            // be set.
+                            //
+                            // clone string here to avoid moving value out of hashmap.
+                            if let Some(wire_type) = wire_cables[k].wire.clone() {
+                                if library.wire_types.contains_key(&wire_type) {
+                                    wire_cable::WireCableType::WireType(
+                                        library.wire_types[&wire_type].clone(),
+                                    )
+                                } else {
+                                    // since this is project, not library, we want to error
+                                    // for types not found in library, since they should
+                                    // all have been parsed before parsing project.
+                                    panic! {concat!{
+                                    "WireType: {} in ",
+                                    "WireCable: {} specified in ",
+                                    "datafile: {} is not found in ",
+                                    "any library either read from ",
+                                    "datafiles, or implemented in program ",
+                                    "logic. Check your spelling"},
+                                    wire_type, k, datafile.file_path.display()}
+                                }
+                            // clone string here to avoid moving value out of hashmap.
+                            } else if let Some(cable_type) = wire_cables[k].cable.clone() {
+                                if library.cable_types.contains_key(&cable_type) {
+                                    wire_cable::WireCableType::CableType(
+                                        library.cable_types[&cable_type].clone(),
+                                    )
+                                } else {
+                                    // since this is project, not library, we want to error
+                                    // for types not found in library, since they should
+                                    // all have been parsed before parsing project.
+                                    panic! {concat!{
+                                    "CableType: {} in ",
+                                    "WireCable: {} specified in ",
+                                    "datafile: {} is not found in ",
+                                    "any library either read from ",
+                                    "datafiles, or implemented in program ",
+                                    "logic. Check your spelling"},
+                                    cable_type, k, datafile.file_path.display()}
+                                }
+                            // clone string here to avoid moving value out of hashmap.
+                            } else if let Some(term_cable_type) = wire_cables[k].term_cable.clone()
+                            {
+                                if library.term_cable_types.contains_key(&term_cable_type) {
+                                    wire_cable::WireCableType::TermCableType(
+                                        library.term_cable_types[&term_cable_type].clone(),
+                                    )
+                                } else {
+                                    // since this is project, not library, we want to error
+                                    // for types not found in library, since they should
+                                    // all have been parsed before parsing project.
+                                    panic! {concat!{
+                                    "TermCableType: {} in ",
+                                    "WireCable: {} specified in ",
+                                    "datafile: {} is not found in ",
+                                    "any library either read from ",
+                                    "datafiles, or implemented in program ",
+                                    "logic. Check your spelling"},
+                                     term_cable_type, k, datafile.file_path.display()}
+                                }
+                            } else {
+                                //TODO: fix this
+                                panic! {concat!{
+                                "Neither wire, cable ",
+                                "or termcable type values ",
+                                "of WireCable {} are specified. ",
+                                "Please correct this."}, &k}
+                            }
+                        }
+                    },
+                    identifier: wire_cables[k].identifier.clone(),
+                    description: wire_cables[k].description.clone(),
+                    length: wire_cables[k].length,
+                    pathway: {
+                        // clone string here to avoid moving value out of hashmap.
+                        if let Some(pathway) = wire_cables[k].pathway.clone() {
+                            if self.pathways.contains_key(k) {
+                                Some(self.pathways[k].clone())
+                            } else {
+                                //these are both project variables so may not be defined
+                                //erroring here is fine.
+                                error! {concat!{
+                                "WireCable: {} is assigned to ",
+                                "Pathway: {} in datafile: {}, ",
+                                "that doesn't exist in any ",
+                                "library either read in from ",
+                                "datafile, or added via program ",
+                                "logic. Not assigning pathway to ",
+                                "WireCable {}. Please check your spelling "},
+                                k, pathway, datafile.file_path.display(), k}
+                                let new_pathway = Rc::new(RefCell::new(pathway::Pathway::new()));
+                                // insert new_pathway into Project
+                                self.pathways.insert(pathway, new_pathway.clone());
+                                // then return reference for struct field
+                                Some(new_pathway)
+                            }
+                        } else {
+                            None
+                        }
+                    },
+                };
                 if self.wire_cables.contains_key(k) {
-                    warn! {concat!{
+                    trace! {concat!{
                         "WireCable: {} with contents: ",
                         "{:#?} has already been loaded. ",
                         "Found again in file {}. ",
                         "Check this and merge if necessary"},
                     k, v, datafile.file_path.display()}
-                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
-                    //automatically
+                    self.wire_cables[k]
+                        .borrow_mut()
+                        .merge_prompt(&new_wire_cable, prompt_fn);
                 } else {
                     trace! {"Inserted WireCable: {}, value: {:#?} into main project.",k,v}
-                    self.wire_cables.insert(
-                        k.to_string(),
-                        Rc::new(RefCell::new(wire_cable::WireCable {
-                            id: k.to_string(),
-                            ctw_type: {
-                                // Checking to make sure only one of wire, cable, or term_cable are set
-                                if (wire_cables[k].wire.is_some()
-                                    && wire_cables[k].cable.is_some()
-                                    && wire_cables[k].term_cable.is_some())
-                                    || (wire_cables[k].wire.is_some()
-                                        && wire_cables[k].cable.is_some())
-                                    || (wire_cables[k].cable.is_some()
-                                        && wire_cables[k].term_cable.is_some())
-                                    || (wire_cables[k].wire.is_some()
-                                        && wire_cables[k].term_cable.is_some())
-                                {
-                                    panic! {concat!{
-                                    "More than one of wire, ",
-                                    "cable and term_cable of ",
-                                    "WireCable {} are specified. ",
-                                    "Please correct this."}, &k}
-                                } else if wire_cables[k].wire.is_none()
-                                    && wire_cables[k].cable.is_none()
-                                    && wire_cables[k].term_cable.is_none()
-                                {
-                                    panic! {concat!{"Neither wire, cable ",
-                                    "or term_cable values of WireCable {} ",
-                                    "are specified. Please correct this."}, &k}
-                                } else {
-                                    // at this point, only one of wire, cable and term_cable should
-                                    // be set.
-                                    //
-                                    // clone string here to avoid moving value out of hashmap.
-                                    if let Some(wire_type) = wire_cables[k].wire.clone() {
-                                        if library.wire_types.contains_key(&wire_type) {
-                                            wire_cable::WireCableType::WireType(
-                                                library.wire_types[&wire_type].clone(),
-                                            )
-                                        } else {
-                                            // since this is project, not library, we want to error
-                                            // for types not found in library, since they should
-                                            // all have been parsed before parsing project.
-                                            panic! {concat!{
-                                            "WireType: {} in ",
-                                            "WireCable: {} specified in ",
-                                            "datafile: {} is not found in ",
-                                            "any library either read from ",
-                                            "datafiles, or implemented in program ",
-                                            "logic. Check your spelling"},
-                                            wire_type, k, datafile.file_path.display()}
-                                        }
-                                    // clone string here to avoid moving value out of hashmap.
-                                    } else if let Some(cable_type) = wire_cables[k].cable.clone() {
-                                        if library.cable_types.contains_key(&cable_type) {
-                                            wire_cable::WireCableType::CableType(
-                                                library.cable_types[&cable_type].clone(),
-                                            )
-                                        } else {
-                                            // since this is project, not library, we want to error
-                                            // for types not found in library, since they should
-                                            // all have been parsed before parsing project.
-                                            panic! {concat!{
-                                            "CableType: {} in ",
-                                            "WireCable: {} specified in ",
-                                            "datafile: {} is not found in ",
-                                            "any library either read from ",
-                                            "datafiles, or implemented in program ",
-                                            "logic. Check your spelling"},
-                                            cable_type, k, datafile.file_path.display()}
-                                        }
-                                    // clone string here to avoid moving value out of hashmap.
-                                    } else if let Some(term_cable_type) =
-                                        wire_cables[k].term_cable.clone()
-                                    {
-                                        if library.term_cable_types.contains_key(&term_cable_type) {
-                                            wire_cable::WireCableType::TermCableType(
-                                                library.term_cable_types[&term_cable_type].clone(),
-                                            )
-                                        } else {
-                                            // since this is project, not library, we want to error
-                                            // for types not found in library, since they should
-                                            // all have been parsed before parsing project.
-                                            panic! {concat!{
-                                            "TermCableType: {} in ",
-                                            "WireCable: {} specified in ",
-                                            "datafile: {} is not found in ",
-                                            "any library either read from ",
-                                            "datafiles, or implemented in program ",
-                                            "logic. Check your spelling"},
-                                             term_cable_type, k, datafile.file_path.display()}
-                                        }
-                                    } else {
-                                        //TODO: fix this
-                                        panic! {concat!{
-                                        "Neither wire, cable ",
-                                        "or termcable type values ",
-                                        "of WireCable {} are specified. ",
-                                        "Please correct this."}, &k}
-                                    }
-                                }
-                            },
-                            identifier: wire_cables[k].identifier.clone(),
-                            description: wire_cables[k].description.clone(),
-                            length: wire_cables[k].length,
-                            pathway: {
-                                // clone string here to avoid moving value out of hashmap.
-                                if let Some(pathway) = wire_cables[k].pathway.clone() {
-                                    if self.pathways.contains_key(k) {
-                                        Some(self.pathways[k].clone())
-                                    } else {
-                                        error! {concat!{
-                                        "WireCable: {} is assigned to ",
-                                        "Pathway: {} in datafile: {}, ",
-                                        "that doesn't exist in any ",
-                                        "library either read in from ",
-                                        "datafile, or added via program ",
-                                        "logic. Not assigning pathway to ",
-                                        "WireCable {}. Please check your spelling "},
-                                        k, pathway, datafile.file_path.display(), k}
-                                        let new_pathway =
-                                            Rc::new(RefCell::new(pathway::Pathway::new()));
-                                        // insert new_pathway into Project
-                                        self.pathways.insert(pathway, new_pathway.clone());
-                                        // then return reference for struct field
-                                        Some(new_pathway)
-                                    }
-                                } else {
-                                    None
-                                }
-                            },
-                        })),
-                    );
+                    self.wire_cables
+                        .insert(k.to_string(), Rc::new(RefCell::new(new_wire_cable)));
                 }
             }
         }
         // locations
         if let Some(locations) = datafile.locations {
             for (k, v) in &locations {
+                let new_location = location::Location {
+                    id: k.to_string(),
+                    location_type: {
+                        if library
+                            .location_types
+                            .contains_key(&locations[k].location_type)
+                        {
+                            library.location_types[&locations[k].location_type].clone()
+                        } else {
+                            // since this is project, not library, we want to error
+                            // for types not found in library, since they should
+                            // all have been parsed before parsing project.
+                            panic! {concat!{
+                            "Failed to find ",
+                            "LocationType: {} used in ",
+                            "Location: {} in file {}, ",
+                            "in any imported library dictionary ",
+                            "or file. Please check spelling, or ",
+                            "add it, if this was not intentional."},
+                            locations[k].location_type, &k,
+                            datafile.file_path.display() }
+                        }
+                    },
+                    identifier: locations[k].identifier.clone(),
+                    description: locations[k].description.clone(),
+                    physical_location: locations[k].physical_location.clone(),
+                };
                 if self.locations.contains_key(k) {
-                    warn! {concat!{"Location: {} with ",
+                    trace! {concat!{"Location: {} with ",
                     "contents: {:#?} has already been ",
                     "loaded. Found again in file {}. ",
                     "Check this and merge if necessary"},
                     k, v, datafile.file_path.display()}
-                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
-                    //automatically
+                    self.locations[k]
+                        .borrow_mut()
+                        .merge_prompt(&new_location, prompt_fn);
                 } else {
                     trace! {"Inserted Location: {}, value: {:#?} into main project.",k,v}
-                    self.locations.insert(
-                        k.to_string(),
-                        Rc::new(RefCell::new(location::Location {
-                            id: k.to_string(),
-                            location_type: {
-                                if library
-                                    .location_types
-                                    .contains_key(&locations[k].location_type)
-                                {
-                                    library.location_types[&locations[k].location_type].clone()
-                                } else {
-                                    // since this is project, not library, we want to error
-                                    // for types not found in library, since they should
-                                    // all have been parsed before parsing project.
-                                    panic! {concat!{
-                                    "Failed to find ",
-                                    "LocationType: {} used in ",
-                                    "Location: {} in file {}, ",
-                                    "in any imported library dictionary ",
-                                    "or file. Please check spelling, or ",
-                                    "add it, if this was not intentional."},
-                                    locations[k].location_type, &k,
-                                    datafile.file_path.display() }
-                                }
-                            },
-                            identifier: locations[k].identifier.clone(),
-                            description: locations[k].description.clone(),
-                            physical_location: locations[k].physical_location.clone(),
-                        })),
-                    );
+                    self.locations
+                        .insert(k.to_string(), Rc::new(RefCell::new(new_location)));
                 }
             }
         }
@@ -1093,69 +1133,72 @@ impl Project {
         // equipment
         if let Some(equipment) = datafile.equipment {
             for (k, v) in &equipment {
+                let new_equipment = equipment::Equipment {
+                    id: k.to_string(),
+                    equip_type: {
+                        if library
+                            .equipment_types
+                            .contains_key(&equipment[k].equipment_type)
+                        {
+                            library.equipment_types[&equipment[k].equipment_type].clone()
+                        } else {
+                            // since this is project, not library, we want to error
+                            // for types not found in library, since they should
+                            // all have been parsed before parsing project.
+                            panic! {concat!{
+                            "Failed to find ",
+                            "EquipmentType: {} used ",
+                            "in Equipment: {} in ",
+                            "file {}, in any imported ",
+                            "library dictionary or ",
+                            "file. Please check spelling, ",
+                            "or add it, if this was not intentional."},
+                            equipment[k].equipment_type, &k,
+                            datafile.file_path.display() }
+                        }
+                    },
+                    identifier: equipment[k].identifier.clone(),
+                    mounting_type: equipment[k].mounting_type.clone(),
+                    location: {
+                        // clone string here to avoid moving value out of hashmap.
+                        if let Some(file_location) = equipment[k].location.clone() {
+                            #[allow(clippy::map_entry)]
+                            // TODO: use entry mechanic to fix this, allowing for now
+                            if self.locations.contains_key(&file_location) {
+                                Some(self.locations[k].clone())
+                            } else {
+                                error! {concat!{
+                                "Location: {} is assigned to ",
+                                "Equipment: {} in datafile: {}, ",
+                                "that doesn't exist in any library ",
+                                "either read in from datafile, or ",
+                                "added via program logic. Check your spelling"},
+                                k, file_location, datafile.file_path.display()}
+                                let new_location = Rc::new(RefCell::new(location::Location::new()));
+                                // add new_location to Project
+                                self.locations.insert(file_location, new_location.clone());
+                                // then return reference to struct field
+                                Some(new_location.clone())
+                            }
+                        } else {
+                            None
+                        }
+                    },
+                    description: equipment[k].description.clone(),
+                };
                 if self.equipment.contains_key(k) {
-                    warn! {"Equipment: {} with contents: {:#?} has already been loaded. Found again in file {}. Check this and merge if necessary", k, v, datafile.file_path.display()}
-                    //TODO: do something: ignore dupe, prompt user for merge, try to merge
-                    //automatically
+                    trace! {concat! {"Equipment: {} with ",
+                    "contents: {:#?} has already been ",
+                    "loaded. Found again in file {}. ",
+                    "Check this and merge if necessary"
+                    }, k, v, datafile.file_path.display()}
+                    self.equipment[k]
+                        .borrow_mut()
+                        .merge_prompt(&new_equipment, prompt_fn);
                 } else {
                     trace! {"Inserted Equipment: {}, value: {:#?} into main project.",k,v}
-                    self.equipment.insert(
-                        k.to_string(),
-                        Rc::new(RefCell::new(equipment::Equipment {
-                            id: k.to_string(),
-                            equip_type: {
-                                if library
-                                    .equipment_types
-                                    .contains_key(&equipment[k].equipment_type)
-                                {
-                                    library.equipment_types[&equipment[k].equipment_type].clone()
-                                } else {
-                                    // since this is project, not library, we want to error
-                                    // for types not found in library, since they should
-                                    // all have been parsed before parsing project.
-                                    panic! {concat!{
-                                    "Failed to find ",
-                                    "EquipmentType: {} used ",
-                                    "in Equipment: {} in ",
-                                    "file {}, in any imported ",
-                                    "library dictionary or ",
-                                    "file. Please check spelling, ",
-                                    "or add it, if this was not intentional."},
-                                    equipment[k].equipment_type, &k,
-                                    datafile.file_path.display() }
-                                }
-                            },
-                            identifier: equipment[k].identifier.clone(),
-                            mounting_type: equipment[k].mounting_type.clone(),
-                            location: {
-                                // clone string here to avoid moving value out of hashmap.
-                                if let Some(file_location) = equipment[k].location.clone() {
-                                    #[allow(clippy::map_entry)]
-                                    // TODO: use entry mechanic to fix this, allowing for now
-                                    if self.locations.contains_key(&file_location) {
-                                        Some(self.locations[k].clone())
-                                    } else {
-                                        error! {concat!{
-                                        "Location: {} is assigned to ",
-                                        "Equipment: {} in datafile: {}, ",
-                                        "that doesn't exist in any library ",
-                                        "either read in from datafile, or ",
-                                        "added via program logic. Check your spelling"},
-                                        k, file_location, datafile.file_path.display()}
-                                        let new_location =
-                                            Rc::new(RefCell::new(location::Location::new()));
-                                        // add new_location to Project
-                                        self.locations.insert(file_location, new_location.clone());
-                                        // then return reference to struct field
-                                        Some(new_location.clone())
-                                    }
-                                } else {
-                                    None
-                                }
-                            },
-                            description: equipment[k].description.clone(),
-                        })),
-                    );
+                    self.equipment
+                        .insert(k.to_string(), Rc::new(RefCell::new(new_equipment)));
                 }
             }
         }
