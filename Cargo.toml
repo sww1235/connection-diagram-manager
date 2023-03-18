@@ -14,6 +14,7 @@ license = "MIT OR Apache-2.0"
 
 [dependencies]
 clap = { version = "4.0.26", features = ["derive", "unicode", "wrap_help"], optional = true }
+dimensioned = "0.8.0"
 fltk = { version = "1.3.30", optional = true }
 fltk-theme = { version = "0.6.0", optional = true }
 log = "0.4.17"
