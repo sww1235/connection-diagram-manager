@@ -1,6 +1,10 @@
+pub mod paper;
+
 use lopdf::content::{Content, Operation};
 use lopdf::dictionary;
 use lopdf::{Document, Object, Stream};
+
+use dimensioned::{f64prefixes, ucum};
 
 use std::io;
 use std::path::PathBuf;
@@ -10,88 +14,21 @@ use std::path::PathBuf;
 /// and allows for easier implementation of helper methods.
 pub struct PDFDocument {
     document: Document,
-    default_page_size: String,
+    default_page_size: paper::PaperSize,
     available_fonts: Vec<String>,
     pages: Vec<PDFPage>,
 }
 /// `PDFPage` represents an individual page of a pdf file
 struct PDFPage {
     operations: Vec<Operation>,
-    page_size: Option<String>,
-}
-
-/// `PaperSize` represents standard paper sizes,
-/// along with options to declare custom sizes in various units.
-/// The provided paper sizes are defined in portrait orientation,
-/// with the long edge as the Y coordinate, or height, and
-/// the short edge as the X coordinate or width.
-/// Custom sizes should be defined similarly.
-#[non_exhaustive]
-pub enum PaperSize {
-    /// ISO A0 paper size
-    A0,
-    /// ISO A1 paper size
-    A1,
-    /// ISO A2 paper size
-    A2,
-    /// ISO A3 paper size
-    A3,
-    /// ISO A4 paper size
-    A4,
-    /// ISO A5 paper size
-    A5,
-    /// ISO A6 paper size
-    A6,
-    /// Tabloid American paper size, portrait orientation of Ledger size
-    Tabloid,
-    /// Legal American paper size
-    Legal,
-    /// Letter American paper size
-    Letter,
-    /// ANSI A paper size
-    AnsiA,
-    /// ANSI B paper size
-    AnsiB,
-    /// ANSI C paper size
-    AnsiC,
-    /// ANSI D paper size
-    AnsiD,
-    /// ANSI E paper size
-    AnsiE,
-    /// ANSI Arch A paper size
-    ArchA,
-    /// ANSI Arch B paper size
-    ArchB,
-    /// ANSI Arch C paper size
-    ArchC,
-    /// ANSI Arch D paper size
-    ArchD,
-    /// ANSI Arch E paper size
-    ArchE,
-}
-
-impl PaperSize {
-    // outputs in original units, (x, y)
-    pub fn value(self) -> (u32, u32) {
-        match self {
-            // ISO paper sizes are specified in mm
-            PaperSize::A0 => (841, 1189),
-            PaperSize::A1 => (594, 841),
-            PaperSize::A2 => (420, 594),
-            PaperSize::A3 => (297, 420),
-            PaperSize::A4 => (210, 297),
-            PaperSize::A5 => (148, 210),
-            PaperSize::A6 => (105, 148),
-            PaperSize::Tabloid => (11, 17),
-        }
-    }
+    page_size: Option<paper::PaperSize>,
 }
 
 impl PDFDocument {
     /// `add_text` writes text into a page of a pdf at a specified position
     pub fn add_text(
         &mut self,
-        page: usize,
+        page_index: usize,
         text: String,
         font: String,
         font_size: u32,
@@ -99,7 +36,7 @@ impl PDFDocument {
         y_pos: u32,
     ) {
         // BT begins a text element. it takes no operands
-        self.pages[page]
+        self.pages[page_index]
             .operations
             .push(Operation::new("BT", vec![]));
         // Tf specifies the font and font size. Font scaling is complicated in PDFs. Reference
@@ -107,25 +44,47 @@ impl PDFDocument {
         // The info() methods are defined based on their paired .from() methods (this
         // functionality is built into rust), and are converting the provided values into
         // An enum that represents the basic object types in PDF documents.
-        self.pages[page]
+        self.pages[page_index]
             .operations
             .push(Operation::new("Tf", vec![font.into(), font_size.into()]));
         // Td adjusts the translation components of the text matrix. When used for the first
         // time after BT, it sets the initial text position on the page.
         // Note: PDF documents have Y=0 at the bottom. Thus 600 to print text near the top.
-        self.pages[page]
+        self.pages[page_index]
             .operations
             .push(Operation::new("Td", vec![x_pos.into(), y_pos.into()]));
         // Tj prints a string literal to the page. By default, this is black text that is
         // filled in. There are other operators that can produce various textual effects and
         // colors
-        self.pages[page]
+        self.pages[page_index]
             .operations
             .push(Operation::new("Tj", vec![Object::string_literal(text)]));
         // ET ends the text element
-        self.pages[page]
+        self.pages[page_index]
             .operations
             .push(Operation::new("ET", vec![]));
+    }
+
+    /// `insert_page` inserts an empty PDFPage into self.pages vector
+    /// at the specified page index which is zero indexed.
+    /// This is a wrapper around vec.insert() so it follows the same rules.
+    pub fn insert_page(&mut self, page_index: usize, page_size: Option<paper::PaperSize>) {
+        self.pages.insert(
+            page_index,
+            PDFPage {
+                operations: Vec::new(),
+                page_size,
+            },
+        );
+    }
+    /// `push_page` inserts an empty PDFPage into self.pages vector
+    /// at the end of the vector.
+    /// This is a wrapper around vec.push() so it follows the same rules.
+    pub fn push_page(&mut self, page_size: Option<paper::PaperSize>) {
+        self.pages.push(PDFPage {
+            operations: Vec::new(),
+            page_size,
+        });
     }
     /// `write` sets up and writes a pdf file.
     pub fn write(&mut self, out_path: PathBuf, file_name: PathBuf) -> io::Result<()> {
