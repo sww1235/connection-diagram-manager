@@ -157,6 +157,7 @@ dependencies = [
  "log",
  "lopdf",
  "serde",
+ "serde_json",
  "serde_yaml",
  "simple_logger",
 ]
