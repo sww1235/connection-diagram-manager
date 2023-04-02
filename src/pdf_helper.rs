@@ -1,11 +1,18 @@
+/// `fonts` contains helper methods, structs and information about PDF fonts.
+pub mod fonts;
+/// `paper` contains information about various
+/// physical paper sizes.
 pub mod paper;
 
 use lopdf::content::{Content, Operation};
 use lopdf::dictionary;
 use lopdf::{Document, Object, Stream};
 
-use dimensioned::{f64prefixes, ucum};
+use dimensioned::ucum;
 
+use log::warn;
+
+use std::collections::HashMap;
 use std::io;
 use std::path::PathBuf;
 
@@ -13,28 +20,120 @@ use std::path::PathBuf;
 /// It allows for easier tracking of default page size, available fonts
 /// and allows for easier implementation of helper methods.
 pub struct PDFDocument {
-    document: Document,
+    /// default page size for PDF
     default_page_size: paper::PaperSize,
-    available_fonts: Vec<String>,
+    /// Vector of available fonts, stored as
+    available_fonts: HashMap<String, fonts::PDFFont>,
     pages: Vec<PDFPage>,
 }
 /// `PDFPage` represents an individual page of a pdf file
 struct PDFPage {
     operations: Vec<Operation>,
     page_size: Option<paper::PaperSize>,
+    left_margin: ucum::Meter<f64>,
+    right_margin: ucum::Meter<f64>,
+    top_margin: ucum::Meter<f64>,
+    bottom_margin: ucum::Meter<f64>,
 }
 
 impl PDFDocument {
-    /// `add_text` writes text into a page of a pdf at a specified position
+    /// `new` returns a set up and initialized `PDFDocument`
+    /// with the 14 default fonts pre-populated and default page size,
+    /// as specified via parameter
+    pub fn new(default_page_size: paper::PaperSize) -> Self {
+        // add 14 default fonts to hashset.
+
+        Self {
+            default_page_size,
+            available_fonts: {
+                match fonts::load_std_fonts() {
+                    Ok(available_fonts) => available_fonts,
+                    // TODO: do something other than panicing here.
+                    Err(err) => panic! {"failed to load in default fonts. Error: {}", err},
+                }
+            },
+            pages: Vec::new(),
+        }
+    }
+
+    /// `empty` returns a mostly empty `PDFDocument`. It does not include default fonts
+    /// and has the default_page_size set to A4.
+    pub fn empty() -> Self {
+        Self {
+            default_page_size: paper::PaperSize::A4,
+            available_fonts: HashMap::new(),
+            pages: Vec::new(),
+        }
+    }
+    /// `add_text` writes text into a page of a pdf at a specified position.
+    /// In order to make this easier to implement for my use cases, for now,
+    /// this only handles ascii text.
+    ///
+    /// # Arguments
+    ///
+    /// * `page_index`: The zero indexed page number that the text should be inserted into.
+    /// * `text`: the text that will be added to the pdf page
+    /// * `font`: a `PDFFont` object representing a font defined for use in a PDF document
+    /// * `font_size`: Font size specified in points. This is used internally as a multiple
+    /// of the standard PDF user space unit size 1/72 inch
+    /// * `line_spacing`: text line spacing in multiples of line height
+    /// * `text width`: An optional parameter that defines the width of the text element. If
+    /// `None`, the width of the page minus the margins is used.
+    /// * `x_pos`: horizontal starting position of text insertion, with 0 on left side of page
+    /// * `y_pos`: vertical starting position of text insertion, with 0 on the bottom side of page
+    #[allow(clippy::too_many_arguments)]
     pub fn add_text(
         &mut self,
         page_index: usize,
         text: String,
-        font: String,
+        font: fonts::PDFFont,
         font_size: u32,
-        x_pos: u32,
-        y_pos: u32,
+        line_spacing: u32,
+        text_width: ucum::Meter<f64>,
+        x_pos: ucum::Meter<f64>,
+        y_pos: ucum::Meter<f64>,
     ) {
+        // first do some checks
+
+        // is font available
+        //TODO: return error here instead of panicing
+        if !self.available_fonts.contains(&font) {
+            panic! {"font {} not found in PDF font collection", font.font_resource_name}
+        }
+
+        // then check to see how many lines are needed to hold `text`.
+        // char width in font file is specified in units of 1/1000 of scale factor (point size) of font.
+        // in pdf files, user space is in units of 72 points: 1 inch, so 1 userspace unit is 1/72
+        // inch.
+
+        let num_lines = chars_width / text_width;
+
+        // then check to see if complete text can fit inside inside page area.
+        let current_page_size = self.pages[page_index]
+            .page_size
+            .unwrap_or(self.default_page_size)
+            .size();
+
+        if x_pos > current_page_size.0
+            || x_pos < 0.0 * ucum::IN_US
+            || y_pos > current_page_size.1
+            || y_pos < 0.0 * ucum::IN_US
+        {
+            panic! {concat!{"Position of text X: {}, Y: {}, ",
+            "is outside page boundaries. Please fix this"},
+            current_page_size.0, current_page_size.1}
+        }
+        if x_pos > current_page_size.0 - self.pages[page_index].right_margin
+            || x_pos < 0.0 * ucum::IN_US + self.pages[page_index].left_margin
+            || y_pos > current_page_size.1 - self.pages[page_index].top_margin
+            || y_pos < 0.0 * ucum::IN_US + self.pages[page_index].bottom_margin
+        {
+            warn! {concat!{"Position of text X: {}, Y: {}, ",
+            "is outside page margin boundaries. ",
+            "Please fix this if unintentional"},
+            current_page_size.0, current_page_size.1}
+        }
+
         // BT begins a text element. it takes no operands
         self.pages[page_index]
             .operations
@@ -44,21 +143,26 @@ impl PDFDocument {
         // The info() methods are defined based on their paired .from() methods (this
         // functionality is built into rust), and are converting the provided values into
         // An enum that represents the basic object types in PDF documents.
-        self.pages[page_index]
-            .operations
-            .push(Operation::new("Tf", vec![font.into(), font_size.into()]));
+        self.pages[page_index].operations.push(Operation::new(
+            "Tf",
+            vec![font.font_resource_name.into(), font_size.into()],
+        ));
         // Td adjusts the translation components of the text matrix. When used for the first
         // time after BT, it sets the initial text position on the page.
         // Note: PDF documents have Y=0 at the bottom. Thus 600 to print text near the top.
-        self.pages[page_index]
-            .operations
-            .push(Operation::new("Td", vec![x_pos.into(), y_pos.into()]));
-        // Tj prints a string literal to the page. By default, this is black text that is
-        // filled in. There are other operators that can produce various textual effects and
-        // colors
-        self.pages[page_index]
-            .operations
-            .push(Operation::new("Tj", vec![Object::string_literal(text)]));
+        self.pages[page_index].operations.push(Operation::new(
+            "Td",
+            vec![x_pos.value_unsafe.into(), y_pos.value_unsafe.into()],
+        ));
+        if num_lines == 1 {
+            // Tj prints a string literal to the page. By default, this is black text that is
+            // filled in. There are other operators that can produce various textual effects and
+            // colors
+            self.pages[page_index]
+                .operations
+                .push(Operation::new("Tj", vec![Object::string_literal(text)]));
+        } else {
+        }
         // ET ends the text element
         self.pages[page_index]
             .operations
@@ -68,22 +172,45 @@ impl PDFDocument {
     /// `insert_page` inserts an empty PDFPage into self.pages vector
     /// at the specified page index which is zero indexed.
     /// This is a wrapper around vec.insert() so it follows the same rules.
-    pub fn insert_page(&mut self, page_index: usize, page_size: Option<paper::PaperSize>) {
+    pub fn insert_page(
+        &mut self,
+        page_index: usize,
+        page_size: Option<paper::PaperSize>,
+        left_margin: ucum::Meter<f64>,
+        right_margin: ucum::Meter<f64>,
+        top_margin: ucum::Meter<f64>,
+        bottom_margin: ucum::Meter<f64>,
+    ) {
         self.pages.insert(
             page_index,
             PDFPage {
                 operations: Vec::new(),
                 page_size,
+                left_margin,
+                right_margin,
+                top_margin,
+                bottom_margin,
             },
         );
     }
     /// `push_page` inserts an empty PDFPage into self.pages vector
     /// at the end of the vector.
     /// This is a wrapper around vec.push() so it follows the same rules.
-    pub fn push_page(&mut self, page_size: Option<paper::PaperSize>) {
+    pub fn push_page(
+        &mut self,
+        page_size: Option<paper::PaperSize>,
+        left_margin: ucum::Meter<f64>,
+        right_margin: ucum::Meter<f64>,
+        top_margin: ucum::Meter<f64>,
+        bottom_margin: ucum::Meter<f64>,
+    ) {
         self.pages.push(PDFPage {
             operations: Vec::new(),
             page_size,
+            left_margin,
+            right_margin,
+            top_margin,
+            bottom_margin,
         });
     }
     /// `write` sets up and writes a pdf file.

@@ -17,3 +17,7 @@ pub mod datatypes;
 /// producing schematics and reports.
 #[cfg(feature = "cli")]
 pub mod pdf_helper;
+
+#[cfg(feature = "cli")]
+/// `text_utils` contains methods to manipulate and layout text
+pub mod text_utils;

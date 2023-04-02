@@ -6,6 +6,7 @@ use dimensioned::{f64prefixes, ucum};
 /// the short edge as the X coordinate or width.
 /// Custom sizes should be defined similarly.
 #[non_exhaustive]
+#[derive(Clone, Copy)]
 pub enum PaperSize {
     /// ISO A0 paper size
     A0,
@@ -52,8 +53,9 @@ pub enum PaperSize {
 }
 
 impl PaperSize {
-    // outputs in meters, (short side, long side)
-    pub fn value(self) -> (ucum::Meter<f64>, ucum::Meter<f64>) {
+    /// `size` outputs the short and long side measurements of the specified
+    /// paper size as a tuple in the specified order.
+    pub fn size(self) -> (ucum::Meter<f64>, ucum::Meter<f64>) {
         match self {
             // ISO paper sizes are specified in mm
             PaperSize::A0 => (
@@ -94,12 +96,10 @@ impl PaperSize {
             PaperSize::ArchC => (18.0 * ucum::IN_US, 24.0 * ucum::IN_US),
             PaperSize::ArchD => (24.0 * ucum::IN_US, 36.0 * ucum::IN_US),
             PaperSize::ArchE => (36.0 * ucum::IN_US, 48.0 * ucum::IN_US),
-            PaperSize::Tabloid => PaperSize::AnsiB.value(),
+            PaperSize::Tabloid => PaperSize::AnsiB.size(),
             PaperSize::Legal => (8.5 * ucum::IN_US, 14.0 * ucum::IN_US),
-            PaperSize::Letter => PaperSize::AnsiA.value(),
+            PaperSize::Letter => PaperSize::AnsiA.size(),
             PaperSize::Custom(short, long) => (short, long),
         }
     }
 }
-
-

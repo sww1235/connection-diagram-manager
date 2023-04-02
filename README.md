@@ -18,3 +18,9 @@ This repository is a rewrite of my initial attempt at this same program in
 because I liked the additional safety of Rust, along with some potential speed
 advantages with the memory management (no GC). I also found the serialization
 and deserialization of YAML to work much better, and be much better documented.
+
+## Credits
+
+The font resources in [pdf\_helper](./src/pdf_helper/) were copied from <https://github.com/chbrown/afm>.
+They were released under a MIT licence and so have been copied and distributed here.
+Please see their repository for more information.
