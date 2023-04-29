@@ -1,5 +1,3 @@
-/// `fonts` contains helper methods, structs and information about PDF fonts.
-pub mod fonts;
 /// `paper` contains information about various
 /// physical paper sizes.
 pub mod paper;
@@ -12,18 +10,19 @@ use dimensioned::ucum;
 
 use log::warn;
 
-use std::collections::HashMap;
-use std::io;
 use std::path::PathBuf;
+use std::{io, str};
 
 /// `PDFDocument` is a helper type to properly generate PDFs
 /// It allows for easier tracking of default page size, available fonts
 /// and allows for easier implementation of helper methods.
-pub struct PDFDocument {
+pub struct PDFDocument<'a> {
     /// default page size for PDF
     default_page_size: paper::PaperSize,
-    /// Vector of available fonts, stored as
-    available_fonts: HashMap<String, fonts::PDFFont>,
+    /// Hashmap of fonts available to be used in a pdf. String in tuple provides easy access to
+    /// full font name
+    available_fonts: Vec<(String, rustybuzz::Face<'a>)>,
+    /// all the pages in the PDF document
     pages: Vec<PDFPage>,
 }
 /// `PDFPage` represents an individual page of a pdf file
@@ -36,24 +35,18 @@ struct PDFPage {
     bottom_margin: ucum::Meter<f64>,
 }
 
-impl PDFDocument {
+impl PDFDocument<'_> {
     /// `new` returns a set up and initialized `PDFDocument`
-    /// with the 14 default fonts pre-populated and default page size,
+    /// with the specified font paths pre-populated and default page size,
     /// as specified via parameter
-    pub fn new(default_page_size: paper::PaperSize) -> Self {
-        // add 14 default fonts to hashset.
-
-        Self {
+    pub fn new(default_page_size: paper::PaperSize, font_paths: Vec<PathBuf>) -> io::Result<Self> {
+        let mut output = Self {
             default_page_size,
-            available_fonts: {
-                match fonts::load_std_fonts() {
-                    Ok(available_fonts) => available_fonts,
-                    // TODO: do something other than panicing here.
-                    Err(err) => panic! {"failed to load in default fonts. Error: {}", err},
-                }
-            },
+            available_fonts: Vec::new(),
             pages: Vec::new(),
-        }
+        };
+        output.load_cfg_fonts(font_paths)?;
+        Ok(output)
     }
 
     /// `empty` returns a mostly empty `PDFDocument`. It does not include default fonts
@@ -61,10 +54,60 @@ impl PDFDocument {
     pub fn empty() -> Self {
         Self {
             default_page_size: paper::PaperSize::A4,
-            available_fonts: HashMap::new(),
+            available_fonts: Vec::new(),
             pages: Vec::new(),
         }
     }
+
+    /// `load_ttf_font` parses the specified TTF font via `rustybuzz` and `ttf_parser` and makes it
+    /// available in the specified PDF document.
+    pub fn load_ttf_font(&mut self, font_file: PathBuf, font_index: Option<u32>) -> io::Result<()> {
+        use rustybuzz::Face;
+
+        let font_data = std::fs::read(font_file)?;
+        let font_data = font_data.to_owned().leak();
+        //TODO: maybe error out if font_file is a collection
+        let face_index = font_index.unwrap_or(0);
+
+        let face = Face::from_slice(font_data, face_index).ok_or(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "font failed to parse",
+        ))?;
+
+        // 0 indexed, 4 is the table row that contains the full name of the font
+        // https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6name.html
+        // the .get function returns a byte array which needs to be converted into a string and
+        // then processed.
+        let font_name_data = face.names().get(4).ok_or(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "font failed to parse",
+        ))?;
+        let font_name = String::from_utf8_lossy(font_name_data.name)
+            .to_mut()
+            .replace(char::REPLACEMENT_CHARACTER, "");
+        self.available_fonts.push((font_name, face));
+
+        Ok(())
+    }
+
+    //TODO: need to add this to the config file
+    /// `load_cfg_font` loads the TTF font specified in the configuration file
+    /// via `rustybuzz` and `ttf_parser` and makes it
+    /// available in the specified PDF document.
+    pub fn load_cfg_fonts(&mut self, font_paths: Vec<PathBuf>) -> io::Result<()> {
+        if font_paths.is_empty() {
+            return Err(io::Error::new(
+                io::ErrorKind::Other,
+                "No Fonts specified in configuration file",
+            ));
+        }
+        for path in font_paths {
+            // load default font_index
+            self.load_ttf_font(path, Some(0))?;
+        }
+        Ok(())
+    }
+
     /// `add_text` writes text into a page of a pdf at a specified position.
     /// In order to make this easier to implement for my use cases, for now,
     /// this only handles ascii text.
@@ -85,30 +128,29 @@ impl PDFDocument {
     pub fn add_text(
         &mut self,
         page_index: usize,
-        text: String,
-        font: fonts::PDFFont,
+        text: &str,
+        font_index: usize,
         font_size: u32,
         line_spacing: u32,
         text_width: ucum::Meter<f64>,
         x_pos: ucum::Meter<f64>,
         y_pos: ucum::Meter<f64>,
-    ) {
-        // first do some checks
+        text_direction: rustybuzz::Direction,
+        text_language: rustybuzz::Language,
+    ) -> io::Result<()> {
+        use super::paragraph_breaking::to_lines;
+        let (lines, glyphs) = to_lines(
+            text,
+            &self.available_fonts[font_index].1,
+            font_size,
+            text_width,
+            text_direction,
+            text_language,
+        )?;
 
-        // is font available
-        //TODO: return error here instead of panicing
-        if !self.available_fonts.contains(&font) {
-            panic! {"font {} not found in PDF font collection", font.font_resource_name}
-        }
+        let num_lines = lines.len();
 
-        // then check to see how many lines are needed to hold `text`.
-        // char width in font file is specified in units of 1/1000 of scale factor (point size) of font.
-        // in pdf files, user space is in units of 72 points: 1 inch, so 1 userspace unit is 1/72
-        // inch.
-
-        let num_lines = chars_width / text_width;
-
-        // then check to see if complete text can fit inside inside page area.
+        // then check to see if text starts inside page boundaries.
         let current_page_size = self.pages[page_index]
             .page_size
             .unwrap_or(self.default_page_size)
@@ -140,12 +182,15 @@ impl PDFDocument {
             .push(Operation::new("BT", vec![]));
         // Tf specifies the font and font size. Font scaling is complicated in PDFs. Reference
         // the reference for more info.
-        // The info() methods are defined based on their paired .from() methods (this
+        // The into() methods are defined based on their paired .from() methods (this
         // functionality is built into rust), and are converting the provided values into
         // An enum that represents the basic object types in PDF documents.
         self.pages[page_index].operations.push(Operation::new(
             "Tf",
-            vec![font.font_resource_name.into(), font_size.into()],
+            vec![
+                self.available_fonts[font_index].0.clone().into(),
+                font_size.into(),
+            ],
         ));
         // Td adjusts the translation components of the text matrix. When used for the first
         // time after BT, it sets the initial text position on the page.
@@ -162,11 +207,24 @@ impl PDFDocument {
                 .operations
                 .push(Operation::new("Tj", vec![Object::string_literal(text)]));
         } else {
+            // push first line
+            self.pages[page_index].operations.push(Operation::new(
+                "Tj",
+                vec![Object::string_literal(lines[1].as_str())],
+            ));
+            // push remaining lines
+            for line in &lines[2..] {
+                self.pages[page_index].operations.push(Operation::new(
+                    "Tj",
+                    vec![Object::string_literal(line.as_str())],
+                ));
+            }
         }
         // ET ends the text element
         self.pages[page_index]
             .operations
             .push(Operation::new("ET", vec![]));
+        Ok(())
     }
 
     /// `insert_page` inserts an empty PDFPage into self.pages vector

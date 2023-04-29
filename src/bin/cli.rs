@@ -74,13 +74,7 @@ use log::{debug, error, LevelFilter};
 
 use simple_logger::SimpleLogger;
 
-use cdm_core::{
-    config::Config,
-    datatypes::{
-        file_types,
-        internal_types::{Library, Project},
-    },
-};
+use cdm_core::{config::Config, datatypes::file_types};
 
 //https://stackoverflow.com/questions/66799905/how-to-make-some-structs-fields-mandatory-to-fill-and-others-optional-in-rust
 fn main() {
@@ -124,7 +118,7 @@ fn main() {
     debug! {"{:#?}", config}
 
     // will be vector of DataFiles
-    let data_files = match file_types::parse_project_dir(cli.project_directory) {
+    let _data_files = match file_types::parse_project_dir(cli.project_directory) {
         Ok(datastore) => datastore,
         Err(e) => {
             //TODO: better handle errors here

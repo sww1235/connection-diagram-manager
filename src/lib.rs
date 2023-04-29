@@ -19,5 +19,6 @@ pub mod datatypes;
 pub mod pdf_helper;
 
 #[cfg(feature = "cli")]
-/// `text_utils` contains methods to manipulate and layout text
-pub mod text_utils;
+/// `paragraph_breaking` contains an implementation of a simplified version of the Knuth-Plass
+/// algorithm
+pub mod paragraph_breaking;
