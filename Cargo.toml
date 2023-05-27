@@ -23,6 +23,7 @@ rustybuzz = "0.7.0"
 serde = { version = "1.0.147", features = ["derive"] }
 serde_yaml = "0.9.14"
 simple_logger = "4.0.0"
+usvg = "0.33.0"
 
 [features]
 cli = ["clap", "lopdf"]
