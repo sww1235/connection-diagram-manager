@@ -4,19 +4,30 @@ use dimensioned::{ucum, MapUnsafe};
 
 use log::trace;
 
-use std::io;
+use crate::error;
 
 #[derive(Debug, Default)]
+/// `ParagraphWord` represents one word in a paragraph
 struct ParagraphWord {
+    /// index of first character in word
     first: Option<usize>,
+    /// index of last character in word
     last: Option<usize>,
+    /// index of next word
     next: Option<usize>,
+    /// word breaking score
     score: Option<ucum::Meter<f64>>,
 }
+
 #[allow(clippy::too_many_arguments)]
+#[allow(clippy::arithmetic_side_effects)]
 /// A simplified implementation of the Knuth-Plass algorithm, as found
 /// [here](https://github.com/jaroslov/knuth-plass-thoughts/blob/master/plass.cpp)
 /// and converted into rust.
+///
+/// # Errors
+///
+/// Can error due to failure to split words into lines
 pub fn to_lines(
     text: &str,
     font_data: &rustybuzz::Face,
@@ -24,9 +35,9 @@ pub fn to_lines(
     textbox_width: ucum::Meter<f64>,
     text_direction: rustybuzz::Direction,
     text_language: rustybuzz::Language,
-) -> io::Result<(Vec<String>, rustybuzz::GlyphBuffer)> {
+) -> error::Result<(Vec<String>, rustybuzz::GlyphBuffer)> {
     if text.is_empty() {
-        return Err(io::Error::new(io::ErrorKind::InvalidInput, "Empty String"));
+        return Err(Error::EmptyString.into());
     }
     let mut buffer = rustybuzz::UnicodeBuffer::new();
     buffer.push_str(text);
@@ -41,7 +52,7 @@ pub fn to_lines(
 
     let glyph_buffer = rustybuzz::shape(font_data, &features, buffer);
     if glyph_buffer.is_empty() {
-        return Err(io::Error::new(io::ErrorKind::InvalidInput, "Empty String"));
+        return Err(Error::EmptyString.into());
     }
     // calculate approx space width
     let mut space_buffer = rustybuzz::UnicodeBuffer::new();
@@ -52,27 +63,24 @@ pub fn to_lines(
     space_buffer.set_cluster_level(rustybuzz::BufferClusterLevel::MonotoneCharacters);
     let space_buffer = rustybuzz::shape(font_data, &features, space_buffer);
     if space_buffer.is_empty() {
-        return Err(io::Error::new(
-            io::ErrorKind::Other,
-            "Space failed to shape",
-        ));
+        return Err(Error::SpaceFailedToShape.into());
     }
 
     // https://github.com/RazrFalcon/rustybuzz/issues/33#issuecomment-784716703
-    let units_per_em = font_data.units_per_em().try_into().unwrap();
+    let units_per_em: u32 = u32::try_from(font_data.units_per_em()).unwrap_or(u32::MIN);
     trace! {"units_per_em: {}", units_per_em};
 
-    let point = (1.0 / 72.0) * ucum::IN_US;
+    let point = (1.0_f64 / 72.0_f64) * ucum::IN_US;
     //https://stackoverflow.com/a/68387730/3342767
-    let em_width = font_size as f64 * point;
+    let em_width = f64::from(font_size) * point;
 
     let space_width =
-        space_buffer.glyph_positions()[0].x_advance as f64 * em_width / units_per_em as f64;
+        f64::from(space_buffer.glyph_positions()[0].x_advance) * em_width / f64::from(units_per_em);
 
     let mut words = text_to_words(text)?;
 
     let max_width = textbox_width;
-    let ideal_width = textbox_width - (textbox_width * 0.1);
+    let ideal_width = textbox_width - (textbox_width * 0.1_f64);
 
     line_break_internal(
         &mut words,
@@ -84,31 +92,33 @@ pub fn to_lines(
         ideal_width,
         max_width,
     )?;
-    Ok((to_lines_internal(words, text), glyph_buffer))
+    Ok((to_lines_internal(&words, text), glyph_buffer))
 }
 #[allow(clippy::too_many_arguments)]
+#[allow(clippy::arithmetic_side_effects)]
+#[allow(clippy::shadow_unrelated)]
 /// `lineBreakInternal` scores each `ParagraphWord` for breaking possibilities
 fn line_break_internal(
     words: &mut [ParagraphWord],
     shaped_text: &rustybuzz::GlyphBuffer,
     em_width: ucum::Meter<f64>,
     space_width: ucum::Meter<f64>,
-    units_per_em: u16,
+    units_per_em: u32,
     current_word_index: usize,
     ideal_width: ucum::Meter<f64>,
     max_width: ucum::Meter<f64>,
-) -> io::Result<()> {
+) -> error::Result<()> {
     let glyph_infos = shaped_text.glyph_infos();
     let glyph_positions = shaped_text.glyph_positions();
 
     let mut next_word_index = current_word_index + 1;
 
-    let mut line_length = 0.0 * ucum::M; // any unit will do here
+    let mut line_length = 0.0_f64 * ucum::M; // any unit will do here
     let first = words[current_word_index].first.unwrap_or(0);
     let last = words[current_word_index].last.unwrap_or(0);
     // current line length is length of first word.
     for glyph in &glyph_positions[first..last] {
-        line_length += glyph.x_advance as f64 * em_width / units_per_em as f64;
+        line_length += f64::from(glyph.x_advance) * em_width / f64::from(units_per_em);
     }
     // the best score is current line length, squared
     let mut best_score = ideal_width - line_length;
@@ -120,12 +130,12 @@ fn line_break_internal(
     // scan down word list looking for better entries
     while next_word_index < words.len() {
         // get width of new potential word
-        let mut word_width = 0.0 * ucum::M; // any unit will do here
+        let mut word_width = 0.0_f64 * ucum::M; // any unit will do here
 
         let first = words[next_word_index].first.unwrap_or(0);
         let last = words[next_word_index].last.unwrap_or(0);
         for glyph in &glyph_positions[first..last] {
-            word_width += glyph.x_advance as f64 * em_width / units_per_em as f64;
+            word_width += f64::from(glyph.x_advance) * em_width / f64::from(units_per_em);
         }
         // if the new word will make the line too long, stop
         if (line_length + word_width) >= max_width {
@@ -154,9 +164,9 @@ fn line_break_internal(
         }
 
         // is this new line_score better than current best_score
-        if (line_score + words[next_word_index].score.unwrap_or(0.0 * ucum::M)) < best_score {
+        if (line_score + words[next_word_index].score.unwrap_or(0.0_f64 * ucum::M)) < best_score {
             // update to this new score
-            best_score = line_score + words[next_word_index].score.unwrap_or(0.0 * ucum::M);
+            best_score = line_score + words[next_word_index].score.unwrap_or(0.0_f64 * ucum::M);
             // track the new tail
             best_tail = next_word_index;
         }
@@ -169,12 +179,14 @@ fn line_break_internal(
 
     // the last word of the paragraph doesn't contribute to the score
     if (words[current_word_index].next.unwrap_or(0) + 1) == words.len() {
-        words[current_word_index].score = Some(0.0 * ucum::M);
+        words[current_word_index].score = Some(0.0_f64 * ucum::M);
     }
     Ok(())
 }
 
-fn text_to_words(text: &str) -> io::Result<Vec<ParagraphWord>> {
+#[allow(clippy::arithmetic_side_effects)]
+/// `text_to_words` splits a utf8 string into an array of [`ParagraphWord`]s
+fn text_to_words(text: &str) -> error::Result<Vec<ParagraphWord>> {
     let mut index = 0;
     let mut words = Vec::new();
 
@@ -184,10 +196,7 @@ fn text_to_words(text: &str) -> io::Result<Vec<ParagraphWord>> {
             && text
                 .chars()
                 .nth(index)
-                .ok_or(io::Error::new(
-                    io::ErrorKind::InvalidData,
-                    "character not found",
-                ))?
+                .ok_or(Error::CharacterNotFound)?
                 .is_whitespace()
         {
             index += 1;
@@ -198,10 +207,7 @@ fn text_to_words(text: &str) -> io::Result<Vec<ParagraphWord>> {
             && !text
                 .chars()
                 .nth(index)
-                .ok_or(io::Error::new(
-                    io::ErrorKind::InvalidData,
-                    "character not found",
-                ))?
+                .ok_or(Error::CharacterNotFound)?
                 .is_whitespace()
         {
             index += 1;
@@ -219,13 +225,15 @@ fn text_to_words(text: &str) -> io::Result<Vec<ParagraphWord>> {
         first: None,
         last: None,
         next: None,
-        score: Some(0.0 * ucum::M),
+        score: Some(0.0_f64 * ucum::M),
     });
     Ok(words)
 }
+#[allow(clippy::similar_names)]
+#[allow(clippy::arithmetic_side_effects)]
 /// `toLines` takes in a vector of `ParagraphWord`s and converts them to a vector of strings
 /// of the correct lengths.
-fn to_lines_internal(words: Vec<ParagraphWord>, text: &str) -> Vec<String> {
+fn to_lines_internal(words: &[ParagraphWord], text: &str) -> Vec<String> {
     let mut index = 0;
     let mut output = Vec::new();
 
@@ -264,42 +272,40 @@ fn to_lines_internal(words: Vec<ParagraphWord>, text: &str) -> Vec<String> {
 }
 
 #[allow(clippy::too_many_arguments)]
+#[allow(clippy::arithmetic_side_effects)]
 /// `greedy_break`
 fn greedy_break(
     words: &mut [ParagraphWord],
-    shaped_text: rustybuzz::GlyphBuffer,
+    shaped_text: &rustybuzz::GlyphBuffer,
     em_width: ucum::Meter<f64>,
     space_width: ucum::Meter<f64>,
     units_per_em: u16,
     ideal_width: ucum::Meter<f64>,
     max_width: ucum::Meter<f64>,
-) -> io::Result<()> {
+) -> error::Result<()> {
     let glyph_positions = shaped_text.glyph_positions();
 
-    let mut line_length = 0.0 * ucum::M; // any unit will do here
+    let mut line_length = 0.0_f64 * ucum::M; // any unit will do here
 
     let mut line_next = 0;
 
     let mut internal_index = 0;
 
     while internal_index < words.len() {
-        let mut word_width = 0.0 * ucum::M;
+        let mut word_width = 0.0_f64 * ucum::M;
         let first = words[internal_index].first.unwrap_or(0);
         let last = words[internal_index].last.unwrap_or(0);
         for glyph in &glyph_positions[first..last] {
-            word_width += glyph.x_advance as f64 * em_width / units_per_em as f64;
+            word_width += f64::from(glyph.x_advance) * em_width / f64::from(units_per_em);
         }
         if (line_length + word_width + space_width) >= ideal_width {
             words[line_next].next = Some(internal_index - 1);
             line_next = internal_index - 1;
-            line_length = 0.0 * ucum::M;
+            line_length = 0.0_f64 * ucum::M;
         }
         line_length += word_width + space_width; // This should work
         if line_length < max_width {
-            return Err(io::Error::new(
-                io::ErrorKind::Other,
-                "Line length was too long",
-            ));
+            return Err(Error::LineLengthTooLong.into());
         }
 
         internal_index += 1;
@@ -307,4 +313,30 @@ fn greedy_break(
     words[line_next].next = Some(words.len() + 1);
     words[words.len()].next = Some(words.len() + 1);
     Ok(())
+}
+
+#[derive(Debug)]
+#[non_exhaustive]
+/// list of errors for this library
+pub enum Error {
+    /// Line length too long
+    LineLengthTooLong,
+    /// Character not found
+    CharacterNotFound,
+    /// Empty string
+    EmptyString,
+    /// Space character failed to shape
+    SpaceFailedToShape,
+}
+impl std::error::Error for Error {}
+
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match *self {
+            Error::LineLengthTooLong => write!(f, "Line Length is too long"),
+            Error::CharacterNotFound => write!(f, "Character Not Found"),
+            Error::EmptyString => write!(f, "Empty String"),
+            Error::SpaceFailedToShape => write!(f, "Space Failed To Shape"),
+        }
+    }
 }
