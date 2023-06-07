@@ -10,8 +10,9 @@ use dimensioned::{ucum, Dimensionless};
 
 use log::warn;
 
-use std::path::PathBuf;
-use std::{io, str};
+use crate::error;
+use std::path::{Path, PathBuf};
+use std::str;
 
 /// `PDFDocument` is a helper type to properly generate PDFs
 /// It allows for easier tracking of default page size, available fonts
@@ -39,15 +40,22 @@ pub struct PDFFont<'a> {
 }
 /// `PDFPage` represents an individual page of a pdf file
 pub struct PDFPage {
+    /// The list of operations for the page
     operations: Vec<Operation>,
+    /// The paper size of the page
     page_size: paper::PaperSize,
+    /// The left margin
     left_margin: ucum::Meter<f64>,
+    /// The right margin
     right_margin: ucum::Meter<f64>,
+    /// The top margin
     top_margin: ucum::Meter<f64>,
+    /// The bottom margin
     bottom_margin: ucum::Meter<f64>,
 }
 /// `PDFTextRenderMode` is an enumeration
 /// of defined text rendering modes in pdf documents
+#[allow(clippy::exhaustive_enums)]
 pub enum PDFTextRenderMode {
     /// Normal Text, colored with current non-stroking color
     Fill,
@@ -66,6 +74,8 @@ pub enum PDFTextRenderMode {
 }
 
 impl PDFTextRenderMode {
+    /// `value` returns the integer value of `PDFTextRenderMode` as needed in the internal PDF
+    /// formatting
     fn value(&self) -> u16 {
         match self {
             PDFTextRenderMode::Fill => 0,
@@ -93,10 +103,14 @@ impl PDFPage {
     /// `None`, the width of the page minus the margins is used.
     /// * `x_pos`: horizontal starting position of text insertion, with 0 on left side of page
     /// * `y_pos`: vertical starting position of text insertion, with 0 on the bottom side of page
+    ///
+    /// # Errors
+    ///
+    /// Can error if text position is incorrect, or if text fails to shape or split into lines
     #[allow(clippy::too_many_arguments)]
     pub fn add_text(
         &mut self,
-        text: &str,
+        text: String,
         font_size: u32,
         font: &PDFFont,
         line_spacing: u32,
@@ -105,11 +119,11 @@ impl PDFPage {
         y_pos: ucum::Meter<f64>,
         text_direction: rustybuzz::Direction,
         text_language: rustybuzz::Language,
-        text_render_mode: PDFTextRenderMode,
-    ) -> io::Result<()> {
+        text_render_mode: &PDFTextRenderMode,
+    ) -> error::Result<()> {
         use super::paragraph_breaking::to_lines;
         let (lines, glyphs) = to_lines(
-            text,
+            &text,
             &font.font_face,
             font_size,
             text_width,
@@ -122,19 +136,26 @@ impl PDFPage {
         // then check to see if text starts inside page boundaries.
         let current_page_size = self.page_size.size();
 
+        #[allow(clippy::arithmetic_side_effects)]
         if x_pos > current_page_size.0
-            || x_pos < 0.0 * ucum::IN_US
+            || x_pos < 0.0_f64 * ucum::IN_US
             || y_pos > current_page_size.1
-            || y_pos < 0.0 * ucum::IN_US
+            || y_pos < 0.0_f64 * ucum::IN_US
         {
-            panic! {concat!{"Position of text X: {}, Y: {}, ",
-            "is outside page boundaries. Please fix this"},
-            current_page_size.0, current_page_size.1}
+            return Err(Error::Other(format!(
+                concat!(
+                    "Position of text X: {}, Y: {}, ",
+                    "is outside page boundaries. Please fix this"
+                ),
+                current_page_size.0, current_page_size.1,
+            ))
+            .into());
         }
+        #[allow(clippy::arithmetic_side_effects)]
         if x_pos > current_page_size.0 - self.right_margin
-            || x_pos < 0.0 * ucum::IN_US + self.left_margin
+            || x_pos < 0.0_f64 * ucum::IN_US + self.left_margin
             || y_pos > current_page_size.1 - self.top_margin
-            || y_pos < 0.0 * ucum::IN_US + self.bottom_margin
+            || y_pos < 0.0_f64 * ucum::IN_US + self.bottom_margin
         {
             warn! {concat!{"Position of text X: {}, Y: {}, ",
             "is outside page margin boundaries. ",
@@ -211,7 +232,14 @@ impl PDFDocument<'_> {
     /// `new` returns a set up and initialized `PDFDocument`
     /// with the specified font paths pre-populated and default page size,
     /// as specified via parameter
-    pub fn new(default_page_size: paper::PaperSize, font_paths: Vec<PathBuf>) -> io::Result<Self> {
+    ///
+    /// # Errors
+    ///
+    /// Will error if loading configuration fonts fails
+    pub fn new(
+        default_page_size: paper::PaperSize,
+        font_paths: Vec<PathBuf>,
+    ) -> error::Result<Self> {
         let mut output = Self {
             default_page_size,
             available_fonts: Vec::new(),
@@ -222,7 +250,8 @@ impl PDFDocument<'_> {
     }
 
     /// `empty` returns a mostly empty `PDFDocument`. It does not include default fonts
-    /// and has the default_page_size set to A4.
+    /// and has the `default_page_size` set to A4.
+    #[must_use]
     pub fn empty() -> Self {
         Self {
             default_page_size: paper::PaperSize::A4,
@@ -233,31 +262,37 @@ impl PDFDocument<'_> {
 
     /// `load_ttf_font` parses the specified TTF font via `rustybuzz` and `ttf_parser` and makes it
     /// available in the specified PDF document.
-    pub fn load_ttf_font(&mut self, font_file: PathBuf, font_index: Option<u32>) -> io::Result<()> {
+    ///
+    /// # Errors
+    ///
+    /// Will produce errors if reading font data fails, or if a font fails to parse
+    pub fn load_ttf_font(
+        &mut self,
+        font_file: PathBuf,
+        font_index: Option<u32>,
+    ) -> error::Result<()> {
         use rustybuzz::Face;
 
         let font_data = std::fs::read(font_file)?;
-        let font_data_owned = font_data.to_owned().leak();
+        let font_data_owned = font_data.clone().leak();
         //TODO: maybe error out if font_file is a collection
         let face_index = font_index.unwrap_or(0);
 
-        let font_face = Face::from_slice(font_data_owned, face_index).ok_or(io::Error::new(
-            io::ErrorKind::InvalidData,
-            "font failed to parse",
-        ))?;
+        let font_face = Face::from_slice(font_data_owned, face_index)
+            .ok_or(Error::FontLoading("font failed to parse".to_string()))?;
 
         // 0 indexed, 4 is the table row that contains the full name of the font
         // https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6name.html
         // the .get function returns a byte array which needs to be converted into a string and
         // then processed.
-        let font_name_data = font_face.names().get(4).ok_or(io::Error::new(
-            io::ErrorKind::InvalidData,
-            "font failed to parse",
-        ))?;
+        let font_name_data = font_face
+            .names()
+            .get(4)
+            .ok_or(Error::FontLoading("font failed to parse".to_string()))?;
         let font_name = String::from_utf8_lossy(font_name_data.name)
             .to_mut()
             .replace(char::REPLACEMENT_CHARACTER, "");
-        let font_id_str = format! {"F{}", self.available_fonts.len()+1};
+        let font_id_str = format! {"F{}", self.available_fonts.len()};
         self.available_fonts.push(PDFFont {
             font_name,
             font_id_str,
@@ -273,12 +308,15 @@ impl PDFDocument<'_> {
     /// `load_cfg_font` loads the TTF font specified in the configuration file
     /// via `rustybuzz` and `ttf_parser` and makes it
     /// available in the specified PDF document.
-    pub fn load_cfg_fonts(&mut self, font_paths: Vec<PathBuf>) -> io::Result<()> {
+    ///
+    /// # Errors
+    ///
+    /// Will error if fonts are not specified in config file, or if a font fails to load.
+    pub fn load_cfg_fonts(&mut self, font_paths: Vec<PathBuf>) -> error::Result<()> {
         if font_paths.is_empty() {
-            return Err(io::Error::new(
-                io::ErrorKind::Other,
-                "No Fonts specified in configuration file",
-            ));
+            return Err(
+                Error::FontLoading("No Fonts specified in configuration file".to_string()).into(),
+            );
         }
         for path in font_paths {
             // load default font_index
@@ -287,7 +325,7 @@ impl PDFDocument<'_> {
         Ok(())
     }
 
-    /// `insert_page` inserts an empty PDFPage into self.pages vector
+    /// `insert_page` inserts an empty `PDFPage` into self.pages vector
     /// at the specified page index which is zero indexed.
     /// This is a wrapper around vec.insert() so it follows the same rules.
     pub fn insert_page(
@@ -317,7 +355,7 @@ impl PDFDocument<'_> {
             },
         );
     }
-    /// `push_page` inserts an empty PDFPage into self.pages vector
+    /// `push_page` inserts an empty `PDFPage` into self.pages vector
     /// at the end of the vector.
     /// This is a wrapper around vec.push() so it follows the same rules.
     pub fn push_page(
@@ -344,23 +382,28 @@ impl PDFDocument<'_> {
         });
     }
     /// `write` sets up and writes a pdf file.
+    ///
+    /// # Errors
+    ///
+    /// Saving the file can error with [`std::io`] errors
     pub fn write(
         &mut self,
-        out_path: PathBuf,
-        file_name: PathBuf,
+        out_path: &Path,
+        file_name: &Path,
         compress: bool,
-    ) -> io::Result<()> {
+    ) -> error::Result<()> {
         let pdf_version = "1.7";
         let mut doc = Document::with_version(pdf_version);
         // default userspace units in PDF are digital printers points
-        let pdf_point = (1.0 / 72.0) * ucum::IN_US;
+        #[allow(clippy::arithmetic_side_effects)]
+        let pdf_point = (1.0_f64 / 72.0_f64) * ucum::IN_US;
 
         // Object IDs are used for cross referencing in PDF documents. `lopdf` helps keep track of them
         // for us. They are simple integers.
         // Calls to `doc.new_object_id` and `doc.add_object` return an object id
 
         // pages is the root node of the page tree
-        let pages_id = doc.new_object_id();
+        let root_id = doc.new_object_id();
 
         // fonts are dictionaries. The type, subtype and basefont tags
         // are straight out of the PDF reference manual
@@ -400,10 +443,12 @@ impl PDFDocument<'_> {
                     //
                     // From table 123 of the PDF1.7 specification pdf.
                     let mut font_descriptor_flag: u32 = 0;
+                    #[allow(clippy::arithmetic_side_effects)]
                     if font.font_face.is_monospaced(){font_descriptor_flag += 2_u32.pow(0); }
                     //if font.font_face.
                     //if
                     //if
+                    #[allow(clippy::arithmetic_side_effects)]
                     if font.font_face.is_italic() || font.font_face.is_oblique() {font_descriptor_flag += 2_u32.pow(6);}
                     font_descriptor_flag
 
@@ -425,7 +470,7 @@ impl PDFDocument<'_> {
                 // required by most PDF readers
                 // https://stackoverflow.com/a/35543715/3342767
                 // https://www.truetype-typography.com/ttqa_1998.htm
-                "StemV" => 80,
+                "StemV" => 80_u16,
                 "FontFile2" => font_stream_id,
 
 
@@ -451,7 +496,7 @@ impl PDFDocument<'_> {
                 //"LastChar" => ,
                 //"Widths" => ,
                 "FontDescriptor" => font_descriptor_id,
-                "Length1" => font.font_data.clone().len() as i32,
+                "Length1" => u32::try_from(font.font_data.clone().len()).unwrap_or(u32::MAX),
             };
             font.font_id = Some(doc.add_object(font_dict));
         }
@@ -466,8 +511,8 @@ impl PDFDocument<'_> {
             "Font" =>  {
                 let mut temp_dict = lopdf::Dictionary::new();
                 for font in &self.available_fonts{
-
-                    temp_dict.set(font.font_id_str.as_str(), font.font_id.unwrap());
+                    temp_dict.set(font.font_id_str.as_str(),
+                        font.font_id.ok_or(Error::FontLoading("Font Object ID not set".to_string()))?);
             }
                 temp_dict
             }
@@ -493,19 +538,22 @@ impl PDFDocument<'_> {
             // Length, Filter, DecodeParams, etc
             //
             // content is a stream of encoded content data.
-            let content_id = doc.add_object(Stream::new(dictionary! {}, content.encode().unwrap()));
+            // TODO: return errors here
+            let content_id = doc.add_object(Stream::new(dictionary! {}, content.encode()?));
 
             // Page is a page object dictionary dictionary that represents one page of a PDF file.
             let page_id = doc.add_object(dictionary! {
                 "Type" => "Page",
-                "Parent" => pages_id, // root of page tree
+                "Parent" => root_id, // root of page tree
                 "Contents" => content_id,
                 // a rectangle that defines the boundaries of the physical or digital media. This is the
                 // "Page Size"
                 "MediaBox" => vec![
-                    0.into(),
-                    0.into(),
+                    0_u16.into(),
+                    0_u16.into(),
+                    #[allow(clippy::arithmetic_side_effects)]
                     (*(page.page_size.size().0/pdf_point).value()).into(),
+                    #[allow(clippy::arithmetic_side_effects)]
                     (*(page.page_size.size().1/pdf_point).value()).into()
                 ],
             });
@@ -520,7 +568,7 @@ impl PDFDocument<'_> {
         // additional entries that can be added to the dictionary if needed. Some of these can also be
         // defined on the page dictionary itself, and not inherited from the page tree root.
 
-        let page_count: u32 = self.pages.len().try_into().unwrap();
+        let page_count: u32 = self.pages.len().try_into().unwrap_or(u32::MAX);
 
         let pages = dictionary! {
             // Type of dictionary
@@ -535,22 +583,24 @@ impl PDFDocument<'_> {
             // "Page Size"
             // The mediabox in the root page node is the default page size
             "MediaBox" => vec![
-                0.into(),
-                0.into(),
+                0_u16.into(),
+                0_u16.into(),
+                #[allow(clippy::arithmetic_side_effects)]
                 (*(self.default_page_size.size().0/pdf_point).value()).into(),
+                #[allow(clippy::arithmetic_side_effects)]
                 (*(self.default_page_size.size().1/pdf_point).value()).into()
             ],
         };
 
         // using insert() here, instead of add_object() since the id is already known.
-        doc.objects.insert(pages_id, Object::Dictionary(pages));
+        doc.objects.insert(root_id, Object::Dictionary(pages));
 
         // Creating document catalog.
         // There are many more entries allowed in the catalog dictionary.
         let doc_catalog_id = doc.add_object(dictionary! {
             "Type" => "Catalog",
             "Version" => pdf_version,
-            "Pages" => pages_id,
+            "Pages" => root_id,
         });
 
         // Root key in trailer is set here to ID of document catalog,
@@ -563,5 +613,30 @@ impl PDFDocument<'_> {
         }
         doc.save(file_path)?;
         Ok(())
+    }
+}
+
+/// `Error` is the list of errors that can occur in `PDFHelper`
+#[derive(Debug)]
+#[non_exhaustive]
+pub enum Error {
+    /// error in loading fonts
+    FontLoading(String),
+    /// error in parsing svg data
+    SVGError(String),
+    /// Other errors
+    Other(String),
+}
+
+impl std::error::Error for Error {}
+
+#[allow(clippy::match_same_arms)]
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match *self {
+            Error::FontLoading(ref e) => write!(f, "Font Loading: {e}"),
+            Error::SVGError(ref e) => write!(f, "SVG: {e}"),
+            Error::Other(ref e) => write!(f, "{e}"),
+        }
     }
 }

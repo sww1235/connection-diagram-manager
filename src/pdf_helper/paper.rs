@@ -5,6 +5,7 @@ use dimensioned::{f64prefixes, ucum};
 /// with the long edge as the Y coordinate, or height, and
 /// the short edge as the X coordinate or width.
 /// Custom sizes should be defined similarly.
+#[allow(clippy::module_name_repetitions)]
 #[non_exhaustive]
 #[derive(Clone, Copy)]
 pub enum PaperSize {
@@ -55,49 +56,51 @@ pub enum PaperSize {
 impl PaperSize {
     /// `size` outputs the short and long side measurements of the specified
     /// paper size as a tuple in the specified order.
+    #[allow(clippy::arithmetic_side_effects)]
+    #[must_use]
     pub fn size(self) -> (ucum::Meter<f64>, ucum::Meter<f64>) {
         match self {
             // ISO paper sizes are specified in mm
             PaperSize::A0 => (
-                841.0 * ucum::M * f64prefixes::MILLI,
-                1189.0 * ucum::M * f64prefixes::MILLI,
+                841.0_f64 * ucum::M * f64prefixes::MILLI,
+                1189.0_f64 * ucum::M * f64prefixes::MILLI,
             ),
             PaperSize::A1 => (
-                594.0 * ucum::M * f64prefixes::MILLI,
-                841.0 * ucum::M * f64prefixes::MILLI,
+                594.0_f64 * ucum::M * f64prefixes::MILLI,
+                841.0_f64 * ucum::M * f64prefixes::MILLI,
             ),
             PaperSize::A2 => (
-                420.0 * ucum::M * f64prefixes::MILLI,
-                594.0 * ucum::M * f64prefixes::MILLI,
+                420.0_f64 * ucum::M * f64prefixes::MILLI,
+                594.0_f64 * ucum::M * f64prefixes::MILLI,
             ),
             PaperSize::A3 => (
-                297.0 * ucum::M * f64prefixes::MILLI,
-                420.0 * ucum::M * f64prefixes::MILLI,
+                297.0_f64 * ucum::M * f64prefixes::MILLI,
+                420.0_f64 * ucum::M * f64prefixes::MILLI,
             ),
             PaperSize::A4 => (
-                210.0 * ucum::M * f64prefixes::MILLI,
-                297.0 * ucum::M * f64prefixes::MILLI,
+                210.0_f64 * ucum::M * f64prefixes::MILLI,
+                297.0_f64 * ucum::M * f64prefixes::MILLI,
             ),
             PaperSize::A5 => (
-                148.0 * ucum::M * f64prefixes::MILLI,
-                210.0 * ucum::M * f64prefixes::MILLI,
+                148.0_f64 * ucum::M * f64prefixes::MILLI,
+                210.0_f64 * ucum::M * f64prefixes::MILLI,
             ),
             PaperSize::A6 => (
-                105.0 * ucum::M * f64prefixes::MILLI,
-                148.0 * ucum::M * f64prefixes::MILLI,
+                105.0_f64 * ucum::M * f64prefixes::MILLI,
+                148.0_f64 * ucum::M * f64prefixes::MILLI,
             ),
-            PaperSize::AnsiA => (8.5 * ucum::IN_US, 11.0 * ucum::IN_US),
-            PaperSize::AnsiB => (11.0 * ucum::IN_US, 17.0 * ucum::IN_US),
-            PaperSize::AnsiC => (17.0 * ucum::IN_US, 22.0 * ucum::IN_US),
-            PaperSize::AnsiD => (22.0 * ucum::IN_US, 34.0 * ucum::IN_US),
-            PaperSize::AnsiE => (34.0 * ucum::IN_US, 44.0 * ucum::IN_US),
-            PaperSize::ArchA => (9.0 * ucum::IN_US, 12.0 * ucum::IN_US),
-            PaperSize::ArchB => (12.0 * ucum::IN_US, 18.0 * ucum::IN_US),
-            PaperSize::ArchC => (18.0 * ucum::IN_US, 24.0 * ucum::IN_US),
-            PaperSize::ArchD => (24.0 * ucum::IN_US, 36.0 * ucum::IN_US),
-            PaperSize::ArchE => (36.0 * ucum::IN_US, 48.0 * ucum::IN_US),
+            PaperSize::AnsiA => (8.5_f64 * ucum::IN_US, 11.0_f64 * ucum::IN_US),
+            PaperSize::AnsiB => (11.0_f64 * ucum::IN_US, 17.0_f64 * ucum::IN_US),
+            PaperSize::AnsiC => (17.0_f64 * ucum::IN_US, 22.0_f64 * ucum::IN_US),
+            PaperSize::AnsiD => (22.0_f64 * ucum::IN_US, 34.0_f64 * ucum::IN_US),
+            PaperSize::AnsiE => (34.0_f64 * ucum::IN_US, 44.0_f64 * ucum::IN_US),
+            PaperSize::ArchA => (9.0_f64 * ucum::IN_US, 12.0_f64 * ucum::IN_US),
+            PaperSize::ArchB => (12.0_f64 * ucum::IN_US, 18.0_f64 * ucum::IN_US),
+            PaperSize::ArchC => (18.0_f64 * ucum::IN_US, 24.0_f64 * ucum::IN_US),
+            PaperSize::ArchD => (24.0_f64 * ucum::IN_US, 36.0_f64 * ucum::IN_US),
+            PaperSize::ArchE => (36.0_f64 * ucum::IN_US, 48.0_f64 * ucum::IN_US),
             PaperSize::Tabloid => PaperSize::AnsiB.size(),
-            PaperSize::Legal => (8.5 * ucum::IN_US, 14.0 * ucum::IN_US),
+            PaperSize::Legal => (8.5_f64 * ucum::IN_US, 14.0_f64 * ucum::IN_US),
             PaperSize::Letter => PaperSize::AnsiA.size(),
             PaperSize::Custom(short, long) => (short, long),
         }
