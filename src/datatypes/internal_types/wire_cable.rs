@@ -3,6 +3,8 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
+use dimensioned::ucum;
+
 use super::{
     cable_type::CableType, pathway::Pathway, term_cable_type::TermCableType, wire_type::WireType,
     Empty, Mergable, PartialEmpty,
@@ -23,7 +25,7 @@ pub struct WireCable {
     /// Optional description
     pub description: Option<String>,
     /// length of wire or cable TODO: figure out how to return term_cable_length if it is defined
-    pub length: Option<f64>,
+    pub length: Option<ucum::Meter<f64>>,
     /// Pathway containing instance
     pub pathway: Option<Rc<RefCell<Pathway>>>,
 }

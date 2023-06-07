@@ -60,9 +60,9 @@ pub struct CableLayer {
     /// `Material of CableLayer`
     pub material: Option<String>,
     /// Voltage rating for insuation layer
-    pub volt_rating: Option<u64>,
+    pub volt_rating: Option<f64>,
     /// Temperature rating for insulation layer, specified in C TODO: fix this with proper unicode
-    pub temp_rating: Option<u64>,
+    pub temp_rating: Option<f64>,
     /// color of CableLayer
     pub color: Option<String>,
 }

@@ -3,6 +3,8 @@ use std::fmt;
 
 use super::{Empty, Mergable, PartialEmpty};
 
+use dimensioned::ucum;
+
 /// `WireType` represents a particular type of wire
 ///
 /// Not all fields have to be populated, and some are
@@ -36,23 +38,23 @@ pub struct WireType {
     pub wire_type_code: Option<String>,
     /// Conductor cross sectional area.
     /// specified in mm^2
-    pub conductor_cross_sect_area: f64,
+    pub conductor_cross_sect_area: ucum::Meter2<f64>,
     /// Overall wire cross sectional area, incluidng insulation.
     /// specified in mm^2
-    pub overall_cross_sect_area: f64,
+    pub overall_cross_sect_area: ucum::Meter2<f64>,
     /// If conductor is stranded
     pub stranded: bool,
     /// How many strands is conductor made of
     pub num_strands: Option<u64>,
     /// cross sectional area of individual strand.
     /// specified in mm^2
-    pub strand_cross_sect_area: Option<f64>,
+    pub strand_cross_sect_area: Option<ucum::Meter2<f64>>,
     /// Insulation voltage rating.
     /// Specified in volts
-    pub insul_volt_rating: Option<u64>,
+    pub insul_volt_rating: Option<ucum::MilliVolt<f64>>,
     /// Insulation temperature rating.
-    /// Specified in ℃
-    pub insul_temp_rating: Option<u64>,
+    /// Specified in K
+    pub insul_temp_rating: Option<ucum::Kelvin<f64>>,
     /// Insulation Color
     pub insul_color: Option<String>,
 }
@@ -74,8 +76,8 @@ impl WireType {
             insulated: false,
             insulation_material: None,
             wire_type_code: None,
-            conductor_cross_sect_area: 0.0,
-            overall_cross_sect_area: 0.0,
+            conductor_cross_sect_area: 0.0_f64 * ucum::M2,
+            overall_cross_sect_area: 0.0_f64 * ucum::M2,
             stranded: false,
             num_strands: None,
             strand_cross_sect_area: None,

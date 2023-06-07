@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
+use dimensioned::ucum;
+
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has one
 /// core, then it is a wire, not a cable.
 #[derive(Debug, Default, PartialEq)]
@@ -30,17 +32,17 @@ pub struct CableType {
     /// SOOW, NM, USE, etc
     pub cable_type_code: Option<String>,
     /// Cable cross sectional area, in mm^2
-    pub cross_sect_area: f64,
+    pub cross_sect_area: ucum::Meter2<f64>,
     /// Cable cross section shape
     ///
     /// Oval, circular, siamese
     pub cross_section: CrossSection,
     /// height of cable in mm
-    pub height: f64,
+    pub height: ucum::Meter<f64>,
     /// width of cable in mm
-    pub width: f64,
+    pub width: ucum::Meter<f64>,
     /// diameter of cable in mm
-    pub diameter: Option<f64>,
+    pub diameter: Option<ucum::Meter<f64>>,
     /// map of cores in cable
     pub cable_cores: HashMap<String, CableCore>,
     /// vector of exterior insulation/shielding layers
@@ -69,9 +71,9 @@ pub struct CableLayer {
     /// `Material of CableLayer`
     pub material: Option<String>,
     /// Voltage rating for insuation layer
-    pub volt_rating: Option<u64>,
-    /// Temperature rating for insulation layer, specified in C TODO: fix this with proper unicode
-    pub temp_rating: Option<u64>,
+    pub volt_rating: Option<ucum::MilliVolt<f64>>,
+    /// Temperature rating for insulation layer, specified in K
+    pub temp_rating: Option<ucum::Kelvin<f64>>,
     /// color of CableLayer
     pub color: Option<String>,
 }
@@ -90,10 +92,10 @@ impl CableType {
             supplier: None,
             supplier_part_number: None,
             cable_type_code: None,
-            cross_sect_area: 0.0,
+            cross_sect_area: 0.0_f64 * ucum::M2,
             cross_section: CrossSection::default(),
-            height: 0.0,
-            width: 0.0,
+            height: 0.0_f64 * ucum::M,
+            width: 0.0_f64 * ucum::M,
             diameter: None,
             cable_cores: HashMap::new(),
             insul_layers: Vec::new(),

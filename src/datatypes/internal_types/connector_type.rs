@@ -3,6 +3,8 @@ use std::fmt;
 
 use super::{svg::Svg, Empty, Mergable, PartialEmpty};
 
+use dimensioned::ucum;
+
 //TODO: Make some of these fields enums
 /// `ConnectorType` represents a particular type of connector.
 ///
@@ -39,13 +41,13 @@ pub struct ConnectorType {
     /// Male, Female, RPMale, RPFemale, Hermaphrodidic, unknown
     pub gender: Option<String>,
     /// height of connector in mm
-    pub height: f64,
+    pub height: ucum::Meter<f64>,
     /// width of connector in mm
-    pub width: f64,
+    pub width: ucum::Meter<f64>,
     /// depth of connector in mm
-    pub depth: f64,
+    pub depth: ucum::Meter<f64>,
     /// diameter of circular connectors in mm
-    pub diameter: Option<f64>,
+    pub diameter: Option<ucum::Meter<f64>>,
     /// pins inside connector.
     ///
     /// Pin index is not guaranteed to be the same. Use `ConnectorPin.id` for confirming equality.
@@ -88,9 +90,9 @@ impl ConnectorType {
             mount_type: None,
             panel_cutout: None,
             gender: None,
-            height: 0.0,
-            width: 0.0,
-            depth: 0.0,
+            height: 0.0_f64 * ucum::M,
+            width: 0.0_f64 * ucum::M,
+            depth: 0.0_f64 * ucum::M,
             diameter: None,
             pins: Vec::new(),
             visual_rep: Svg::new(),
@@ -526,8 +528,8 @@ impl fmt::Display for ConnectorType {
         if let Some(gender) = &self.gender {
             writeln!(f, "Gender: {gender}")?;
         }
-        writeln!(f, "Height: {:.2} mm", self.height)?;
-        writeln!(f, "Width: {:.2} mm", self.width)?;
+        writeln!(f, "Height: {:.2}", self.height)?;
+        writeln!(f, "Width: {:.2}", self.width)?;
         if let Some(diameter) = &self.diameter {
             writeln!(f, "Diameter: {diameter:.2} mm")?;
         }

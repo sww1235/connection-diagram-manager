@@ -24,9 +24,9 @@ pub struct TermCableType {
     /// Underlying wire type of Terminated Cable
     pub wire: Option<String>,
     /// Nominal Length of Terminated Cable
-    pub nominal_length: Option<u64>,
+    pub nominal_length: Option<f64>,
     /// Actual Length of Terminated Cable
-    pub actual_length: Option<u64>,
+    pub actual_length: Option<f64>,
     /// One end of Terminated Cable.
     pub end1: Vec<TermCableConnector>,
     /// The other end of Terminated Cable

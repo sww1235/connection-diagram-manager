@@ -48,10 +48,10 @@ pub struct WireType {
     pub strand_cross_sect_area: Option<f64>,
     /// Insulation voltage rating.
     /// Specified in volts
-    pub insul_volt_rating: Option<u64>,
+    pub insul_volt_rating: Option<f64>,
     /// Insulation temperature rating.
     /// Specified in ℃
-    pub insul_temp_rating: Option<u64>,
+    pub insul_temp_rating: Option<f64>,
     /// Insulation color
     pub insul_color: Option<String>,
 }

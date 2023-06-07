@@ -36,6 +36,10 @@ use super::util_types::CrossSection;
 use cable_type::CableCore;
 use svg::Svg;
 
+use dimensioned::{f64prefixes, ucum};
+
+//TODO: fix all display methods to use proper units
+
 /// `Library` represents all library data used in program
 #[derive(Debug, Default, PartialEq)]
 pub struct Library {
@@ -236,13 +240,19 @@ impl Library {
                     insulated: wire_types[k].insulated,
                     insulation_material: wire_types[k].insulation_material.clone(),
                     wire_type_code: wire_types[k].wire_type_code.clone(),
-                    conductor_cross_sect_area: wire_types[k].conductor_cross_sect_area,
-                    overall_cross_sect_area: wire_types[k].overall_cross_sect_area,
+                    conductor_cross_sect_area: wire_types[k].conductor_cross_sect_area
+                        * ucum::M2
+                        * f64prefixes::MEGA, //TODO: implement unit text option in file_types
+                    overall_cross_sect_area: wire_types[k].overall_cross_sect_area
+                        * ucum::M2
+                        * f64prefixes::MEGA,
                     stranded: wire_types[k].stranded,
                     num_strands: wire_types[k].num_strands,
-                    strand_cross_sect_area: wire_types[k].strand_cross_sect_area,
-                    insul_volt_rating: wire_types[k].insul_volt_rating,
-                    insul_temp_rating: wire_types[k].insul_temp_rating,
+                    strand_cross_sect_area: wire_types[k]
+                        .strand_cross_sect_area
+                        .map(|x| x * ucum::M2 * f64prefixes::MEGA),
+                    insul_volt_rating: wire_types[k].insul_volt_rating.map(|x| x * ucum::V),
+                    insul_temp_rating: wire_types[k].insul_temp_rating.map(|x| x * ucum::K),
                     insul_color: wire_types[k].insul_color.clone(),
                 };
                 if self.wire_types.contains_key(k) {
@@ -328,10 +338,12 @@ impl Library {
                     supplier: cable_types[k].supplier.clone(),
                     supplier_part_number: cable_types[k].supplier_part_number.clone(),
                     cable_type_code: cable_types[k].cable_type_code.clone(),
-                    cross_sect_area: cable_types[k].cross_sect_area,
-                    height: cable_types[k].height,
-                    width: cable_types[k].width,
-                    diameter: cable_types[k].diameter,
+                    cross_sect_area: cable_types[k].cross_sect_area * ucum::M2 * f64prefixes::MEGA,
+                    height: cable_types[k].height * ucum::M * f64prefixes::KILO,
+                    width: cable_types[k].width * ucum::M * f64prefixes::KILO,
+                    diameter: cable_types[k]
+                        .diameter
+                        .map(|x| x * ucum::M * f64prefixes::MEGA),
                     cross_section: {
                         match cable_types[k].cross_section.to_uppercase().as_str() {
                             "OVAL" => CrossSection::Oval,
@@ -356,8 +368,8 @@ impl Library {
                                 layer_number: layer.layer_number,
                                 layer_type: layer.layer_type.clone(),
                                 material: layer.material.clone(),
-                                volt_rating: layer.volt_rating,
-                                temp_rating: layer.temp_rating,
+                                volt_rating: layer.volt_rating.map(|x| x * ucum::V),
+                                temp_rating: layer.temp_rating.map(|x| x * ucum::K),
                                 color: layer.color.clone(),
                             };
                             new_layers.push(new_layer);
@@ -398,8 +410,12 @@ impl Library {
                     description: pathway_types[k].description.clone(),
                     size: pathway_types[k].size.clone(),
                     trade_size: pathway_types[k].trade_size.clone(),
+                    width: pathway_types[k].width * ucum::M * f64prefixes::KILO,
+                    height: pathway_types[k].height * ucum::M * f64prefixes::KILO,
                     // no clone needed since numeric types have easy copy implementation
-                    cross_sect_area: pathway_types[k].cross_sect_area,
+                    cross_sect_area: pathway_types[k].cross_sect_area
+                        * ucum::M2
+                        * f64prefixes::MEGA,
                     material: pathway_types[k].material.clone(),
                 };
                 if self.pathway_types.contains_key(k) {
@@ -431,12 +447,12 @@ impl Library {
                     supplier_part_number: location_types[k].supplier_part_number.clone(),
                     description: location_types[k].description.clone(),
                     material: location_types[k].material.clone(),
-                    height: location_types[k].height,
-                    width: location_types[k].width,
-                    depth: location_types[k].depth,
-                    usable_width: location_types[k].usable_width,
-                    usable_height: location_types[k].usable_height,
-                    usable_depth: location_types[k].usable_depth,
+                    height: location_types[k].height * ucum::M * f64prefixes::KILO,
+                    width: location_types[k].width * ucum::M * f64prefixes::KILO,
+                    depth: location_types[k].depth * ucum::M * f64prefixes::KILO,
+                    usable_width: location_types[k].usable_width * ucum::M * f64prefixes::KILO,
+                    usable_height: location_types[k].usable_height * ucum::M * f64prefixes::KILO,
+                    usable_depth: location_types[k].usable_depth * ucum::M * f64prefixes::KILO,
                 };
                 if self.location_types.contains_key(k) {
                     trace! {concat!{"LocationType : {} with ",
@@ -470,10 +486,12 @@ impl Library {
                     mount_type: connector_types[k].mount_type.clone(),
                     panel_cutout: connector_types[k].panel_cutout.clone(),
                     gender: connector_types[k].gender.clone(),
-                    height: connector_types[k].height,
-                    width: connector_types[k].width,
-                    depth: connector_types[k].depth,
-                    diameter: connector_types[k].diameter,
+                    height: connector_types[k].height * ucum::M * f64prefixes::KILO,
+                    width: connector_types[k].width * ucum::M * f64prefixes::KILO,
+                    depth: connector_types[k].depth * ucum::M * f64prefixes::KILO,
+                    diameter: connector_types[k]
+                        .diameter
+                        .map(|x| x * ucum::M * f64prefixes::KILO),
                     pins: {
                         let mut new_pins = Vec::new();
                         for pin in &connector_types[k].pins {
@@ -596,8 +614,12 @@ impl Library {
                             }
                         }
                     },
-                    nominal_length: term_cable_types[k].nominal_length,
-                    actual_length: term_cable_types[k].actual_length,
+                    nominal_length: term_cable_types[k]
+                        .nominal_length
+                        .map(|x| x * ucum::M * f64prefixes::KILO),
+                    actual_length: term_cable_types[k]
+                        .actual_length
+                        .map(|x| x * ucum::M * f64prefixes::KILO),
                     end1: {
                         let mut new_end1 = Vec::new();
                         for connector in &term_cable_types[k].end1 {
@@ -933,7 +955,8 @@ impl Project {
                     },
                     identifier: pathways[k].identifier.clone(),
                     description: pathways[k].description.clone(),
-                    length: pathways[k].length,
+                    //TODO: figure out how to parse units from file
+                    length: pathways[k].length * ucum::M * f64prefixes::MILLI,
                 };
                 if self.pathways.contains_key(k) {
                     trace! {concat!{"Pathway : {} with contents: ",
@@ -1052,7 +1075,9 @@ impl Project {
                     },
                     identifier: wire_cables[k].identifier.clone(),
                     description: wire_cables[k].description.clone(),
-                    length: wire_cables[k].length,
+                    length: wire_cables[k]
+                        .length
+                        .map(|x| x * ucum::M * f64prefixes::KILO),
                     pathway: {
                         // clone string here to avoid moving value out of hashmap.
                         if let Some(pathway) = wire_cables[k].pathway.clone() {

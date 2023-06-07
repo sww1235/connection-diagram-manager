@@ -26,7 +26,10 @@ pub struct PathwayType {
     pub size: Option<String>,
     /// Trade Size of pathway
     pub trade_size: Option<String>,
-    //TODO: add in height, width, etc
+    /// Height of pathway in mm
+    pub height: f64,
+    /// Width of pathway in mm
+    pub width: f64,
     /// Inner cross sectional area of pathway
     pub cross_sect_area: f64,
     /// Main material of pathway
@@ -62,6 +65,8 @@ impl fmt::Display for PathwayType {
         if let Some(trade_size) = &self.trade_size {
             writeln!(f, "Trade Size: {trade_size}")?;
         }
+        writeln!(f, "Height: {:.2}", self.height)?;
+        writeln!(f, "Width: {:.2}", self.width)?;
         //TODO: implement unit conversion function
         writeln!(f, "Cross Sectional Area: {:.2} mm^2", self.cross_sect_area)?;
         if let Some(material) = &self.material {

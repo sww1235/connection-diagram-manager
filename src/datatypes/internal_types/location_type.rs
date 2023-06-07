@@ -31,17 +31,17 @@ pub struct LocationType {
     /// Main material of LocationType
     pub material: Option<String>,
     /// Width of locationType
-    pub width: f64,
+    pub width: ucum::Meter<f64>,
     /// Height of locationType
-    pub height: f64,
+    pub height: ucum::Meter<f64>,
     /// Depth of locationType
-    pub depth: f64,
+    pub depth: ucum::Meter<f64>,
     /// Usable Width of locationType
-    pub usable_width: f64,
+    pub usable_width: ucum::Meter<f64>,
     /// Usable Height of locationType
-    pub usable_height: f64,
+    pub usable_height: ucum::Meter<f64>,
     /// Usable Depth of locationType
-    pub usable_depth: f64,
+    pub usable_depth: ucum::Meter<f64>,
 }
 
 impl LocationType {
@@ -59,12 +59,12 @@ impl LocationType {
             supplier_part_number: None,
             description: None,
             material: None,
-            width: 0.0,
-            height: 0.0,
-            depth: 0.0,
-            usable_width: 0.0,
-            usable_height: 0.0,
-            usable_depth: 0.0,
+            width: 0.0_f64 * ucum::M,
+            height: 0.0_f64 * ucum::M,
+            depth: 0.0_f64 * ucum::M,
+            usable_width: 0.0_f64 * ucum::M,
+            usable_height: 0.0_f64 * ucum::M,
+            usable_depth: 0.0_f64 * ucum::M,
         }
     }
 }

@@ -3,6 +3,8 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
+use dimensioned::ucum;
+
 use super::{
     cable_type::CableType, connector_type::ConnectorType, wire_type::WireType, Empty, Mergable,
     PartialEmpty,
@@ -29,9 +31,9 @@ pub struct TermCableType {
     /// Underlying wire or cable type of Terminated Cable
     pub wire_cable: WireCable,
     /// Nominal Length of Terminated Cable
-    pub nominal_length: Option<u64>, //TODO: decide if one of these should be optional or not
+    pub nominal_length: Option<ucum::Meter<f64>>, //TODO: decide if one of these should be optional or not
     /// Actual Length of Terminated Cable
-    pub actual_length: Option<u64>,
+    pub actual_length: Option<ucum::Meter<f64>>,
     /// One end of Terminated Cable.
     pub end1: Vec<TermCableConnector>,
     /// The other end of Terminated Cable

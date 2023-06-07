@@ -5,6 +5,8 @@ use std::rc::Rc;
 
 use super::{pathway_type::PathwayType, Empty, Mergable, PartialEmpty};
 
+use dimensioned::ucum;
+
 /// `Pathway` represents a physical instance of a pathway
 #[derive(Debug, Default, PartialEq)]
 pub struct Pathway {
@@ -17,7 +19,7 @@ pub struct Pathway {
     /// Optional description
     pub description: Option<String>,
     /// length TODO: change to correct units
-    pub length: f64,
+    pub length: ucum::Meter<f64>,
 }
 impl Pathway {
     /// Creates an empty instance of `Pathway`
@@ -29,7 +31,7 @@ impl Pathway {
             path_type: Rc::new(RefCell::new(PathwayType::new())),
             identifier: None,
             description: None,
-            length: 0.0,
+            length: 0.0_f64 * ucum::M, // units are not important here
         }
     }
 }

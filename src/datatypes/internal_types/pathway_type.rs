@@ -3,7 +3,9 @@ use std::fmt;
 
 use super::{Empty, Mergable, PartialEmpty};
 
-/// PathwayType represents a route for wires and cables to take from one
+use dimensioned::ucum;
+
+/// `PathwayType` represents a route for wires and cables to take from one
 /// [`LocationType`](super::location_type::LocationType) to another.
 ///
 /// Examples of Pathways include, conduit, cable tray, free air
@@ -29,9 +31,12 @@ pub struct PathwayType {
     pub size: Option<String>,
     /// Trade Size of pathway
     pub trade_size: Option<String>,
-    //TODO: add in height, width, etc
+    /// height of pathway in mm
+    pub height: ucum::Meter<f64>,
+    /// width of pathway in mm
+    pub width: ucum::Meter<f64>,
     /// Inner cross sectional area of pathway
-    pub cross_sect_area: f64,
+    pub cross_sect_area: ucum::Meter2<f64>,
     /// Main material of pathway
     pub material: Option<String>,
 }
@@ -51,7 +56,9 @@ impl PathwayType {
             description: None,
             size: None,
             trade_size: None,
-            cross_sect_area: 0.0,
+            height: 0.0_f64 * ucum::M,
+            width: 0.0_f64 * ucum::M,
+            cross_sect_area: 0.0_f64 * ucum::M2,
             material: None,
         }
     }
@@ -263,6 +270,18 @@ impl Mergable for PathwayType {
                 ],
             );
         }
+        if self.height != other.height {
+            input_map.insert(
+                "Height".to_string(),
+                [self.height.to_string(), other.height.to_string()],
+            );
+        }
+        if self.width != other.width {
+            input_map.insert(
+                "Width".to_string(),
+                [self.width.to_string(), other.width.to_string()],
+            );
+        }
         if self.cross_sect_area != other.cross_sect_area {
             input_map.insert(
                 "Cross Sectional Area".to_string(),
@@ -323,6 +342,12 @@ impl Mergable for PathwayType {
         if results["Trade Size"] {
             self.trade_size = other.trade_size.clone();
         }
+        if results["Height"] {
+            self.height = other.height;
+        }
+        if results["Width"] {
+            self.width = other.width;
+        }
         if results["Cross Sectional Area"] {
             self.cross_sect_area = other.cross_sect_area;
         }
@@ -350,6 +375,8 @@ impl PartialEmpty for PathwayType {
             && self.description == tester.description
             && self.size == tester.size
             && self.trade_size == tester.trade_size
+            && self.height == tester.height
+            && self.width == tester.width
             && self.cross_sect_area == tester.cross_sect_area
             && self.material == tester.material
     }
@@ -385,6 +412,8 @@ impl fmt::Display for PathwayType {
         if let Some(trade_size) = &self.trade_size {
             writeln!(f, "Trade Size: {trade_size}")?;
         }
+        writeln!(f, "Height: {:.2}", self.height)?;
+        writeln!(f, "Width: {:.2}", self.width)?;
         //TODO: implement unit conversion function
         writeln!(f, "Cross Sectional Area: {:.2} mm^2", self.cross_sect_area)?;
         if let Some(material) = &self.material {
