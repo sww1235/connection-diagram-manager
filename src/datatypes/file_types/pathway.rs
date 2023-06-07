@@ -13,7 +13,7 @@ pub struct Pathway {
     pub identifier: Option<String>,
     /// Optional description
     pub description: Option<String>,
-    /// length TODO: change to correct units
+    /// Length of pathway
     pub length: f64,
 }
 

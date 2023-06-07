@@ -3,10 +3,12 @@ use std::fmt;
 
 use super::{Empty, Mergable, PartialEmpty};
 
+use dimensioned::ucum;
+
 //TODO: create physical location stuff
-/// LocationType represents a type/model of location.
+/// `LocationType` represents a type/model of location.
 ///
-/// Examples of LocationType include junction boxes, racks, panels, etc.
+/// Examples of `LocationType` include junction boxes, racks, panels, etc.
 /// It does not include places these are located.
 #[derive(Debug, Default, PartialEq)]
 pub struct LocationType {
@@ -44,6 +46,8 @@ pub struct LocationType {
 
 impl LocationType {
     /// Creates an empty instance of `LocationType`
+    #[allow(clippy::arithmetic_side_effects)]
+    #[must_use]
     pub fn new() -> Self {
         Self {
             id: String::new(),
@@ -65,6 +69,8 @@ impl LocationType {
     }
 }
 impl Mergable for LocationType {
+    #[allow(clippy::too_many_lines)]
+    // TODO: see if this can be split up
     fn merge_prompt(
         &mut self,
         other: &Self,

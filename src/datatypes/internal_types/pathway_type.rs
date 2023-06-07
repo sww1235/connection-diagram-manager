@@ -37,6 +37,8 @@ pub struct PathwayType {
 }
 impl PathwayType {
     /// Creates an empty instance of `PathwayType`
+    #[allow(clippy::arithmetic_side_effects)]
+    #[must_use]
     pub fn new() -> Self {
         Self {
             id: String::new(),
@@ -56,6 +58,8 @@ impl PathwayType {
 }
 
 impl Mergable for PathwayType {
+    #[allow(clippy::too_many_lines)]
+    // TODO: see if this can be split up
     fn merge_prompt(
         &mut self,
         other: &Self,

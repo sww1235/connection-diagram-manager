@@ -3,9 +3,9 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 
 //TODO: create physical location stuff
-/// LocationType represents a type/model of location.
+/// `LocationType` represents a type/model of location.
 ///
-/// Examples of LocationType include junction boxes, racks, panels, etc.
+/// Examples of `LocationType` include junction boxes, racks, panels, etc.
 /// It does not include places these are located.
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct LocationType {

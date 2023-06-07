@@ -38,6 +38,7 @@ impl PartialEmpty for Svg {
 
 impl Svg {
     /// `new()` creates a new SVG
+    #[must_use]
     pub fn new() -> Self {
         //TODO: actually have this be a blank SVG
         Self(String::new())

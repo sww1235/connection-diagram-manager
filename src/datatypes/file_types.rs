@@ -15,7 +15,7 @@ pub mod term_cable_type;
 /// `wire_type` represents an individual wire with optional insulation
 pub mod wire_type;
 
-/// `equipment` represents an instance of an EquipmentType. This is a physical item
+/// `equipment` represents an instance of an `EquipmentType`. This is a physical item
 /// you hold in your hand.
 pub mod equipment;
 /// `location` represents an instance of a `LocationType`
@@ -77,13 +77,20 @@ pub struct DataFile {
     pub pathways: Option<HashMap<String, pathway::Pathway>>,
 }
 
-/// `data_parser` deserializes a provided file handle into a Data Struct
+/// `data_parser` deserializes a provided file handle into a `DataFile`
 fn data_parser(data_file: fs::File) -> Result<DataFile, serde_yaml::Error> {
     let data: DataFile = serde_yaml::from_reader(data_file)?;
     Ok(data)
 }
 
 /// `project_dir_parser` takes in a project directory and parses all source files found within
+///
+/// # Errors
+///
+/// Will error if:
+/// - reading any of the individual project files fails
+/// - the specified `project_dir` is not a directory
+/// - `os_str` failed to parse to UTF-8
 pub fn parse_project_dir(project_dir: path::PathBuf) -> Result<Vec<DataFile>, io::Error> {
     let mut files = Vec::<DataFile>::new();
     if project_dir.as_path().is_dir() {
@@ -98,6 +105,7 @@ pub fn parse_project_dir(project_dir: path::PathBuf) -> Result<Vec<DataFile>, io
     }
 }
 
+/// `proj_dir_parse_inner` is the recursive function to parse all project directories
 fn proj_dir_parse_inner(
     inner_dir: path::PathBuf,
     datafiles: &mut Vec<DataFile>,
@@ -105,7 +113,12 @@ fn proj_dir_parse_inner(
     let ext = match inner_dir.extension() {
         Some(ext) => match ext.to_str() {
             Some(ext) => ext,
-            None => panic! {"os_str failed to parse to valid utf-8"},
+            None => {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "os_str failed to parse to valid utf-8",
+                ))
+            }
         },
         None => "",
     };

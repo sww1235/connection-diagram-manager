@@ -85,16 +85,16 @@ pub trait Mergable {
     // index out of the array, with keys as struct field names
 }
 
-/// `Empty` indicates that an object can be checked for PartialEq to Object::new()
+/// `Empty` indicates that an object can be checked for `PartialEq` to `Object::new()`
 pub trait Empty {
-    /// `is_empty` checks to see if self is PartialEq to Object::new()
+    /// `is_empty` checks to see if self is `PartialEq` to `Object::new()`
     fn is_empty(&self) -> bool;
 }
 
-/// `PartialEmpty` indicates that an object can be checked to be almost PartialEq to Object::new(),
+/// `PartialEmpty` indicates that an object can be checked to be almost `PartialEq` to `Object::new()`,
 /// excepting the id field
 pub trait PartialEmpty {
-    /// `is_partial_empty` checks to see if self is almost PartialEq to Object::new() but id can be
+    /// `is_partial_empty` checks to see if self is almost `PartialEq` to `Object::new()` but id can be
     /// different
     fn is_partial_empty(&self) -> bool;
 }
@@ -103,6 +103,7 @@ pub trait PartialEmpty {
 //can be updated with new serialized data
 impl Library {
     ///Initializes an empty `Library`
+    #[must_use]
     pub fn new() -> Self {
         Library {
             wire_types: HashMap::new(),
@@ -116,6 +117,8 @@ impl Library {
     }
     /// `from_datafiles` converts between the textual representation of datafiles, and the struct
     /// object representation of the internal objects
+    #[allow(clippy::too_many_lines)]
+    // TODO: see if this can be split up
     pub fn from_datafiles(
         &mut self,
         datafiles: Vec<DataFile>,
@@ -123,7 +126,7 @@ impl Library {
     ) {
         // parse all datafiles
         for datafile in datafiles {
-            self.from_datafile(datafile, prompt_fn)
+            self.from_datafile(datafile, prompt_fn);
         }
         for wire_type in self.wire_types.values() {
             if wire_type.borrow().is_partial_empty() {
@@ -210,6 +213,9 @@ impl Library {
     // need to follow the same rules
     // TODO: maybe rename this to something that doesn't
     // sound like a type conversion function
+    #[allow(clippy::too_many_lines)]
+    // TODO: see if this can be split up
+    #[allow(clippy::arithmetic_side_effects)]
     fn from_datafile(
         &mut self,
         datafile: DataFile,
@@ -268,12 +274,12 @@ impl Library {
                     if core.is_wire && self.wire_types.contains_key(&core.type_str) {
                         cable_core_map.insert(
                             core_id.to_string(),
-                            CableCore::WireType(self.wire_types[&core.type_str].clone()),
+                            CableCore::WireType(Rc::clone(&self.wire_types[&core.type_str])),
                         );
                     } else if !core.is_wire && self.cable_types.contains_key(&core.type_str) {
                         cable_core_map.insert(
                             core_id.to_string(),
-                            CableCore::CableType(self.cable_types[&core.type_str].clone()),
+                            CableCore::CableType(Rc::clone(&self.cable_types[&core.type_str])),
                         );
                     } else {
                         warn! {concat!{
@@ -288,28 +294,28 @@ impl Library {
                             let new_wire_type = Rc::new(RefCell::new(wire_type::WireType::new()));
                             // need to set id of wire type correctly. type_str not
                             // core_id
-                            new_wire_type.borrow_mut().id = core.type_str.to_string();
+                            new_wire_type.borrow_mut().id = core.type_str.clone();
                             // insert new_wire_type as core into cable_core_map
                             cable_core_map.insert(
                                 core_id.to_string(),
-                                CableCore::WireType(new_wire_type.clone()),
+                                CableCore::WireType(Rc::clone(&new_wire_type)),
                             );
                             // also insert new_wire_type into library
                             self.wire_types
-                                .insert(core.type_str.to_string(), new_wire_type.clone());
+                                .insert(core.type_str.clone(), Rc::clone(&new_wire_type));
                         } else {
                             //cable type
                             let new_cable_type =
                                 Rc::new(RefCell::new(cable_type::CableType::new()));
-                            new_cable_type.borrow_mut().id = core.type_str.to_string();
+                            new_cable_type.borrow_mut().id = core.type_str.clone();
                             // insert new_cable_type as core into cable_core_map
                             cable_core_map.insert(
                                 core_id.to_string(),
-                                CableCore::CableType(new_cable_type.clone()),
+                                CableCore::CableType(Rc::clone(&new_cable_type)),
                             );
                             // also insert new_cable_type into library
                             self.cable_types
-                                .insert(core.type_str.to_string(), new_cable_type.clone());
+                                .insert(core.type_str.clone(), Rc::clone(&new_cable_type));
                         }
                     }
                 }
@@ -533,9 +539,9 @@ impl Library {
                             // meaning of the logic
                             if let Some(wire_type_id) = term_cable_types[k].wire.clone() {
                                 if self.wire_types.contains_key(&wire_type_id) {
-                                    term_cable_type::WireCable::WireType(
-                                        self.wire_types[&wire_type_id].clone(),
-                                    )
+                                    term_cable_type::WireCable::WireType(Rc::clone(
+                                        &self.wire_types[&wire_type_id],
+                                    ))
                                 } else {
                                     warn! {concat!{
                                         "WireType: {} in TermCableType: ",
@@ -547,18 +553,18 @@ impl Library {
                                     }
                                     let new_wire_type =
                                         Rc::new(RefCell::new(wire_type::WireType::new()));
-                                    new_wire_type.borrow_mut().id = wire_type_id.to_string();
+                                    new_wire_type.borrow_mut().id = wire_type_id.clone();
                                     // first insert new_wire_type into library
                                     self.wire_types
-                                        .insert(wire_type_id.to_string(), new_wire_type.clone());
+                                        .insert(wire_type_id.clone(), Rc::clone(&new_wire_type));
                                     // then return reference to insert into struct field
-                                    term_cable_type::WireCable::WireType(new_wire_type.clone())
+                                    term_cable_type::WireCable::WireType(Rc::clone(&new_wire_type))
                                 }
                             } else if let Some(cable_type_id) = &term_cable_types[k].cable {
                                 if self.cable_types.contains_key(cable_type_id) {
-                                    term_cable_type::WireCable::CableType(
-                                        self.cable_types[cable_type_id].clone(),
-                                    )
+                                    term_cable_type::WireCable::CableType(Rc::clone(
+                                        &self.cable_types[cable_type_id],
+                                    ))
                                 } else {
                                     warn! {concat!{
                                         "WireType: {} in TermCableType: ",
@@ -572,10 +578,14 @@ impl Library {
                                         Rc::new(RefCell::new(cable_type::CableType::new()));
                                     new_cable_type.borrow_mut().id = cable_type_id.to_string();
                                     // insert new_cable_type into library
-                                    self.cable_types
-                                        .insert(cable_type_id.to_string(), new_cable_type.clone());
+                                    self.cable_types.insert(
+                                        cable_type_id.to_string(),
+                                        Rc::clone(&new_cable_type),
+                                    );
                                     // then return reference to insert into struct field
-                                    term_cable_type::WireCable::CableType(new_cable_type.clone())
+                                    term_cable_type::WireCable::CableType(Rc::clone(
+                                        &new_cable_type,
+                                    ))
                                 }
                             } else {
                                 //TODO: fix this
@@ -595,7 +605,7 @@ impl Library {
                                 connector_type: {
                                     if self.connector_types.contains_key(&connector.connector_type)
                                     {
-                                        self.connector_types[&connector.connector_type].clone()
+                                        Rc::clone(&self.connector_types[&connector.connector_type])
                                     } else {
                                         warn! {concat!{
                                         "End 1 of TermCableType: {} ",
@@ -612,12 +622,12 @@ impl Library {
                                         ));
                                         // insert new_connector_type into library
                                         self.connector_types.insert(
-                                            connector.connector_type.to_string(),
-                                            new_connector_type.clone(),
+                                            connector.connector_type.clone(),
+                                            Rc::clone(&new_connector_type),
                                         );
                                         // then return reference to insert into struct
                                         // field
-                                        new_connector_type.clone()
+                                        Rc::clone(&new_connector_type)
                                     }
                                 },
                                 terminations: {
@@ -648,7 +658,7 @@ impl Library {
                                 connector_type: {
                                     if self.connector_types.contains_key(&connector.connector_type)
                                     {
-                                        self.connector_types[&connector.connector_type].clone()
+                                        Rc::clone(&self.connector_types[&connector.connector_type])
                                     } else {
                                         warn! {concat!{
                                         "End 2 of TermCableType: {} ",
@@ -665,12 +675,12 @@ impl Library {
                                         ));
                                         // insert new_connector_type into library
                                         self.connector_types.insert(
-                                            connector.connector_type.to_string(),
-                                            new_connector_type.clone(),
+                                            connector.connector_type.clone(),
+                                            Rc::clone(&new_connector_type),
                                         );
                                         // then return reference to insert into struct
                                         // field
-                                        new_connector_type.clone()
+                                        Rc::clone(&new_connector_type)
                                     }
                                 },
                                 terminations: {
@@ -731,7 +741,7 @@ impl Library {
                             let mut new_faces = Vec::new();
                             for face in faces {
                                 let new_face = equipment_type::EquipFace {
-                                    name: face.name.to_string(),
+                                    name: face.name.clone(),
                                     vis_rep: face.vis_rep.clone().map(Svg::from),
                                     connectors: {
                                         if let Some(connectors) = &face.connectors {
@@ -743,9 +753,10 @@ impl Library {
                                                             if self.connector_types.contains_key(
                                                                 &connector.connector_type,
                                                             ) {
-                                                                self.connector_types
-                                                                    [&connector.connector_type]
-                                                                    .clone()
+                                                                Rc::clone(
+                                                                    &self.connector_types
+                                                                        [&connector.connector_type],
+                                                                )
                                                             } else {
                                                                 warn! {concat!{
                                                                 "ConnectorType: {} in Equipment: {} ",
@@ -763,12 +774,12 @@ impl Library {
                                                                 self.connector_types.insert(
                                                                     connector
                                                                         .connector_type
-                                                                        .to_string(),
-                                                                    new_connector_type.clone(),
+                                                                        .clone(),
+                                                                    Rc::clone(&new_connector_type),
                                                                 );
                                                                 // then return reference to insert into struct
                                                                 // field
-                                                                new_connector_type.clone()
+                                                                Rc::clone(&new_connector_type)
                                                             }
                                                         },
                                                         direction: connector.direction.clone(),
@@ -813,6 +824,7 @@ impl Library {
 
 impl Project {
     ///Initializes an empty `Project`
+    #[must_use]
     pub fn new() -> Self {
         Project {
             locations: HashMap::new(),
@@ -831,7 +843,7 @@ impl Project {
     ) {
         // parse all datafiles
         for datafile in datafiles {
-            self.from_datafile(datafile, library, prompt_fn)
+            self.from_datafile(datafile, library, prompt_fn);
         }
         for location in self.locations.values() {
             if location.borrow().is_partial_empty() {
@@ -888,6 +900,9 @@ impl Project {
     // need to follow the same rules
     // TODO: maybe rename this to something that doesn't
     // sound like a type conversion function
+    #[allow(clippy::too_many_lines)]
+    // TODO: see if this can be split up
+    #[allow(clippy::arithmetic_side_effects)]
     fn from_datafile(
         &mut self,
         datafile: DataFile,
@@ -901,7 +916,7 @@ impl Project {
                     id: k.to_string(),
                     path_type: {
                         if library.pathway_types.contains_key(&pathways[k].path_type) {
-                            library.pathway_types[&pathways[k].path_type].clone()
+                            Rc::clone(&library.pathway_types[&pathways[k].path_type])
                         } else {
                             // since this is project, not library, we want to error
                             // for types not found in library, since they should
@@ -970,9 +985,9 @@ impl Project {
                             // clone string here to avoid moving value out of hashmap.
                             if let Some(wire_type) = wire_cables[k].wire.clone() {
                                 if library.wire_types.contains_key(&wire_type) {
-                                    wire_cable::WireCableType::WireType(
-                                        library.wire_types[&wire_type].clone(),
-                                    )
+                                    wire_cable::WireCableType::WireType(Rc::clone(
+                                        &library.wire_types[&wire_type],
+                                    ))
                                 } else {
                                     // since this is project, not library, we want to error
                                     // for types not found in library, since they should
@@ -989,9 +1004,9 @@ impl Project {
                             // clone string here to avoid moving value out of hashmap.
                             } else if let Some(cable_type) = wire_cables[k].cable.clone() {
                                 if library.cable_types.contains_key(&cable_type) {
-                                    wire_cable::WireCableType::CableType(
-                                        library.cable_types[&cable_type].clone(),
-                                    )
+                                    wire_cable::WireCableType::CableType(Rc::clone(
+                                        &library.cable_types[&cable_type],
+                                    ))
                                 } else {
                                     // since this is project, not library, we want to error
                                     // for types not found in library, since they should
@@ -1009,9 +1024,9 @@ impl Project {
                             } else if let Some(term_cable_type) = wire_cables[k].term_cable.clone()
                             {
                                 if library.term_cable_types.contains_key(&term_cable_type) {
-                                    wire_cable::WireCableType::TermCableType(
-                                        library.term_cable_types[&term_cable_type].clone(),
-                                    )
+                                    wire_cable::WireCableType::TermCableType(Rc::clone(
+                                        &library.term_cable_types[&term_cable_type],
+                                    ))
                                 } else {
                                     // since this is project, not library, we want to error
                                     // for types not found in library, since they should
@@ -1042,7 +1057,7 @@ impl Project {
                         // clone string here to avoid moving value out of hashmap.
                         if let Some(pathway) = wire_cables[k].pathway.clone() {
                             if self.pathways.contains_key(k) {
-                                Some(self.pathways[k].clone())
+                                Some(Rc::clone(&self.pathways[k]))
                             } else {
                                 //these are both project variables so may not be defined
                                 //erroring here is fine.
@@ -1057,9 +1072,9 @@ impl Project {
                                 k, pathway, datafile.file_path.display(), k}
                                 let new_pathway = Rc::new(RefCell::new(pathway::Pathway::new()));
                                 // insert new_pathway into Project
-                                self.pathways.insert(pathway, new_pathway.clone());
+                                self.pathways.insert(pathway, Rc::clone(&new_pathway));
                                 // then return reference for struct field
-                                Some(new_pathway)
+                                Some(Rc::clone(&new_pathway))
                             }
                         } else {
                             None
@@ -1093,7 +1108,7 @@ impl Project {
                             .location_types
                             .contains_key(&locations[k].location_type)
                         {
-                            library.location_types[&locations[k].location_type].clone()
+                            Rc::clone(&library.location_types[&locations[k].location_type])
                         } else {
                             // since this is project, not library, we want to error
                             // for types not found in library, since they should
@@ -1140,7 +1155,7 @@ impl Project {
                             .equipment_types
                             .contains_key(&equipment[k].equipment_type)
                         {
-                            library.equipment_types[&equipment[k].equipment_type].clone()
+                            Rc::clone(&library.equipment_types[&equipment[k].equipment_type])
                         } else {
                             // since this is project, not library, we want to error
                             // for types not found in library, since they should
@@ -1165,7 +1180,7 @@ impl Project {
                             #[allow(clippy::map_entry)]
                             // TODO: use entry mechanic to fix this, allowing for now
                             if self.locations.contains_key(&file_location) {
-                                Some(self.locations[k].clone())
+                                Some(Rc::clone(&self.locations[k]))
                             } else {
                                 error! {concat!{
                                 "Location: {} is assigned to ",
@@ -1176,9 +1191,10 @@ impl Project {
                                 k, file_location, datafile.file_path.display()}
                                 let new_location = Rc::new(RefCell::new(location::Location::new()));
                                 // add new_location to Project
-                                self.locations.insert(file_location, new_location.clone());
+                                self.locations
+                                    .insert(file_location, Rc::clone(&new_location));
                                 // then return reference to struct field
-                                Some(new_location.clone())
+                                Some(Rc::clone(&new_location))
                             }
                         } else {
                             None

@@ -51,6 +51,7 @@ pub struct CableType {
 
 /// `CableCore` represents an individual conductor, strength member or optical fiber in a cable.
 #[derive(Debug, PartialEq, Clone)]
+#[allow(clippy::exhaustive_enums)]
 pub enum CableCore {
     /// `WireType`
     WireType(Rc<RefCell<WireType>>),
@@ -77,6 +78,8 @@ pub struct CableLayer {
 
 impl CableType {
     /// Creates an empty instance of `CableType`
+    #[allow(clippy::arithmetic_side_effects)]
+    #[must_use]
     pub fn new() -> Self {
         Self {
             id: String::new(),
@@ -99,6 +102,8 @@ impl CableType {
 }
 
 impl Mergable for CableType {
+    #[allow(clippy::too_many_lines)]
+    // TODO: see if this can be split up
     fn merge_prompt(
         &mut self,
         other: &Self,
@@ -315,10 +320,11 @@ impl Mergable for CableType {
             let mut self_string = String::new();
             let mut other_string = String::new();
             for core in self.cable_cores.keys() {
-                self_string = self_string + core + "\t"
+                self_string.push_str(core);
+                self_string.push('\t');
             }
             for core in other.cable_cores.keys() {
-                other_string = other_string + core
+                other_string.push_str(core);
             }
             input_map.insert("Cable Cores".to_string(), [self_string, other_string]);
         }
@@ -334,7 +340,7 @@ impl Mergable for CableType {
                 if let Some(color) = &layer.color {
                     self_string.push_str(color.as_str());
                 }
-                self_string.push_str(")\t")
+                self_string.push_str(")\t");
             }
             for layer in &other.insul_layers {
                 other_string.push('(');

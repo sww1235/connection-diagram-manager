@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use std::fmt;
 
-/// PathwayType represents a route for wires and cables to take from one
+/// `PathwayType` represents a route for wires and cables to take from one
 /// [`LocationType`](super::location_type::LocationType) to another.
 ///
 /// Examples of Pathways include, conduit, cable tray, free air

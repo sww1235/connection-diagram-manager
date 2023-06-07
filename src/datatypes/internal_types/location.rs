@@ -22,6 +22,7 @@ pub struct Location {
 }
 impl Location {
     /// Creates an empty instance of `Location`
+    #[must_use]
     pub fn new() -> Self {
         Self {
             id: String::new(),
@@ -119,7 +120,7 @@ impl Mergable for Location {
         let results = prompt_fn(input_map);
         // false means don't replace value in self struct
         if results["Location Type"] {
-            self.location_type = other.location_type.clone();
+            self.location_type = Rc::clone(&other.location_type);
         }
         if results["Identifier"] {
             self.identifier = other.identifier.clone();

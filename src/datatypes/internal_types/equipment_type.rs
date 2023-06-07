@@ -6,7 +6,7 @@ use std::fmt;
 use std::rc::Rc;
 
 //TODO: Make some of these fields enums
-/// EquipmentType represents a type of equipment
+/// `EquipmentType` represents a type of equipment
 ///
 /// Anything from a rackmount piece of gear to an outlet or terminal block
 #[derive(Debug, Default, PartialEq)]
@@ -55,8 +55,8 @@ pub struct EquipFace {
 }
 
 //TODO: Make some of these fields enums
-/// EquipmentConnector represents an instance of a [`ConnectorType`](super::connector_type::ConnectorType) in
-/// a EquipmentType
+/// `EquipmentConnector` represents an instance of a [`ConnectorType`](super::connector_type::ConnectorType) in
+/// a `EquipmentType`
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct EquipConnector {
     /// Internal ID of `EquipmentConnector`
@@ -66,12 +66,14 @@ pub struct EquipConnector {
     /// output, bidirectiona, passive)
     pub direction: Option<String>,
     /// location of connector on face from left of visrep. Origin is bottom left
-    pub x: u64,
+    pub x: u64, //TODO: Units?
     /// location of connector on face from bottom of visrep. Origin is bottom left
     pub y: u64,
 }
 impl EquipmentType {
     /// Creates an empty instance of `EquipmentType`
+    #[allow(clippy::arithmetic_side_effects)]
+    #[must_use]
     pub fn new() -> Self {
         Self {
             id: String::new(),
@@ -91,6 +93,8 @@ impl EquipmentType {
 }
 
 impl Mergable for EquipmentType {
+    #[allow(clippy::too_many_lines)]
+    // TODO: see if this can be split up
     fn merge_prompt(
         &mut self,
         other: &Self,

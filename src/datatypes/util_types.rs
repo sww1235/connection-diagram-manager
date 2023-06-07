@@ -1,6 +1,7 @@
 use std::fmt;
 
 /// Cross section of wire or cable
+#[non_exhaustive]
 #[derive(Debug, Default, PartialEq, Clone)]
 pub enum CrossSection {
     /// A wire or cable with an oval or flat cross section

@@ -30,6 +30,8 @@ pub struct WireCable {
 /// `WireCableType` allows a `WireCable` to store a reference to either a `WireType`, `CableType`
 /// or `TermCableType`
 #[derive(Debug, PartialEq, Clone)]
+#[non_exhaustive]
+#[allow(clippy::module_name_repetitions)]
 pub enum WireCableType {
     /// `CableType`
     CableType(Rc<RefCell<CableType>>),
@@ -47,6 +49,7 @@ impl Default for WireCableType {
 }
 impl WireCable {
     /// Creates an empty instance of `WireCable`
+    #[must_use]
     pub fn new() -> Self {
         Self {
             id: String::new(),
@@ -59,6 +62,8 @@ impl WireCable {
     }
 }
 
+#[allow(clippy::too_many_lines)]
+// TODO: see if this can be split up
 impl Mergable for WireCable {
     fn merge_prompt(
         &mut self,

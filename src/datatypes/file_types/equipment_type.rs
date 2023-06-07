@@ -3,22 +3,22 @@ use serde::{Deserialize, Serialize};
 
 use std::fmt;
 //TODO: Make some of these fields enums
-/// EquipmentType represents a type of equipment.
+/// `EquipmentType` represents a type of equipment.
 ///
 /// Anything from a rackmount piece of gear to an outlet or terminal block. This represents
 /// something that is off the shelf, or at least self contained and does not have internal
 /// connections that needs to be known to this tool.
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct EquipmentType {
-    /// Manufacturer of Equipment
+    /// Manufacturer of `Equipment`
     pub manufacturer: Option<String>,
     /// Model of Equipment
     pub model: Option<String>,
-    /// Part Number of Equipment
+    /// Part Number of `Equipment`
     pub part_number: Option<String>,
     /// Manufacturer's Part Number
     pub manufacturer_part_number: Option<String>,
-    /// Supplier of Equipment
+    /// Supplier of `Equipment`
     pub supplier: Option<String>,
     /// Supplier's Part Number
     pub supplier_part_number: Option<String>,

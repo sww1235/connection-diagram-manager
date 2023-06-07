@@ -59,6 +59,8 @@ pub struct WireType {
 
 impl WireType {
     /// Creates an empty instance of `WireType`
+    #[allow(clippy::arithmetic_side_effects)]
+    #[must_use]
     pub fn new() -> Self {
         Self {
             id: String::new(),
@@ -85,6 +87,8 @@ impl WireType {
 }
 
 impl Mergable for WireType {
+    #[allow(clippy::too_many_lines)]
+    // TODO: see if this can be split up
     fn merge_prompt(
         &mut self,
         other: &Self,

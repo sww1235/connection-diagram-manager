@@ -33,23 +33,23 @@ pub struct TermCableType {
     pub end2: Vec<TermCableConnector>,
 }
 
-/// TermCableConnectorTermination represents the connections between a pin of an individual
-/// TermCableConnector and the individual core of the cable.
+/// `TermCableConnectorTermination` represents the connections between a pin of an individual
+/// `TermCableConnector` and the individual core of the cable.
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct TermCableConnectorTermination {
-    /// Core represents which individual wire inside a cable this pin is connected to
+    /// `Core` represents which individual wire inside a cable this pin is connected to
     pub core: Option<u64>,
-    /// Pin represents which pin in the associated connector the core is connected to
+    /// `Pin` represents which pin in the associated connector the core is connected to
     pub pin: Option<u64>,
 }
 
-/// TermCableConnector represents a connector on one end of a TermCable
+/// `TermCableConnector` represents a connector on one end of a `TermCable`
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct TermCableConnector {
-    /// connector_type represents the connector type that is on the end of a TermCable
+    /// `connector_type` represents the connector type that is on the end of a `TermCable`
     #[serde(rename = "type")]
     pub connector_type: String,
-    /// terminations represents the pin/core mapping for this connector
+    /// `terminations` represents the pin/core mapping for this connector
     pub terminations: Option<Vec<TermCableConnectorTermination>>,
 }
 impl fmt::Display for TermCableType {
@@ -65,10 +65,7 @@ impl fmt::Display for TermCableType {
             writeln!(f, "\tPart Number: {part_number}")?;
         }
         if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
-            writeln!(
-                f,
-                "\tManufacturer Part Number: {manufacturer_part_number}"
-            )?;
+            writeln!(f, "\tManufacturer Part Number: {manufacturer_part_number}")?;
         }
         if let Some(supplier) = &self.supplier {
             writeln!(f, "\tSupplier: {supplier}")?;

@@ -40,6 +40,7 @@ pub struct TermCableType {
 
 /// `WireCable` allows either a `WireType` or `CableType` to be the root of a `TermCableType`
 #[derive(Debug, PartialEq, Clone)]
+#[allow(clippy::exhaustive_enums)]
 pub enum WireCable {
     /// CableType
     CableType(Rc<RefCell<CableType>>),
@@ -53,26 +54,27 @@ impl Default for WireCable {
     }
 }
 
-/// TermCableConnectorTermination represents the connections between a pin of an individual
-/// TermCableConnector and the individual core of the cable.
+/// `TermCableConnectorTermination` represents the connections between a pin of an individual
+/// `TermCableConnector` and the individual core of the cable.
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct TermCableConnectorTermination {
-    /// Core represents which individual wire inside a cable this pin is connected to
+    /// `Core` represents which individual wire inside a cable this pin is connected to
     pub core: Option<u64>,
-    /// Pin represents which pin in the associated connector the core is connected to
+    /// `Pin` represents which pin in the associated connector the core is connected to
     pub pin: Option<u64>,
 }
 
-/// TermCableConnector represents a connector on one end of a TermCable
+/// `TermCableConnector` represents a connector on one end of a `TermCable`
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct TermCableConnector {
-    /// connector_type represents the connector type that is on the end of a TermCable
+    /// `connector_type` represents the connector type that is on the end of a `TermCable`
     pub connector_type: Rc<RefCell<ConnectorType>>,
-    /// terminations represents the pin/core mapping for this connector
+    /// `terminations` represents the pin/core mapping for this connector
     pub terminations: Option<Vec<TermCableConnectorTermination>>,
 }
 impl TermCableType {
     /// Creates an empty instance of `TermCableType`
+    #[must_use]
     pub fn new() -> Self {
         Self {
             id: String::new(),
@@ -93,6 +95,8 @@ impl TermCableType {
 }
 
 impl Mergable for TermCableType {
+    #[allow(clippy::too_many_lines)]
+    // TODO: see if this can be split up
     fn merge_prompt(
         &mut self,
         other: &Self,
@@ -313,12 +317,14 @@ impl Mergable for TermCableType {
             let mut self_string = String::new();
             let mut other_string = String::new();
             for connector in &self.end1 {
-                self_string =
-                    self_string + "(" + connector.connector_type.borrow().id.as_str() + "\t"
+                self_string.push('(');
+                self_string.push_str(connector.connector_type.borrow().id.as_str());
+                self_string.push('\t');
             }
             for connector in &other.end1 {
-                other_string =
-                    other_string + "(" + connector.connector_type.borrow().id.as_str() + "\t"
+                other_string.push('(');
+                other_string.push_str(connector.connector_type.borrow().id.as_str());
+                other_string.push('\t');
             }
             input_map.insert("End1".to_string(), [self_string, other_string]);
         }
@@ -326,12 +332,14 @@ impl Mergable for TermCableType {
             let mut self_string = String::new();
             let mut other_string = String::new();
             for connector in &self.end2 {
-                self_string =
-                    self_string + "(" + connector.connector_type.borrow().id.as_str() + "\t"
+                self_string.push('(');
+                self_string.push_str(connector.connector_type.borrow().id.as_str());
+                self_string.push('\t');
             }
             for connector in &other.end2 {
-                other_string =
-                    other_string + "(" + connector.connector_type.borrow().id.as_str() + "\t"
+                other_string.push('(');
+                other_string.push_str(connector.connector_type.borrow().id.as_str());
+                other_string.push('\t');
             }
             input_map.insert("End2".to_string(), [self_string, other_string]);
         }

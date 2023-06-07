@@ -73,6 +73,8 @@ pub struct ConnectorPin {
 
 impl ConnectorType {
     /// Creates an empty instance of `ConnectorType`
+    #[allow(clippy::arithmetic_side_effects)]
+    #[must_use]
     pub fn new() -> Self {
         Self {
             id: String::new(),
@@ -96,6 +98,8 @@ impl ConnectorType {
     }
 }
 impl Mergable for ConnectorType {
+    #[allow(clippy::too_many_lines)]
+    // TODO: see if this can be split up
     fn merge_prompt(
         &mut self,
         other: &Self,

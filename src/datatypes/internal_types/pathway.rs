@@ -21,6 +21,8 @@ pub struct Pathway {
 }
 impl Pathway {
     /// Creates an empty instance of `Pathway`
+    #[must_use]
+    #[allow(clippy::arithmetic_side_effects)]
     pub fn new() -> Self {
         Self {
             id: String::new(),
@@ -103,7 +105,7 @@ impl Mergable for Pathway {
         let results = prompt_fn(input_map);
         // false means don't replace value in self struct
         if results["Path Type"] {
-            self.path_type = other.path_type.clone();
+            self.path_type = Rc::clone(&other.path_type);
         }
         if results["Identifier"] {
             self.identifier = other.identifier.clone();

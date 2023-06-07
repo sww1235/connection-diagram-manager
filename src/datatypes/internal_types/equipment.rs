@@ -25,6 +25,7 @@ pub struct Equipment {
 }
 impl Equipment {
     /// Creates an empty instance of `Equipment`
+    #[must_use]
     pub fn new() -> Self {
         Self {
             id: String::new(),
@@ -38,6 +39,8 @@ impl Equipment {
 }
 
 impl Mergable for Equipment {
+    #[allow(clippy::too_many_lines)]
+    // TODO: see if this can be split up
     fn merge_prompt(
         &mut self,
         other: &Self,
@@ -144,7 +147,7 @@ impl Mergable for Equipment {
         let results = prompt_fn(input_map);
         // false means don't replace value in self struct
         if results["Equipment Type"] {
-            self.equip_type = other.equip_type.clone();
+            self.equip_type = Rc::clone(&other.equip_type);
         }
         if results["Identifier"] {
             self.identifier = other.identifier.clone();

@@ -19,6 +19,7 @@ pub struct Config {
     pub no_default_libraries: bool,
 }
 
+/// `read_config_file` reads an indivdiual configuration yaml file into a [`fs::File`]
 fn read_config_file(project_directory: &Path) -> Option<fs::File> {
     let src_dir = project_directory.join("src");
     let src_config_filepath = src_dir.join("cdm_config.yaml");
@@ -87,24 +88,24 @@ fn read_config_file(project_directory: &Path) -> Option<fs::File> {
 }
 impl Config {
     /// `parse_config` reads and selects the correct config file within the project directory
+    ///
+    /// # Errors
+    ///
+    /// Will error if any parsed yaml file fails to parse
     pub fn parse_config(project_directory: &Path) -> Result<Self, serde_yaml::Error> {
-        let config_file = match read_config_file(project_directory) {
-            Some(file) => Some(file),
-            None => {
-                info!("No Config file detected and parsed");
-                info!("Returning empty config struct");
-                None
-            }
+        let config_file = if let Some(file) = read_config_file(project_directory) {
+            Some(file)
+        } else {
+            info!("No Config file detected and parsed");
+            info!("Returning empty config struct");
+            None
         };
-        match config_file {
-            Some(config_file) => {
-                let config: Config = serde_yaml::from_reader(config_file)?;
-                Ok(config) // need to have Ok here to return when everything is fine
-            }
-            None => {
-                let config = Config::default();
-                Ok(config) // need to have Ok here to return when everything is fine
-            }
+        if let Some(config_file) = config_file {
+            let config: Config = serde_yaml::from_reader(config_file)?;
+            Ok(config) // need to have Ok here to return when everything is fine
+        } else {
+            let config = Config::default();
+            Ok(config) // need to have Ok here to return when everything is fine
         }
     }
 }
