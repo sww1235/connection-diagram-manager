@@ -225,10 +225,153 @@ impl PDFPage {
 
     /// `add_svg` parses an SVG image, converts it into pdf graphics operators,
     /// and inserts it into the referenced pdf document at the specified page
-    pub fn add_svg() {}
+    ///
+    /// Heavily inspired by [resvg](https://github.com/RazrFalcon/resvg)
+    ///
+    /// # Errors
+    ///
+    /// May error due to malformed SVGs or other errors
+    pub fn add_svg(&mut self, svg_string: &str) -> error::Result<()> {
+        use usvg::{Tree, TreeParsing};
+        let parse_options = usvg::Options::default();
+        let tree = Tree::from_str(svg_string, &parse_options)?;
+        // TODO: either handle or forbid text nodes
+        if tree.has_text_nodes() {
+            return Err(Error::Other("Text Nodes in tree".to_string()).into());
+        }
+        let new_operations = loop_nodes(&tree.root);
+        self.operations.extend(new_operations);
+        Ok(())
+    }
+}
+/// `loop_nodes` loops over a SVG tree or subtree and outputs a vector of PDF operations
+fn loop_nodes(node: &usvg::Node) -> Vec<Operation> {
+    // dereferencing a borrow, but then borrowing the underlying value again
+    let new_operations = match *node.borrow() {
+        usvg::NodeKind::Group(..) => {
+            let mut group_operations = Vec::new();
+            for child in node.children() {
+                group_operations.extend(loop_nodes(&child));
+            }
+            group_operations
+        }
+        usvg::NodeKind::Path(ref path) => convert_path(path),
+        usvg::NodeKind::Image(ref image) => convert_image(image),
+        usvg::NodeKind::Text(_) => Vec::new(), // should already be converted into paths
+    };
+    new_operations
 }
 
-impl PDFDocument<'_> {
+/// `convert_path` convets an SVG path element into a vector of PDF operations
+fn convert_path(path: &usvg::Path) -> Vec<Operation> {
+    use usvg::tiny_skia_path::{PathSegment, Point};
+    let mut new_operations = Vec::new();
+
+    //TODO: figure out scaling here
+
+    //TODO: determine if we need to start with m operation by looking at the first point in
+    //data.points()
+    let mut last_point = Point::zero();
+    for segment in path.data.segments() {
+        match segment {
+            PathSegment::MoveTo(p) => {
+                last_point = p;
+                // begin a new path (subpath in pdf language) by moving the current point to
+                // coordinates (x,y)
+                new_operations.push(Operation::new("m", vec![p.x.into(), p.y.into()]));
+            }
+            PathSegment::LineTo(p) => {
+                last_point = p;
+                // append a straight line segment from current point to the point (x,y).
+                new_operations.push(Operation::new("l", vec![p.x.into(), p.y.into()]));
+            }
+            // p0 is control point, p1 is end point
+            PathSegment::QuadTo(p0, p1) => {
+                // create psuedo control points for cubic from quadratic.
+                // Formuala from https://stackoverflow.com/a/3162732/3342767
+
+                // begining control point
+                #[allow(clippy::arithmetic_side_effects)]
+                let cp1 = last_point
+                    + Point::from_xy(
+                        (2.0 / 3.0) * (p0 - last_point).x,
+                        (2.0 / 3.0) * (p0 - last_point).y,
+                    );
+                // end control point
+                #[allow(clippy::arithmetic_side_effects)]
+                let cp2 = p1 + Point::from_xy((2.0 / 3.0) * (p0 - p1).x, (2.0 / 3.0) * (p0 - p1).y);
+                last_point = p1;
+                // append a cubic bezier curve to current path.
+                // Last 2 points are end point,
+                // First 2 points are begining control point
+                // Second 2 points are end control points
+                new_operations.push(Operation::new(
+                    "c",
+                    vec![
+                        cp1.x.into(),
+                        cp1.y.into(),
+                        cp2.x.into(),
+                        cp2.y.into(),
+                        p1.x.into(),
+                        p1.y.into(),
+                    ],
+                ));
+            }
+            // p0 is begining control point, p1 is end control point, p2 is end point
+            PathSegment::CubicTo(p0, p1, p2) => {
+                last_point = p1;
+                // append a cubic bezier curve to current path.
+                // Last 2 points are end point,
+                // First 2 points are begining control point
+                // Second 2 points are end control points
+                new_operations.push(Operation::new(
+                    "c",
+                    vec![
+                        p0.x.into(),
+                        p0.y.into(),
+                        p1.x.into(),
+                        p1.y.into(),
+                        p2.x.into(),
+                        p2.y.into(),
+                    ],
+                ));
+            }
+            PathSegment::Close => {
+                // close current path by appending a straight line segment from current point to
+                // starting point of path
+                new_operations.push(Operation::new("h", vec![]));
+            }
+        }
+    }
+    new_operations
+}
+
+/// `convert_image` converts an embedded image in an SVG into a vector of PDF operations.
+///
+/// Currently ignores all embedded images other than SVGs.
+fn convert_image(image: &usvg::Image) -> Vec<Operation> {
+    use usvg::ImageKind;
+    match &image.kind {
+        ImageKind::JPEG(_) => {
+            // only vector graphic elements allowed
+            warn! {"svg should not contain images or image tags, ignoring"};
+            Vec::new()
+        }
+        ImageKind::PNG(_) => {
+            // only vector graphic elements allowed
+            warn! {"svg should not contain images or image tags, ignoring"};
+            Vec::new()
+        }
+        ImageKind::GIF(_) => {
+            // only vector graphic elements allowed
+            warn! {"svg should not contain images or image tags, ignoring"};
+            Vec::new()
+        }
+        ImageKind::SVG(tree) => loop_nodes(&tree.root),
+    }
+}
+
+impl<'a> PDFDocument<'a> {
     /// `new` returns a set up and initialized `PDFDocument`
     /// with the specified font paths pre-populated and default page size,
     /// as specified via parameter
