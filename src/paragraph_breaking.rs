@@ -35,7 +35,7 @@ pub fn to_lines(
     textbox_width: ucum::Meter<f64>,
     text_direction: rustybuzz::Direction,
     text_language: rustybuzz::Language,
-) -> error::Result<(Vec<String>, rustybuzz::GlyphBuffer)> {
+) -> Result<(Vec<String>, rustybuzz::GlyphBuffer), error::Error> {
     if text.is_empty() {
         return Err(Error::EmptyString.into());
     }
@@ -107,7 +107,7 @@ fn line_break_internal(
     current_word_index: usize,
     ideal_width: ucum::Meter<f64>,
     max_width: ucum::Meter<f64>,
-) -> error::Result<()> {
+) -> Result<(), error::Error> {
     let glyph_infos = shaped_text.glyph_infos();
     let glyph_positions = shaped_text.glyph_positions();
 
@@ -186,7 +186,7 @@ fn line_break_internal(
 
 #[allow(clippy::arithmetic_side_effects)]
 /// `text_to_words` splits a utf8 string into an array of [`ParagraphWord`]s
-fn text_to_words(text: &str) -> error::Result<Vec<ParagraphWord>> {
+fn text_to_words(text: &str) -> Result<Vec<ParagraphWord>, error::Error> {
     let mut index = 0;
     let mut words = Vec::new();
 
@@ -282,7 +282,7 @@ fn greedy_break(
     units_per_em: u16,
     ideal_width: ucum::Meter<f64>,
     max_width: ucum::Meter<f64>,
-) -> error::Result<()> {
+) -> Result<(), error::Error> {
     let glyph_positions = shaped_text.glyph_positions();
 
     let mut line_length = 0.0_f64 * ucum::M; // any unit will do here

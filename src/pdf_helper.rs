@@ -120,7 +120,7 @@ impl PDFPage {
         text_direction: rustybuzz::Direction,
         text_language: rustybuzz::Language,
         text_render_mode: &PDFTextRenderMode,
-    ) -> error::Result<()> {
+    ) -> Result<(), error::Error> {
         use super::paragraph_breaking::to_lines;
         let (lines, glyphs) = to_lines(
             &text,
@@ -231,7 +231,7 @@ impl PDFPage {
     /// # Errors
     ///
     /// May error due to malformed SVGs or other errors
-    pub fn add_svg(&mut self, svg_string: &str) -> error::Result<()> {
+    pub fn add_svg(&mut self, svg_string: &str) -> Result<(), error::Error> {
         use usvg::{Tree, TreeParsing};
         let parse_options = usvg::Options::default();
         let tree = Tree::from_str(svg_string, &parse_options)?;
@@ -382,7 +382,7 @@ impl<'a> PDFDocument<'a> {
     pub fn new(
         default_page_size: paper::PaperSize,
         font_paths: Vec<PathBuf>,
-    ) -> error::Result<Self> {
+    ) -> Result<Self, error::Error> {
         let mut output = Self {
             default_page_size,
             available_fonts: Vec::new(),
@@ -413,7 +413,7 @@ impl<'a> PDFDocument<'a> {
         &mut self,
         font_file: PathBuf,
         font_index: Option<u32>,
-    ) -> error::Result<()> {
+    ) -> Result<(), error::Error> {
         use rustybuzz::Face;
 
         let font_data = std::fs::read(font_file)?;
@@ -455,7 +455,7 @@ impl<'a> PDFDocument<'a> {
     /// # Errors
     ///
     /// Will error if fonts are not specified in config file, or if a font fails to load.
-    pub fn load_cfg_fonts(&mut self, font_paths: Vec<PathBuf>) -> error::Result<()> {
+    pub fn load_cfg_fonts(&mut self, font_paths: Vec<PathBuf>) -> Result<(), error::Error> {
         if font_paths.is_empty() {
             return Err(
                 Error::FontLoading("No Fonts specified in configuration file".to_string()).into(),
@@ -529,12 +529,13 @@ impl<'a> PDFDocument<'a> {
     /// # Errors
     ///
     /// Saving the file can error with [`std::io`] errors
+    #[allow(clippy::too_many_lines)]
     pub fn write(
         &mut self,
         out_path: &Path,
         file_name: &Path,
         compress: bool,
-    ) -> error::Result<()> {
+    ) -> Result<(), error::Error> {
         let pdf_version = "1.7";
         let mut doc = Document::with_version(pdf_version);
         // default userspace units in PDF are digital printers points
