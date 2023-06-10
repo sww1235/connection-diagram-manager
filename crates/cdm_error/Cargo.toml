@@ -1,0 +1,24 @@
+[package]
+name = "cdm_error"
+version = "0.0.1"
+authors.workspace = true
+edition.workspace = true
+repository.workspace = true
+description = "Error handler for Connection Diagram Manager"
+keywords = ["Connection", "Diagram", "Manager", "Visualiser", "wire", "cable", "connections", "wiring", "harness", "CAD"]
+categories = ["CAD"]
+readme = "README.md"
+license.workspace = true
+
+[dependencies]
+log = "~0"
+lopdf = "~0"
+simple_logger = "~4"
+usvg = "~0"
+paragraph_breaker = {path = "../paragraph_breaker/"}
+pdf_helper = { path = "../pdf_helper/"}
+
+
+[lib]
+name = "cdm_error"
+path = "src/lib.rs"

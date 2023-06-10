@@ -68,14 +68,3 @@ pub mod config;
 /// It also contains functions for parsing data files
 /// and the main `Data` type
 pub mod datatypes;
-/// `pdf_helper` contains functions to generate PDF files.
-/// It wraps `lopdf` with custom functions specific to
-/// producing schematics and reports.
-pub mod pdf_helper;
-
-/// `paragraph_breaking` contains an implementation of a simplified version of the Knuth-Plass
-/// algorithm
-pub mod paragraph_breaking;
-
-/// `error` contains error definitions for the entire library
-pub mod error;

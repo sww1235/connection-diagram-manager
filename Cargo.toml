@@ -1,44 +1,9 @@
-[package]
-name = "connection-diagram-manager-rust"
-version = "0.0.1"
+[workspace]
+
+members = [ "crates/*" ]
+
+[workspace.package]
 authors = ["Stephen Walker-Weinshenker"]
 edition = "2021"
 repository = "https://github.com/sww1235/connection-diagram-manager-rust"
-description = "Connection Diagram Manager and visualizer"
-keywords = ["Connection", "Diagram", "Manager", "Visualiser", "wire", "cable", "connections", "wiring", "harness", "CAD"]
-categories = ["CAD"]
-readme = "README.md"
 license = "MIT OR Apache-2.0"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-clap = { version = "~4", features = ["derive", "unicode", "wrap_help"], optional = true }
-dimensioned = "0.8.0"
-fltk = { version = "~1", optional = true }
-fltk-theme = { version = "~0", optional = true }
-log = "~0"
-lopdf = { version="~0" }
-rustybuzz = "~0.7"
-serde = { version = "~1", features = ["derive"] }
-serde_yaml = "~0"
-simple_logger = "~4"
-usvg = "~0"
-
-[features]
-cli = ["clap"]
-gui = ["clap", "fltk", "fltk-theme"]
-
-[lib]
-name = "cdm_core"
-path = "src/lib.rs"
-
-[[bin]]
-name = "cli"
-path = "src/bin/cli.rs"
-required-features = ["cli"]
-
-[[bin]]
-name = "gui"
-path = "src/bin/gui.rs"
-required-features = ["gui"]

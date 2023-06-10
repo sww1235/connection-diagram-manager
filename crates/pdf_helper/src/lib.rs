@@ -10,9 +10,12 @@ use dimensioned::{ucum, Dimensionless};
 
 use log::warn;
 
-use crate::error;
+use std::io;
 use std::path::{Path, PathBuf};
 use std::str;
+
+use paragraph_breaker::Error as ParagraphError;
+use usvg::Error as USVGError;
 
 /// `PDFDocument` is a helper type to properly generate PDFs
 /// It allows for easier tracking of default page size, available fonts
@@ -120,8 +123,8 @@ impl PDFPage {
         text_direction: rustybuzz::Direction,
         text_language: rustybuzz::Language,
         text_render_mode: &PDFTextRenderMode,
-    ) -> Result<(), error::Error> {
-        use super::paragraph_breaking::to_lines;
+    ) -> Result<(), Error> {
+        use paragraph_breaker::to_lines;
         let (lines, glyphs) = to_lines(
             &text,
             &font.font_face,
@@ -231,7 +234,7 @@ impl PDFPage {
     /// # Errors
     ///
     /// May error due to malformed SVGs or other errors
-    pub fn add_svg(&mut self, svg_string: &str) -> Result<(), error::Error> {
+    pub fn add_svg(&mut self, svg_string: &str) -> Result<(), Error> {
         use usvg::{Tree, TreeParsing};
         let parse_options = usvg::Options::default();
         let tree = Tree::from_str(svg_string, &parse_options)?;
@@ -382,7 +385,7 @@ impl<'a> PDFDocument<'a> {
     pub fn new(
         default_page_size: paper::PaperSize,
         font_paths: Vec<PathBuf>,
-    ) -> Result<Self, error::Error> {
+    ) -> Result<Self, Error> {
         let mut output = Self {
             default_page_size,
             available_fonts: Vec::new(),
@@ -413,7 +416,7 @@ impl<'a> PDFDocument<'a> {
         &mut self,
         font_file: PathBuf,
         font_index: Option<u32>,
-    ) -> Result<(), error::Error> {
+    ) -> Result<(), Error> {
         use rustybuzz::Face;
 
         let font_data = std::fs::read(font_file)?;
@@ -455,7 +458,7 @@ impl<'a> PDFDocument<'a> {
     /// # Errors
     ///
     /// Will error if fonts are not specified in config file, or if a font fails to load.
-    pub fn load_cfg_fonts(&mut self, font_paths: Vec<PathBuf>) -> Result<(), error::Error> {
+    pub fn load_cfg_fonts(&mut self, font_paths: Vec<PathBuf>) -> Result<(), Error> {
         if font_paths.is_empty() {
             return Err(
                 Error::FontLoading("No Fonts specified in configuration file".to_string()).into(),
@@ -535,7 +538,7 @@ impl<'a> PDFDocument<'a> {
         out_path: &Path,
         file_name: &Path,
         compress: bool,
-    ) -> Result<(), error::Error> {
+    ) -> Result<(), Error> {
         let pdf_version = "1.7";
         let mut doc = Document::with_version(pdf_version);
         // default userspace units in PDF are digital printers points
@@ -764,10 +767,16 @@ impl<'a> PDFDocument<'a> {
 #[derive(Debug)]
 #[non_exhaustive]
 pub enum Error {
+    /// Errors relating to linebreaking
+    ParagraphBreaking(String),
+    /// Errors relating to PDF creation and export
+    PDFError(String),
     /// error in loading fonts
     FontLoading(String),
     /// error in parsing svg data
     SVGError(String),
+    /// Errors from [`std::io`]
+    IOError(String),
     /// Other errors
     Other(String),
 }
@@ -778,9 +787,54 @@ impl std::error::Error for Error {}
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match *self {
+            Error::ParagraphBreaking(ref e) => write!(f, "Line Breaking failed: {e}"),
             Error::FontLoading(ref e) => write!(f, "Font Loading: {e}"),
+            Error::PDFError(ref e) => write!(f, "PDF error: {e}"),
             Error::SVGError(ref e) => write!(f, "SVG: {e}"),
+            Error::IOError(ref e) => write!(f, "IO error: {e}"),
             Error::Other(ref e) => write!(f, "{e}"),
+        }
+    }
+}
+
+impl From<ParagraphError> for Error {
+    fn from(e: ParagraphError) -> Self {
+        Error::ParagraphBreaking(format!("{e}"))
+    }
+}
+
+impl From<io::Error> for Error {
+    fn from(e: io::Error) -> Self {
+        Error::IOError(format!("{e}"))
+    }
+}
+impl From<USVGError> for Error {
+    fn from(e: USVGError) -> Self {
+        Error::SVGError(format!("{e}"))
+    }
+}
+impl From<lopdf::Error> for Error {
+    fn from(e: lopdf::Error) -> Self {
+        match e {
+            lopdf::Error::ContentDecode
+            | lopdf::Error::DictKey
+            | lopdf::Error::Header
+            | lopdf::Error::ObjectIdMismatch
+            | lopdf::Error::ObjectNotFound
+            | lopdf::Error::Offset(..)
+            | lopdf::Error::PageNumberNotFound(..)
+            | lopdf::Error::Parse { .. }
+            | lopdf::Error::ReferenceLimit
+            | lopdf::Error::BracketLimit
+            | lopdf::Error::Trailer
+            | lopdf::Error::Type
+            | lopdf::Error::UTF8
+            | lopdf::Error::Syntax(..)
+            | lopdf::Error::Xref(..)
+            | lopdf::Error::Invalid(..)
+            | lopdf::Error::NoOutlines
+            | lopdf::Error::Decryption(..) => Error::PDFError(format!("{e}")),
+            lopdf::Error::IO(..) => Error::IOError(format!("{e}")),
         }
     }
 }

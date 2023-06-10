@@ -1,0 +1,27 @@
+[package]
+name = "pdf_helper"
+version = "0.0.1"
+authors.workspace = true
+edition.workspace = true
+repository.workspace = true
+description = "PDF Helper library for Connection Diagram Manager"
+keywords = ["Connection", "Diagram", "Manager", "Visualiser", "wire", "cable", "connections", "wiring", "harness", "CAD"]
+categories = ["CAD"]
+readme = "README.md"
+license.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dimensioned = "0.8.0"
+log = "~0"
+lopdf = { version="~0" }
+rustybuzz = "~0.7"
+simple_logger = "~4"
+usvg = "~0"
+paragraph_breaker = { path = "../paragraph_breaker/" }
+
+
+[lib]
+name = "pdf_helper"
+path = "src/lib.rs"

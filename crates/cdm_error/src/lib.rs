@@ -1,6 +1,5 @@
-use crate::paragraph_breaking::Error as ParagraphError;
-use crate::pdf_helper::Error as PDFError;
-
+use paragraph_breaker::Error as ParagraphError;
+use pdf_helper::Error as PDFError;
 use usvg::Error as USVGError;
 
 use std::io;
@@ -10,7 +9,7 @@ use std::io;
 #[derive(Debug)]
 pub enum Error {
     /// Errors relating to linebreaking
-    LineBreaking(String),
+    ParagraphBreaking(String),
     /// Errors relating to input / output
     IOError(String),
     /// Errors relating to PDF creation and export
@@ -26,7 +25,7 @@ impl std::error::Error for Error {}
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match *self {
-            Error::LineBreaking(ref e) => write!(f, "Line Breaking failed: {e}"),
+            Error::ParagraphBreaking(ref e) => write!(f, "Line Breaking failed: {e}"),
             Error::IOError(ref e) => write!(f, "IO error: {e}"),
             Error::PDFError(ref e) => write!(f, "PDF error: {e}"),
             Error::USVGError(ref e) => write!(f, "SVG error: {e}"),
@@ -37,7 +36,7 @@ impl std::fmt::Display for Error {
 
 impl From<ParagraphError> for Error {
     fn from(e: ParagraphError) -> Self {
-        Error::LineBreaking(format!("{e}"))
+        Error::ParagraphBreaking(format!("{e}"))
     }
 }
 
