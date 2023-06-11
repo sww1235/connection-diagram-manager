@@ -5,6 +5,7 @@ use super::{wire_type::WireType, Empty, Mergable, PartialEmpty};
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::fmt;
+use std::path::PathBuf;
 use std::rc::Rc;
 
 use dimensioned::ucum;
@@ -47,6 +48,8 @@ pub struct CableType {
     pub cable_cores: HashMap<String, CableCore>,
     /// vector of exterior insulation/shielding layers
     pub insul_layers: Vec<CableLayer>,
+    /// datafile the struct instance was read in from
+    pub contained_datafile_path: PathBuf,
 }
 
 //https://stackoverflow.com/questions/67594909/multiple-possible-types-for-a-serializable-structs-field
@@ -83,23 +86,7 @@ impl CableType {
     #[allow(clippy::arithmetic_side_effects)]
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            id: String::new(),
-            manufacturer: None,
-            model: None,
-            part_number: None,
-            manufacturer_part_number: None,
-            supplier: None,
-            supplier_part_number: None,
-            cable_type_code: None,
-            cross_sect_area: 0.0_f64 * ucum::M2,
-            cross_section: CrossSection::default(),
-            height: 0.0_f64 * ucum::M,
-            width: 0.0_f64 * ucum::M,
-            diameter: None,
-            cable_cores: HashMap::new(),
-            insul_layers: Vec::new(),
-        }
+        Self::default()
     }
 }
 
@@ -357,6 +344,15 @@ impl Mergable for CableType {
             }
             input_map.insert("Insulation Layers".to_string(), [self_string, other_string]);
         }
+        if self.contained_datafile_path != other.contained_datafile_path {
+            input_map.insert(
+                "Datafile Path".to_string(),
+                [
+                    self.contained_datafile_path.display().to_string(),
+                    other.contained_datafile_path.display().to_string(),
+                ],
+            );
+        }
 
         let results = prompt_fn(input_map);
         // false means don't replace value in self struct
@@ -402,6 +398,9 @@ impl Mergable for CableType {
         if results["Insulation Layers"] {
             self.insul_layers = other.insul_layers.clone();
         }
+        if results["Datafile Path"] {
+            self.contained_datafile_path = other.contained_datafile_path.clone();
+        }
     }
 }
 
@@ -428,6 +427,7 @@ impl PartialEmpty for CableType {
             && self.diameter == tester.diameter
             && self.cable_cores == tester.cable_cores
             && self.insul_layers == tester.insul_layers
+            && self.contained_datafile_path == tester.contained_datafile_path
     }
 }
 

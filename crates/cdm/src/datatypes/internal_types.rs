@@ -29,6 +29,7 @@ use log::{error, trace, warn};
 
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
 use super::file_types::DataFile;
@@ -127,7 +128,7 @@ impl Library {
         &mut self,
         datafiles: Vec<DataFile>,
         prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
-    ) {
+    ) -> Result<(), Error> {
         // parse all datafiles
         for datafile in datafiles {
             self.from_datafile(datafile, prompt_fn);
@@ -209,6 +210,7 @@ impl Library {
                 }, pathway_type.borrow().id}
             }
         }
+        Ok(())
     }
 
     /// inserts the correct values from a datafile into the called upon `Library` struct
@@ -376,6 +378,7 @@ impl Library {
                         }
                         new_layers
                     },
+                    contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.cable_types.contains_key(k) {
                     trace! {concat!{
@@ -508,6 +511,7 @@ impl Library {
                         new_pins
                     },
                     visual_rep: Svg::from(connector_types[k].visual_rep.clone()),
+                    contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.connector_types.contains_key(k) {
                     trace! {concat!{
@@ -862,55 +866,52 @@ impl Project {
         datafiles: Vec<DataFile>,
         library: &Library,
         prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
-    ) {
+    ) -> Result<(), Error> {
         // parse all datafiles
         for datafile in datafiles {
-            self.from_datafile(datafile, library, prompt_fn);
+            self.from_datafile(datafile, library, prompt_fn)?;
         }
         for location in self.locations.values() {
             if location.borrow().is_partial_empty() {
-                //TODO: Return error here instead
                 //TODO: Add in source file name here
-                panic! {
-                concat!{
-                    "Location {} was specified in files read in ",
-                    "but no defintion was found. Please correct this.",
-                }, location.borrow().id}
+                return Err(Error::NoDefinitionFound {
+                    datatype: "Location".to_string(),
+                    datatype_id: location.borrow().id.clone(),
+                    datafile_path: PathBuf::new(), //location.contained_datafile_path,
+                });
             }
         }
         for equipment in self.equipment.values() {
             if equipment.borrow().is_partial_empty() {
-                //TODO: Return error here instead
                 //TODO: Add in source file name here
-                panic! {
-                concat!{
-                    "Equipment {} was specified in files read in ",
-                    "but no defintion was found. Please correct this.",
-                }, equipment.borrow().id}
+                return Err(Error::NoDefinitionFound {
+                    datatype: "Equipment".to_string(),
+                    datatype_id: equipment.borrow().id.clone(),
+                    datafile_path: PathBuf::new(), //equipment.contained_datafile_path,
+                });
             }
         }
         for pathway in self.pathways.values() {
             if pathway.borrow().is_partial_empty() {
-                //TODO: Return error here instead
                 //TODO: Add in source file name here
-                panic! {
-                concat!{
-                    "Pathway {} was specified in files read in ",
-                    "but no defintion was found. Please correct this.",
-                }, pathway.borrow().id}
+                return Err(Error::NoDefinitionFound {
+                    datatype: "Pathway".to_string(),
+                    datatype_id: pathway.borrow().id.clone(),
+                    datafile_path: PathBuf::new(), //pathway.contained_datafile_path,
+                });
             }
         }
         for wire_cable in self.wire_cables.values() {
             if wire_cable.borrow().is_partial_empty() {
-                //TODO: Return error here instead
                 //TODO: Add in source file name here
-                panic! {
-                concat!{
-                    "WireCable {} was specified in files read in ",
-                    "but no defintion was found. Please correct this.",
-                }, wire_cable.borrow().id}
+                return Err(Error::NoDefinitionFound {
+                    datatype: "WireCable".to_string(),
+                    datatype_id: wire_cable.borrow().id.clone(),
+                    datafile_path: PathBuf::new(), //wire_cable.contained_datafile_path,
+                });
             }
         }
+        Ok(())
     }
 
     /// `from_datafile` takes a `DataFile` and a `Library` and imports all Project data found
@@ -930,7 +931,7 @@ impl Project {
         datafile: DataFile,
         library: &Library,
         prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
-    ) {
+    ) -> Result<(), Error> {
         // pathway
         if let Some(pathways) = datafile.pathways {
             for (k, v) in &pathways {
@@ -1241,6 +1242,55 @@ impl Project {
                     self.equipment
                         .insert(k.to_string(), Rc::new(RefCell::new(new_equipment)));
                 }
+            }
+        }
+        Ok(())
+    }
+}
+
+/// `Error` is the list of errors that are triggered in this library
+#[non_exhaustive]
+#[derive(Debug)]
+pub enum Error {
+    /// No defintion found for project datatype
+    NoDefinitionFound {
+        datatype: String,
+        datatype_id: String,
+        datafile_path: PathBuf,
+    },
+    /// No defintion found for project datatype contained in other datatype
+    NoContainedDefinitionFound {
+        contained_type: String,
+        contained_type_id: String,
+        container_type: String,
+        container_type_id: String,
+        datafile_path: PathBuf,
+    },
+}
+
+impl std::error::Error for Error {}
+
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match *self {
+            Error::NoDefinitionFound {
+                ref datatype,
+                ref datatype_id,
+                ref datafile_path,
+            } => {
+                write!(
+                    f,
+                    "No definition found for {datatype}: {datatype_id} in file: {datafile_path:?}"
+                )
+            }
+            Error::NoContainedDefinitionFound {
+                ref contained_type,
+                ref contained_type_id,
+                ref container_type,
+                ref container_type_id,
+                ref datafile_path,
+            } => {
+                write!(f, "{contained_type}: {contained_type_id} found in {container_type}: {container_type_id} in file: {datafile_path:?}")
             }
         }
     }

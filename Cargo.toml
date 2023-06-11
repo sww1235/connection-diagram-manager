@@ -7,3 +7,6 @@ authors = ["Stephen Walker-Weinshenker"]
 edition = "2021"
 repository = "https://github.com/sww1235/connection-diagram-manager-rust"
 license = "MIT OR Apache-2.0"
+
+[workspace.dependencies]
+cdm_error = {path = "cdm_error"}

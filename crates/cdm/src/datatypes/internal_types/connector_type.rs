@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::fmt;
+use std::path::PathBuf;
 
 use super::{svg::Svg, Empty, Mergable, PartialEmpty};
 
@@ -54,6 +55,8 @@ pub struct ConnectorType {
     pub pins: Vec<ConnectorPin>,
     /// overall diagram of connector TODO: figure out what angle this should be
     pub visual_rep: Svg,
+    /// datafile the struct instance was read in from
+    pub contained_datafile_path: PathBuf,
 }
 
 /// Represents an individual pin in a `ConnectorType`
@@ -96,6 +99,7 @@ impl ConnectorType {
             diameter: None,
             pins: Vec::new(),
             visual_rep: Svg::new(),
+            contained_datafile_path: PathBuf::new(),
         }
     }
 }
@@ -397,6 +401,15 @@ impl Mergable for ConnectorType {
             }
             input_map.insert("Pins".to_string(), [self_string, other_string]);
         }
+        if self.contained_datafile_path != other.contained_datafile_path {
+            input_map.insert(
+                "Datafile Path".to_string(),
+                [
+                    self.contained_datafile_path.display().to_string(),
+                    other.contained_datafile_path.display().to_string(),
+                ],
+            );
+        }
 
         let results = prompt_fn(input_map);
         // false means don't replace value in self struct
@@ -445,6 +458,9 @@ impl Mergable for ConnectorType {
         if results["Pins"] {
             self.pins = other.pins.clone();
         }
+        if results["Datafile Path"] {
+            self.contained_datafile_path = other.contained_datafile_path.clone();
+        }
     }
 }
 
@@ -472,6 +488,7 @@ impl PartialEmpty for ConnectorType {
             && self.diameter == tester.diameter
             && self.pins == tester.pins
             && self.visual_rep == tester.visual_rep
+            && self.contained_datafile_path == tester.contained_datafile_path
     }
 }
 
