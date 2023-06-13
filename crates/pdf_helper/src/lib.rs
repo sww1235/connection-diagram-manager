@@ -151,8 +151,7 @@ impl PDFPage {
                     "is outside page boundaries. Please fix this"
                 ),
                 current_page_size.0, current_page_size.1,
-            ))
-            .into());
+            )));
         }
         #[allow(clippy::arithmetic_side_effects)]
         if x_pos > current_page_size.0 - self.right_margin
@@ -240,7 +239,7 @@ impl PDFPage {
         let tree = Tree::from_str(svg_string, &parse_options)?;
         // TODO: either handle or forbid text nodes
         if tree.has_text_nodes() {
-            return Err(Error::Other("Text Nodes in tree".to_string()).into());
+            return Err(Error::Other("Text Nodes in tree".to_string()));
         }
         let new_operations = loop_nodes(&tree.root);
         self.operations.extend(new_operations);
@@ -460,9 +459,9 @@ impl<'a> PDFDocument<'a> {
     /// Will error if fonts are not specified in config file, or if a font fails to load.
     pub fn load_cfg_fonts(&mut self, font_paths: Vec<PathBuf>) -> Result<(), Error> {
         if font_paths.is_empty() {
-            return Err(
-                Error::FontLoading("No Fonts specified in configuration file".to_string()).into(),
-            );
+            return Err(Error::FontLoading(
+                "No Fonts specified in configuration file".to_string(),
+            ));
         }
         for path in font_paths {
             // load default font_index

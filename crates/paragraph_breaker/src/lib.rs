@@ -35,7 +35,7 @@ pub fn to_lines(
     text_language: rustybuzz::Language,
 ) -> Result<(Vec<String>, rustybuzz::GlyphBuffer), Error> {
     if text.is_empty() {
-        return Err(Error::EmptyString.into());
+        return Err(Error::EmptyString);
     }
     let mut buffer = rustybuzz::UnicodeBuffer::new();
     buffer.push_str(text);
@@ -50,7 +50,7 @@ pub fn to_lines(
 
     let glyph_buffer = rustybuzz::shape(font_data, &features, buffer);
     if glyph_buffer.is_empty() {
-        return Err(Error::EmptyString.into());
+        return Err(Error::EmptyString);
     }
     // calculate approx space width
     let mut space_buffer = rustybuzz::UnicodeBuffer::new();
@@ -61,7 +61,7 @@ pub fn to_lines(
     space_buffer.set_cluster_level(rustybuzz::BufferClusterLevel::MonotoneCharacters);
     let space_buffer = rustybuzz::shape(font_data, &features, space_buffer);
     if space_buffer.is_empty() {
-        return Err(Error::SpaceFailedToShape.into());
+        return Err(Error::SpaceFailedToShape);
     }
 
     // https://github.com/RazrFalcon/rustybuzz/issues/33#issuecomment-784716703
@@ -303,7 +303,7 @@ fn greedy_break(
         }
         line_length += word_width + space_width; // This should work
         if line_length < max_width {
-            return Err(Error::LineLengthTooLong.into());
+            return Err(Error::LineLengthTooLong);
         }
 
         internal_index += 1;
