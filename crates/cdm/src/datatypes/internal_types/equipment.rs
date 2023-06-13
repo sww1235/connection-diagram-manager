@@ -3,7 +3,9 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
-use super::{equipment_type::EquipmentType, location::Location, Empty, Mergable, PartialEmpty};
+use cdm_traits::{Empty, Mergable, PartialEmpty};
+
+use super::{equipment_type::EquipmentType, location::Location};
 
 /// `Equipment` represents a particular instance of an `EquipmentType`.
 /// This is the physical unit you would hold in your hand

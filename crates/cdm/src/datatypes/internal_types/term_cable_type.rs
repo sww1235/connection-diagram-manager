@@ -5,10 +5,10 @@ use std::rc::Rc;
 
 use dimensioned::ucum;
 
-use super::{
-    cable_type::CableType, connector_type::ConnectorType, wire_type::WireType, Empty, Mergable,
-    PartialEmpty,
-};
+use cdm_traits::{Empty, Mergable, PartialEmpty};
+
+use super::{cable_type::CableType, connector_type::ConnectorType, wire_type::WireType};
+
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
 #[derive(Debug, Default, PartialEq)]
 pub struct TermCableType {

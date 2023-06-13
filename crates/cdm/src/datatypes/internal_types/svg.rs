@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fmt;
 
 use super::super::file_types::svg::Svg as FileSvg;
-use super::{Empty, Mergable, PartialEmpty};
+use cdm_traits::{Empty, Mergable, PartialEmpty};
 
 /// Svg represents a full SVG image
 #[derive(Debug, Default, Clone, PartialEq)]

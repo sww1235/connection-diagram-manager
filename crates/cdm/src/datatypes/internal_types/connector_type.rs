@@ -2,7 +2,9 @@ use std::collections::HashMap;
 use std::fmt;
 use std::path::PathBuf;
 
-use super::{svg::Svg, Empty, Mergable, PartialEmpty};
+use cdm_traits::{Empty, Mergable, PartialEmpty};
+
+use super::svg::Svg;
 
 use dimensioned::ucum;
 
@@ -512,6 +514,7 @@ impl fmt::Display for ConnectorPin {
         Ok(())
     }
 }
+
 impl fmt::Display for ConnectorType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Connector Type:")?;

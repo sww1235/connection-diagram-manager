@@ -68,3 +68,5 @@ pub mod config;
 /// It also contains functions for parsing data files
 /// and the main `Data` type
 pub mod datatypes;
+
+pub use cdm_macros;

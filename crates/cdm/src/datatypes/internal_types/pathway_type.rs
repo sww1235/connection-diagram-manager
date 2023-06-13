@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::fmt;
 
-use super::{Empty, Mergable, PartialEmpty};
+use cdm_traits::{Empty, Mergable, PartialEmpty};
 
 use dimensioned::ucum;
 

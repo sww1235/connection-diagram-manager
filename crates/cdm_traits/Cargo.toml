@@ -1,0 +1,15 @@
+[package]
+name = "cdm_traits"
+version = "0.0.1"
+authors.workspace = true
+edition.workspace = true
+repository.workspace = true
+description = "Auto derivable traits for Connection Diagram Manager"
+keywords = ["Connection", "Diagram", "Manager", "Visualiser", "wire", "cable", "connections", "wiring", "harness", "CAD"]
+categories = ["CAD"]
+readme = "README.md"
+license.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]

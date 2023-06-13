@@ -3,7 +3,9 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
-use super::{location_type::LocationType, Empty, Mergable, PartialEmpty};
+use cdm_traits::{Empty, Mergable, PartialEmpty};
+
+use super::location_type::LocationType;
 
 /// `Location` represents a physical instance of a pathway
 #[derive(Debug, Default, PartialEq)]

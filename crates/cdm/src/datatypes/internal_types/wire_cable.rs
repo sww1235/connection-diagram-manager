@@ -5,9 +5,10 @@ use std::rc::Rc;
 
 use dimensioned::ucum;
 
+use cdm_traits::{Empty, Mergable, PartialEmpty};
+
 use super::{
     cable_type::CableType, pathway::Pathway, term_cable_type::TermCableType, wire_type::WireType,
-    Empty, Mergable, PartialEmpty,
 };
 
 //TODO: maybe split this up into separate structs

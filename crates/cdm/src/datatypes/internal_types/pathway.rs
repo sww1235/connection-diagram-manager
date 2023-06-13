@@ -3,7 +3,9 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
-use super::{pathway_type::PathwayType, Empty, Mergable, PartialEmpty};
+use cdm_traits::{Empty, Mergable, PartialEmpty};
+
+use super::pathway_type::PathwayType;
 
 use dimensioned::ucum;
 

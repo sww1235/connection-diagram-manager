@@ -1,4 +1,6 @@
-use super::{connector_type::ConnectorType, svg::Svg, Empty, Mergable, PartialEmpty};
+use super::{connector_type::ConnectorType, svg::Svg};
+
+use cdm_traits::{Empty, Mergable, PartialEmpty};
 
 use std::cell::RefCell;
 use std::collections::HashMap;
