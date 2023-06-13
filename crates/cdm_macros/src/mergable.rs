@@ -1,4 +1,4 @@
-use proc_macro2::{Ident, Span, TokenStream};
+use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{
     Data, DataStruct, DeriveInput, Fields, GenericArgument, Path, PathArguments, Type, TypePath,
@@ -13,127 +13,135 @@ pub fn expand_mergable(input: DeriveInput) -> TokenStream {
         _ => panic!("this derive macro only works on structs with named fields"),
     };
 
-    let has_id = fields
-        .iter()
-        .any(|f| f.ident == Some(Ident::new("id", Span::call_site())));
+    let has_id = fields.iter().any(|f| {
+        if let Some(fname) = f.ident.clone() {
+            fname == "id"
+        } else {
+            false
+        }
+    });
 
-    if has_id {
+    if !has_id {
         panic!("this derive macro only works on structs with a field called id");
     };
 
     let struct_name = input.ident;
 
-    let eql_checks = fields.iter().map(|f| {
+    let mut eql_checks = Vec::new();
+    for f in fields.iter() {
         // Interpolation only works for variables, not arbitrary expressions.
         // That's why we need to move these fields into local variables first
         //
         // @ is pattern binding
         let field_name = f.ident.clone();
+
+        if let Some(fname) = &field_name {
+            if fname == "id" {
+                continue;
+            }
+        }
+
         match f.ty.clone() {
             // strings (only works for String, not std::string::String)
             Type::Path(TypePath { path, .. }) if path.is_ident("String") => {
-                quote! {
+                eql_checks.push(quote! {
                     if self.#field_name != other.#field_name {
                         input_map.insert(
-                            #field_name.to_string(),
+                            stringify!(#field_name).to_string(),
                             [self.#field_name.clone(), other.#field_name.clone()],
                         );
 
                     }
-                }
+                });
             }
+            //vectors
+            // Type::Path(TypePath {path, ..}) if path.
             // options (only works for Option, not std::option::Option)
             Type::Path(ty @ TypePath { .. }) => match option_inner_type(&ty.path) {
-                Some(ty) => {
-                    quote! {
-                        if self.#field_name != other.#field_name {
-                            input_map.insert(
-                                #field_name.to_string(),
-                                [
-                                    {
-                                        if let Some(#field_name) = self.#field_name.clone() {
-                                            #field_name
-                                        } else {
-                                           #ty::default()
-                                        }
-                                    },
-                                    {
-                                        if let Some(#field_name) = other.#field_name.clone(){
-                                            #field_name
-                                        } else {
-                                            #ty::default()
-                                        }
-                                    }
-                                ]
-                            );
-                        }
-                    }
-                }
-                None => {
-                    quote! {
-                        if self.#field_name != other.#field_name {
-                            input_map.insert(
-                                #field_name.to_string(),
-                                [self.#field_name.to_string(), other.#field_name.to_string()],
-                            );
-                        }
-                    }
-                }
-            },
-            _ => {
-                quote! {
+                Some(ty) => eql_checks.push(quote! {
                     if self.#field_name != other.#field_name {
                         input_map.insert(
-                            #field_name.to_string(),
+                            stringify!(#field_name).to_string(),
+                            [
+                                {
+                                    if let Some(#field_name) = self.#field_name.clone() {
+                                        #field_name
+                                    } else {
+                                       #ty::default()
+                                    }
+                                },
+                                {
+                                    if let Some(#field_name) = other.#field_name.clone(){
+                                        #field_name
+                                    } else {
+                                        #ty::default()
+                                    }
+                                }
+                            ]
+                        );
+                    }
+                }),
+                None => eql_checks.push(quote! {
+                    if self.#field_name != other.#field_name {
+                        input_map.insert(
+                            stringify!(#field_name).to_string(),
                             [self.#field_name.to_string(), other.#field_name.to_string()],
                         );
                     }
+                }),
+            },
+            _ => eql_checks.push(quote! {
+                if self.#field_name != other.#field_name {
+                    input_map.insert(
+                            stringify!(#field_name).to_string(),
+                        [self.#field_name.to_string(), other.#field_name.to_string()],
+                    );
                 }
+            }),
+        }
+    }
+
+    let mut result_checks = Vec::new();
+    for f in fields.iter() {
+        let field_name = f.ident.clone();
+        if let Some(fname) = &field_name {
+            if fname == "id" {
+                continue;
             }
         }
-    });
-
-    let result_checks = fields.iter().map(|f| {
-        let field_name = f.ident.clone();
         match f.ty.clone() {
             // strings (only works for String, not std::string::String)
             Type::Path(TypePath { path, .. }) if path.is_ident("String") => {
-                quote! {
-                    if results[#field_name] {
-                            self.#field_name =other.#field_name.clone();
+                result_checks.push(quote! {
+                    if results[stringify!(#field_name)] {
+                            self.#field_name = other.#field_name.clone();
                     }
-                }
+                })
             }
             // options (only works for Option, not std::option::Option)
             Type::Path(ty @ TypePath { .. }) => match option_inner_type(&ty.path) {
-                Some(..) => {
-                    quote! {
-                        if results[#field_name] {
-                            self.#field_name =other.#field_name.clone();
-                        }
+                Some(..) => result_checks.push(quote! {
+                    if results[stringify!(#field_name)] {
+                        self.#field_name =i other.#field_name.clone();
                     }
-                }
-                None => {
-                    quote! {
-                        if results[#field_name] {
-                            self.#field_name =other.#field_name;
-                        }
+                }),
+                None => result_checks.push(quote! {
+                    if results[stringify!(#field_name)] {
+                        self.#field_name = other.#field_name;
                     }
-                }
+                }),
             },
-            _ => {
-                quote! {
-                    if results[#field_name] {
-                        self.#field_name =other.#field_name;
-                    }
+            _ => result_checks.push(quote! {
+                if results[stringify!(#field_name)] {
+                    self.#field_name = other.#field_name;
                 }
-            }
+            }),
         }
-    });
+    }
 
     quote! {
         #[automatically_derived]
-        impl ::cdm::datatypes::internal_types::Mergable for #struct_name {
+        impl ::cdm_traits::Mergable for #struct_name {
             fn merge_prompt(&mut self, other: &Self, prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>) {
                 //TODO: maybe check for partial_empty/empty here on other
                 let mut input_map: HashMap<String, [String; 2]> = HashMap::new();
