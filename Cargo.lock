@@ -159,6 +159,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "cdm_traits"
+version = "0.0.1"
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -252,6 +256,7 @@ name = "connection_diagram_manager"
 version = "0.0.1"
 dependencies = [
  "cdm_macros",
+ "cdm_traits",
  "clap",
  "dimensioned",
  "fltk",

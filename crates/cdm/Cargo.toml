@@ -24,13 +24,14 @@ serde_yaml = "~0"
 simple_logger = "~4"
 usvg = "~0"
 cdm_macros = {path = "../cdm_macros/", version = "~0"}
+cdm_traits = {path = "../cdm_traits/", version = "~0"}
 
 [features]
 cli = ["clap"]
 gui = ["clap", "fltk", "fltk-theme"]
 
 [lib]
-name = "cdm_core"
+name = "cdm"
 path = "src/lib.rs"
 
 [[bin]]
