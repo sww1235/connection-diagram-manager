@@ -2,7 +2,7 @@ use super::super::util_types::CrossSection;
 
 use super::wire_type::WireType;
 
-use cdm_traits::{Empty, Mergable, PartialEmpty};
+use cdm_traits::{compare::Compare, empty::Empty, partial_empty::PartialEmpty};
 
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -12,11 +12,11 @@ use std::rc::Rc;
 
 use dimensioned::ucum;
 
-use cdm_macros::Mergable;
+use cdm_macros::{Compare, Merge};
 
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has one
 /// core, then it is a wire, not a cable.
-#[derive(Debug, Default, PartialEq, Mergable)]
+#[derive(Debug, Default, PartialEq, Compare, Merge)]
 pub struct CableType {
     /// Unique ID of `CableType`
     pub id: String,
@@ -69,7 +69,7 @@ pub enum CableCore {
 }
 
 /// `CableLayer` represents an insulation or shield layer of the entire cable
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Compare)]
 pub struct CableLayer {
     /// layer number, counted from inside to outside of cable, 1 indexed
     pub layer_number: u64,

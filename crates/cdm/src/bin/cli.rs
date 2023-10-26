@@ -137,6 +137,8 @@ fn main() {
     //println! {"{proj2:#?}"};
 }
 
+fn merge_prompt_fn() {}
+
 /// `Cli` holds the defintions for command line arguments used in this binary
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]

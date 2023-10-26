@@ -1,11 +1,11 @@
-use std::collections::HashMap;
 use std::fmt;
 
 use super::super::file_types::svg::Svg as FileSvg;
-use cdm_traits::{Empty, Mergable, PartialEmpty};
+use cdm_macros::{Compare, Merge};
+use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
 
 /// Svg represents a full SVG image
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, PartialEq, Compare)]
 pub struct Svg(pub String);
 
 impl From<FileSvg> for Svg {
@@ -13,15 +13,15 @@ impl From<FileSvg> for Svg {
         Svg(file_svg.0)
     }
 }
-impl Mergable for Svg {
-    fn merge_prompt(
-        &mut self,
-        _other: &Self,
-        _prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
-    ) {
-        todo!();
-    }
-}
+//impl Mergable for Svg {
+//    fn merge_prompt(
+//        &mut self,
+//        _other: &Self,
+//        _prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
+//    ) {
+//        todo!();
+//    }
+//}
 
 impl Empty for Svg {
     fn is_empty(&self) -> bool {

@@ -1,11 +1,10 @@
 use std::cell::RefCell;
-use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
 use dimensioned::ucum;
 
-use cdm_traits::{Empty, Mergable, PartialEmpty};
+use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
 
 use super::{
     cable_type::CableType, pathway::Pathway, term_cable_type::TermCableType, wire_type::WireType,
@@ -67,138 +66,138 @@ impl WireCable {
 
 #[allow(clippy::too_many_lines)]
 // TODO: see if this can be split up
-impl Mergable for WireCable {
-    fn merge_prompt(
-        &mut self,
-        other: &Self,
-        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
-    ) {
-        //TODO: maybe check for partial_empty/empty here on other
-        let mut input_map: HashMap<String, [String; 2]> = HashMap::new();
-        if self.id != other.id {
-            panic! {"attempting to merge structs with different IDs. This shouldn't have happened."}
-        }
-        if self.ctw_type != other.ctw_type {
-            let self_string = match &self.ctw_type {
-                WireCableType::CableType(cable_type) => cable_type.borrow().id.clone(),
-                WireCableType::TermCableType(term_cable_type) => {
-                    term_cable_type.borrow().id.clone()
-                }
-                WireCableType::WireType(wire_type) => wire_type.borrow().id.clone(),
-            };
-            let other_string = match &other.ctw_type {
-                WireCableType::CableType(cable_type) => cable_type.borrow().id.clone(),
-                WireCableType::TermCableType(term_cable_type) => {
-                    term_cable_type.borrow().id.clone()
-                }
-                WireCableType::WireType(wire_type) => wire_type.borrow().id.clone(),
-            };
-
-            input_map.insert("CTW Type".to_string(), [self_string, other_string]);
-        }
-        if self.identifier != other.identifier {
-            input_map.insert(
-                "Identifier".to_string(),
-                [
-                    {
-                        if let Some(identifier) = self.identifier.clone() {
-                            identifier
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(identifier) = other.identifier.clone() {
-                            identifier
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.description != other.description {
-            input_map.insert(
-                "Description".to_string(),
-                [
-                    {
-                        if let Some(description) = self.description.clone() {
-                            description
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(description) = other.description.clone() {
-                            description
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.length != other.length {
-            input_map.insert(
-                "Length".to_string(),
-                [
-                    {
-                        if let Some(length) = self.length {
-                            length.to_string()
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(length) = other.length {
-                            length.to_string()
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.pathway != other.pathway {
-            input_map.insert(
-                "Pathway".to_string(),
-                [
-                    {
-                        if let Some(pathway) = self.pathway.clone() {
-                            pathway.borrow().id.clone()
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(pathway) = other.pathway.clone() {
-                            pathway.borrow().id.clone()
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        let results = prompt_fn(input_map);
-        // false means don't replace value in self struct
-        if results["CTW Type"] {
-            self.ctw_type = other.ctw_type.clone();
-        }
-        if results["Identifier"] {
-            self.identifier = other.identifier.clone();
-        }
-        if results["Description"] {
-            self.description = other.description.clone();
-        }
-        if results["Length"] {
-            self.length = other.length;
-        }
-        if results["Pathway"] {
-            self.pathway = other.pathway.clone();
-        }
-    }
-}
+//impl Mergable for WireCable {
+//    fn merge_prompt(
+//        &mut self,
+//        other: &Self,
+//        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
+//    ) {
+//        //TODO: maybe check for partial_empty/empty here on other
+//        let mut input_map: HashMap<String, [String; 2]> = HashMap::new();
+//        if self.id != other.id {
+//            panic! {"attempting to merge structs with different IDs. This shouldn't have happened."}
+//        }
+//        if self.ctw_type != other.ctw_type {
+//            let self_string = match &self.ctw_type {
+//                WireCableType::CableType(cable_type) => cable_type.borrow().id.clone(),
+//                WireCableType::TermCableType(term_cable_type) => {
+//                    term_cable_type.borrow().id.clone()
+//                }
+//                WireCableType::WireType(wire_type) => wire_type.borrow().id.clone(),
+//            };
+//            let other_string = match &other.ctw_type {
+//                WireCableType::CableType(cable_type) => cable_type.borrow().id.clone(),
+//                WireCableType::TermCableType(term_cable_type) => {
+//                    term_cable_type.borrow().id.clone()
+//                }
+//                WireCableType::WireType(wire_type) => wire_type.borrow().id.clone(),
+//            };
+//
+//            input_map.insert("CTW Type".to_string(), [self_string, other_string]);
+//        }
+//        if self.identifier != other.identifier {
+//            input_map.insert(
+//                "Identifier".to_string(),
+//                [
+//                    {
+//                        if let Some(identifier) = self.identifier.clone() {
+//                            identifier
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(identifier) = other.identifier.clone() {
+//                            identifier
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.description != other.description {
+//            input_map.insert(
+//                "Description".to_string(),
+//                [
+//                    {
+//                        if let Some(description) = self.description.clone() {
+//                            description
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(description) = other.description.clone() {
+//                            description
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.length != other.length {
+//            input_map.insert(
+//                "Length".to_string(),
+//                [
+//                    {
+//                        if let Some(length) = self.length {
+//                            length.to_string()
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(length) = other.length {
+//                            length.to_string()
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.pathway != other.pathway {
+//            input_map.insert(
+//                "Pathway".to_string(),
+//                [
+//                    {
+//                        if let Some(pathway) = self.pathway.clone() {
+//                            pathway.borrow().id.clone()
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(pathway) = other.pathway.clone() {
+//                            pathway.borrow().id.clone()
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        let results = prompt_fn(input_map);
+//        // false means don't replace value in self struct
+//        if results["CTW Type"] {
+//            self.ctw_type = other.ctw_type.clone();
+//        }
+//        if results["Identifier"] {
+//            self.identifier = other.identifier.clone();
+//        }
+//        if results["Description"] {
+//            self.description = other.description.clone();
+//        }
+//        if results["Length"] {
+//            self.length = other.length;
+//        }
+//        if results["Pathway"] {
+//            self.pathway = other.pathway.clone();
+//        }
+//    }
+//}
 
 impl Empty for WireCable {
     fn is_empty(&self) -> bool {

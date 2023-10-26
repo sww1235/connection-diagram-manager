@@ -1,14 +1,14 @@
 use std::cell::RefCell;
-use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
-use cdm_traits::{Empty, Mergable, PartialEmpty};
+use cdm_macros::{Compare, Merge};
+use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
 
 use super::location_type::LocationType;
 
 /// `Location` represents a physical instance of a pathway
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, Compare, Merge)]
 pub struct Location {
     /// Internal `id` of location instance
     pub id: String,
@@ -36,105 +36,105 @@ impl Location {
     }
 }
 
-impl Mergable for Location {
-    fn merge_prompt(
-        &mut self,
-        other: &Self,
-        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
-    ) {
-        //TODO: maybe check for partial_empty/empty here on other
-        let mut input_map: HashMap<String, [String; 2]> = HashMap::new();
-        if self.id != other.id {
-            panic! {"attempting to merge structs with different IDs. This shouldn't have happened."}
-        }
-        if self.location_type != other.location_type {
-            input_map.insert(
-                "Location Type".to_string(),
-                [
-                    self.location_type.borrow().id.clone(),
-                    other.location_type.borrow().id.clone(),
-                ],
-            );
-        }
-        if self.identifier != other.identifier {
-            input_map.insert(
-                "Identifier".to_string(),
-                [
-                    {
-                        if let Some(identifier) = self.identifier.clone() {
-                            identifier
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(identifier) = other.identifier.clone() {
-                            identifier
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.description != other.description {
-            input_map.insert(
-                "Description".to_string(),
-                [
-                    {
-                        if let Some(description) = self.description.clone() {
-                            description
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(description) = other.description.clone() {
-                            description
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.physical_location != other.physical_location {
-            input_map.insert(
-                "Physical Location".to_string(),
-                [
-                    {
-                        if let Some(physical_location) = self.physical_location.clone() {
-                            physical_location
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(physical_location) = other.physical_location.clone() {
-                            physical_location
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        let results = prompt_fn(input_map);
-        // false means don't replace value in self struct
-        if results["Location Type"] {
-            self.location_type = Rc::clone(&other.location_type);
-        }
-        if results["Identifier"] {
-            self.identifier = other.identifier.clone();
-        }
-        if results["Description"] {
-            self.description = other.description.clone();
-        }
-        if results["Physical Location"] {
-            self.physical_location = other.physical_location.clone();
-        }
-    }
-}
+//impl Mergable for Location {
+//    fn merge_prompt(
+//        &mut self,
+//        other: &Self,
+//        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
+//    ) {
+//        //TODO: maybe check for partial_empty/empty here on other
+//        let mut input_map: HashMap<String, [String; 2]> = HashMap::new();
+//        if self.id != other.id {
+//            panic! {"attempting to merge structs with different IDs. This shouldn't have happened."}
+//        }
+//        if self.location_type != other.location_type {
+//            input_map.insert(
+//                "Location Type".to_string(),
+//                [
+//                    self.location_type.borrow().id.clone(),
+//                    other.location_type.borrow().id.clone(),
+//                ],
+//            );
+//        }
+//        if self.identifier != other.identifier {
+//            input_map.insert(
+//                "Identifier".to_string(),
+//                [
+//                    {
+//                        if let Some(identifier) = self.identifier.clone() {
+//                            identifier
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(identifier) = other.identifier.clone() {
+//                            identifier
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.description != other.description {
+//            input_map.insert(
+//                "Description".to_string(),
+//                [
+//                    {
+//                        if let Some(description) = self.description.clone() {
+//                            description
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(description) = other.description.clone() {
+//                            description
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.physical_location != other.physical_location {
+//            input_map.insert(
+//                "Physical Location".to_string(),
+//                [
+//                    {
+//                        if let Some(physical_location) = self.physical_location.clone() {
+//                            physical_location
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(physical_location) = other.physical_location.clone() {
+//                            physical_location
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        let results = prompt_fn(input_map);
+//        // false means don't replace value in self struct
+//        if results["Location Type"] {
+//            self.location_type = Rc::clone(&other.location_type);
+//        }
+//        if results["Identifier"] {
+//            self.identifier = other.identifier.clone();
+//        }
+//        if results["Description"] {
+//            self.description = other.description.clone();
+//        }
+//        if results["Physical Location"] {
+//            self.physical_location = other.physical_location.clone();
+//        }
+//    }
+//}
 
 impl Empty for Location {
     fn is_empty(&self) -> bool {

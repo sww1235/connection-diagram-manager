@@ -1,9 +1,9 @@
 use super::{connector_type::ConnectorType, svg::Svg};
 
-use cdm_traits::{Empty, Mergable, PartialEmpty};
+use cdm_macros::{Compare, Merge};
+use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
 
 use std::cell::RefCell;
-use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
@@ -11,7 +11,7 @@ use std::rc::Rc;
 /// `EquipmentType` represents a type of equipment
 ///
 /// Anything from a rackmount piece of gear to an outlet or terminal block
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, Compare, Merge)]
 pub struct EquipmentType {
     //TODO: add dimensions here
     /// Internal ID of `EquipmentType`
@@ -94,323 +94,323 @@ impl EquipmentType {
     }
 }
 
-impl Mergable for EquipmentType {
-    #[allow(clippy::too_many_lines)]
-    // TODO: see if this can be split up
-    fn merge_prompt(
-        &mut self,
-        other: &Self,
-        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
-    ) {
-        //TODO: maybe check for partial_empty/empty here on other
-        let mut input_map: HashMap<String, [String; 2]> = HashMap::new();
-        if self.id != other.id {
-            panic! {"attempting to merge structs with different IDs. This shouldn't have happened."}
-        }
-        if self.manufacturer != other.manufacturer {
-            input_map.insert(
-                "Manufacturer".to_string(),
-                [
-                    {
-                        if let Some(manufacturer) = self.manufacturer.clone() {
-                            manufacturer
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(manufacturer) = other.manufacturer.clone() {
-                            manufacturer
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.model != other.model {
-            input_map.insert(
-                "Model".to_string(),
-                [
-                    {
-                        if let Some(model) = self.model.clone() {
-                            model
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(model) = other.model.clone() {
-                            model
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.part_number != other.part_number {
-            input_map.insert(
-                "Part Number".to_string(),
-                [
-                    {
-                        if let Some(part_number) = self.part_number.clone() {
-                            part_number
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(part_number) = other.part_number.clone() {
-                            part_number
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.manufacturer_part_number != other.manufacturer_part_number {
-            input_map.insert(
-                "Manufacturer Part Number".to_string(),
-                [
-                    {
-                        if let Some(manufacturer_part_number) =
-                            self.manufacturer_part_number.clone()
-                        {
-                            manufacturer_part_number
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(manufacturer_part_number) =
-                            other.manufacturer_part_number.clone()
-                        {
-                            manufacturer_part_number
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.supplier != other.supplier {
-            input_map.insert(
-                "Supplier".to_string(),
-                [
-                    {
-                        if let Some(supplier) = self.supplier.clone() {
-                            supplier
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(supplier) = other.supplier.clone() {
-                            supplier
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.supplier_part_number != other.supplier_part_number {
-            input_map.insert(
-                "Supplier Part Number".to_string(),
-                [
-                    {
-                        if let Some(supplier_part_number) = self.supplier_part_number.clone() {
-                            supplier_part_number
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(supplier_part_number) = other.supplier_part_number.clone() {
-                            supplier_part_number
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.description != other.description {
-            input_map.insert(
-                "Description".to_string(),
-                [
-                    {
-                        if let Some(description) = self.description.clone() {
-                            description
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(description) = other.description.clone() {
-                            description
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.mount_type != other.mount_type {
-            input_map.insert(
-                "Mount Type".to_string(),
-                [
-                    {
-                        if let Some(mount_type) = self.mount_type.clone() {
-                            mount_type
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(mount_type) = other.mount_type.clone() {
-                            mount_type
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.equip_type != other.equip_type {
-            input_map.insert(
-                "Equipment Type".to_string(),
-                [
-                    {
-                        if let Some(equip_type) = self.equip_type.clone() {
-                            equip_type
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(equip_type) = other.equip_type.clone() {
-                            equip_type
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.faces != other.faces {
-            let mut self_string = String::new();
-            let mut other_string = String::new();
-            if let Some(self_faces) = &self.faces {
-                for face in self_faces {
-                    self_string.push('(');
-                    self_string.push_str(face.name.as_str());
-                    self_string.push_str(", Connectors:  ");
-
-                    if let Some(connectors) = &face.connectors {
-                        let mut connector_string = String::new();
-                        for connector in connectors {
-                            connector_string.push('(');
-                            connector_string
-                                .push_str(connector.connector_type.borrow().id.as_str());
-                            connector_string.push_str(", Direction: ");
-
-                            if let Some(direction) = &connector.direction {
-                                connector_string.push_str(direction.as_str());
-                            }
-
-                            connector_string.push_str(", X: ");
-                            connector_string.push_str(connector.x.to_string().as_str());
-                            connector_string.push_str(", Y: ");
-                            connector_string.push_str(connector.y.to_string().as_str());
-                            connector_string.push_str(")\t");
-                        }
-                        self_string.push_str(connector_string.as_str());
-                    }
-
-                    self_string.push_str(")\t");
-                }
-            } else {
-                self_string = String::new();
-            }
-            if let Some(other_faces) = &other.faces {
-                for face in other_faces {
-                    other_string.push('(');
-                    other_string.push_str(face.name.as_str());
-                    other_string.push_str(", Connectors:  ");
-                    if let Some(connectors) = &face.connectors {
-                        let mut connector_string = String::new();
-                        for connector in connectors {
-                            connector_string.push('(');
-                            connector_string
-                                .push_str(connector.connector_type.borrow().id.as_str());
-                            connector_string.push_str(", Direction: ");
-
-                            if let Some(direction) = &connector.direction {
-                                connector_string.push_str(direction.as_str());
-                            }
-
-                            connector_string.push_str(", X: ");
-                            connector_string.push_str(connector.x.to_string().as_str());
-                            connector_string.push_str(", Y: ");
-                            connector_string.push_str(connector.y.to_string().as_str());
-                            connector_string.push_str(")\t");
-                        }
-                        other_string.push_str(connector_string.as_str());
-                    }
-                    other_string.push_str(")\t");
-                }
-            } else {
-                other_string = String::new();
-            }
-            input_map.insert("Faces".to_string(), [self_string, other_string]);
-        }
-        if self.visual_rep != other.visual_rep {
-            input_map.insert(
-                "Visual Representation".to_string(),
-                [self.visual_rep.to_string(), other.visual_rep.to_string()],
-            );
-        }
-
-        let results = prompt_fn(input_map);
-        // false means don't replace value in self struct
-        if results["Manufacturer"] {
-            self.manufacturer = other.manufacturer.clone();
-        }
-        if results["Model"] {
-            self.model = other.model.clone();
-        }
-        if results["Part Number"] {
-            self.part_number = other.part_number.clone();
-        }
-        if results["Manufacturer Part Number"] {
-            self.manufacturer_part_number = other.manufacturer_part_number.clone();
-        }
-        if results["Supplier"] {
-            self.supplier = other.supplier.clone();
-        }
-        if results["Supplier Part Number"] {
-            self.supplier_part_number = other.supplier_part_number.clone();
-        }
-        if results["Description"] {
-            self.description = other.description.clone();
-        }
-        if results["Mount Type"] {
-            self.mount_type = other.mount_type.clone();
-        }
-        if results["Equipment Type"] {
-            self.equip_type = other.equip_type.clone();
-        }
-        if results["Faces"] {
-            self.faces = other.faces.clone();
-        }
-        if results["Visual Representation"] {
-            self.visual_rep = other.visual_rep.clone();
-        }
-    }
-}
+//impl Mergable for EquipmentType {
+//    #[allow(clippy::too_many_lines)]
+//    // TODO: see if this can be split up
+//    fn merge_prompt(
+//        &mut self,
+//        other: &Self,
+//        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
+//    ) {
+//        //TODO: maybe check for partial_empty/empty here on other
+//        let mut input_map: HashMap<String, [String; 2]> = HashMap::new();
+//        if self.id != other.id {
+//            panic! {"attempting to merge structs with different IDs. This shouldn't have happened."}
+//        }
+//        if self.manufacturer != other.manufacturer {
+//            input_map.insert(
+//                "Manufacturer".to_string(),
+//                [
+//                    {
+//                        if let Some(manufacturer) = self.manufacturer.clone() {
+//                            manufacturer
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(manufacturer) = other.manufacturer.clone() {
+//                            manufacturer
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.model != other.model {
+//            input_map.insert(
+//                "Model".to_string(),
+//                [
+//                    {
+//                        if let Some(model) = self.model.clone() {
+//                            model
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(model) = other.model.clone() {
+//                            model
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.part_number != other.part_number {
+//            input_map.insert(
+//                "Part Number".to_string(),
+//                [
+//                    {
+//                        if let Some(part_number) = self.part_number.clone() {
+//                            part_number
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(part_number) = other.part_number.clone() {
+//                            part_number
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.manufacturer_part_number != other.manufacturer_part_number {
+//            input_map.insert(
+//                "Manufacturer Part Number".to_string(),
+//                [
+//                    {
+//                        if let Some(manufacturer_part_number) =
+//                            self.manufacturer_part_number.clone()
+//                        {
+//                            manufacturer_part_number
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(manufacturer_part_number) =
+//                            other.manufacturer_part_number.clone()
+//                        {
+//                            manufacturer_part_number
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.supplier != other.supplier {
+//            input_map.insert(
+//                "Supplier".to_string(),
+//                [
+//                    {
+//                        if let Some(supplier) = self.supplier.clone() {
+//                            supplier
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(supplier) = other.supplier.clone() {
+//                            supplier
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.supplier_part_number != other.supplier_part_number {
+//            input_map.insert(
+//                "Supplier Part Number".to_string(),
+//                [
+//                    {
+//                        if let Some(supplier_part_number) = self.supplier_part_number.clone() {
+//                            supplier_part_number
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(supplier_part_number) = other.supplier_part_number.clone() {
+//                            supplier_part_number
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.description != other.description {
+//            input_map.insert(
+//                "Description".to_string(),
+//                [
+//                    {
+//                        if let Some(description) = self.description.clone() {
+//                            description
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(description) = other.description.clone() {
+//                            description
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.mount_type != other.mount_type {
+//            input_map.insert(
+//                "Mount Type".to_string(),
+//                [
+//                    {
+//                        if let Some(mount_type) = self.mount_type.clone() {
+//                            mount_type
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(mount_type) = other.mount_type.clone() {
+//                            mount_type
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.equip_type != other.equip_type {
+//            input_map.insert(
+//                "Equipment Type".to_string(),
+//                [
+//                    {
+//                        if let Some(equip_type) = self.equip_type.clone() {
+//                            equip_type
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(equip_type) = other.equip_type.clone() {
+//                            equip_type
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.faces != other.faces {
+//            let mut self_string = String::new();
+//            let mut other_string = String::new();
+//            if let Some(self_faces) = &self.faces {
+//                for face in self_faces {
+//                    self_string.push('(');
+//                    self_string.push_str(face.name.as_str());
+//                    self_string.push_str(", Connectors:  ");
+//
+//                    if let Some(connectors) = &face.connectors {
+//                        let mut connector_string = String::new();
+//                        for connector in connectors {
+//                            connector_string.push('(');
+//                            connector_string
+//                                .push_str(connector.connector_type.borrow().id.as_str());
+//                            connector_string.push_str(", Direction: ");
+//
+//                            if let Some(direction) = &connector.direction {
+//                                connector_string.push_str(direction.as_str());
+//                            }
+//
+//                            connector_string.push_str(", X: ");
+//                            connector_string.push_str(connector.x.to_string().as_str());
+//                            connector_string.push_str(", Y: ");
+//                            connector_string.push_str(connector.y.to_string().as_str());
+//                            connector_string.push_str(")\t");
+//                        }
+//                        self_string.push_str(connector_string.as_str());
+//                    }
+//
+//                    self_string.push_str(")\t");
+//                }
+//            } else {
+//                self_string = String::new();
+//            }
+//            if let Some(other_faces) = &other.faces {
+//                for face in other_faces {
+//                    other_string.push('(');
+//                    other_string.push_str(face.name.as_str());
+//                    other_string.push_str(", Connectors:  ");
+//                    if let Some(connectors) = &face.connectors {
+//                        let mut connector_string = String::new();
+//                        for connector in connectors {
+//                            connector_string.push('(');
+//                            connector_string
+//                                .push_str(connector.connector_type.borrow().id.as_str());
+//                            connector_string.push_str(", Direction: ");
+//
+//                            if let Some(direction) = &connector.direction {
+//                                connector_string.push_str(direction.as_str());
+//                            }
+//
+//                            connector_string.push_str(", X: ");
+//                            connector_string.push_str(connector.x.to_string().as_str());
+//                            connector_string.push_str(", Y: ");
+//                            connector_string.push_str(connector.y.to_string().as_str());
+//                            connector_string.push_str(")\t");
+//                        }
+//                        other_string.push_str(connector_string.as_str());
+//                    }
+//                    other_string.push_str(")\t");
+//                }
+//            } else {
+//                other_string = String::new();
+//            }
+//            input_map.insert("Faces".to_string(), [self_string, other_string]);
+//        }
+//        if self.visual_rep != other.visual_rep {
+//            input_map.insert(
+//                "Visual Representation".to_string(),
+//                [self.visual_rep.to_string(), other.visual_rep.to_string()],
+//            );
+//        }
+//
+//        let results = prompt_fn(input_map);
+//        // false means don't replace value in self struct
+//        if results["Manufacturer"] {
+//            self.manufacturer = other.manufacturer.clone();
+//        }
+//        if results["Model"] {
+//            self.model = other.model.clone();
+//        }
+//        if results["Part Number"] {
+//            self.part_number = other.part_number.clone();
+//        }
+//        if results["Manufacturer Part Number"] {
+//            self.manufacturer_part_number = other.manufacturer_part_number.clone();
+//        }
+//        if results["Supplier"] {
+//            self.supplier = other.supplier.clone();
+//        }
+//        if results["Supplier Part Number"] {
+//            self.supplier_part_number = other.supplier_part_number.clone();
+//        }
+//        if results["Description"] {
+//            self.description = other.description.clone();
+//        }
+//        if results["Mount Type"] {
+//            self.mount_type = other.mount_type.clone();
+//        }
+//        if results["Equipment Type"] {
+//            self.equip_type = other.equip_type.clone();
+//        }
+//        if results["Faces"] {
+//            self.faces = other.faces.clone();
+//        }
+//        if results["Visual Representation"] {
+//            self.visual_rep = other.visual_rep.clone();
+//        }
+//    }
+//}
 
 impl Empty for EquipmentType {
     fn is_empty(&self) -> bool {

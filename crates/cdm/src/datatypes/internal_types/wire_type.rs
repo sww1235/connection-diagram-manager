@@ -1,7 +1,6 @@
-use std::collections::HashMap;
 use std::fmt;
 
-use cdm_traits::{Empty, Mergable, PartialEmpty};
+use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
 
 use dimensioned::ucum;
 
@@ -88,406 +87,406 @@ impl WireType {
     }
 }
 
-impl Mergable for WireType {
-    #[allow(clippy::too_many_lines)]
-    // TODO: see if this can be split up
-    fn merge_prompt(
-        &mut self,
-        other: &Self,
-        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
-    ) {
-        //TODO: maybe check for partial_empty/empty here on other
-        let mut input_map: HashMap<String, [String; 2]> = HashMap::new();
-        if self.id != other.id {
-            panic! {"attempting to merge structs with different IDs. This shouldn't have happened."}
-        }
-        if self.manufacturer != other.manufacturer {
-            input_map.insert(
-                "Manufacturer".to_string(),
-                [
-                    {
-                        if let Some(manufacturer) = self.manufacturer.clone() {
-                            manufacturer
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(manufacturer) = other.manufacturer.clone() {
-                            manufacturer
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.model != other.model {
-            input_map.insert(
-                "Model".to_string(),
-                [
-                    {
-                        if let Some(model) = self.model.clone() {
-                            model
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(model) = other.model.clone() {
-                            model
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.part_number != other.part_number {
-            input_map.insert(
-                "Part Number".to_string(),
-                [
-                    {
-                        if let Some(part_number) = self.part_number.clone() {
-                            part_number
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(part_number) = other.part_number.clone() {
-                            part_number
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.manufacturer_part_number != other.manufacturer_part_number {
-            input_map.insert(
-                "Manufacturer Part Number".to_string(),
-                [
-                    {
-                        if let Some(manufacturer_part_number) =
-                            self.manufacturer_part_number.clone()
-                        {
-                            manufacturer_part_number
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(manufacturer_part_number) =
-                            other.manufacturer_part_number.clone()
-                        {
-                            manufacturer_part_number
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.supplier != other.supplier {
-            input_map.insert(
-                "Supplier".to_string(),
-                [
-                    {
-                        if let Some(supplier) = self.supplier.clone() {
-                            supplier
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(supplier) = other.supplier.clone() {
-                            supplier
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.supplier_part_number != other.supplier_part_number {
-            input_map.insert(
-                "Supplier Part Number".to_string(),
-                [
-                    {
-                        if let Some(supplier_part_number) = self.supplier_part_number.clone() {
-                            supplier_part_number
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(supplier_part_number) = other.supplier_part_number.clone() {
-                            supplier_part_number
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.material != other.material {
-            input_map.insert(
-                "Material".to_string(),
-                [
-                    {
-                        if let Some(material) = self.material.clone() {
-                            material
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(material) = other.material.clone() {
-                            material
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.insulated != other.insulated {
-            input_map.insert(
-                "Insulated".to_string(),
-                [self.insulated.to_string(), other.insulated.to_string()],
-            );
-        }
-        if self.insulation_material != other.insulation_material {
-            input_map.insert(
-                "Insulation Material".to_string(),
-                [
-                    {
-                        if let Some(insulation_material) = self.insulation_material.clone() {
-                            insulation_material
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(insulation_material) = other.insulation_material.clone() {
-                            insulation_material
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.wire_type_code != other.wire_type_code {
-            input_map.insert(
-                "Wire Type Code".to_string(),
-                [
-                    {
-                        if let Some(wire_type_code) = self.wire_type_code.clone() {
-                            wire_type_code
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(wire_type_code) = other.wire_type_code.clone() {
-                            wire_type_code
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.conductor_cross_sect_area != other.conductor_cross_sect_area {
-            input_map.insert(
-                "Conductor Cross Sectional Area".to_string(),
-                [
-                    self.conductor_cross_sect_area.to_string(),
-                    other.conductor_cross_sect_area.to_string(),
-                ],
-            );
-        }
-        if self.overall_cross_sect_area != other.overall_cross_sect_area {
-            input_map.insert(
-                "Overall Cross Sectional Area".to_string(),
-                [
-                    self.overall_cross_sect_area.to_string(),
-                    other.overall_cross_sect_area.to_string(),
-                ],
-            );
-        }
-        if self.stranded != other.stranded {
-            input_map.insert(
-                "Stranded".to_string(),
-                [self.stranded.to_string(), other.stranded.to_string()],
-            );
-        }
-        if self.num_strands != other.num_strands {
-            input_map.insert(
-                "Number of Strands".to_string(),
-                [
-                    {
-                        if let Some(num_strands) = self.num_strands {
-                            num_strands.to_string()
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(num_strands) = other.num_strands {
-                            num_strands.to_string()
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.strand_cross_sect_area != other.strand_cross_sect_area {
-            input_map.insert(
-                "Strand Cross Sectional Area".to_string(),
-                [
-                    {
-                        if let Some(strand_cross_sect_area) = self.strand_cross_sect_area {
-                            strand_cross_sect_area.to_string()
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(strand_cross_sect_area) = other.strand_cross_sect_area {
-                            strand_cross_sect_area.to_string()
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.insul_volt_rating != other.insul_volt_rating {
-            input_map.insert(
-                "Insulation Voltage Rating".to_string(),
-                [
-                    {
-                        if let Some(insul_volt_rating) = self.insul_volt_rating {
-                            insul_volt_rating.to_string()
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(insul_volt_rating) = other.insul_volt_rating {
-                            insul_volt_rating.to_string()
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.insul_temp_rating != other.insul_temp_rating {
-            input_map.insert(
-                "Insulation Temperature Rating".to_string(),
-                [
-                    {
-                        if let Some(insul_temp_rating) = self.insul_temp_rating {
-                            insul_temp_rating.to_string()
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(insul_temp_rating) = other.insul_temp_rating {
-                            insul_temp_rating.to_string()
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-        if self.insul_color != other.insul_color {
-            input_map.insert(
-                "Insulation Color".to_string(),
-                [
-                    {
-                        if let Some(insul_color) = self.insul_color.clone() {
-                            insul_color
-                        } else {
-                            String::new()
-                        }
-                    },
-                    {
-                        if let Some(insul_color) = other.insul_color.clone() {
-                            insul_color
-                        } else {
-                            String::new()
-                        }
-                    },
-                ],
-            );
-        }
-
-        let results = prompt_fn(input_map);
-        // false means don't replace value in self struct
-        if results["Manufacturer"] {
-            self.manufacturer = other.manufacturer.clone();
-        }
-        if results["Model"] {
-            self.model = other.model.clone();
-        }
-        if results["Part Number"] {
-            self.part_number = other.part_number.clone();
-        }
-        if results["Manufacturer Part Number"] {
-            self.manufacturer_part_number = other.manufacturer_part_number.clone();
-        }
-        if results["Supplier"] {
-            self.supplier = other.supplier.clone();
-        }
-        if results["Supplier Part Number"] {
-            self.supplier_part_number = other.supplier_part_number.clone();
-        }
-        if results["Material"] {
-            self.material = other.material.clone();
-        }
-        if results["Insulated"] {
-            self.insulated = other.insulated;
-        }
-        if results["Insulation Material"] {
-            self.insulation_material = other.insulation_material.clone();
-        }
-        if results["Wire Type Code"] {
-            self.wire_type_code = other.wire_type_code.clone();
-        }
-        if results["Conductor Cross Sectional Area"] {
-            self.conductor_cross_sect_area = other.conductor_cross_sect_area;
-        }
-        if results["Overall_Cross Sectional Area"] {
-            self.overall_cross_sect_area = other.overall_cross_sect_area;
-        }
-        if results["Stranded"] {
-            self.stranded = other.stranded;
-        }
-        if results["Number of Strands"] {
-            self.num_strands = other.num_strands;
-        }
-        if results["Strand Cross Sectional Area"] {
-            self.strand_cross_sect_area = other.strand_cross_sect_area;
-        }
-        if results["Insulation Voltage Rating"] {
-            self.insul_volt_rating = other.insul_volt_rating;
-        }
-        if results["Insulation Temperature Rating"] {
-            self.insul_temp_rating = other.insul_temp_rating;
-        }
-        if results["Insulation Color"] {
-            self.insul_color = other.insul_color.clone();
-        }
-    }
-}
+//impl Mergable for WireType {
+//    #[allow(clippy::too_many_lines)]
+//    // TODO: see if this can be split up
+//    fn merge_prompt(
+//        &mut self,
+//        other: &Self,
+//        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
+//    ) {
+//        //TODO: maybe check for partial_empty/empty here on other
+//        let mut input_map: HashMap<String, [String; 2]> = HashMap::new();
+//        if self.id != other.id {
+//            panic! {"attempting to merge structs with different IDs. This shouldn't have happened."}
+//        }
+//        if self.manufacturer != other.manufacturer {
+//            input_map.insert(
+//                "Manufacturer".to_string(),
+//                [
+//                    {
+//                        if let Some(manufacturer) = self.manufacturer.clone() {
+//                            manufacturer
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(manufacturer) = other.manufacturer.clone() {
+//                            manufacturer
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.model != other.model {
+//            input_map.insert(
+//                "Model".to_string(),
+//                [
+//                    {
+//                        if let Some(model) = self.model.clone() {
+//                            model
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(model) = other.model.clone() {
+//                            model
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.part_number != other.part_number {
+//            input_map.insert(
+//                "Part Number".to_string(),
+//                [
+//                    {
+//                        if let Some(part_number) = self.part_number.clone() {
+//                            part_number
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(part_number) = other.part_number.clone() {
+//                            part_number
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.manufacturer_part_number != other.manufacturer_part_number {
+//            input_map.insert(
+//                "Manufacturer Part Number".to_string(),
+//                [
+//                    {
+//                        if let Some(manufacturer_part_number) =
+//                            self.manufacturer_part_number.clone()
+//                        {
+//                            manufacturer_part_number
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(manufacturer_part_number) =
+//                            other.manufacturer_part_number.clone()
+//                        {
+//                            manufacturer_part_number
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.supplier != other.supplier {
+//            input_map.insert(
+//                "Supplier".to_string(),
+//                [
+//                    {
+//                        if let Some(supplier) = self.supplier.clone() {
+//                            supplier
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(supplier) = other.supplier.clone() {
+//                            supplier
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.supplier_part_number != other.supplier_part_number {
+//            input_map.insert(
+//                "Supplier Part Number".to_string(),
+//                [
+//                    {
+//                        if let Some(supplier_part_number) = self.supplier_part_number.clone() {
+//                            supplier_part_number
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(supplier_part_number) = other.supplier_part_number.clone() {
+//                            supplier_part_number
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.material != other.material {
+//            input_map.insert(
+//                "Material".to_string(),
+//                [
+//                    {
+//                        if let Some(material) = self.material.clone() {
+//                            material
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(material) = other.material.clone() {
+//                            material
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.insulated != other.insulated {
+//            input_map.insert(
+//                "Insulated".to_string(),
+//                [self.insulated.to_string(), other.insulated.to_string()],
+//            );
+//        }
+//        if self.insulation_material != other.insulation_material {
+//            input_map.insert(
+//                "Insulation Material".to_string(),
+//                [
+//                    {
+//                        if let Some(insulation_material) = self.insulation_material.clone() {
+//                            insulation_material
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(insulation_material) = other.insulation_material.clone() {
+//                            insulation_material
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.wire_type_code != other.wire_type_code {
+//            input_map.insert(
+//                "Wire Type Code".to_string(),
+//                [
+//                    {
+//                        if let Some(wire_type_code) = self.wire_type_code.clone() {
+//                            wire_type_code
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(wire_type_code) = other.wire_type_code.clone() {
+//                            wire_type_code
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.conductor_cross_sect_area != other.conductor_cross_sect_area {
+//            input_map.insert(
+//                "Conductor Cross Sectional Area".to_string(),
+//                [
+//                    self.conductor_cross_sect_area.to_string(),
+//                    other.conductor_cross_sect_area.to_string(),
+//                ],
+//            );
+//        }
+//        if self.overall_cross_sect_area != other.overall_cross_sect_area {
+//            input_map.insert(
+//                "Overall Cross Sectional Area".to_string(),
+//                [
+//                    self.overall_cross_sect_area.to_string(),
+//                    other.overall_cross_sect_area.to_string(),
+//                ],
+//            );
+//        }
+//        if self.stranded != other.stranded {
+//            input_map.insert(
+//                "Stranded".to_string(),
+//                [self.stranded.to_string(), other.stranded.to_string()],
+//            );
+//        }
+//        if self.num_strands != other.num_strands {
+//            input_map.insert(
+//                "Number of Strands".to_string(),
+//                [
+//                    {
+//                        if let Some(num_strands) = self.num_strands {
+//                            num_strands.to_string()
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(num_strands) = other.num_strands {
+//                            num_strands.to_string()
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.strand_cross_sect_area != other.strand_cross_sect_area {
+//            input_map.insert(
+//                "Strand Cross Sectional Area".to_string(),
+//                [
+//                    {
+//                        if let Some(strand_cross_sect_area) = self.strand_cross_sect_area {
+//                            strand_cross_sect_area.to_string()
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(strand_cross_sect_area) = other.strand_cross_sect_area {
+//                            strand_cross_sect_area.to_string()
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.insul_volt_rating != other.insul_volt_rating {
+//            input_map.insert(
+//                "Insulation Voltage Rating".to_string(),
+//                [
+//                    {
+//                        if let Some(insul_volt_rating) = self.insul_volt_rating {
+//                            insul_volt_rating.to_string()
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(insul_volt_rating) = other.insul_volt_rating {
+//                            insul_volt_rating.to_string()
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.insul_temp_rating != other.insul_temp_rating {
+//            input_map.insert(
+//                "Insulation Temperature Rating".to_string(),
+//                [
+//                    {
+//                        if let Some(insul_temp_rating) = self.insul_temp_rating {
+//                            insul_temp_rating.to_string()
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(insul_temp_rating) = other.insul_temp_rating {
+//                            insul_temp_rating.to_string()
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//        if self.insul_color != other.insul_color {
+//            input_map.insert(
+//                "Insulation Color".to_string(),
+//                [
+//                    {
+//                        if let Some(insul_color) = self.insul_color.clone() {
+//                            insul_color
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                    {
+//                        if let Some(insul_color) = other.insul_color.clone() {
+//                            insul_color
+//                        } else {
+//                            String::new()
+//                        }
+//                    },
+//                ],
+//            );
+//        }
+//
+//        let results = prompt_fn(input_map);
+//        // false means don't replace value in self struct
+//        if results["Manufacturer"] {
+//            self.manufacturer = other.manufacturer.clone();
+//        }
+//        if results["Model"] {
+//            self.model = other.model.clone();
+//        }
+//        if results["Part Number"] {
+//            self.part_number = other.part_number.clone();
+//        }
+//        if results["Manufacturer Part Number"] {
+//            self.manufacturer_part_number = other.manufacturer_part_number.clone();
+//        }
+//        if results["Supplier"] {
+//            self.supplier = other.supplier.clone();
+//        }
+//        if results["Supplier Part Number"] {
+//            self.supplier_part_number = other.supplier_part_number.clone();
+//        }
+//        if results["Material"] {
+//            self.material = other.material.clone();
+//        }
+//        if results["Insulated"] {
+//            self.insulated = other.insulated;
+//        }
+//        if results["Insulation Material"] {
+//            self.insulation_material = other.insulation_material.clone();
+//        }
+//        if results["Wire Type Code"] {
+//            self.wire_type_code = other.wire_type_code.clone();
+//        }
+//        if results["Conductor Cross Sectional Area"] {
+//            self.conductor_cross_sect_area = other.conductor_cross_sect_area;
+//        }
+//        if results["Overall_Cross Sectional Area"] {
+//            self.overall_cross_sect_area = other.overall_cross_sect_area;
+//        }
+//        if results["Stranded"] {
+//            self.stranded = other.stranded;
+//        }
+//        if results["Number of Strands"] {
+//            self.num_strands = other.num_strands;
+//        }
+//        if results["Strand Cross Sectional Area"] {
+//            self.strand_cross_sect_area = other.strand_cross_sect_area;
+//        }
+//        if results["Insulation Voltage Rating"] {
+//            self.insul_volt_rating = other.insul_volt_rating;
+//        }
+//        if results["Insulation Temperature Rating"] {
+//            self.insul_temp_rating = other.insul_temp_rating;
+//        }
+//        if results["Insulation Color"] {
+//            self.insul_color = other.insul_color.clone();
+//        }
+//    }
+//}
 
 impl Empty for WireType {
     fn is_empty(&self) -> bool {
