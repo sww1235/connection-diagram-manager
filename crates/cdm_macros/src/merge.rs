@@ -1,8 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{
-    Data, DataStruct, DeriveInput, Fields, GenericArgument, Path, PathArguments, Type, TypePath,
-};
+use syn::{Data, DataStruct, DeriveInput, Fields, GenericArgument, Path, PathArguments, Type};
 
 pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
     let fields = match input.data {
@@ -79,15 +77,17 @@ pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
             fn merge_prompt(
                 &mut self,
                 other: &Self,
-                prompt_fn: fn(::cdm_traits::compare::CompareResult),
-                -> ::cdm_traits::compare::CompareResult)
-                 {
+                prompt_fn: fn(::cdm_traits::compare::CompareResult)
+                -> ::cdm_traits::compare::CompareResult
+            ){
                 //TODO: maybe check for partial_empty/empty here on other
                 if self.id != other.id {
-                    return Err(syn::Error::new_spanned(
-                    input,
-                    "attempting to merge structs with different IDs. This shouldn't have happened.",
-                    ));
+                    //return Err(::cdm_errors::(
+                    //input,
+                    //"attempting to merge structs with different IDs. This shouldn't have happened.",
+                    //));
+                    //TODO: return an error within scope
+                    todo!();
                 }
                 let compare = self.compare(other, None);
                 if let Some(compare) = compare {

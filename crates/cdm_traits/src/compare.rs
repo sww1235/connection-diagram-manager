@@ -12,20 +12,20 @@ pub trait Compare: PartialEq {
 }
 
 pub struct CompareResult {
-    struct_name: Option<String>,
-    base_result: Option<CompareResultBase>,
-    field_variations: Option<Vec<CompareResultField>>,
+    pub struct_name: Option<String>,
+    pub base_result: Option<CompareResultBase>,
+    pub field_variations: Option<Vec<CompareResultField>>,
 }
 pub struct CompareResultField {
-    field_name: String,
-    self_value: String,
-    other_value: String,
-    use_other: bool,
+    pub field_name: String,
+    pub self_value: String,
+    pub other_value: String,
+    pub use_other: bool,
 }
 
 pub struct CompareResultBase {
-    self_value: String,
-    other_value: String,
+    pub self_value: String,
+    pub other_value: String,
 }
 
 impl Compare for String {

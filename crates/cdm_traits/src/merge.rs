@@ -8,7 +8,7 @@ pub trait Merge {
     fn merge_prompt(
         &mut self,
         other: &Self,
-        prompt_fn: fn(compare::CompareResult) -> Option<HashMap<String, bool>>,
+        prompt_fn: fn(compare::CompareResult) -> compare::CompareResult,
     );
     // pass a hashmap of string arrays, return a hashmap of integers which are the selected value
     // index out of the array, with keys as struct field names

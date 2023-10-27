@@ -1,11 +1,10 @@
 use std::fmt;
 
 use super::super::file_types::svg::Svg as FileSvg;
-use cdm_macros::{Compare, Merge};
 use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
 
 /// Svg represents a full SVG image
-#[derive(Debug, Default, Clone, PartialEq, Compare)]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub struct Svg(pub String);
 
 impl From<FileSvg> for Svg {
