@@ -28,13 +28,48 @@ pub struct CompareResultBase {
     pub other_value: String,
 }
 
-impl Compare for String {
+impl<T: Compare> Compare for Option<T> {
     fn compare(
         &self,
         other: &Self,
         compare_result: Option<CompareResult>,
     ) -> Option<CompareResult> {
+        if self.is_some() && other.is_some() && compare_result.is_some() {
+            return self.compare(other, compare_result);
+        } else {
+            None
+        }
+    }
+}
+
+impl Compare for String {
+    fn compare(
+        &self,
+        other: &Self,
+        _compare_result: Option<CompareResult>,
+    ) -> Option<CompareResult> {
         // compare_result should never be Some() on base types, so it is ignored
+        if self == other {
+            return None;
+        } else {
+            Some(CompareResult {
+                struct_name: None,
+                base_result: Some(CompareResultBase {
+                    self_value: self.clone(),
+                    other_value: other.clone(),
+                }),
+                field_variations: None,
+            })
+        }
+    }
+}
+
+impl Compare for f64 {
+    fn compare(
+        &self,
+        other: &Self,
+        _compare_result: Option<CompareResult>,
+    ) -> Option<CompareResult> {
         if self == other {
             return None;
         } else {
@@ -50,11 +85,11 @@ impl Compare for String {
     }
 }
 
-impl Compare for f64 {
+impl Compare for u64 {
     fn compare(
         &self,
         other: &Self,
-        compare_result: Option<CompareResult>,
+        _compare_result: Option<CompareResult>,
     ) -> Option<CompareResult> {
         if self == other {
             return None;
