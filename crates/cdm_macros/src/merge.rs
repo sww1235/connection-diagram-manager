@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{Data, DataStruct, DeriveInput, Fields, GenericArgument, Path, PathArguments, Type};
+use syn::{Data, DataStruct, DeriveInput, Fields};
 
 pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
     let fields = match input.data {
@@ -33,43 +33,38 @@ pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
 
     let struct_name = input.ident;
 
-    //let mut result_checks = Vec::new();
-    //for f in fields.iter() {
-    //    let field_name = f.ident.clone();
-    //    if let Some(fname) = &field_name {
-    //        if fname == "id" {
-    //            continue;
-    //        }
-    //    }
-    //    match f.ty.clone() {
-    //        // strings (only works for String, not std::string::String)
-    //        Type::Path(TypePath { path, .. }) if path.is_ident("String") => {
-    //            result_checks.push(quote! {
-    //                if results[stringify!(#field_name)] {
-    //                        self.#field_name = other.#field_name.clone();
-    //                }
-    //            })
-    //        }
-    //        // options (only works for Option, not std::option::Option)
-    //        Type::Path(ty @ TypePath { .. }) => match option_inner_type(&ty.path) {
-    //            Some(..) => result_checks.push(quote! {
-    //                if results[stringify!(#field_name)] {
-    //                    self.#field_name =i other.#field_name.clone();
-    //                }
-    //            }),
-    //            None => result_checks.push(quote! {
-    //                if results[stringify!(#field_name)] {
-    //                    self.#field_name = other.#field_name;
-    //                }
-    //            }),
-    //        },
-    //        _ => result_checks.push(quote! {
-    //            if results[stringify!(#field_name)] {
-    //                self.#field_name = other.#field_name;
-    //            }
-    //        }),
-    //    }
-    //}
+    // First check for equality between each field, and
+    let mut equality_checks = Vec::new();
+    for f in fields.iter() {
+        let field_name = f.ident.clone();
+        if let Some(fname) = &field_name {
+            if fname == "id" {
+                continue;
+            }
+        }
+        // use colons to set field values dummy
+        equality_checks.push(quote! {
+            let field = ::cdm_traits::merge::StructField {
+                name: {stringify!(#field_name).to_string()},
+                // use debug formatting for ease
+                self_string: {format!{"{:#?}", self.#field_name}},
+                other_string: {format!{"{:#?}", other.#field_name}},
+                equality: {self.#field_name == other.#field_name},
+                use_other: false,
+            };
+            equality_results.fields.push(field);
+        });
+    }
+    // then use results from merge to process
+    let mut merge_ops = Vec::new();
+    for f in fields.iter() {
+        let field_name = f.ident.clone();
+        merge_ops.push(quote! {
+            if val.name == stringify!(#field_name).to_string() && val.use_other {
+               self.#field_name = other.#field_name.clone();
+            }
+        });
+    }
 
     Ok(quote! {
         #[automatically_derived]
@@ -77,8 +72,8 @@ pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
             fn merge_prompt(
                 &mut self,
                 other: &Self,
-                prompt_fn: fn(::cdm_traits::compare::CompareResult)
-                -> ::cdm_traits::compare::CompareResult
+                prompt_fn: fn(::cdm_traits::merge::ComparedStruct)
+                -> ::cdm_traits::merge::ComparedStruct
             ){
                 //TODO: maybe check for partial_empty/empty here on other
                 if self.id != other.id {
@@ -89,40 +84,16 @@ pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
                     //TODO: return an error within scope
                     todo!();
                 }
-                let compare = self.compare(other, None);
-                if let Some(compare) = compare {
-                    let results = prompt_fn(compare);
-                } else {
-                    return None;
+                let mut equality_results = ::cdm_traits::merge::ComparedStruct::new();
+                equality_results.struct_name = stringify!(#struct_name).to_string();
+                #(#equality_checks)*
+                let prompt_results = prompt_fn(equality_results);
+                for val in prompt_results.fields{
+                    #(#merge_ops)*
                 }
-                // false means don't replace value in self struct
-                //#(#result_checks)*
             }
 
         }
 
     })
-}
-
-// only works on types with Option<>, not any other type of option.
-// this should be ok, since it is only for my crate
-fn option_inner_type(path: &Path) -> Option<&Type> {
-    if path.leading_colon.is_some() {
-        return None;
-    }
-    if path.segments.len() != 1 || path.segments[0].ident != "Option" {
-        return None;
-    }
-
-    let ab = match &path.segments[0].arguments {
-        PathArguments::AngleBracketed(ab) => ab,
-        _ => return None,
-    };
-    if ab.args.len() != 1 {
-        return None;
-    }
-    match &ab.args[0] {
-        GenericArgument::Type(t) => Some(t),
-        _ => None,
-    }
 }
