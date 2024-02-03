@@ -1,9 +1,6 @@
 mod merge;
 use merge::expand_merge;
 
-mod compare;
-use compare::expand_compare;
-
 // https://blog.turbo.fish/proc-macro-simple-derive/
 use proc_macro::TokenStream;
 
@@ -19,14 +16,6 @@ use syn::{parse_macro_input, DeriveInput};
 pub fn derive_merge(input: TokenStream) -> TokenStream {
     let input: DeriveInput = parse_macro_input!(input);
     expand_merge(input)
-        .unwrap_or_else(syn::Error::into_compile_error)
-        .into()
-}
-
-#[proc_macro_derive(Compare)]
-pub fn derive_compare(input: TokenStream) -> TokenStream {
-    let input: DeriveInput = parse_macro_input!(input);
-    expand_compare(input)
         .unwrap_or_else(syn::Error::into_compile_error)
         .into()
 }
