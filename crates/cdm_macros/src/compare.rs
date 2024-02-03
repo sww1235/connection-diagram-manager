@@ -17,7 +17,7 @@ pub fn expand_compare(input: DeriveInput) -> syn::Result<TokenStream> {
         }
     };
 
-    let struct_name = input.ident;
+    let struct_name = input.ident.clone();
 
     let mut compares = Vec::new();
 
@@ -25,12 +25,13 @@ pub fn expand_compare(input: DeriveInput) -> syn::Result<TokenStream> {
         let field_name = f.ident.clone();
 
         compares.push(quote! {
-        let cmp = self.#field_name.compare();
+        let cmp = self.#field_name.compare(other, compare_result);
         if cmp.is_some() {
             field_vars.push(::cdm_traits::compare::CompareResultField{
                field_name: stringify!(#field_name),
-               self_value: self.#field_name.to_string(),
-               other_value: other.#field_name.to_string(),
+               self_value: format!("{:#?}", self.#field_name),
+               other_value: format!("{:#?}", other.#field_name),
+               use_other: false,
             });
         }
 
