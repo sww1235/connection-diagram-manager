@@ -39,7 +39,7 @@ use svg::Svg;
 
 use dimensioned::{f64prefixes, ucum};
 
-use cdm_traits::{compare::CompareResult, merge::Merge, partial_empty::PartialEmpty};
+use cdm_traits::{merge::ComparedStruct, merge::Merge, partial_empty::PartialEmpty};
 
 //TODO: fix all display methods to use proper units
 
@@ -101,7 +101,7 @@ impl Library {
     pub fn from_datafiles(
         &mut self,
         datafiles: Vec<DataFile>,
-        prompt_fn: fn(CompareResult) -> CompareResult,
+        prompt_fn: fn(ComparedStruct) -> ComparedStruct,
     ) -> Result<(), Error> {
         // parse all datafiles
         for datafile in datafiles {
@@ -196,7 +196,11 @@ impl Library {
     #[allow(clippy::too_many_lines)]
     // TODO: see if this can be split up
     #[allow(clippy::arithmetic_side_effects)]
-    fn from_datafile(&mut self, datafile: DataFile, prompt_fn: fn(CompareResult) -> CompareResult) {
+    fn from_datafile(
+        &mut self,
+        datafile: DataFile,
+        prompt_fn: fn(ComparedStruct) -> ComparedStruct,
+    ) {
         // wire_types
         if let Some(wire_types) = datafile.wire_types {
             for (k, v) in &wire_types {
@@ -835,7 +839,7 @@ impl Project {
         &mut self,
         datafiles: Vec<DataFile>,
         library: &Library,
-        prompt_fn: fn(CompareResult) -> CompareResult,
+        prompt_fn: fn(ComparedStruct) -> ComparedStruct,
     ) -> Result<(), Error> {
         // parse all datafiles
         for datafile in datafiles {
@@ -900,7 +904,7 @@ impl Project {
         &mut self,
         datafile: DataFile,
         library: &Library,
-        prompt_fn: fn(CompareResult) -> CompareResult,
+        prompt_fn: fn(ComparedStruct) -> ComparedStruct,
     ) -> Result<(), Error> {
         // pathway
         if let Some(pathways) = datafile.pathways {

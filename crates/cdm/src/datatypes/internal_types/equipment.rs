@@ -6,11 +6,11 @@ use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
 
 use super::{equipment_type::EquipmentType, location::Location};
 
-use cdm_macros::{Compare, Merge};
+use cdm_macros::Merge;
 
 /// `Equipment` represents a particular instance of an `EquipmentType`.
 /// This is the physical unit you would hold in your hand
-#[derive(Debug, Default, PartialEq, Compare, Merge)]
+#[derive(Debug, Default, PartialEq, Merge)]
 pub struct Equipment {
     /// Internal `id` of equipment instance
     pub id: String,
@@ -40,132 +40,6 @@ impl Equipment {
         }
     }
 }
-
-//impl Mergable for Equipment {
-//    #[allow(clippy::too_many_lines)]
-//    // TODO: see if this can be split up
-//    fn merge_prompt(
-//        &mut self,
-//        other: &Self,
-//        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
-//    ) {
-//        //TODO: maybe check for partial_empty/empty here on other
-//        let mut input_map: HashMap<String, [String; 2]> = HashMap::new();
-//        if self.id != other.id {
-//            panic! {"attempting to merge structs with different IDs. This shouldn't have happened."}
-//        }
-//        if self.equip_type != other.equip_type {
-//            input_map.insert(
-//                "Equipment Type".to_string(),
-//                [
-//                    self.equip_type.borrow().id.clone(),
-//                    other.equip_type.borrow().id.clone(),
-//                ],
-//            );
-//        }
-//        if self.identifier != other.identifier {
-//            input_map.insert(
-//                "Identifier".to_string(),
-//                [
-//                    {
-//                        if let Some(identifier) = self.identifier.clone() {
-//                            identifier
-//                        } else {
-//                            String::new()
-//                        }
-//                    },
-//                    {
-//                        if let Some(identifier) = other.identifier.clone() {
-//                            identifier
-//                        } else {
-//                            String::new()
-//                        }
-//                    },
-//                ],
-//            );
-//        }
-//        if self.mounting_type != other.mounting_type {
-//            input_map.insert(
-//                "Mounting Type".to_string(),
-//                [
-//                    {
-//                        if let Some(mounting_type) = self.mounting_type.clone() {
-//                            mounting_type
-//                        } else {
-//                            String::new()
-//                        }
-//                    },
-//                    {
-//                        if let Some(mounting_type) = other.mounting_type.clone() {
-//                            mounting_type
-//                        } else {
-//                            String::new()
-//                        }
-//                    },
-//                ],
-//            );
-//        }
-//        if self.location != other.location {
-//            input_map.insert(
-//                "Location".to_string(),
-//                [
-//                    {
-//                        if let Some(location) = self.location.clone() {
-//                            location.borrow().id.clone()
-//                        } else {
-//                            String::new()
-//                        }
-//                    },
-//                    {
-//                        if let Some(location) = other.location.clone() {
-//                            location.borrow().id.clone()
-//                        } else {
-//                            String::new()
-//                        }
-//                    },
-//                ],
-//            );
-//        }
-//        if self.description != other.description {
-//            input_map.insert(
-//                "Description".to_string(),
-//                [
-//                    {
-//                        if let Some(description) = self.description.clone() {
-//                            description
-//                        } else {
-//                            String::new()
-//                        }
-//                    },
-//                    {
-//                        if let Some(description) = other.description.clone() {
-//                            description
-//                        } else {
-//                            String::new()
-//                        }
-//                    },
-//                ],
-//            );
-//        }
-//        let results = prompt_fn(input_map);
-//        // false means don't replace value in self struct
-//        if results["Equipment Type"] {
-//            self.equip_type = Rc::clone(&other.equip_type);
-//        }
-//        if results["Identifier"] {
-//            self.identifier = other.identifier.clone();
-//        }
-//        if results["Mounting Type"] {
-//            self.mounting_type = other.mounting_type.clone();
-//        }
-//        if results["Location"] {
-//            self.location = other.location.clone();
-//        }
-//        if results["Description"] {
-//            self.description = other.description.clone();
-//        }
-//    }
-//}
 
 impl Empty for Equipment {
     fn is_empty(&self) -> bool {

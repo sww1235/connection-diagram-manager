@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::fmt;
 use std::rc::Rc;
 
-use cdm_macros::{Compare, Merge};
+use cdm_macros::Merge;
 use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
 
 use super::pathway_type::PathwayType;
@@ -10,7 +10,7 @@ use super::pathway_type::PathwayType;
 use dimensioned::ucum;
 
 /// `Pathway` represents a physical instance of a pathway
-#[derive(Debug, Default, PartialEq, Compare, Merge)]
+#[derive(Debug, Default, PartialEq, Merge)]
 pub struct Pathway {
     /// Internal `id` of pathway instance
     pub id: String,
@@ -37,91 +37,6 @@ impl Pathway {
         }
     }
 }
-
-//impl Mergable for Pathway {
-//    fn merge_prompt(
-//        &mut self,
-//        other: &Self,
-//        prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
-//    ) {
-//        //TODO: maybe check for partial_empty/empty here on other
-//        let mut input_map: HashMap<String, [String; 2]> = HashMap::new();
-//        if self.id != other.id {
-//            panic! {"attempting to merge structs with different IDs. This shouldn't have happened."}
-//        }
-//        if self.path_type != other.path_type {
-//            input_map.insert(
-//                "Path Type".to_string(),
-//                [
-//                    self.path_type.borrow().id.clone(),
-//                    other.path_type.borrow().id.clone(),
-//                ],
-//            );
-//        }
-//        if self.identifier != other.identifier {
-//            input_map.insert(
-//                "Identifier".to_string(),
-//                [
-//                    {
-//                        if let Some(identifier) = self.identifier.clone() {
-//                            identifier
-//                        } else {
-//                            String::new()
-//                        }
-//                    },
-//                    {
-//                        if let Some(identifier) = other.identifier.clone() {
-//                            identifier
-//                        } else {
-//                            String::new()
-//                        }
-//                    },
-//                ],
-//            );
-//        }
-//        if self.description != other.description {
-//            input_map.insert(
-//                "Description".to_string(),
-//                [
-//                    {
-//                        if let Some(description) = self.description.clone() {
-//                            description
-//                        } else {
-//                            String::new()
-//                        }
-//                    },
-//                    {
-//                        if let Some(description) = other.description.clone() {
-//                            description
-//                        } else {
-//                            String::new()
-//                        }
-//                    },
-//                ],
-//            );
-//        }
-//        if self.length != other.length {
-//            input_map.insert(
-//                "Length".to_string(),
-//                [self.length.to_string(), other.length.to_string()],
-//            );
-//        }
-//        let results = prompt_fn(input_map);
-//        // false means don't replace value in self struct
-//        if results["Path Type"] {
-//            self.path_type = Rc::clone(&other.path_type);
-//        }
-//        if results["Identifier"] {
-//            self.identifier = other.identifier.clone();
-//        }
-//        if results["Description"] {
-//            self.description = other.description.clone();
-//        }
-//        if results["Length"] {
-//            self.length = other.length;
-//        }
-//    }
-//}
 
 impl Empty for Pathway {
     fn is_empty(&self) -> bool {
