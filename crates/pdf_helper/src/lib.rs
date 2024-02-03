@@ -247,21 +247,19 @@ impl PDFPage {
     }
 }
 /// `loop_nodes` loops over a SVG tree or subtree and outputs a vector of PDF operations
-fn loop_nodes(node: &usvg::Node) -> Vec<Operation> {
-    // dereferencing a borrow, but then borrowing the underlying value again
-    let new_operations = match *node.borrow() {
-        usvg::NodeKind::Group(..) => {
-            let mut group_operations = Vec::new();
-            for child in node.children() {
-                group_operations.extend(loop_nodes(&child));
-            }
-            group_operations
-        }
-        usvg::NodeKind::Path(ref path) => convert_path(path),
-        usvg::NodeKind::Image(ref image) => convert_image(image),
-        usvg::NodeKind::Text(_) => Vec::new(), // should already be converted into paths
-    };
-    new_operations
+fn loop_nodes(parent: &usvg::Group) -> Vec<Operation> {
+    let mut group_operations = Vec::new();
+    for node in &parent.children {
+        //TODO: investigate subroots
+        let operation = match node {
+            usvg::Node::Group(group) => loop_nodes(group),
+            usvg::Node::Path(ref path) => convert_path(path),
+            usvg::Node::Image(ref image) => convert_image(image),
+            usvg::Node::Text(_) => Vec::new(), // should already be converted into paths
+        };
+        group_operations.extend(operation);
+    }
+    group_operations
 }
 
 /// `convert_path` convets an SVG path element into a vector of PDF operations
