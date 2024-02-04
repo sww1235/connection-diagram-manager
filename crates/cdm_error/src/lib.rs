@@ -1,3 +1,6 @@
+//! CDM Error contains some error handling stuff that is used in the other crates in the workspace
+//!
+//!
 use paragraph_breaker::Error as ParagraphError;
 use pdf_helper::Error as PDFError;
 use usvg::Error as USVGError;
