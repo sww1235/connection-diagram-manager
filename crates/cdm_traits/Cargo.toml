@@ -9,3 +9,6 @@ keywords = ["Connection", "Diagram", "Manager", "Visualiser", "wire", "cable", "
 categories = ["CAD"]
 readme = "README.md"
 license.workspace = true
+
+[lints]
+workspace = true

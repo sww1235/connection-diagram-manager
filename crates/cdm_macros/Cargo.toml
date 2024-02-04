@@ -10,6 +10,9 @@ categories = ["CAD"]
 readme = "README.md"
 license.workspace = true
 
+[lints]
+workspace = true
+
 
 [lib]
 proc-macro = true
