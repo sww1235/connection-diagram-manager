@@ -96,6 +96,12 @@ impl Library {
     }
     /// `from_datafiles` converts between the textual representation of datafiles, and the struct
     /// object representation of the internal objects
+    ///
+    /// # Errors
+    /// TODO: fix this formatting
+    ///
+    /// - `Error::NoDefinitionFound`
+    ///
     #[allow(clippy::too_many_lines)]
     // TODO: see if this can be split up
     pub fn from_datafiles(
@@ -107,81 +113,76 @@ impl Library {
         for datafile in datafiles {
             self.from_datafile(datafile, prompt_fn);
         }
+        // check for empty dummy objects created because they were referenced by other objects
+        // during the import process
         for wire_type in self.wire_types.values() {
             if wire_type.borrow().is_partial_empty() {
-                //TODO: Return error here instead
                 //TODO: Add in source file name here
-                panic! {
-                concat!{
-                    "WireType {} was specified in files read in ",
-                    "but no defintion was found. Please correct this.",
-                }, wire_type.borrow().id}
+                return Err(Error::NoDefinitionFound {
+                    datatype: "WireType".to_string(),
+                    datatype_id: wire_type.borrow().id.clone(),
+                    datafile_path: PathBuf::new(), //location.contained_datafile_path,
+                });
             }
         }
         for cable_type in self.cable_types.values() {
             if cable_type.borrow().is_partial_empty() {
-                //TODO: Return error here instead
                 //TODO: Add in source file name here
-                panic! {
-                concat!{
-                    "CableType {} was specified in files read in ",
-                    "but no defintion was found. Please correct this.",
-                }, cable_type.borrow().id}
+                return Err(Error::NoDefinitionFound {
+                    datatype: "CableType".to_string(),
+                    datatype_id: cable_type.borrow().id.clone(),
+                    datafile_path: PathBuf::new(), //location.contained_datafile_path,
+                });
             }
         }
         for term_cable_type in self.term_cable_types.values() {
             if term_cable_type.borrow().is_partial_empty() {
-                //TODO: Return error here instead
                 //TODO: Add in source file name here
-                panic! {
-                concat!{
-                    "TermCableType {} was specified in files read in ",
-                    "but no defintion was found. Please correct this.",
-                }, term_cable_type.borrow().id}
+                return Err(Error::NoDefinitionFound {
+                    datatype: "TermCableType".to_string(),
+                    datatype_id: term_cable_type.borrow().id.clone(),
+                    datafile_path: PathBuf::new(), //location.contained_datafile_path,
+                });
             }
         }
         for location_type in self.location_types.values() {
             if location_type.borrow().is_partial_empty() {
-                //TODO: Return error here instead
                 //TODO: Add in source file name here
-                panic! {
-                concat!{
-                    "LocationType {} was specified in files read in ",
-                    "but no defintion was found. Please correct this.",
-                }, location_type.borrow().id}
+                return Err(Error::NoDefinitionFound {
+                    datatype: "LocationType".to_string(),
+                    datatype_id: location_type.borrow().id.clone(),
+                    datafile_path: PathBuf::new(), //location.contained_datafile_path,
+                });
             }
         }
         for connector_type in self.connector_types.values() {
             if connector_type.borrow().is_partial_empty() {
-                //TODO: Return error here instead
                 //TODO: Add in source file name here
-                panic! {
-                concat!{
-                    "ConnectorType {} was specified in files read in ",
-                    "but no defintion was found. Please correct this.",
-                }, connector_type.borrow().id}
+                return Err(Error::NoDefinitionFound {
+                    datatype: "ConnectorType".to_string(),
+                    datatype_id: connector_type.borrow().id.clone(),
+                    datafile_path: PathBuf::new(), //location.contained_datafile_path,
+                });
             }
         }
         for equipment_type in self.equipment_types.values() {
             if equipment_type.borrow().is_partial_empty() {
-                //TODO: Return error here instead
                 //TODO: Add in source file name here
-                panic! {
-                concat!{
-                    "EquipmentType {} was specified in files read in ",
-                    "but no defintion was found. Please correct this.",
-                }, equipment_type.borrow().id}
+                return Err(Error::NoDefinitionFound {
+                    datatype: "EquipmentType".to_string(),
+                    datatype_id: equipment_type.borrow().id.clone(),
+                    datafile_path: PathBuf::new(), //location.contained_datafile_path,
+                });
             }
         }
         for pathway_type in self.pathway_types.values() {
             if pathway_type.borrow().is_partial_empty() {
-                //TODO: Return error here instead
                 //TODO: Add in source file name here
-                panic! {
-                concat!{
-                    "PathwayType {} was specified in files read in ",
-                    "but no defintion was found. Please correct this.",
-                }, pathway_type.borrow().id}
+                return Err(Error::NoDefinitionFound {
+                    datatype: "PathwayType".to_string(),
+                    datatype_id: pathway_type.borrow().id.clone(),
+                    datafile_path: PathBuf::new(), //location.contained_datafile_path,
+                });
             }
         }
         Ok(())
@@ -833,8 +834,15 @@ impl Project {
             wire_cables: HashMap::new(),
         }
     }
-    /// `from_datafiles` converts between the textual representation of datafiles, and the struct
+    /// `from_datafiles` converts from the textual representation of datafiles, and the struct
     /// object representation of the internal objects
+    /// # Errors
+    /// TODO: fix this formatting
+    ///
+    /// - `Error::NoDefinitionFound`
+    /// - `Error::NoContainedDefinitionFound`
+    /// - `Error::DefinitionProcessing`
+    ///
     pub fn from_datafiles(
         &mut self,
         datafiles: Vec<DataFile>,
@@ -845,6 +853,8 @@ impl Project {
         for datafile in datafiles {
             self.from_datafile(datafile, library, prompt_fn)?;
         }
+        // check for empty dummy objects created because they were referenced by other objects
+        // during the import process
         for location in self.locations.values() {
             if location.borrow().is_partial_empty() {
                 //TODO: Add in source file name here
@@ -918,14 +928,13 @@ impl Project {
                             // since this is project, not library, we want to error
                             // for types not found in library, since they should
                             // all have been parsed before parsing project.
-                            panic! {concat!{
-                            "PathwayType: {} in ",
-                            "Pathway: {} specified in ",
-                            "datafile: {} is not found in ",
-                            "any library either read from ",
-                            "datafiles, or implemented in program ",
-                            "logic. Check your spelling"},
-                            pathways[k].path_type, &k, datafile.file_path.display()}
+                            return Err(Error::NoContainedDefinitionFound {
+                                contained_type: "PathwayType".to_string(),
+                                contained_type_id: pathways[k].path_type.clone(),
+                                container_type: "Pathway".to_string(),
+                                container_type_id: k.to_string(),
+                                datafile_path: datafile.file_path,
+                            });
                         }
                     },
                     identifier: pathways[k].identifier.clone(),
@@ -964,18 +973,26 @@ impl Project {
                             || (wire_cables[k].wire.is_some()
                                 && wire_cables[k].term_cable.is_some())
                         {
-                            panic! {concat!{
-                            "More than one of wire, ",
-                            "cable and term_cable of ",
-                            "WireCable {} are specified. ",
-                            "Please correct this."}, &k}
+                            return Err(Error::DefinitionProcessing {
+                                datatype: "WireCable".to_string(),
+                                datatype_id: k.to_string(),
+                                message: concat! {"More than one of Wire, Cable ",
+                                "and TermCable are defined. Please correct this"}
+                                .to_string(),
+                                datafile_path: datafile.file_path,
+                            });
                         } else if wire_cables[k].wire.is_none()
                             && wire_cables[k].cable.is_none()
                             && wire_cables[k].term_cable.is_none()
                         {
-                            panic! {concat!{"Neither wire, cable ",
-                            "or term_cable values of WireCable {} ",
-                            "are specified. Please correct this."}, &k}
+                            return Err(Error::DefinitionProcessing {
+                                datatype: "WireCable".to_string(),
+                                datatype_id: k.to_string(),
+                                message: concat! {"Neither Wire, Cable ",
+                                "and TermCable are defined. Please correct this"}
+                                .to_string(),
+                                datafile_path: datafile.file_path,
+                            });
                         } else {
                             // at this point, only one of wire, cable and term_cable should
                             // be set.
@@ -990,14 +1007,13 @@ impl Project {
                                     // since this is project, not library, we want to error
                                     // for types not found in library, since they should
                                     // all have been parsed before parsing project.
-                                    panic! {concat!{
-                                    "WireType: {} in ",
-                                    "WireCable: {} specified in ",
-                                    "datafile: {} is not found in ",
-                                    "any library either read from ",
-                                    "datafiles, or implemented in program ",
-                                    "logic. Check your spelling"},
-                                    wire_type, k, datafile.file_path.display()}
+                                    return Err(Error::NoContainedDefinitionFound {
+                                        contained_type: "WireType".to_string(),
+                                        contained_type_id: wire_type.clone(),
+                                        container_type: "WireCable".to_string(),
+                                        container_type_id: k.to_string(),
+                                        datafile_path: datafile.file_path,
+                                    });
                                 }
                             // clone string here to avoid moving value out of hashmap.
                             } else if let Some(cable_type) = wire_cables[k].cable.clone() {
@@ -1009,14 +1025,13 @@ impl Project {
                                     // since this is project, not library, we want to error
                                     // for types not found in library, since they should
                                     // all have been parsed before parsing project.
-                                    panic! {concat!{
-                                    "CableType: {} in ",
-                                    "WireCable: {} specified in ",
-                                    "datafile: {} is not found in ",
-                                    "any library either read from ",
-                                    "datafiles, or implemented in program ",
-                                    "logic. Check your spelling"},
-                                    cable_type, k, datafile.file_path.display()}
+                                    return Err(Error::NoContainedDefinitionFound {
+                                        contained_type: "CableType".to_string(),
+                                        contained_type_id: cable_type.clone(),
+                                        container_type: "WireCable".to_string(),
+                                        container_type_id: k.to_string(),
+                                        datafile_path: datafile.file_path,
+                                    });
                                 }
                             // clone string here to avoid moving value out of hashmap.
                             } else if let Some(term_cable_type) = wire_cables[k].term_cable.clone()
@@ -1029,22 +1044,25 @@ impl Project {
                                     // since this is project, not library, we want to error
                                     // for types not found in library, since they should
                                     // all have been parsed before parsing project.
-                                    panic! {concat!{
-                                    "TermCableType: {} in ",
-                                    "WireCable: {} specified in ",
-                                    "datafile: {} is not found in ",
-                                    "any library either read from ",
-                                    "datafiles, or implemented in program ",
-                                    "logic. Check your spelling"},
-                                     term_cable_type, k, datafile.file_path.display()}
+                                    return Err(Error::NoContainedDefinitionFound {
+                                        contained_type: "TermCableType".to_string(),
+                                        contained_type_id: term_cable_type.clone(),
+                                        container_type: "WireCable".to_string(),
+                                        container_type_id: k.to_string(),
+                                        datafile_path: datafile.file_path,
+                                    });
                                 }
                             } else {
-                                //TODO: fix this
-                                panic! {concat!{
-                                "Neither wire, cable ",
-                                "or termcable type values ",
-                                "of WireCable {} are specified. ",
-                                "Please correct this."}, &k}
+                                // this should be impossible
+                                return Err(Error::DefinitionProcessing {
+                                    datatype: "WireCable".to_string(),
+                                    datatype_id: k.to_string(),
+                                    message: concat! {"Neither Wire, Cable ",
+                                    "and TermCable are defined. Please correct this. ",
+                                    "This message should be unreachable!"}
+                                    .to_string(),
+                                    datafile_path: datafile.file_path,
+                                });
                             }
                         }
                     },
@@ -1061,6 +1079,15 @@ impl Project {
                             } else {
                                 //these are both project variables so may not be defined
                                 //erroring here is fine.
+                                //
+                                //TODO: actually return error here. fix this
+                                //return Err(Error::NoContainedDefinitionFound {
+                                //    contained_type: "Pathway".to_string(),
+                                //    contained_type_id: pathway.to_string(),
+                                //    container_type: "WireCable".to_string(),
+                                //    container_type_id: k.to_string(),
+                                //    datafile_path: datafile.file_path,
+                                //});
                                 error! {concat!{
                                 "WireCable: {} is assigned to ",
                                 "Pathway: {} in datafile: {}, ",
@@ -1113,15 +1140,13 @@ impl Project {
                             // since this is project, not library, we want to error
                             // for types not found in library, since they should
                             // all have been parsed before parsing project.
-                            panic! {concat!{
-                            "Failed to find ",
-                            "LocationType: {} used in ",
-                            "Location: {} in file {}, ",
-                            "in any imported library dictionary ",
-                            "or file. Please check spelling, or ",
-                            "add it, if this was not intentional."},
-                            locations[k].location_type, &k,
-                            datafile.file_path.display() }
+                            return Err(Error::NoContainedDefinitionFound {
+                                contained_type: "LocationType".to_string(),
+                                contained_type_id: locations[k].location_type.clone(),
+                                container_type: "Location".to_string(),
+                                container_type_id: k.to_string(),
+                                datafile_path: datafile.file_path,
+                            });
                         }
                     },
                     identifier: locations[k].identifier.clone(),
@@ -1160,16 +1185,13 @@ impl Project {
                             // since this is project, not library, we want to error
                             // for types not found in library, since they should
                             // all have been parsed before parsing project.
-                            panic! {concat!{
-                            "Failed to find ",
-                            "EquipmentType: {} used ",
-                            "in Equipment: {} in ",
-                            "file {}, in any imported ",
-                            "library dictionary or ",
-                            "file. Please check spelling, ",
-                            "or add it, if this was not intentional."},
-                            equipment[k].equipment_type, &k,
-                            datafile.file_path.display() }
+                            return Err(Error::NoContainedDefinitionFound {
+                                contained_type: "EquipmentType".to_string(),
+                                contained_type_id: equipment[k].equipment_type.clone(),
+                                container_type: "Equipment".to_string(),
+                                container_type_id: k.to_string(),
+                                datafile_path: datafile.file_path,
+                            });
                         }
                     },
                     identifier: equipment[k].identifier.clone(),
@@ -1182,6 +1204,7 @@ impl Project {
                             if self.locations.contains_key(&file_location) {
                                 Some(Rc::clone(&self.locations[k]))
                             } else {
+                                //TODO: return error here
                                 error! {concat!{
                                 "Location: {} is assigned to ",
                                 "Equipment: {} in datafile: {}, ",
@@ -1226,18 +1249,54 @@ impl Project {
 #[non_exhaustive]
 #[derive(Debug)]
 pub enum Error {
-    /// No defintion found for project datatype
+    /// Definition of library object referenced in project not found
+    ///
+    /// This is mainly caused when a dummy object is created during the import process because it
+    /// is referenced by another object but not populated during the remainder of the import
+    /// process
     NoDefinitionFound {
+        /// datatype type
         datatype: String,
+        /// ID of datatype
         datatype_id: String,
+        /// filepath containing definition
+        datafile_path: PathBuf,
+    },
+    /// Error during definition processing
+    DefinitionProcessing {
+        /// datatype type
+        datatype: String,
+        /// ID of datatype
+        datatype_id: String,
+        ///error message
+        message: String,
+        /// filepath containing definition
+        datafile_path: PathBuf,
+    },
+    /// Definition of object empty
+    DefinitionEmpty {
+        /// datatype type
+        datatype: String,
+        /// ID of datatype
+        datatype_id: String,
+        /// filepath containing definition
         datafile_path: PathBuf,
     },
     /// No defintion found for project datatype contained in other datatype
+    ///
+    /// This is mainly caused when a dummy object is created during the import process because it
+    /// is referenced by another object but not populated during the remainder of the import
+    /// process
     NoContainedDefinitionFound {
+        /// contained type
         contained_type: String,
+        /// contained type id
         contained_type_id: String,
+        /// container type
         container_type: String,
+        /// container type id
         container_type_id: String,
+        /// filepath containing definition
         datafile_path: PathBuf,
     },
 }
@@ -1254,7 +1313,28 @@ impl std::fmt::Display for Error {
             } => {
                 write!(
                     f,
-                    "No definition found for {datatype}: {datatype_id} in file: {datafile_path:?}"
+                    "{datatype}: {datatype_id} was specified in file: {datafile_path:?}, but no definition was found."
+                )
+            }
+            Error::DefinitionProcessing {
+                ref datatype,
+                ref datatype_id,
+                ref message,
+                ref datafile_path,
+            } => {
+                write!(
+                    f,
+                    "{datatype}: {datatype_id} found in file: {datafile_path:?}, had error during processing: {message}."
+                )
+            }
+            Error::DefinitionEmpty {
+                ref datatype,
+                ref datatype_id,
+                ref datafile_path,
+            } => {
+                write!(
+                    f,
+                    "Definition empty for {datatype}: {datatype_id} in file: {datafile_path:?}"
                 )
             }
             Error::NoContainedDefinitionFound {
@@ -1264,7 +1344,7 @@ impl std::fmt::Display for Error {
                 ref container_type_id,
                 ref datafile_path,
             } => {
-                write!(f, "{contained_type}: {contained_type_id} found in {container_type}: {container_type_id} in file: {datafile_path:?}")
+                write!(f, "{contained_type}: {contained_type_id} specified in {container_type}: {container_type_id} in file: {datafile_path:?}, not found in libraries, either read from datafiles or implemented in program logic. Check your spelling.")
             }
         }
     }
