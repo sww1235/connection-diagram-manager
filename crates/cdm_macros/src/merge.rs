@@ -60,7 +60,7 @@ pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
     for f in fields.iter() {
         let field_name = f.ident.clone();
         merge_ops.push(quote! {
-            if val.name == stringify!(#field_name).to_string() && val.use_other {
+            if val.name == stringify!(#field_name) && val.use_other {
                self.#field_name = other.#field_name.clone();
             }
         });
