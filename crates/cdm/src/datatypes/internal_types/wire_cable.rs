@@ -4,6 +4,8 @@ use std::rc::Rc;
 
 use dimensioned::ucum;
 
+use cdm_macros::Merge;
+
 use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
 
 use super::{
@@ -14,7 +16,7 @@ use super::{
 
 /// `WireCable` represents a particular instance of a `WireType`, `CableType` or `TermCableType`.
 /// It represents a physical item.
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, Merge)]
 pub struct WireCable {
     /// Internal `id` of wire or cable instance
     pub id: String,

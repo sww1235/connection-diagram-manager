@@ -2,6 +2,8 @@ use std::fmt;
 
 use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
 
+use cdm_macros::Merge;
+
 use dimensioned::ucum;
 
 /// `WireType` represents a particular type of wire
@@ -10,7 +12,7 @@ use dimensioned::ucum;
 /// mainly provided for logical reasons rather than
 /// functional (model/part number/manufacturer part number
 /// may all be equivalent in some cases)
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, Merge)]
 pub struct WireType {
     /// Internal ID of `WireType`
     pub id: String,
