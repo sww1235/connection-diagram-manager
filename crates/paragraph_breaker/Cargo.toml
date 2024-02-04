@@ -16,7 +16,7 @@ license.workspace = true
 dimensioned = "0.8.0"
 log = "~0"
 lopdf = "~0"
-rustybuzz = "~0.7"
+rustybuzz = "~0"
 simple_logger = "~4"
 
 [lib]
