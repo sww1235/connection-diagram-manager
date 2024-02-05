@@ -1,0 +1,5 @@
+
+# TODO: remove this. colored has a lower windows-sys version than
+# chrono which is causing errors. need colored to update first
+# to eliminate clippy spam
+# allowed-duplicate-crates = ["windows-targets"]

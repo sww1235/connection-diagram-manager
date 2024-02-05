@@ -34,6 +34,11 @@ pdf_helper = {path = "crates/pdf_helper/", version = "~0"}
 [workspace.lints.rust]
 missing_docs = "warn"
 [workspace.lints.clippy]
+# TODO: remove this. colored has a lower windows-sys version than
+# chrono which is causing errors. need colored to update first
+# to eliminate clippy spam. Also uncomment line in clippy.toml
+# when configuration option is available
+multiple_crate_versions = {level = "allow", priority = 2}
 correctness = "warn"
 suspicious = "warn"
 perf = "warn"
