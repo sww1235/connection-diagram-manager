@@ -8,6 +8,28 @@ authors = ["Stephen Walker-Weinshenker"]
 edition = "2021"
 repository = "https://github.com/sww1235/connection-diagram-manager-rust"
 license = "MIT OR Apache-2.0"
+
+[workspace.dependencies]
+#uom = {version = "~0", default-features = false, features = ["autoconvert", "std", "serde", "si", "bigint", "bigrational", "i128"]}
+dimensioned = "~0"
+log = "~0"
+rustybuzz = "~0"
+serde = { version = "~1", features = ["derive"] }
+serde_yaml = "~0"
+simple_logger = "~4"
+usvg = "~0"
+lopdf = "~0"
+cdm_macros = {path = "crates/cdm_macros/", version = "~0"}
+cdm_traits = {path = "crates/cdm_traits/", version = "~0"}
+paragraph_breaker = {path = "crates/paragraph_breaker/", version = "~0"}
+pdf_helper = {path = "crates/pdf_helper/", version = "~0"}
+#unit_utils = {path = "crates/unit_utils", version = "~0"}
+
+# per uom docs, enabling serde support for bigint and bigrational stuff
+#num-rational = { version = "*", features = ["serde"] }
+#num-bigint = { version = "*", features = ["serde"] }
+
+
 #https://stackoverflow.com/a/74545562/3342767
 [workspace.lints.rust]
 missing_docs = "warn"

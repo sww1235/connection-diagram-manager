@@ -13,11 +13,12 @@ license.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dimensioned = "0.8.0"
-log = "~0"
-lopdf = "~0"
-rustybuzz = "~0"
-simple_logger = "~4"
+log.workspace = true
+lopdf.workspace = true
+rustybuzz.workspace = true
+simple_logger.workspace = true
+# uom.workspace = true
+dimensioned.workspace = true
 
 [lib]
 name = "paragraph_breaker"

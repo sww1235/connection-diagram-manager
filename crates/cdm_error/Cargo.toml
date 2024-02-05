@@ -14,12 +14,12 @@ license.workspace = true
 workspace = true
 
 [dependencies]
-log = "~0"
-lopdf = "~0"
-simple_logger = "~4"
-usvg = "~0"
-paragraph_breaker = {path = "../paragraph_breaker/"}
-pdf_helper = { path = "../pdf_helper/"}
+log.workspace = true
+lopdf.workspace = true
+simple_logger.workspace = true
+usvg.workspace = true
+paragraph_breaker.workspace = true
+pdf_helper.workspace = true
 
 
 [lib]

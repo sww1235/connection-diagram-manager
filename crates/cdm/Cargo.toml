@@ -17,17 +17,19 @@ workspace = true
 
 [dependencies]
 clap = { version = "~4", features = ["derive", "unicode", "wrap_help"], optional = true }
-dimensioned = "0.8.0"
 fltk = { version = "~1", optional = true }
 fltk-theme = { version = "~0", optional = true }
-log = "~0"
-rustybuzz = "~0"
-serde = { version = "~1", features = ["derive"] }
-serde_yaml = "~0"
-simple_logger = "~4"
-usvg = "~0"
-cdm_macros = {path = "../cdm_macros/", version = "~0"}
-cdm_traits = {path = "../cdm_traits/", version = "~0"}
+log.workspace = true
+rustybuzz.workspace = true
+serde.workspace = true
+serde_yaml.workspace = true
+simple_logger.workspace = true
+# uom.workspace = true
+dimensioned.workspace = true
+usvg.workspace = true
+cdm_macros.workspace = true
+cdm_traits.workspace = true
+# unit_utils.workspace = true
 
 [features]
 cli = ["clap"]
