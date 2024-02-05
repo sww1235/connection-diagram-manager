@@ -1,7 +1,10 @@
+//! test
+
 use dimensioned::ucum;
 
 fn main() {
-    let test = 0.0 * ucum::M;
+    #[allow(clippy::arithmetic_side_effects)]
+    let test = 0.0_f64 * ucum::M;
 
     let test2: ucum::Meter<f64> = ucum::Meter::default();
 
