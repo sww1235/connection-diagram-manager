@@ -1,3 +1,8 @@
+//! `cdm_traits` provide traits for Connection Diagram Manager
+//!
+//! They are in a separate crate due to issues with proc macro generation
+//!
+
 /// `merge` provides the `Merge` trait
 pub mod merge;
 

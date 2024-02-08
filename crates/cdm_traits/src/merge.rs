@@ -27,18 +27,25 @@ pub struct StructField {
 }
 
 impl StructField {
+    /// Create new `StructField`
+    #[must_use]
     pub fn new() -> Self {
-        Default::default()
+        StructField::default()
     }
 }
+/// `ComparedStruct` is a container for comparision information about a struct
 #[derive(Debug, Default, PartialEq)]
 pub struct ComparedStruct {
+    /// struct name
     pub struct_name: String,
+    /// list of fields in the struct
     pub fields: Vec<StructField>,
 }
 
 impl ComparedStruct {
+    /// Create new `ComparedStruct`
+    #[must_use]
     pub fn new() -> Self {
-        Default::default()
+        ComparedStruct::default()
     }
 }

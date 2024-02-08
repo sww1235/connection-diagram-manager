@@ -1,3 +1,6 @@
+//! Procedural Macros for Connection Diagram Manager
+
+/// merge derive
 mod merge;
 use merge::expand_merge;
 
@@ -12,6 +15,7 @@ use syn::{parse_macro_input, DeriveInput};
 // - Empty / is_empty()
 // - PartialEmpty / is_partial_empty()
 
+/// `derive_merge` is the proc macro function to process the merge derive
 #[proc_macro_derive(Merge)]
 pub fn derive_merge(input: TokenStream) -> TokenStream {
     let input: DeriveInput = parse_macro_input!(input);
