@@ -36,7 +36,7 @@ cli = ["clap"]
 gui = ["clap", "fltk", "fltk-theme"]
 
 [lib]
-name = "cdm"
+name = "cdm_core"
 path = "src/lib.rs"
 
 [[bin]]
