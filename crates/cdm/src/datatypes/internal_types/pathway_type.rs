@@ -1,4 +1,5 @@
 use std::fmt;
+use std::path::PathBuf;
 
 use cdm_macros::Merge;
 use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
@@ -39,6 +40,8 @@ pub struct PathwayType {
     pub cross_sect_area: ucum::Meter2<f64>,
     /// Main material of pathway
     pub material: Option<String>,
+    /// datafile the struct instance was read in from
+    pub contained_datafile_path: PathBuf,
 }
 impl PathwayType {
     /// Creates an empty instance of `PathwayType`

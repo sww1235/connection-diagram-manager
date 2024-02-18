@@ -3,7 +3,17 @@
 pub trait Merge {
     /// `merge_prompt` assists the user in merging 2 object instances by prompting the user with
     /// the difference between the object, field by field, and providing sensible defaults.
-    fn merge_prompt(&mut self, other: &Self, prompt_fn: fn(ComparedStruct) -> ComparedStruct);
+    ///
+    /// # Errors
+    ///
+    /// TODO: format this better
+    ///
+    /// - `DataMergeError`: means that the function failed to merge the two structs
+    fn merge_prompt(
+        &mut self,
+        other: &Self,
+        prompt_fn: fn(ComparedStruct) -> ComparedStruct,
+    ) -> Result<(), Error>;
     // pass a hashmap of string arrays, return a hashmap of integers which are the selected value
     // index out of the array, with keys as struct field names
 }
@@ -47,5 +57,43 @@ impl ComparedStruct {
     #[must_use]
     pub fn new() -> Self {
         ComparedStruct::default()
+    }
+}
+
+/// `Error` is the list of errors that are used in this trait definition
+#[derive(Debug)]
+pub enum Error {
+    ///Failure to merge two different structs
+    ///
+    ///This is caused when attempting to merge 2 different structs with different IDs
+    DataMergeError {
+        /// datatype type
+        datatype: String,
+        /// ID of struct called as self
+        self_id: String,
+        /// ID of struct called as other
+        other_id: String,
+        /// datafile path of struct called as self
+        self_path: String,
+        /// datafile path of struct called as other
+        other_path: String,
+    },
+}
+
+impl std::error::Error for Error {}
+
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match *self {
+            Error::DataMergeError {
+                ref datatype,
+                ref self_id,
+                ref other_id,
+                ref self_path,
+                ref other_path,
+            } => {
+                write!(f, "Attempting to merge two structs of type {datatype} with IDs {self_id} and {other_id} which don't match. They came from datafiles {self_path} and {other_path}. Please check this data and clean it up, as this should not have happened.")
+            }
+        }
     }
 }

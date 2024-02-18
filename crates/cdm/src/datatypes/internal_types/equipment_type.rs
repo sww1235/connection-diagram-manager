@@ -5,6 +5,7 @@ use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
 
 use std::cell::RefCell;
 use std::fmt;
+use std::path::PathBuf;
 use std::rc::Rc;
 
 //TODO: Make some of these fields enums
@@ -40,6 +41,8 @@ pub struct EquipmentType {
     // TODO: figure out what angle to standardize on, or
     // just rely on the face vis_rep
     pub visual_rep: Svg,
+    /// datafile the struct instance was read in from
+    pub contained_datafile_path: PathBuf,
 }
 
 /// `EquipFace` represents one physical face of equipment.

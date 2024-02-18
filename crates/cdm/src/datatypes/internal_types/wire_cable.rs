@@ -1,5 +1,6 @@
 use std::cell::RefCell;
 use std::fmt;
+use std::path::PathBuf;
 use std::rc::Rc;
 
 use dimensioned::ucum;
@@ -30,6 +31,8 @@ pub struct WireCable {
     pub length: Option<ucum::Meter<f64>>,
     /// Pathway containing instance
     pub pathway: Option<Rc<RefCell<Pathway>>>,
+    /// datafile the struct instance was read in from
+    pub contained_datafile_path: PathBuf,
 }
 /// `WireCableType` allows a `WireCable` to store a reference to either a `WireType`, `CableType`
 /// or `TermCableType`

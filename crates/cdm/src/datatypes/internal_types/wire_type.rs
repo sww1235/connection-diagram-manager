@@ -1,4 +1,5 @@
 use std::fmt;
+use std::path::PathBuf;
 
 use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
 
@@ -58,6 +59,8 @@ pub struct WireType {
     pub insul_temp_rating: Option<ucum::Kelvin<f64>>,
     /// Insulation Color
     pub insul_color: Option<String>,
+    /// datafile the struct instance was read in from
+    pub contained_datafile_path: PathBuf,
 }
 
 impl WireType {

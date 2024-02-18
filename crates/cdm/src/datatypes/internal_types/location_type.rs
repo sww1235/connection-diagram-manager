@@ -1,4 +1,5 @@
 use std::fmt;
+use std::path::PathBuf;
 
 use cdm_macros::Merge;
 use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
@@ -42,6 +43,8 @@ pub struct LocationType {
     pub usable_height: ucum::Meter<f64>,
     /// Usable Depth of locationType
     pub usable_depth: ucum::Meter<f64>,
+    /// datafile the struct instance was read in from
+    pub contained_datafile_path: PathBuf,
 }
 
 impl LocationType {

@@ -1,5 +1,6 @@
 use std::cell::RefCell;
 use std::fmt;
+use std::path::PathBuf;
 use std::rc::Rc;
 
 use dimensioned::ucum;
@@ -38,6 +39,8 @@ pub struct TermCableType {
     pub end1: Vec<TermCableConnector>,
     /// The other end of Terminated Cable
     pub end2: Vec<TermCableConnector>,
+    /// datafile the struct instance was read in from
+    pub contained_datafile_path: PathBuf,
 }
 
 /// `WireCable` allows either a `WireType` or `CableType` to be the root of a `TermCableType`

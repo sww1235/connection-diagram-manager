@@ -111,77 +111,70 @@ impl Library {
     ) -> Result<(), Error> {
         // parse all datafiles
         for datafile in datafiles {
-            self.from_datafile(datafile, prompt_fn);
+            self.from_datafile(datafile, prompt_fn)?;
         }
         // check for empty dummy objects created because they were referenced by other objects
         // during the import process
         for wire_type in self.wire_types.values() {
             if wire_type.borrow().is_partial_empty() {
-                //TODO: Add in source file name here
                 return Err(Error::NoDefinitionFound {
                     datatype: "WireType".to_string(),
                     datatype_id: wire_type.borrow().id.clone(),
-                    datafile_path: PathBuf::new(), //location.contained_datafile_path,
+                    datafile_path: wire_type.borrow().contained_datafile_path.clone(),
                 });
             }
         }
         for cable_type in self.cable_types.values() {
             if cable_type.borrow().is_partial_empty() {
-                //TODO: Add in source file name here
                 return Err(Error::NoDefinitionFound {
                     datatype: "CableType".to_string(),
                     datatype_id: cable_type.borrow().id.clone(),
-                    datafile_path: PathBuf::new(), //location.contained_datafile_path,
+                    datafile_path: cable_type.borrow().contained_datafile_path.clone(),
                 });
             }
         }
         for term_cable_type in self.term_cable_types.values() {
             if term_cable_type.borrow().is_partial_empty() {
-                //TODO: Add in source file name here
                 return Err(Error::NoDefinitionFound {
                     datatype: "TermCableType".to_string(),
                     datatype_id: term_cable_type.borrow().id.clone(),
-                    datafile_path: PathBuf::new(), //location.contained_datafile_path,
+                    datafile_path: term_cable_type.borrow().contained_datafile_path.clone(),
                 });
             }
         }
         for location_type in self.location_types.values() {
             if location_type.borrow().is_partial_empty() {
-                //TODO: Add in source file name here
                 return Err(Error::NoDefinitionFound {
                     datatype: "LocationType".to_string(),
                     datatype_id: location_type.borrow().id.clone(),
-                    datafile_path: PathBuf::new(), //location.contained_datafile_path,
+                    datafile_path: location_type.borrow().contained_datafile_path.clone(),
                 });
             }
         }
         for connector_type in self.connector_types.values() {
             if connector_type.borrow().is_partial_empty() {
-                //TODO: Add in source file name here
                 return Err(Error::NoDefinitionFound {
                     datatype: "ConnectorType".to_string(),
                     datatype_id: connector_type.borrow().id.clone(),
-                    datafile_path: PathBuf::new(), //location.contained_datafile_path,
+                    datafile_path: connector_type.borrow().contained_datafile_path.clone(),
                 });
             }
         }
         for equipment_type in self.equipment_types.values() {
             if equipment_type.borrow().is_partial_empty() {
-                //TODO: Add in source file name here
                 return Err(Error::NoDefinitionFound {
                     datatype: "EquipmentType".to_string(),
                     datatype_id: equipment_type.borrow().id.clone(),
-                    datafile_path: PathBuf::new(), //location.contained_datafile_path,
+                    datafile_path: equipment_type.borrow().contained_datafile_path.clone(),
                 });
             }
         }
         for pathway_type in self.pathway_types.values() {
             if pathway_type.borrow().is_partial_empty() {
-                //TODO: Add in source file name here
                 return Err(Error::NoDefinitionFound {
                     datatype: "PathwayType".to_string(),
                     datatype_id: pathway_type.borrow().id.clone(),
-                    datafile_path: PathBuf::new(), //location.contained_datafile_path,
+                    datafile_path: pathway_type.borrow().contained_datafile_path.clone(),
                 });
             }
         }
@@ -201,7 +194,7 @@ impl Library {
         &mut self,
         datafile: DataFile,
         prompt_fn: fn(ComparedStruct) -> ComparedStruct,
-    ) {
+    ) -> Result<(), Error> {
         // wire_types
         if let Some(wire_types) = datafile.wire_types {
             for (k, v) in &wire_types {
@@ -231,6 +224,7 @@ impl Library {
                     insul_volt_rating: wire_types[k].insul_volt_rating.map(|x| x * ucum::V),
                     insul_temp_rating: wire_types[k].insul_temp_rating.map(|x| x * ucum::K),
                     insul_color: wire_types[k].insul_color.clone(),
+                    contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.wire_types.contains_key(k) {
                     trace! {concat!{
@@ -241,7 +235,7 @@ impl Library {
                     }
                     self.wire_types[k]
                         .borrow_mut()
-                        .merge_prompt(&new_wire_type, prompt_fn);
+                        .merge_prompt(&new_wire_type, prompt_fn)?;
                 } else {
                     trace! {"Inserted WireType: {}, value: {:#?} into main library.",k,v}
                     self.wire_types
@@ -327,12 +321,14 @@ impl Library {
                             "CIRCULAR" => CrossSection::Circular,
                             "SIAMESE" => CrossSection::Siamese,
                             //TODO: handle this better
-                            _ => panic! {concat!{
-                                "Cross Section: {} in CableType: {} ",
-                                "in file: {} not recognized. ",
-                                 "Check your spelling and try again."}
-                                ,cable_types[k].cross_section, k, datafile.file_path.display()
-                            },
+                            _ => {
+                                return Err(Error::DefinitionProcessing {
+                                    datatype: "CableType".to_string(),
+                                    datatype_id: k.clone(),
+                                    message: format! {"Cross Section: {} not recognized. Check your spelling and try again.", cable_types[k].cross_section},
+                                    datafile_path: datafile.file_path.clone(),
+                                })
+                            }
                         }
                     },
                     // cable_core_map defined above main struct definition to avoid multiple mutable
@@ -360,11 +356,11 @@ impl Library {
                         "CableType: {} with contents: {:#?} ",
                         "has already been loaded. Found again in ",
                         "file {}. Check this and merge if necessary"},
-                        k, v, datafile.file_path.display()
+                        k, v, datafile.file_path.clone().display()
                     }
                     self.cable_types[k]
                         .borrow_mut()
-                        .merge_prompt(&new_cable_type, prompt_fn);
+                        .merge_prompt(&new_cable_type, prompt_fn)?;
                 } else {
                     trace! {"Inserted CableType: {}, value: {:#?} into main datastore.",k,v}
 
@@ -395,6 +391,7 @@ impl Library {
                         * ucum::M2
                         * f64prefixes::MEGA,
                     material: pathway_types[k].material.clone(),
+                    contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.pathway_types.contains_key(k) {
                     trace! {concat!{"PathwayType : {} with ",
@@ -404,7 +401,7 @@ impl Library {
                     k, v, datafile.file_path.display()}
                     self.pathway_types[k]
                         .borrow_mut()
-                        .merge_prompt(&new_pathway_type, prompt_fn);
+                        .merge_prompt(&new_pathway_type, prompt_fn)?;
                 } else {
                     trace! {"Inserted PathwayType: {}, value: {:#?} into main datastore.",k,v}
                     self.pathway_types
@@ -431,6 +428,7 @@ impl Library {
                     usable_width: location_types[k].usable_width * ucum::M * f64prefixes::KILO,
                     usable_height: location_types[k].usable_height * ucum::M * f64prefixes::KILO,
                     usable_depth: location_types[k].usable_depth * ucum::M * f64prefixes::KILO,
+                    contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.location_types.contains_key(k) {
                     trace! {concat!{"LocationType : {} with ",
@@ -440,7 +438,7 @@ impl Library {
                     k, v, datafile.file_path.display()}
                     self.location_types[k]
                         .borrow_mut()
-                        .merge_prompt(&new_location_type, prompt_fn);
+                        .merge_prompt(&new_location_type, prompt_fn)?;
                 } else {
                     trace! {"Inserted LocationType: {}, value: {:#?} into main datastore.",k,v}
                     self.location_types
@@ -494,10 +492,10 @@ impl Library {
                         "{:#?} has already been loaded. Found ",
                         "again in file {}. Check this and merge if necessary"
                     },
-                    k, v, datafile.file_path.display()}
+                    k, v, datafile.file_path.clone().display()}
                     self.connector_types[k]
                         .borrow_mut()
-                        .merge_prompt(&new_connector_type, prompt_fn);
+                        .merge_prompt(&new_connector_type, prompt_fn)?;
                 } else {
                     trace! {"Inserted ConnectorType: {}, value: {:#?} into main datastore.",k,v}
                     self.connector_types
@@ -520,17 +518,25 @@ impl Library {
                     wire_cable: {
                         if term_cable_types[k].wire.is_some() && term_cable_types[k].cable.is_some()
                         {
-                            panic! {concat!{
-                            "Both wire and cable ",
-                             "values of TermCableType {} ",
-                             "are specified. Please correct this."}, k}
+                            return Err(Error::DefinitionProcessing {
+                                datatype: "TermCableType".to_string(),
+                                datatype_id: k.clone(),
+                                message:
+                                    "Both wire and cable types were specified. Please correct this"
+                                        .to_string(),
+                                datafile_path: datafile.file_path.clone(),
+                            });
                         } else if term_cable_types[k].wire.is_none()
                             && term_cable_types[k].cable.is_none()
                         {
-                            panic! {concat!{
-                            "Neither wire or cable ",
-                            "values of TermCableType {} ",
-                            "are specified. Please correct this."}, k}
+                            return Err(Error::DefinitionProcessing {
+                                datatype: "TermCableType".to_string(),
+                                datatype_id: k.clone(),
+                                message:
+                                    "Neither wire and cable types were specified. Please correct this"
+                                        .to_string(),
+                                datafile_path: datafile.file_path.clone(),
+                            });
                         } else {
                             #[allow(clippy::collapsible_else_if)] // This would change the
                             // meaning of the logic
@@ -546,7 +552,7 @@ impl Library {
                                         "found in any library either read from ",
                                         "datafiles, or implemented in program ",
                                         "logic. Creating empty object for now"},
-                                        wire_type_id, k, datafile.file_path.display()
+                                        wire_type_id, k, datafile.file_path.clone().display()
                                     }
                                     let new_wire_type =
                                         Rc::new(RefCell::new(wire_type::WireType::new()));
@@ -586,10 +592,14 @@ impl Library {
                                 }
                             } else {
                                 //TODO: fix this
-                                panic! {concat!{
-                                "Neither wire or cable ",
-                                "values of TermCableType {} ",
-                                "are specified. Please correct this."}, k}
+                                return Err(Error::DefinitionProcessing {
+                                datatype: "TermCableType".to_string(),
+                                datatype_id: k.clone(),
+                                message:
+                                    "Neither wire and cable types were specified. Please correct this"
+                                        .to_string(),
+                                datafile_path: datafile.file_path.clone(),
+                            });
                             }
                         }
                     },
@@ -669,7 +679,7 @@ impl Library {
                                         "either read from file, or ",
                                         "created via program logic. ",
                                         "Creating empty object for now."},
-                                        k, datafile.file_path.display(),
+                                        k, datafile.file_path.clone().display(),
                                         &connector.connector_type}
                                         let new_connector_type = Rc::new(RefCell::new(
                                             connector_type::ConnectorType::new(),
@@ -705,6 +715,7 @@ impl Library {
                         }
                         new_end2
                     },
+                    contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.term_cable_types.contains_key(k) {
                     trace! {concat!{
@@ -714,7 +725,7 @@ impl Library {
                     k, v, datafile.file_path.display()}
                     self.term_cable_types[k]
                         .borrow_mut()
-                        .merge_prompt(&new_term_cable_type, prompt_fn);
+                        .merge_prompt(&new_term_cable_type, prompt_fn)?;
                 } else {
                     trace! {"Inserted TermCableType: {}, value: {:#?} into main datastore.",k,v}
                     self.term_cable_types
@@ -767,7 +778,7 @@ impl Library {
                                                                 "created via program logic. ",
                                                                 "Creating empty object for now."},
                                                                 &connector.connector_type,
-                                                                k, datafile.file_path.display()
+                                                                k, datafile.file_path.clone().display()
                                                                 }
                                                                 let new_connector_type = Rc::new(RefCell::new(
                                                                         connector_type::ConnectorType::new()));
@@ -803,16 +814,17 @@ impl Library {
                         }
                     },
                     visual_rep: Svg::from(equipment_types[k].visual_rep.clone()),
+                    contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.equipment_types.contains_key(k) {
                     trace! {concat!{"EquipmentType : {} with ",
                     "contents: {:#?} has already been loaded. ",
                     "Found again in file {}. ",
                     "Check this and merge if necessary"},
-                    k, v, datafile.file_path.display()}
+                    k, v, datafile.file_path.clone().display()}
                     self.equipment_types[k]
                         .borrow_mut()
-                        .merge_prompt(&new_equipment_type, prompt_fn);
+                        .merge_prompt(&new_equipment_type, prompt_fn)?;
                 } else {
                     trace! {"Inserted EquipmentType: {}, value: {:#?} into main datastore.",k,v}
                     self.equipment_types
@@ -820,6 +832,7 @@ impl Library {
                 }
             }
         }
+        Ok(())
     }
 }
 
@@ -857,41 +870,37 @@ impl Project {
         // during the import process
         for location in self.locations.values() {
             if location.borrow().is_partial_empty() {
-                //TODO: Add in source file name here
                 return Err(Error::NoDefinitionFound {
                     datatype: "Location".to_string(),
                     datatype_id: location.borrow().id.clone(),
-                    datafile_path: PathBuf::new(), //location.contained_datafile_path,
+                    datafile_path: location.borrow().contained_datafile_path.clone(),
                 });
             }
         }
         for equipment in self.equipment.values() {
             if equipment.borrow().is_partial_empty() {
-                //TODO: Add in source file name here
                 return Err(Error::NoDefinitionFound {
                     datatype: "Equipment".to_string(),
                     datatype_id: equipment.borrow().id.clone(),
-                    datafile_path: PathBuf::new(), //equipment.contained_datafile_path,
+                    datafile_path: equipment.borrow().contained_datafile_path.clone(),
                 });
             }
         }
         for pathway in self.pathways.values() {
             if pathway.borrow().is_partial_empty() {
-                //TODO: Add in source file name here
                 return Err(Error::NoDefinitionFound {
                     datatype: "Pathway".to_string(),
                     datatype_id: pathway.borrow().id.clone(),
-                    datafile_path: PathBuf::new(), //pathway.contained_datafile_path,
+                    datafile_path: pathway.borrow().contained_datafile_path.clone(),
                 });
             }
         }
         for wire_cable in self.wire_cables.values() {
             if wire_cable.borrow().is_partial_empty() {
-                //TODO: Add in source file name here
                 return Err(Error::NoDefinitionFound {
                     datatype: "WireCable".to_string(),
                     datatype_id: wire_cable.borrow().id.clone(),
-                    datafile_path: PathBuf::new(), //wire_cable.contained_datafile_path,
+                    datafile_path: wire_cable.borrow().contained_datafile_path.clone(),
                 });
             }
         }
@@ -941,6 +950,7 @@ impl Project {
                     description: pathways[k].description.clone(),
                     //TODO: figure out how to parse units from file
                     length: pathways[k].length * ucum::M * f64prefixes::MILLI,
+                    contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.pathways.contains_key(k) {
                     trace! {concat!{"Pathway : {} with contents: ",
@@ -949,7 +959,7 @@ impl Project {
                     }, k, v, datafile.file_path.display()}
                     self.pathways[k]
                         .borrow_mut()
-                        .merge_prompt(&new_pathway, prompt_fn);
+                        .merge_prompt(&new_pathway, prompt_fn)?;
                 } else {
                     trace! {"Inserted Pathway: {}, value: {:#?} into main datastore.",k,v}
                     self.pathways
@@ -979,7 +989,7 @@ impl Project {
                                 message: concat! {"More than one of Wire, Cable ",
                                 "and TermCable are defined. Please correct this"}
                                 .to_string(),
-                                datafile_path: datafile.file_path,
+                                datafile_path: datafile.file_path.clone(),
                             });
                         } else if wire_cables[k].wire.is_none()
                             && wire_cables[k].cable.is_none()
@@ -991,7 +1001,7 @@ impl Project {
                                 message: concat! {"Neither Wire, Cable ",
                                 "and TermCable are defined. Please correct this"}
                                 .to_string(),
-                                datafile_path: datafile.file_path,
+                                datafile_path: datafile.file_path.clone(),
                             });
                         } else {
                             // at this point, only one of wire, cable and term_cable should
@@ -1012,7 +1022,7 @@ impl Project {
                                         contained_type_id: wire_type.clone(),
                                         container_type: "WireCable".to_string(),
                                         container_type_id: k.to_string(),
-                                        datafile_path: datafile.file_path,
+                                        datafile_path: datafile.file_path.clone(),
                                     });
                                 }
                             // clone string here to avoid moving value out of hashmap.
@@ -1030,7 +1040,7 @@ impl Project {
                                         contained_type_id: cable_type.clone(),
                                         container_type: "WireCable".to_string(),
                                         container_type_id: k.to_string(),
-                                        datafile_path: datafile.file_path,
+                                        datafile_path: datafile.file_path.clone(),
                                     });
                                 }
                             // clone string here to avoid moving value out of hashmap.
@@ -1049,7 +1059,7 @@ impl Project {
                                         contained_type_id: term_cable_type.clone(),
                                         container_type: "WireCable".to_string(),
                                         container_type_id: k.to_string(),
-                                        datafile_path: datafile.file_path,
+                                        datafile_path: datafile.file_path.clone(),
                                     });
                                 }
                             } else {
@@ -1061,7 +1071,7 @@ impl Project {
                                     "and TermCable are defined. Please correct this. ",
                                     "This message should be unreachable!"}
                                     .to_string(),
-                                    datafile_path: datafile.file_path,
+                                    datafile_path: datafile.file_path.clone(),
                                 });
                             }
                         }
@@ -1086,7 +1096,7 @@ impl Project {
                                 //    contained_type_id: pathway.to_string(),
                                 //    container_type: "WireCable".to_string(),
                                 //    container_type_id: k.to_string(),
-                                //    datafile_path: datafile.file_path,
+                                //    datafile_path: datafile.file_path.clone(),
                                 //});
                                 error! {concat!{
                                 "WireCable: {} is assigned to ",
@@ -1107,6 +1117,7 @@ impl Project {
                             None
                         }
                     },
+                    contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.wire_cables.contains_key(k) {
                     trace! {concat!{
@@ -1114,10 +1125,10 @@ impl Project {
                         "{:#?} has already been loaded. ",
                         "Found again in file {}. ",
                         "Check this and merge if necessary"},
-                    k, v, datafile.file_path.display()}
+                    k, v, datafile.file_path.clone().display()}
                     self.wire_cables[k]
                         .borrow_mut()
-                        .merge_prompt(&new_wire_cable, prompt_fn);
+                        .merge_prompt(&new_wire_cable, prompt_fn)?;
                 } else {
                     trace! {"Inserted WireCable: {}, value: {:#?} into main project.",k,v}
                     self.wire_cables
@@ -1145,23 +1156,24 @@ impl Project {
                                 contained_type_id: locations[k].location_type.clone(),
                                 container_type: "Location".to_string(),
                                 container_type_id: k.to_string(),
-                                datafile_path: datafile.file_path,
+                                datafile_path: datafile.file_path.clone(),
                             });
                         }
                     },
                     identifier: locations[k].identifier.clone(),
                     description: locations[k].description.clone(),
                     physical_location: locations[k].physical_location.clone(),
+                    contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.locations.contains_key(k) {
                     trace! {concat!{"Location: {} with ",
                     "contents: {:#?} has already been ",
                     "loaded. Found again in file {}. ",
                     "Check this and merge if necessary"},
-                    k, v, datafile.file_path.display()}
+                    k, v, datafile.file_path.clone().display()}
                     self.locations[k]
                         .borrow_mut()
-                        .merge_prompt(&new_location, prompt_fn);
+                        .merge_prompt(&new_location, prompt_fn)?;
                 } else {
                     trace! {"Inserted Location: {}, value: {:#?} into main project.",k,v}
                     self.locations
@@ -1190,7 +1202,7 @@ impl Project {
                                 contained_type_id: equipment[k].equipment_type.clone(),
                                 container_type: "Equipment".to_string(),
                                 container_type_id: k.to_string(),
-                                datafile_path: datafile.file_path,
+                                datafile_path: datafile.file_path.clone(),
                             });
                         }
                     },
@@ -1211,7 +1223,7 @@ impl Project {
                                 "that doesn't exist in any library ",
                                 "either read in from datafile, or ",
                                 "added via program logic. Check your spelling"},
-                                k, file_location, datafile.file_path.display()}
+                                k, file_location, datafile.file_path.clone().display()}
                                 let new_location = Rc::new(RefCell::new(location::Location::new()));
                                 // add new_location to Project
                                 self.locations
@@ -1224,16 +1236,17 @@ impl Project {
                         }
                     },
                     description: equipment[k].description.clone(),
+                    contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.equipment.contains_key(k) {
                     trace! {concat! {"Equipment: {} with ",
                     "contents: {:#?} has already been ",
                     "loaded. Found again in file {}. ",
                     "Check this and merge if necessary"
-                    }, k, v, datafile.file_path.display()}
+                    }, k, v, datafile.file_path.clone().display()}
                     self.equipment[k]
                         .borrow_mut()
-                        .merge_prompt(&new_equipment, prompt_fn);
+                        .merge_prompt(&new_equipment, prompt_fn)?;
                 } else {
                     trace! {"Inserted Equipment: {}, value: {:#?} into main project.",k,v}
                     self.equipment
@@ -1299,9 +1312,44 @@ pub enum Error {
         /// filepath containing definition
         datafile_path: PathBuf,
     },
+    ///Failure to merge two different structs
+    ///
+    ///This is caused when attempting to merge 2 different structs with different IDs
+    DataMergeError {
+        /// datatype type
+        datatype: String,
+        /// ID of struct called as self
+        self_id: String,
+        /// ID of struct called as other
+        other_id: String,
+        /// datafile path of struct called as self
+        self_path: String,
+        /// datafile path of struct called as other
+        other_path: String,
+    },
 }
 
 impl std::error::Error for Error {}
+
+impl From<::cdm_traits::merge::Error> for Error {
+    fn from(e: ::cdm_traits::merge::Error) -> Self {
+        match e {
+            ::cdm_traits::merge::Error::DataMergeError {
+                datatype,
+                self_id,
+                other_id,
+                self_path,
+                other_path,
+            } => Self::DataMergeError {
+                datatype,
+                self_id,
+                other_id,
+                self_path,
+                other_path,
+            },
+        }
+    }
+}
 
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
@@ -1345,6 +1393,15 @@ impl std::fmt::Display for Error {
                 ref datafile_path,
             } => {
                 write!(f, "{contained_type}: {contained_type_id} specified in {container_type}: {container_type_id} in file: {datafile_path:?}, not found in libraries, either read from datafiles or implemented in program logic. Check your spelling.")
+            }
+            Error::DataMergeError {
+                ref datatype,
+                ref self_id,
+                ref other_id,
+                ref self_path,
+                ref other_path,
+            } => {
+                write!(f, "Attempting to merge two structs of type {datatype} with IDs {self_id} and {other_id} which don't match. They came from datafiles {self_path} and {other_path}. Please check this data and clean it up, as this should not have happened.")
             }
         }
     }

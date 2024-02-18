@@ -1,5 +1,6 @@
 use std::cell::RefCell;
 use std::fmt;
+use std::path::PathBuf;
 use std::rc::Rc;
 
 use cdm_macros::Merge;
@@ -21,6 +22,8 @@ pub struct Location {
     /// Physical Location
     pub physical_location: Option<String>,
     //TODO: add sub locations
+    /// datafile the struct instance was read in from
+    pub contained_datafile_path: PathBuf,
 }
 impl Location {
     /// Creates an empty instance of `Location`

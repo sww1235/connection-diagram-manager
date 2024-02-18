@@ -1,5 +1,6 @@
 use std::cell::RefCell;
 use std::fmt;
+use std::path::PathBuf;
 use std::rc::Rc;
 
 use cdm_macros::Merge;
@@ -22,6 +23,8 @@ pub struct Pathway {
     pub description: Option<String>,
     /// length TODO: change to correct units
     pub length: ucum::Meter<f64>,
+    /// datafile the struct instance was read in from
+    pub contained_datafile_path: PathBuf,
 }
 impl Pathway {
     /// Creates an empty instance of `Pathway`
