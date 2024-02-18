@@ -7,8 +7,6 @@ use log::{debug, info};
 
 use serde::{Deserialize, Serialize};
 
-// debug allows easy printing
-// TODO: implement better display functionality
 /// `Config` represents configuration options for the various cdm binary programs
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Config {
