@@ -2,7 +2,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{Data, DataStruct, DeriveInput, Fields};
 
-/// `expand_merge` is the actual logic of deriving the `merge_prompt` function
+/// `expand_merge` is the actual logic of deriving the `Merge` trait
 #[allow(clippy::module_name_repetitions)]
 pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
     let fields = match input.data {
@@ -78,15 +78,16 @@ pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
                 other: &Self,
                 prompt_fn: fn(::cdm_traits::merge::ComparedStruct)
                 -> ::cdm_traits::merge::ComparedStruct
-            ){
+            ) -> Result<(), ::cdm_traits::merge::Error>{
                 //TODO: maybe check for partial_empty/empty here on other
                 if self.id != other.id {
-                    //return Err(::cdm_errors::(
-                    //input,
-                    //"attempting to merge structs with different IDs. This shouldn't have happened.",
-                    //));
-                    //TODO: return an error within scope
-                    todo!();
+                    return Err(::cdm_traits::merge::Error::DataMergeError{
+                        datatype: stringify!(#struct_name).to_string(),
+                        self_id: self.id.clone(),
+                        other_id: other.id.clone(),
+                        self_path: self.contained_datafile_path.clone().display().to_string(),
+                        other_path: other.contained_datafile_path.clone().display().to_string(),
+                    } );
                 }
                 let mut equality_results = ::cdm_traits::merge::ComparedStruct::new();
                 equality_results.struct_name = stringify!(#struct_name).to_string();
@@ -95,6 +96,7 @@ pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
                 for val in prompt_results.fields{
                     #(#merge_ops)*
                 }
+                Ok(())
             }
 
         }

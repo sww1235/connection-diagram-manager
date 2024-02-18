@@ -1,8 +1,7 @@
 use std::fmt;
 use std::path::PathBuf;
 
-use cdm_macros::Merge;
-use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
+use cdm_macros::{Empty, Merge, PartialEmpty};
 
 use dimensioned::ucum;
 
@@ -10,7 +9,7 @@ use dimensioned::ucum;
 /// [`LocationType`](super::location_type::LocationType) to another.
 ///
 /// Examples of Pathways include, conduit, cable tray, free air
-#[derive(Debug, Default, PartialEq, Merge)]
+#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
 pub struct PathwayType {
     /// Internal ID of `PathwayType`
     pub id: String,
@@ -48,47 +47,7 @@ impl PathwayType {
     #[allow(clippy::arithmetic_side_effects)]
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            id: String::new(),
-            manufacturer: None,
-            model: None,
-            part_number: None,
-            manufacturer_part_number: None,
-            supplier: None,
-            supplier_part_number: None,
-            description: None,
-            size: None,
-            trade_size: None,
-            height: 0.0_f64 * ucum::M,
-            width: 0.0_f64 * ucum::M,
-            cross_sect_area: 0.0_f64 * ucum::M2,
-            material: None,
-        }
-    }
-}
-
-impl Empty for PathwayType {
-    fn is_empty(&self) -> bool {
-        self == &Self::new()
-    }
-}
-
-impl PartialEmpty for PathwayType {
-    fn is_partial_empty(&self) -> bool {
-        let tester = Self::new();
-        self.manufacturer == tester.manufacturer
-            && self.model == tester.model
-            && self.part_number == tester.part_number
-            && self.manufacturer_part_number == tester.manufacturer_part_number
-            && self.supplier == tester.supplier
-            && self.supplier_part_number == tester.supplier_part_number
-            && self.description == tester.description
-            && self.size == tester.size
-            && self.trade_size == tester.trade_size
-            && self.height == tester.height
-            && self.width == tester.width
-            && self.cross_sect_area == tester.cross_sect_area
-            && self.material == tester.material
+        Self::default()
     }
 }
 

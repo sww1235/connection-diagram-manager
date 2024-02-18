@@ -2,8 +2,6 @@ use super::super::util_types::CrossSection;
 
 use super::wire_type::WireType;
 
-use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
-
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::fmt;
@@ -12,11 +10,11 @@ use std::rc::Rc;
 
 use dimensioned::ucum;
 
-use cdm_macros::Merge;
+use cdm_macros::{Empty, Merge, PartialEmpty};
 
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has one
 /// core, then it is a wire, not a cable.
-#[derive(Debug, Default, PartialEq, Merge)]
+#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
 pub struct CableType {
     /// Unique ID of `CableType`
     pub id: String,
@@ -91,33 +89,6 @@ impl CableType {
     #[must_use]
     pub fn new() -> Self {
         Self::default()
-    }
-}
-
-impl Empty for CableType {
-    fn is_empty(&self) -> bool {
-        self == &Self::new()
-    }
-}
-
-impl PartialEmpty for CableType {
-    fn is_partial_empty(&self) -> bool {
-        let tester = Self::new();
-        self.manufacturer == tester.manufacturer
-            && self.model == tester.model
-            && self.part_number == tester.part_number
-            && self.manufacturer_part_number == tester.manufacturer_part_number
-            && self.supplier == tester.supplier
-            && self.supplier_part_number == tester.supplier_part_number
-            && self.cable_type_code == tester.cable_type_code
-            && self.cross_sect_area == tester.cross_sect_area
-            && self.cross_section == tester.cross_section
-            && self.height == tester.height
-            && self.width == tester.width
-            && self.diameter == tester.diameter
-            && self.cable_cores == tester.cable_cores
-            && self.insul_layers == tester.insul_layers
-            && self.contained_datafile_path == tester.contained_datafile_path
     }
 }
 

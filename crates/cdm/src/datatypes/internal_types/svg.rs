@@ -1,10 +1,12 @@
 use std::fmt;
 
 use super::super::file_types::svg::Svg as FileSvg;
-use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
+use cdm_traits::partial_empty::PartialEmpty;
+
+use cdm_macros::Empty;
 
 /// Svg represents a full SVG image
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, PartialEq, Empty)]
 pub struct Svg(pub String);
 
 impl From<FileSvg> for Svg {
@@ -22,16 +24,10 @@ impl From<FileSvg> for Svg {
 //    }
 //}
 
-impl Empty for Svg {
-    fn is_empty(&self) -> bool {
-        self == &Self::new()
-    }
-}
-
 impl PartialEmpty for Svg {
     fn is_partial_empty(&self) -> bool {
         // only one field, may update this later
-        self.is_empty()
+        self.0.is_empty()
     }
 }
 

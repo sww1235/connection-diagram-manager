@@ -5,13 +5,12 @@ use std::rc::Rc;
 
 use dimensioned::ucum;
 
-use cdm_macros::Merge;
-use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
+use cdm_macros::{Empty, Merge, PartialEmpty};
 
 use super::{cable_type::CableType, connector_type::ConnectorType, wire_type::WireType};
 
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
-#[derive(Debug, Default, PartialEq, Merge)]
+#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
 pub struct TermCableType {
     /// Internal ID of `TermCableType`
     pub id: String,
@@ -82,45 +81,7 @@ impl TermCableType {
     /// Creates an empty instance of `TermCableType`
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            id: String::new(),
-            manufacturer: None,
-            model: None,
-            part_number: None,
-            manufacturer_part_number: None,
-            supplier: None,
-            supplier_part_number: None,
-            description: None,
-            wire_cable: WireCable::default(),
-            nominal_length: None,
-            actual_length: None,
-            end1: Vec::new(),
-            end2: Vec::new(),
-        }
-    }
-}
-
-impl Empty for TermCableType {
-    fn is_empty(&self) -> bool {
-        self == &Self::new()
-    }
-}
-
-impl PartialEmpty for TermCableType {
-    fn is_partial_empty(&self) -> bool {
-        let tester = Self::new();
-        self.manufacturer == tester.manufacturer
-            && self.model == tester.model
-            && self.part_number == tester.part_number
-            && self.manufacturer_part_number == tester.manufacturer_part_number
-            && self.supplier == tester.supplier
-            && self.supplier_part_number == tester.supplier_part_number
-            && self.description == tester.description
-            && self.wire_cable == tester.wire_cable
-            && self.nominal_length == tester.nominal_length
-            && self.actual_length == tester.actual_length
-            && self.end1 == tester.end1
-            && self.end2 == tester.end2
+        Self::default()
     }
 }
 

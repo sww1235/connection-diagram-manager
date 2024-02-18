@@ -1,7 +1,6 @@
 use super::{connector_type::ConnectorType, svg::Svg};
 
-use cdm_macros::Merge;
-use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
+use cdm_macros::{Empty, Merge, PartialEmpty};
 
 use std::cell::RefCell;
 use std::fmt;
@@ -12,7 +11,7 @@ use std::rc::Rc;
 /// `EquipmentType` represents a type of equipment
 ///
 /// Anything from a rackmount piece of gear to an outlet or terminal block
-#[derive(Debug, Default, PartialEq, Merge)]
+#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
 pub struct EquipmentType {
     //TODO: add dimensions here
     /// Internal ID of `EquipmentType`
@@ -80,43 +79,7 @@ impl EquipmentType {
     #[allow(clippy::arithmetic_side_effects)]
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            id: String::new(),
-            manufacturer: None,
-            model: None,
-            part_number: None,
-            manufacturer_part_number: None,
-            supplier: None,
-            supplier_part_number: None,
-            description: None,
-            mount_type: None,
-            equip_type: None,
-            faces: None,
-            visual_rep: Svg::new(),
-        }
-    }
-}
-
-impl Empty for EquipmentType {
-    fn is_empty(&self) -> bool {
-        self == &Self::new()
-    }
-}
-
-impl PartialEmpty for EquipmentType {
-    fn is_partial_empty(&self) -> bool {
-        let tester = Self::new();
-        self.manufacturer == tester.manufacturer
-            && self.model == tester.model
-            && self.part_number == tester.part_number
-            && self.manufacturer_part_number == tester.manufacturer_part_number
-            && self.supplier == tester.supplier
-            && self.supplier_part_number == tester.supplier_part_number
-            && self.description == tester.description
-            && self.mount_type == tester.mount_type
-            && self.equip_type == tester.equip_type
-            && self.faces == tester.faces
-            && self.visual_rep == tester.visual_rep
+        Self::default()
     }
 }
 

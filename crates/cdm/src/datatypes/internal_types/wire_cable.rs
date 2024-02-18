@@ -5,9 +5,7 @@ use std::rc::Rc;
 
 use dimensioned::ucum;
 
-use cdm_macros::Merge;
-
-use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
+use cdm_macros::{Empty, Merge, PartialEmpty};
 
 use super::{
     cable_type::CableType, pathway::Pathway, term_cable_type::TermCableType, wire_type::WireType,
@@ -17,7 +15,7 @@ use super::{
 
 /// `WireCable` represents a particular instance of a `WireType`, `CableType` or `TermCableType`.
 /// It represents a physical item.
-#[derive(Debug, Default, PartialEq, Merge)]
+#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
 pub struct WireCable {
     /// Internal `id` of wire or cable instance
     pub id: String,
@@ -58,31 +56,7 @@ impl WireCable {
     /// Creates an empty instance of `WireCable`
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            id: String::new(),
-            ctw_type: WireCableType::default(),
-            identifier: None,
-            description: None,
-            length: None,
-            pathway: None,
-        }
-    }
-}
-
-impl Empty for WireCable {
-    fn is_empty(&self) -> bool {
-        self == &Self::new()
-    }
-}
-
-impl PartialEmpty for WireCable {
-    fn is_partial_empty(&self) -> bool {
-        let tester = Self::new();
-        self.ctw_type == tester.ctw_type
-            && self.identifier == tester.identifier
-            && self.length == tester.length
-            && self.description == tester.description
-            && self.pathway == tester.pathway
+        Self::default()
     }
 }
 

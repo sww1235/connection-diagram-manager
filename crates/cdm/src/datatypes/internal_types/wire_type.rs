@@ -1,9 +1,7 @@
 use std::fmt;
 use std::path::PathBuf;
 
-use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
-
-use cdm_macros::Merge;
+use cdm_macros::{Empty, Merge, PartialEmpty};
 
 use dimensioned::ucum;
 
@@ -13,7 +11,7 @@ use dimensioned::ucum;
 /// mainly provided for logical reasons rather than
 /// functional (model/part number/manufacturer part number
 /// may all be equivalent in some cases)
-#[derive(Debug, Default, PartialEq, Merge)]
+#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
 pub struct WireType {
     /// Internal ID of `WireType`
     pub id: String,
@@ -68,57 +66,7 @@ impl WireType {
     #[allow(clippy::arithmetic_side_effects)]
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            id: String::new(),
-            manufacturer: None,
-            model: None,
-            part_number: None,
-            manufacturer_part_number: None,
-            supplier: None,
-            supplier_part_number: None,
-            material: None,
-            insulated: false,
-            insulation_material: None,
-            wire_type_code: None,
-            conductor_cross_sect_area: 0.0_f64 * ucum::M2,
-            overall_cross_sect_area: 0.0_f64 * ucum::M2,
-            stranded: false,
-            num_strands: None,
-            strand_cross_sect_area: None,
-            insul_volt_rating: None,
-            insul_temp_rating: None,
-            insul_color: None,
-        }
-    }
-}
-
-impl Empty for WireType {
-    fn is_empty(&self) -> bool {
-        self == &Self::new()
-    }
-}
-
-impl PartialEmpty for WireType {
-    fn is_partial_empty(&self) -> bool {
-        let tester = Self::new();
-        self.manufacturer == tester.manufacturer
-            && self.model == tester.model
-            && self.part_number == tester.part_number
-            && self.manufacturer_part_number == tester.manufacturer_part_number
-            && self.supplier == tester.supplier
-            && self.supplier_part_number == tester.supplier_part_number
-            && self.material == tester.material
-            && self.insulated == tester.insulated
-            && self.insulation_material == tester.insulation_material
-            && self.wire_type_code == tester.wire_type_code
-            && self.conductor_cross_sect_area == tester.conductor_cross_sect_area
-            && self.overall_cross_sect_area == tester.overall_cross_sect_area
-            && self.stranded == tester.stranded
-            && self.num_strands == tester.num_strands
-            && self.strand_cross_sect_area == tester.strand_cross_sect_area
-            && self.insul_volt_rating == tester.insul_volt_rating
-            && self.insul_temp_rating == tester.insul_temp_rating
-            && self.insul_color == tester.insul_color
+        Self::default()
     }
 }
 

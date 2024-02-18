@@ -3,13 +3,12 @@ use std::fmt;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use cdm_macros::Merge;
-use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
+use cdm_macros::{Empty, Merge, PartialEmpty};
 
 use super::location_type::LocationType;
 
 /// `Location` represents a physical instance of a pathway
-#[derive(Debug, Default, PartialEq, Merge)]
+#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
 pub struct Location {
     /// Internal `id` of location instance
     pub id: String,
@@ -29,29 +28,7 @@ impl Location {
     /// Creates an empty instance of `Location`
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            id: String::new(),
-            location_type: Rc::new(RefCell::new(LocationType::new())),
-            identifier: None,
-            description: None,
-            physical_location: None,
-        }
-    }
-}
-
-impl Empty for Location {
-    fn is_empty(&self) -> bool {
-        self == &Self::new()
-    }
-}
-
-impl PartialEmpty for Location {
-    fn is_partial_empty(&self) -> bool {
-        let tester = Self::new();
-        self.location_type == tester.location_type
-            && self.identifier == tester.identifier
-            && self.physical_location == tester.physical_location
-            && self.description == tester.description
+        Self::default()
     }
 }
 

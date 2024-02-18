@@ -3,15 +3,14 @@ use std::fmt;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use cdm_macros::Merge;
-use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
+use cdm_macros::{Empty, Merge, PartialEmpty};
 
 use super::pathway_type::PathwayType;
 
 use dimensioned::ucum;
 
 /// `Pathway` represents a physical instance of a pathway
-#[derive(Debug, Default, PartialEq, Merge)]
+#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
 pub struct Pathway {
     /// Internal `id` of pathway instance
     pub id: String,
@@ -31,29 +30,7 @@ impl Pathway {
     #[must_use]
     #[allow(clippy::arithmetic_side_effects)]
     pub fn new() -> Self {
-        Self {
-            id: String::new(),
-            path_type: Rc::new(RefCell::new(PathwayType::new())),
-            identifier: None,
-            description: None,
-            length: 0.0_f64 * ucum::M, // units are not important here
-        }
-    }
-}
-
-impl Empty for Pathway {
-    fn is_empty(&self) -> bool {
-        self == &Self::new()
-    }
-}
-
-impl PartialEmpty for Pathway {
-    fn is_partial_empty(&self) -> bool {
-        let tester = Self::new();
-        self.path_type == tester.path_type
-            && self.identifier == tester.identifier
-            && self.length == tester.length
-            && self.description == tester.description
+        Self::default()
     }
 }
 

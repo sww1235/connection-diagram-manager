@@ -3,15 +3,13 @@ use std::fmt;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
-
 use super::{equipment_type::EquipmentType, location::Location};
 
-use cdm_macros::Merge;
+use cdm_macros::{Empty, Merge, PartialEmpty};
 
 /// `Equipment` represents a particular instance of an `EquipmentType`.
 /// This is the physical unit you would hold in your hand
-#[derive(Debug, Default, PartialEq, Merge)]
+#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
 pub struct Equipment {
     /// Internal `id` of equipment instance
     pub id: String,
@@ -26,36 +24,14 @@ pub struct Equipment {
     pub location: Option<Rc<RefCell<Location>>>,
     /// Description
     pub description: Option<String>,
+    /// datafile the struct instance was read in from
+    pub contained_datafile_path: PathBuf,
 }
 impl Equipment {
     /// Creates an empty instance of `Equipment`
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            id: String::new(),
-            equip_type: Rc::new(RefCell::new(EquipmentType::new())),
-            identifier: None,
-            mounting_type: None,
-            location: None,
-            description: None,
-        }
-    }
-}
-
-impl Empty for Equipment {
-    fn is_empty(&self) -> bool {
-        self == &Self::new()
-    }
-}
-
-impl PartialEmpty for Equipment {
-    fn is_partial_empty(&self) -> bool {
-        let tester = Self::new();
-        self.equip_type == tester.equip_type
-            && self.identifier == tester.identifier
-            && self.mounting_type == tester.mounting_type
-            && self.location == tester.location
-            && self.description == tester.description
+        Self::default()
     }
 }
 

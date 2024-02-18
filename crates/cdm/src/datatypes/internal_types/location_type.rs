@@ -1,8 +1,7 @@
 use std::fmt;
 use std::path::PathBuf;
 
-use cdm_macros::Merge;
-use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
+use cdm_macros::{Empty, Merge, PartialEmpty};
 
 use dimensioned::ucum;
 
@@ -11,7 +10,7 @@ use dimensioned::ucum;
 ///
 /// Examples of `LocationType` include junction boxes, racks, panels, etc.
 /// It does not include places these are located.
-#[derive(Debug, Default, PartialEq, Merge)]
+#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
 pub struct LocationType {
     /// Internal ID of `LocationType`
     pub id: String,
@@ -52,48 +51,7 @@ impl LocationType {
     #[allow(clippy::arithmetic_side_effects)]
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            id: String::new(),
-            manufacturer: None,
-            model: None,
-            part_number: None,
-            manufacturer_part_number: None,
-            supplier: None,
-            supplier_part_number: None,
-            description: None,
-            material: None,
-            width: 0.0_f64 * ucum::M,
-            height: 0.0_f64 * ucum::M,
-            depth: 0.0_f64 * ucum::M,
-            usable_width: 0.0_f64 * ucum::M,
-            usable_height: 0.0_f64 * ucum::M,
-            usable_depth: 0.0_f64 * ucum::M,
-        }
-    }
-}
-
-impl Empty for LocationType {
-    fn is_empty(&self) -> bool {
-        self == &Self::new()
-    }
-}
-
-impl PartialEmpty for LocationType {
-    fn is_partial_empty(&self) -> bool {
-        let tester = Self::new();
-        self.manufacturer == tester.manufacturer
-            && self.model == tester.model
-            && self.part_number == tester.part_number
-            && self.manufacturer_part_number == tester.manufacturer_part_number
-            && self.supplier == tester.supplier
-            && self.supplier_part_number == tester.supplier_part_number
-            && self.description == tester.description
-            && self.height == tester.height
-            && self.width == tester.width
-            && self.depth == tester.depth
-            && self.usable_height == tester.usable_height
-            && self.usable_width == tester.usable_width
-            && self.usable_depth == tester.usable_depth
+        Self::default()
     }
 }
 

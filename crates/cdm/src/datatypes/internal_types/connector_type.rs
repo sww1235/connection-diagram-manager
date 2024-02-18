@@ -1,20 +1,18 @@
 use std::fmt;
 use std::path::PathBuf;
 
-use cdm_traits::{empty::Empty, partial_empty::PartialEmpty};
-
 use super::svg::Svg;
 
 use dimensioned::ucum;
 
-use cdm_macros::Merge;
+use cdm_macros::{Empty, Merge, PartialEmpty};
 
 //TODO: Make some of these fields enums
 /// `ConnectorType` represents a particular type of connector.
 ///
 /// Connector can represent more than just a metal or plastic blob on the end of a cable, it can
 /// represent a screw terminal on a piece of equipment or a hole for wire to be entered in.
-#[derive(Debug, Default, PartialEq, Merge)]
+#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
 pub struct ConnectorType {
     /// Internal ID of ConnectorType
     pub id: String,
@@ -84,54 +82,7 @@ impl ConnectorType {
     #[allow(clippy::arithmetic_side_effects)]
     #[must_use]
     pub fn new() -> Self {
-        Self {
-            id: String::new(),
-            manufacturer: None,
-            model: None,
-            part_number: None,
-            manufacturer_part_number: None,
-            supplier: None,
-            supplier_part_number: None,
-            description: None,
-            mount_type: None,
-            panel_cutout: None,
-            gender: None,
-            height: 0.0_f64 * ucum::M,
-            width: 0.0_f64 * ucum::M,
-            depth: 0.0_f64 * ucum::M,
-            diameter: None,
-            pins: Vec::new(),
-            visual_rep: Svg::new(),
-            contained_datafile_path: PathBuf::new(),
-        }
-    }
-}
-
-impl Empty for ConnectorType {
-    fn is_empty(&self) -> bool {
-        self == &Self::new()
-    }
-}
-
-impl PartialEmpty for ConnectorType {
-    fn is_partial_empty(&self) -> bool {
-        let tester = Self::new();
-        self.manufacturer == tester.manufacturer
-            && self.model == tester.model
-            && self.part_number == tester.part_number
-            && self.manufacturer_part_number == tester.manufacturer_part_number
-            && self.supplier == tester.supplier
-            && self.supplier_part_number == tester.supplier_part_number
-            && self.description == tester.description
-            && self.mount_type == tester.mount_type
-            && self.panel_cutout == tester.panel_cutout
-            && self.gender == tester.gender
-            && self.height == tester.height
-            && self.width == tester.width
-            && self.diameter == tester.diameter
-            && self.pins == tester.pins
-            && self.visual_rep == tester.visual_rep
-            && self.contained_datafile_path == tester.contained_datafile_path
+        Self::default()
     }
 }
 
