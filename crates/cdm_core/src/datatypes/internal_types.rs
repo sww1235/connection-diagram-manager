@@ -320,7 +320,6 @@ impl Library {
                             "OVAL" => CrossSection::Oval,
                             "CIRCULAR" => CrossSection::Circular,
                             "SIAMESE" => CrossSection::Siamese,
-                            //TODO: handle this better
                             _ => {
                                 return Err(Error::DefinitionProcessing {
                                     datatype: "CableType".to_string(),

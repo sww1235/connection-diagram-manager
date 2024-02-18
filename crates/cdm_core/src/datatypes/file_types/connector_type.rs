@@ -1,7 +1,6 @@
 use super::svg::Svg;
 use serde::{Deserialize, Serialize};
 use std::fmt;
-//TODO: Make some of these fields enums
 /// `ConnectorType` represents a particular type of connector.
 ///
 /// Connector can represent more than just a metal or plastic blob on the end of a cable, it can

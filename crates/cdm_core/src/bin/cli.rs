@@ -4,8 +4,7 @@
 //! that allows for basic operations directly, as well as launching both
 //! a TUI and a proper GUI.
 
-//TODO:
-//- change datafile parsing to parse individual files, and keep track of which files, which
+//TODO: change datafile parsing to parse individual files, and keep track of which files, which
 //values came from.
 
 use std::path::PathBuf;

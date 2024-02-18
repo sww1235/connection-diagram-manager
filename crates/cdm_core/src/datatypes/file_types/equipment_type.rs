@@ -2,7 +2,6 @@ use super::svg::Svg;
 use serde::{Deserialize, Serialize};
 
 use std::fmt;
-//TODO: Make some of these fields enums
 /// `EquipmentType` represents a type of equipment.
 ///
 /// Anything from a rackmount piece of gear to an outlet or terminal block. This represents

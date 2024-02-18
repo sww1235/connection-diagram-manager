@@ -18,7 +18,7 @@ pub struct WireCable {
     pub identifier: Option<String>,
     /// Optional description
     pub description: Option<String>,
-    /// length of wire or cable TODO: figure out how to return term_cable_length if it is defined
+    /// length of wire or cable
     pub length: Option<f64>,
     /// Pathway containing instance
     pub pathway: Option<String>,

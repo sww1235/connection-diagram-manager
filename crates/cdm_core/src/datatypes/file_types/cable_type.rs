@@ -55,7 +55,7 @@ pub struct CableCore {
 pub struct CableLayer {
     /// layer number, counted from inside to outside of cable, 1 indexed
     pub layer_number: u64,
-    /// Insulation, Semiconductor, shield, screen, concentric neutral. TODO: change this to Enum
+    /// Insulation, Semiconductor, shield, screen, concentric neutral
     pub layer_type: String,
     /// `Material of CableLayer`
     pub material: Option<String>,
