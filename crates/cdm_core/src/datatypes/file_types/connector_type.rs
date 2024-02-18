@@ -1,6 +1,5 @@
 use super::svg::Svg;
 use serde::{Deserialize, Serialize};
-use std::fmt;
 /// `ConnectorType` represents a particular type of connector.
 ///
 /// Connector can represent more than just a metal or plastic blob on the end of a cable, it can
@@ -64,80 +63,4 @@ pub struct ConnectorPin {
     pub visual_rep: Option<Svg>,
     /// gender of pin
     pub gender: Option<String>,
-}
-
-impl fmt::Display for ConnectorPin {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Pin:")?;
-        writeln!(f, "\tPin ID: {}", self.id)?;
-        if let Some(label) = &self.label {
-            writeln!(f, "\tPin Label: {label}")?;
-        }
-        if let Some(signal_type) = &self.signal_type {
-            writeln!(f, "\tPin Signal Type: {signal_type}")?;
-        }
-        if let Some(color) = &self.color {
-            writeln!(f, "\tPin Color: {color}")?;
-        }
-        if let Some(gender) = &self.gender {
-            writeln!(f, "\tPin Gender: {gender}")?;
-        }
-        //TODO: provide a way of showing visual representation
-        Ok(())
-    }
-}
-impl fmt::Display for ConnectorType {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Connector Type:")?;
-        if let Some(manufacturer) = &self.manufacturer {
-            writeln!(f, "\tManufacturer: {manufacturer}")?;
-        }
-        if let Some(model) = &self.model {
-            writeln!(f, "\tModel: {model}")?;
-        }
-        if let Some(part_number) = &self.part_number {
-            writeln!(f, "\tPart Number: {part_number}")?;
-        }
-        if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
-            writeln!(f, "\tManufacturer Part Number: {manufacturer_part_number}")?;
-        }
-        if let Some(supplier) = &self.supplier {
-            writeln!(f, "\tSupplier: {supplier}")?;
-        }
-        if let Some(supplier_part_number) = &self.supplier_part_number {
-            writeln!(f, "\tSupplier Part Number: {supplier_part_number}")?;
-        }
-        if let Some(description) = &self.description {
-            writeln!(f, "\tDescription: {description}")?;
-        }
-        if let Some(mount_type) = &self.mount_type {
-            writeln!(f, "\tMount Type: {mount_type}")?;
-        }
-        if let Some(panel_cutout) = &self.panel_cutout {
-            writeln!(f, "\tPanel Cutout: {panel_cutout}")?;
-        }
-        if let Some(gender) = &self.gender {
-            writeln!(f, "\tGender: {gender}")?;
-        }
-        writeln!(f, "\tHeight: {:.2} mm", self.height)?;
-        writeln!(f, "\tWidth: {:.2} mm", self.width)?;
-        writeln!(f, "\tDepth: {:.2} mm", self.depth)?;
-        if let Some(diameter) = &self.diameter {
-            writeln!(f, "\tDiameter: {diameter:.2} mm")?;
-        }
-        writeln!(f, "\tPin Count: {}", self.pins.len())?;
-        //TODO: implement loop here to print all pins
-        //if let Some() = &self.pins {
-        //    writeln!(f, "Panel Cutout: {}", )?;
-        //}
-        //TODO: implement loops here to print all layers of cable
-        //if let Some() = &self.model {
-        //    writeln!(f, "Model: {}", )?;
-        //}
-        //if let Some() = &self.model {
-        //    writeln!(f, "Model: {}", )?;
-        //}
-        //TODO: implement svg validation rules here
-        Ok(())
-    }
 }

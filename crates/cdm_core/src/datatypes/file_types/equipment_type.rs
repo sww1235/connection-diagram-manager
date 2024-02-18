@@ -1,7 +1,6 @@
 use super::svg::Svg;
 use serde::{Deserialize, Serialize};
 
-use std::fmt;
 /// `EquipmentType` represents a type of equipment.
 ///
 /// Anything from a rackmount piece of gear to an outlet or terminal block. This represents
@@ -61,53 +60,4 @@ pub struct EquipConnector {
     pub x: u64,
     /// location of connector on face from bottom of visrep. Origin is bottom left
     pub y: u64,
-}
-
-impl fmt::Display for EquipConnector {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Equipment Connector:")?;
-        writeln!(f, "Connector: {}", &self.connector_type)?;
-        if let Some(direction) = &self.direction {
-            writeln!(f, "Direction: {direction}")?;
-        }
-        writeln!(f, "X coordinate: {}", self.x)?;
-        writeln!(f, "Y coordinate: {}", self.y)?;
-        Ok(())
-    }
-}
-
-impl fmt::Display for EquipmentType {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Equipment Type:")?;
-        if let Some(manufacturer) = &self.manufacturer {
-            write!(f, "Manufacturer: {manufacturer}")?;
-        }
-        if let Some(model) = &self.model {
-            write!(f, "Model: {model}")?;
-        }
-        if let Some(part_number) = &self.part_number {
-            write!(f, "Part Number: {part_number}")?;
-        }
-        if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
-            write!(f, "Manufacturer Part Number: {manufacturer_part_number}")?;
-        }
-        if let Some(supplier) = &self.supplier {
-            write!(f, "Supplier: {supplier}")?;
-        }
-        if let Some(supplier_part_number) = &self.supplier_part_number {
-            write!(f, "Supplier Part Number: {supplier_part_number}")?;
-        }
-        if let Some(description) = &self.description {
-            write!(f, "Description: {description}")?;
-        }
-        if let Some(mount_type) = &self.mount_type {
-            write!(f, "Mount Type: {mount_type}")?;
-        }
-        if let Some(equip_type) = &self.equip_type {
-            write!(f, "Equipment Type: {equip_type}")?;
-        }
-        //TODO: implement loops over faces and connectors
-        //TODO: implement svg validation rules here
-        Ok(())
-    }
 }

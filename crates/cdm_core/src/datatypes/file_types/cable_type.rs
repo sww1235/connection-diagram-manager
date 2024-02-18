@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 
 use std::collections::HashMap;
-use std::fmt;
 
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has one
 /// core, then it is a wire, not a cable.
@@ -65,59 +64,4 @@ pub struct CableLayer {
     pub temp_rating: Option<f64>,
     /// color of CableLayer
     pub color: Option<String>,
-}
-
-impl fmt::Display for CableType {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Cable Type:")?;
-        if let Some(manufacturer) = &self.manufacturer {
-            writeln!(f, "\tManufacturer: {manufacturer}")?;
-        }
-        if let Some(model) = &self.model {
-            writeln!(f, "\tModel: {model}")?;
-        }
-        if let Some(part_number) = &self.part_number {
-            writeln!(f, "\tPart Number: {part_number}")?;
-        }
-        if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
-            writeln!(f, "\tManufacturer Part Number: {manufacturer_part_number}")?;
-        }
-        if let Some(supplier) = &self.supplier {
-            writeln!(f, "\tSupplier: {supplier}")?;
-        }
-        if let Some(supplier_part_number) = &self.supplier_part_number {
-            writeln!(f, "\tSupplier Part Number: {supplier_part_number}")?;
-        }
-        if let Some(cable_type_code) = &self.cable_type_code {
-            writeln!(f, "\tCable Type: {cable_type_code}")?;
-        }
-        if f.alternate() {
-            //TODO: implement mm^2 to awg conversion function. include function for changing units
-            writeln!(
-                f,
-                "\tCross Sectional Area: {:.2} AWG",
-                &self.cross_sect_area
-            )?;
-        } else {
-            writeln!(
-                f,
-                "\tCross Sectional Area: {:.2} mm^2",
-                &self.cross_sect_area
-            )?;
-        }
-        writeln!(f, "\tCross Section: {}", &self.cross_section)?;
-        writeln!(f, "\tHeight: {:.2} mm", &self.height)?;
-        writeln!(f, "\tWidth: {:.2} mm", &self.width)?;
-        if let Some(diameter) = &self.diameter {
-            writeln!(f, "\tDiameter: {diameter:.2} mm")?;
-        }
-        //TODO: implement loops here to print all layers of cable
-        //if let Some() = &self.model {
-        //    writeln!(f, "Model: {}", )?;
-        //}
-        //if let Some() = &self.model {
-        //    writeln!(f, "Model: {}", )?;
-        //}
-        Ok(())
-    }
 }

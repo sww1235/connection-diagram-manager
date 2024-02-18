@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-use std::fmt;
-
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct TermCableType {
@@ -51,46 +49,4 @@ pub struct TermCableConnector {
     pub connector_type: String,
     /// `terminations` represents the pin/core mapping for this connector
     pub terminations: Option<Vec<TermCableConnectorTermination>>,
-}
-impl fmt::Display for TermCableType {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "TermCable Type:")?;
-        if let Some(manufacturer) = &self.manufacturer {
-            writeln!(f, "\tManufacturer: {manufacturer}")?;
-        }
-        if let Some(model) = &self.model {
-            writeln!(f, "\tModel: {model}")?;
-        }
-        if let Some(part_number) = &self.part_number {
-            writeln!(f, "\tPart Number: {part_number}")?;
-        }
-        if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
-            writeln!(f, "\tManufacturer Part Number: {manufacturer_part_number}")?;
-        }
-        if let Some(supplier) = &self.supplier {
-            writeln!(f, "\tSupplier: {supplier}")?;
-        }
-        if let Some(supplier_part_number) = &self.supplier_part_number {
-            writeln!(f, "\tSupplier Part Number: {supplier_part_number}")?;
-        }
-        if let Some(description) = &self.description {
-            writeln!(f, "\tDescription: {description}")?;
-        }
-        if let Some(cable) = &self.cable {
-            writeln!(f, "\tCable Type: {cable}")?;
-        }
-        if let Some(wire) = &self.wire {
-            writeln!(f, "\tWire Type: {wire}")?;
-        }
-        if let Some(nominal_length) = &self.nominal_length {
-            //TODO: implement units functions to do proper conversions
-            writeln!(f, "\tNominal Length: {nominal_length}mm")?;
-        }
-        if let Some(actual_length) = &self.actual_length {
-            //TODO: implement units functions to do proper conversions
-            writeln!(f, "\tActual Length: {actual_length} mm")?;
-        }
-        //TODO: implement loops for cable ends.
-        Ok(())
-    }
 }

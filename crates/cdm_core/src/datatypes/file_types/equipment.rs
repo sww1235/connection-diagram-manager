@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-use std::fmt;
-
 /// `Equipment` represents a particular instance of an `EquipmentType`.
 /// This is the physical unit you would hold in your hand
 ///
@@ -24,25 +22,4 @@ pub struct Equipment {
     pub location: Option<String>,
     /// Description
     pub description: Option<String>,
-}
-
-impl fmt::Display for Equipment {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "File Equipment Instance:")?;
-
-        writeln!(f, "Equipment Type String: {}", &self.equipment_type)?;
-        if let Some(identifier) = &self.identifier {
-            writeln!(f, "Identifier: {identifier}")?;
-        }
-        if let Some(mounting_type) = &self.mounting_type {
-            writeln!(f, "Mounting Type: {mounting_type}")?;
-        }
-        if let Some(location) = &self.location {
-            writeln!(f, "Location: {location}")?;
-        }
-        if let Some(description) = &self.description {
-            writeln!(f, "Description: {description}")?;
-        }
-        Ok(())
-    }
 }
