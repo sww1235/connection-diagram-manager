@@ -71,8 +71,8 @@ pub enum CableCore {
 pub struct CableLayer {
     /// layer number, counted from inside to outside of cable, 1 indexed
     pub layer_number: u64,
-    /// Insulation, Semiconductor, shield, screen, concentric neutral. TODO: change this to Enum
-    pub layer_type: String,
+    /// layer type
+    pub layer_type: LayerType,
     /// `Material of CableLayer`
     pub material: Option<String>,
     /// Voltage rating for insuation layer
@@ -81,6 +81,25 @@ pub struct CableLayer {
     pub temp_rating: Option<ucum::Kelvin<f64>>,
     /// color of CableLayer
     pub color: Option<String>,
+}
+
+/// `LayerType` represents different functions of a `CableLayer` `layer_type`
+#[derive(Debug, Default, Clone, PartialEq)]
+pub enum LayerType {
+    /// `Insulation` is a normal insulation layer of a cable
+    #[default]
+    Insulation,
+    /// `Semiconductor` is a semiconducting layer in high voltage cables
+    Semiconductor,
+    /// `Shield` is a solid metallic shield for EMI reduction
+    Shield,
+    /// `Screen` is a mesh-like metallic shield for EMI reduction
+    Screen,
+    /// `ConcentricNeutral` is the outer concetric metallic neutral in high voltage cables
+    ConcentricNeutral,
+    /// `Armor` is a strength member that resists mechanical damage and is not designed as part of
+    /// the electrical paths in the cable
+    Armor,
 }
 
 impl CableType {

@@ -34,7 +34,7 @@ use std::rc::Rc;
 
 use super::file_types::DataFile;
 use super::util_types::CrossSection;
-use cable_type::CableCore;
+use cable_type::{CableCore, LayerType};
 use svg::Svg;
 
 use dimensioned::{f64prefixes, ucum};
@@ -338,7 +338,24 @@ impl Library {
                         for layer in &cable_types[k].insul_layers {
                             let new_layer = cable_type::CableLayer {
                                 layer_number: layer.layer_number,
-                                layer_type: layer.layer_type.clone(),
+                                layer_type: {
+                                    match layer.layer_type.as_str() {
+                                        "Insulation" => LayerType::Insulation,
+                                        "Semiconductor" => LayerType::Semiconductor,
+                                        "Shield" => LayerType::Shield,
+                                        "Screen" => LayerType::Screen,
+                                        "ConcentricNeutral" => LayerType::ConcentricNeutral,
+                                        "Armor" => LayerType::Armor,
+                                        _ => {
+                                            return Err(Error::DefinitionProcessing {
+                                                datatype: "CableType".to_string(),
+                                                datatype_id: k.clone(),
+                                                message: format! {"LayerType: {} not recognized. Check your spelling and try again.", layer.layer_type},
+                                                datafile_path: datafile.file_path.clone(),
+                                            })
+                                        }
+                                    }
+                                },
                                 material: layer.material.clone(),
                                 volt_rating: layer.volt_rating.map(|x| x * ucum::V),
                                 temp_rating: layer.temp_rating.map(|x| x * ucum::K),
