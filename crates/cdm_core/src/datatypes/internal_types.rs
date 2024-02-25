@@ -766,11 +766,10 @@ impl Library {
                     equip_type: equipment_types[k].equip_type.clone(),
                     faces: {
                         if let Some(faces) = &equipment_types[k].faces {
-                            let mut new_faces = Vec::new();
+                            let mut new_faces = HashMap::new();
                             for face in faces {
                                 let new_face = equipment_type::EquipFace {
-                                    name: face.name.clone(),
-                                    vis_rep: face.vis_rep.clone().map(Svg::from),
+                                    visual_rep: Svg::from(face.visual_rep.clone()),
                                     connectors: {
                                         if let Some(connectors) = &face.connectors {
                                             let mut new_connectors = Vec::new();
@@ -811,8 +810,12 @@ impl Library {
                                                             }
                                                         },
                                                         direction: connector.direction.clone(),
-                                                        x: connector.x,
-                                                        y: connector.y,
+                                                        x: connector.x
+                                                            * ucum::M
+                                                            * f64prefixes::MILLI,
+                                                        y: connector.y
+                                                            * ucum::M
+                                                            * f64prefixes::MILLI,
                                                     };
                                                 new_connectors.push(new_connector);
                                             }
@@ -822,7 +825,7 @@ impl Library {
                                         }
                                     },
                                 };
-                                new_faces.push(new_face);
+                                new_faces.insert(face.name.clone(), new_face);
                             }
                             Some(new_faces)
                         } else {
@@ -1179,6 +1182,21 @@ impl Project {
                     identifier: locations[k].identifier.clone(),
                     description: locations[k].description.clone(),
                     physical_location: locations[k].physical_location.clone(),
+                    sub_locations: {
+                        let mut sub_locations =
+                            HashMap::with_capacity(locations[k].sub_locations.len());
+                        for (subkey, subloc) in locations[k].sub_locations.clone() {
+                            sub_locations.insert(
+                                subkey,
+                                location::SubLocation {
+                                    x: subloc.x * ucum::M * f64prefixes::MILLI,
+                                    y: subloc.y * ucum::M * f64prefixes::MILLI,
+                                    z: subloc.z * ucum::M * f64prefixes::MILLI,
+                                },
+                            );
+                        }
+                        sub_locations
+                    },
                     contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.locations.contains_key(k) {
@@ -1201,6 +1219,59 @@ impl Project {
         // equipment
         if let Some(equipment) = datafile.equipment {
             for (k, v) in &equipment {
+                //TODO: re-evaluate the logic for location/sublocation
+                // check if location exists in self.locations first
+                let mut temp_location = Rc::new(RefCell::new(location::Location::new()));
+                #[allow(clippy::map_entry)]
+                // TODO: use entry mechanic to fix this, allowing for now
+                if self.locations.contains_key(&equipment[k].location) {
+                    temp_location = Rc::clone(&self.locations[k]);
+                } else {
+                    // In theory, this location could be defined in another file
+                    //TODO: return error here
+                    error! {concat!{
+                    "Location: {} is assigned to ",
+                    "Equipment: {} in datafile: {}, ",
+                    "that doesn't exist in any library ",
+                    "either read in from datafile, or ",
+                    "added via program logic. Check your spelling"},
+                    &equipment[k].location, k, datafile.file_path.clone().display()}
+                    let new_location = Rc::new(RefCell::new(location::Location::new()));
+                    // add new_location to Project
+                    self.locations
+                        .insert(equipment[k].location.clone(), Rc::clone(&new_location));
+                    // then return reference to struct field
+                    temp_location = Rc::clone(&new_location);
+                }
+                //then check if sublocation is defined in location
+                let mut temp_sub_location = location::SubLocation::new();
+                // first want to verify location exists again
+                if temp_location == Rc::new(RefCell::new(location::Location::new())) {
+                    return Err(Error::DefinitionProcessing {
+                datatype: "Equipment".to_string(),
+                datatype_id: k.clone(),
+                message: format!("Location: {} contained in equipment didn't exist when attempting to parse sublocations. Please fix this", equipment[k].location),
+                datafile_path: datafile.file_path.clone(),
+                    } );
+                } else if temp_location
+                    .borrow()
+                    .sub_locations
+                    .contains_key(&equipment[k].sub_location)
+                {
+                    temp_sub_location =
+                        temp_location.borrow().sub_locations[&equipment[k].sub_location].clone();
+                } else {
+                    // Sublocations are defined at the same time as location, so they should be
+                    // present if the location is present
+                    return Err(Error::NoContainedDefinitionFound {
+                        contained_type: "SubLocation".to_string(),
+                        contained_type_id: equipment[k].sub_location.clone(),
+                        container_type: "Location".to_string(),
+                        container_type_id: equipment[k].location.clone(),
+                        datafile_path: datafile.file_path.clone(),
+                    });
+                }
+
                 let new_equipment = equipment::Equipment {
                     id: k.to_string(),
                     equip_type: {
@@ -1224,33 +1295,8 @@ impl Project {
                     },
                     identifier: equipment[k].identifier.clone(),
                     mounting_type: equipment[k].mounting_type.clone(),
-                    location: {
-                        // clone string here to avoid moving value out of hashmap.
-                        if let Some(file_location) = equipment[k].location.clone() {
-                            #[allow(clippy::map_entry)]
-                            // TODO: use entry mechanic to fix this, allowing for now
-                            if self.locations.contains_key(&file_location) {
-                                Some(Rc::clone(&self.locations[k]))
-                            } else {
-                                //TODO: return error here
-                                error! {concat!{
-                                "Location: {} is assigned to ",
-                                "Equipment: {} in datafile: {}, ",
-                                "that doesn't exist in any library ",
-                                "either read in from datafile, or ",
-                                "added via program logic. Check your spelling"},
-                                k, file_location, datafile.file_path.clone().display()}
-                                let new_location = Rc::new(RefCell::new(location::Location::new()));
-                                // add new_location to Project
-                                self.locations
-                                    .insert(file_location, Rc::clone(&new_location));
-                                // then return reference to struct field
-                                Some(Rc::clone(&new_location))
-                            }
-                        } else {
-                            None
-                        }
-                    },
+                    location: temp_location,
+                    sub_location: temp_sub_location,
                     description: equipment[k].description.clone(),
                     contained_datafile_path: datafile.file_path.clone(),
                 };

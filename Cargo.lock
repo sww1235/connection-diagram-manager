@@ -244,6 +244,7 @@ dependencies = [
  "fltk",
  "fltk-theme",
  "log",
+ "pdf_helper",
  "rustybuzz",
  "serde",
  "serde_yaml",

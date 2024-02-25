@@ -30,6 +30,7 @@ usvg.workspace = true
 cdm_macros.workspace = true
 cdm_traits.workspace = true
 # unit_utils.workspace = true
+pdf_helper.workspace = true
 
 [features]
 cli = ["clap"]

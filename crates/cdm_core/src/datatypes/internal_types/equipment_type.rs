@@ -2,7 +2,10 @@ use super::{connector_type::ConnectorType, svg::Svg};
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 
+use dimensioned::ucum;
+
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::fmt;
 use std::path::PathBuf;
 use std::rc::Rc;
@@ -35,10 +38,11 @@ pub struct EquipmentType {
     /// Equipment Type (audio, video, mix, lighting, networking, patch panel, power)
     pub equip_type: Option<String>,
     /// faces represents a visual representation of each face of a piece of equipment
-    pub faces: Option<Vec<EquipFace>>,
+    pub faces: Option<HashMap<String, EquipFace>>,
     /// visual representation of the equipment
     // TODO: figure out what angle to standardize on, or
     // just rely on the face vis_rep
+    // TODO: create associated method to return correct face here
     pub visual_rep: Svg,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
@@ -50,10 +54,8 @@ pub struct EquipmentType {
 /// sphere, etc.
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct EquipFace {
-    /// Name/ID of equipment face
-    pub name: String,
     /// visual representation of equipment face, without connectors
-    pub vis_rep: Option<Svg>,
+    pub visual_rep: Svg,
     /// all connectors that are on this face of equipment
     pub connectors: Option<Vec<EquipConnector>>,
 }
@@ -70,9 +72,9 @@ pub struct EquipConnector {
     /// output, bidirectiona, passive)
     pub direction: Option<String>,
     /// location of connector on face from left of visrep. Origin is bottom left
-    pub x: u64, //TODO: Units?
+    pub x: ucum::Meter<f64>,
     /// location of connector on face from bottom of visrep. Origin is bottom left
-    pub y: u64,
+    pub y: ucum::Meter<f64>,
 }
 impl EquipmentType {
     /// Creates an empty instance of `EquipmentType`
@@ -80,6 +82,14 @@ impl EquipmentType {
     #[must_use]
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Returns representative svg representation of EquipmnentType
+    pub fn visual_rep(&self) -> Svg {
+        match &self.faces {
+            Some(faces) => faces["Front"].visual_rep,
+            None => self.visual_rep,
+        }
     }
 }
 

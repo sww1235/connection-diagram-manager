@@ -14,15 +14,6 @@ impl From<FileSvg> for Svg {
         Svg(file_svg.0)
     }
 }
-//impl Mergable for Svg {
-//    fn merge_prompt(
-//        &mut self,
-//        _other: &Self,
-//        _prompt_fn: fn(HashMap<String, [String; 2]>) -> HashMap<String, bool>,
-//    ) {
-//        todo!();
-//    }
-//}
 
 impl PartialEmpty for Svg {
     fn is_partial_empty(&self) -> bool {

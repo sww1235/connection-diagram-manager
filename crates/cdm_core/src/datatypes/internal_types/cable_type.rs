@@ -85,6 +85,7 @@ pub struct CableLayer {
 
 /// `LayerType` represents different functions of a `CableLayer` `layer_type`
 #[derive(Debug, Default, Clone, PartialEq)]
+#[non_exhaustive]
 pub enum LayerType {
     /// `Insulation` is a normal insulation layer of a cable
     #[default]

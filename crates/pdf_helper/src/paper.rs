@@ -1,4 +1,5 @@
 use dimensioned::{f64prefixes, ucum};
+use std::fmt;
 /// `PaperSize` represents standard paper sizes,
 /// along with options to declare custom sizes in various units.
 /// The provided paper sizes are defined in portrait orientation,
@@ -104,5 +105,81 @@ impl PaperSize {
             PaperSize::Letter => PaperSize::AnsiA.size(),
             PaperSize::Custom(short, long) => (short, long),
         }
+    }
+}
+
+impl fmt::Display for PaperSize {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            //TODO: finish alt mode display implementation
+            PaperSize::A0 => {
+                if f.alternate() {
+                    writeln!(f, "")?;
+                } else {
+                    writeln!(f, "A0")?;
+                }
+            }
+            PaperSize::A1 => {
+                writeln!(f, "A1")?;
+            }
+            PaperSize::A2 => {
+                writeln!(f, "A2")?;
+            }
+            PaperSize::A3 => {
+                writeln!(f, "A3")?;
+            }
+            PaperSize::A4 => {
+                writeln!(f, "A4")?;
+            }
+            PaperSize::A5 => {
+                writeln!(f, "A5")?;
+            }
+            PaperSize::A6 => {
+                writeln!(f, "A6")?;
+            }
+            PaperSize::AnsiA => {
+                writeln!(f, "ANSI A")?;
+            }
+            PaperSize::AnsiB => {
+                writeln!(f, "ANSI B")?;
+            }
+            PaperSize::AnsiC => {
+                writeln!(f, "ANSI C")?;
+            }
+            PaperSize::AnsiD => {
+                writeln!(f, "ANSI D")?;
+            }
+            PaperSize::AnsiE => {
+                writeln!(f, "ANSI E")?;
+            }
+            PaperSize::ArchA => {
+                writeln!(f, "ARCH A")?;
+            }
+            PaperSize::ArchB => {
+                writeln!(f, "ARCH B")?;
+            }
+            PaperSize::ArchC => {
+                writeln!(f, "ARCH C")?;
+            }
+            PaperSize::ArchD => {
+                writeln!(f, "ARCH D")?;
+            }
+            PaperSize::ArchE => {
+                writeln!(f, "ARCH E")?;
+            }
+            PaperSize::Tabloid => {
+                writeln!(f, "TABLOID")?;
+            }
+            PaperSize::Legal => {
+                writeln!(f, "LEGAL")?;
+            }
+            PaperSize::Letter => {
+                writeln!(f, "LETTER")?;
+            }
+            PaperSize::Custom(_, _) => {
+                writeln!(f, "CUSTOM")?;
+            }
+        }
+        Ok(())
     }
 }

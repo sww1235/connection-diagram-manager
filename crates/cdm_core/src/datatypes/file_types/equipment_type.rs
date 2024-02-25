@@ -43,7 +43,7 @@ pub struct EquipFace {
     /// Name of face
     pub name: String,
     /// Visual representation of face in SVG format, without connectors
-    pub vis_rep: Option<Svg>,
+    pub visual_rep: Svg,
     /// all connectors on face
     pub connectors: Option<Vec<EquipConnector>>,
 }

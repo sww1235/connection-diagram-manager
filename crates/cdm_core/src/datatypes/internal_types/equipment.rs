@@ -3,7 +3,10 @@ use std::fmt;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use super::{equipment_type::EquipmentType, location::Location};
+use super::{
+    equipment_type::EquipmentType,
+    location::{Location, SubLocation},
+};
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 
@@ -18,10 +21,13 @@ pub struct Equipment {
     /// The structured name of the equipment
     pub identifier: Option<String>,
     /// The particular mounting type of this instance
-    /// must be in list of mounting types defined in `equip_type.mounting_type`
+    /// must be in list of mounting types defined in `equip_type.mounting_type` TODO validate this
+    /// during import
     pub mounting_type: Option<String>,
-    /// The individual location
-    pub location: Option<Rc<RefCell<Location>>>,
+    /// The contained location
+    pub location: Rc<RefCell<Location>>,
+    /// The sublocation within the location
+    pub sub_location: SubLocation,
     /// Description
     pub description: Option<String>,
     /// datafile the struct instance was read in from
@@ -63,9 +69,7 @@ impl fmt::Display for Equipment {
         if let Some(mounting_type) = &self.mounting_type {
             writeln!(f, "Mounting Type: {mounting_type}")?;
         }
-        if let Some(location) = &self.location {
-            writeln!(f, "Location: {}", location.borrow())?;
-        }
+        writeln!(f, "Location: {}", &self.location.borrow())?;
         if let Some(description) = &self.description {
             writeln!(f, "Description: {description}")?;
         }

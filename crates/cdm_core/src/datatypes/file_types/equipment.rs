@@ -18,8 +18,10 @@ pub struct Equipment {
     /// The particular mounting type of this instance
     /// must be in list of mounting types defined in `equip_type.mounting_type`
     pub mounting_type: Option<String>,
-    /// The individual location
-    pub location: Option<String>,
+    /// The contained location
+    pub location: String,
+    /// The sublocation wthin the location
+    pub sub_location: String,
     /// Description
     pub description: Option<String>,
 }

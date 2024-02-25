@@ -15,9 +15,16 @@ use log::{debug, error, LevelFilter};
 
 use simple_logger::SimpleLogger;
 
-use cdm_core::{config::Config, datatypes::file_types};
+use cdm_core::{
+    config::Config,
+    datatypes::{
+        file_types,
+        internal_types::{Library, Project},
+    },
+};
 
-//https://stackoverflow.com/questions/66799905/how-to-make-some-structs-fields-mandatory-to-fill-and-others-optional-in-rust
+use cdm_traits::merge::ComparedStruct;
+
 fn main() {
     //parse command line flags
     let cli = Cli::parse();
@@ -59,7 +66,7 @@ fn main() {
     debug! {"{:#?}", config}
 
     // will be vector of DataFiles
-    let _data_files = match file_types::parse_project_dir(cli.project_directory) {
+    let data_files = match file_types::parse_project_dir(cli.project_directory) {
         Ok(datastore) => datastore,
         Err(e) => {
             //TODO: better handle errors here
@@ -68,17 +75,26 @@ fn main() {
         }
     };
 
-    //let mut lib2 = Library::new();
-    //let mut proj2 = Project::new();
-    //lib2.from_datafiles(data_files.clone());
+    let mut library = Library::new();
+    let mut project = Project::new();
+    //TODO: handle errors here better
+    library
+        .from_datafiles(data_files.clone(), merge_prompt_fn)
+        .unwrap();
 
-    //proj2.from_datafiles(data_files, &lib2);
+    project
+        .from_datafiles(data_files, &library, merge_prompt_fn)
+        .unwrap();
 
-    //println! {"{lib2:#?}"};
-    //println! {"{proj2:#?}"};
+    debug! {"{library:?}"};
+    debug! {"{project:?}"};
+
+    if cli.export_pdf {}
 }
-
-fn merge_prompt_fn() {}
+//TODO: implement
+fn merge_prompt_fn(input: ComparedStruct) -> ComparedStruct {
+    input
+}
 
 /// `Cli` holds the defintions for command line arguments used in this binary
 #[derive(Parser)]
@@ -101,4 +117,7 @@ struct Cli {
     /// Do not use default libraries included with program
     #[arg(short, long)]
     no_default_libs: bool,
+    /// Export complete PDF
+    #[arg(short, long)]
+    export_pdf: bool,
 }

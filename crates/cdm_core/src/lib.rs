@@ -12,4 +12,8 @@ pub mod config;
 /// and the main `Data` type
 pub mod datatypes;
 
+/// `pdf_generation` contains the functions used to generate a PDF
+/// of `Projects`
+pub mod pdf_generation;
+
 pub use cdm_macros;

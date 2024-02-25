@@ -26,7 +26,7 @@ pub struct PDFDocument<'a> {
     /// Vector of fonts available to be used in a pdf.
     available_fonts: Vec<PDFFont<'a>>,
     /// all the pages in the PDF document
-    pages: Vec<PDFPage>,
+    pub pages: Vec<PDFPage>,
 }
 /// `PDFFont` contains information about a font.
 pub struct PDFFont<'a> {
@@ -46,16 +46,10 @@ pub struct PDFPage {
     /// The list of operations for the page
     operations: Vec<Operation>,
     /// The paper size of the page
-    page_size: paper::PaperSize,
-    /// The left margin
-    left_margin: ucum::Meter<f64>,
-    /// The right margin
-    right_margin: ucum::Meter<f64>,
-    /// The top margin
-    top_margin: ucum::Meter<f64>,
-    /// The bottom margin
-    bottom_margin: ucum::Meter<f64>,
+    pub page_size: paper::PaperSize,
+    pub margins: Margins,
 }
+
 /// `PDFTextRenderMode` is an enumeration
 /// of defined text rendering modes in pdf documents
 #[allow(clippy::exhaustive_enums)]
@@ -74,6 +68,19 @@ pub enum PDFTextRenderMode {
     FillForClipping,
     /// Stroke text and add to path for clipping
     StrokeForClipping,
+}
+
+/// `Margins` represents the non-printing border around a PDF page, or piece of paper
+#[derive(Debug, Default, PartialEq, Clone, Copy)]
+pub struct Margins {
+    /// `top` margin
+    pub top: ucum::Meter<f64>,
+    /// `bottom` margin
+    pub bottom: ucum::Meter<f64>,
+    /// `left` margin
+    pub left: ucum::Meter<f64>,
+    /// `right` margin
+    pub right: ucum::Meter<f64>,
 }
 
 impl PDFTextRenderMode {
@@ -96,7 +103,6 @@ impl PDFPage {
     ///
     /// # Arguments
     ///
-    /// * `page_index`: The zero indexed page number that the text should be inserted into.
     /// * `text`: the text that will be added to the pdf page
     /// * `font`: a `PDFFont` object representing a font defined for use in a PDF document
     /// * `font_size`: Font size specified in points. This is used internally as a multiple
@@ -105,7 +111,9 @@ impl PDFPage {
     /// * `text width`: An optional parameter that defines the width of the text element. If
     /// `None`, the width of the page minus the margins is used.
     /// * `x_pos`: horizontal starting position of text insertion, with 0 on left side of page
-    /// * `y_pos`: vertical starting position of text insertion, with 0 on the bottom side of page
+    /// inside the margin
+    /// * `y_pos`: vertical starting position of text insertion, with 0 on the bottom side of page,
+    /// inside the margin
     ///
     /// # Errors
     ///
@@ -154,10 +162,10 @@ impl PDFPage {
             )));
         }
         #[allow(clippy::arithmetic_side_effects)]
-        if x_pos > current_page_size.0 - self.right_margin
-            || x_pos < 0.0_f64 * ucum::IN_US + self.left_margin
-            || y_pos > current_page_size.1 - self.top_margin
-            || y_pos < 0.0_f64 * ucum::IN_US + self.bottom_margin
+        if x_pos > current_page_size.0 - self.margins.right
+            || x_pos < 0.0_f64 * ucum::IN_US + self.margins.left
+            || y_pos > current_page_size.1 - self.margins.top
+            || y_pos < 0.0_f64 * ucum::IN_US + self.margins.bottom
         {
             warn! {concat!{"Position of text X: {}, Y: {}, ",
             "is outside page margin boundaries. ",
@@ -185,11 +193,10 @@ impl PDFPage {
         // time after BT, it sets the initial text position on the page.
         // Note: PDF documents have Y=0 at the bottom. Thus 600 to print text near the top.
         // This is setting the position of the first line
-        // TODO: convert into user space units here and use value rather than value unsafe
-        self.operations.push(Operation::new(
-            "Td",
-            vec![x_pos.value_unsafe.into(), y_pos.value_unsafe.into()],
-        ));
+        let x = *(((x_pos + self.margins.left) / PDFDocument::pdf_point()).value());
+        let y = *(((y_pos + self.margins.bottom) / PDFDocument::pdf_point()).value());
+        self.operations
+            .push(Operation::new("Td", vec![x.into(), y.into()]));
 
         // sets rendering mode of text
         self.operations
@@ -212,6 +219,7 @@ impl PDFPage {
             for line in &lines[2..] {
                 // `'` operation moves to next line using value specified by TL for spacing
                 // and shows a line of text
+                // TODO: add line spacing here
                 self.operations.push(Operation::new(
                     "'",
                     vec![Object::string_literal(line.as_str())],
@@ -225,15 +233,34 @@ impl PDFPage {
         Ok(())
     }
 
+    //TODO: need to be able to specify location
     /// `add_svg` parses an SVG image, converts it into pdf graphics operators,
     /// and inserts it into the referenced pdf document at the specified page
     ///
     /// Heavily inspired by [resvg](https://github.com/RazrFalcon/resvg)
     ///
+    /// # Arguments
+    ///
+    /// * `page_index`: The zero indexed page number that the text should be inserted into.
+    /// * `text`: the text that will be added to the pdf page
+    /// * `font`: a `PDFFont` object representing a font defined for use in a PDF document
+    /// * `font_size`: Font size specified in points. This is used internally as a multiple
+    /// of the standard PDF user space unit size 1/72 inch
+    /// * `line_spacing`: text line spacing in multiples of line height
+    /// * `text width`: An optional parameter that defines the width of the text element. If
+    /// `None`, the width of the page minus the margins is used.
+    /// * `x_pos`: horizontal starting position of text insertion, with 0 on left side of page
+    /// * `y_pos`: vertical starting position of text insertion, with 0 on the bottom side of page
+    ///
     /// # Errors
     ///
     /// May error due to malformed SVGs or other errors
-    pub fn add_svg(&mut self, svg_string: &str) -> Result<(), Error> {
+    pub fn add_svg(
+        &mut self,
+        svg_string: &str,
+        x_pos: ucum::Meter<f64>,
+        y_pos: ucum::Meter<f64>,
+    ) -> Result<(), Error> {
         use usvg::{Tree, TreeParsing};
         let parse_options = usvg::Options::default();
         let tree = Tree::from_str(svg_string, &parse_options)?;
@@ -241,20 +268,24 @@ impl PDFPage {
         if tree.has_text_nodes() {
             return Err(Error::Other("Text Nodes in tree".to_string()));
         }
-        let new_operations = loop_nodes(&tree.root);
+        let new_operations = loop_nodes(&tree.root, x_pos, y_pos);
         self.operations.extend(new_operations);
         Ok(())
     }
 }
 /// `loop_nodes` loops over a SVG tree or subtree and outputs a vector of PDF operations
-fn loop_nodes(parent: &usvg::Group) -> Vec<Operation> {
+fn loop_nodes(
+    parent: &usvg::Group,
+    x_pos: ucum::Meter<f64>,
+    y_pos: ucum::Meter<f64>,
+) -> Vec<Operation> {
     let mut group_operations = Vec::new();
     for node in &parent.children {
         //TODO: investigate subroots
         let operation = match node {
-            usvg::Node::Group(group) => loop_nodes(group),
-            usvg::Node::Path(ref path) => convert_path(path),
-            usvg::Node::Image(ref image) => convert_image(image),
+            usvg::Node::Group(group) => loop_nodes(group, x_pos, y_pos),
+            usvg::Node::Path(ref path) => convert_path(path, x_pos, y_pos),
+            usvg::Node::Image(ref image) => convert_image(image, x_pos, y_pos),
             usvg::Node::Text(_) => Vec::new(), // should already be converted into paths
         };
         group_operations.extend(operation);
@@ -263,11 +294,13 @@ fn loop_nodes(parent: &usvg::Group) -> Vec<Operation> {
 }
 
 /// `convert_path` convets an SVG path element into a vector of PDF operations
-fn convert_path(path: &usvg::Path) -> Vec<Operation> {
+fn convert_path(
+    path: &usvg::Path,
+    x_pos: ucum::Meter<f64>,
+    y_pos: ucum::Meter<f64>,
+) -> Vec<Operation> {
     use usvg::tiny_skia_path::{PathSegment, Point};
     let mut new_operations = Vec::new();
-
-    //TODO: figure out scaling here
 
     //TODO: determine if we need to start with m operation by looking at the first point in
     //data.points()
@@ -278,7 +311,10 @@ fn convert_path(path: &usvg::Path) -> Vec<Operation> {
                 last_point = p;
                 // begin a new path (subpath in pdf language) by moving the current point to
                 // coordinates (x,y)
-                new_operations.push(Operation::new("m", vec![p.x.into(), p.y.into()]));
+                //TODO: figure out scaling here
+                let x = *(((f64::from(p.x) * x_pos) / PDFDocument::pdf_point()).value());
+                let y = *(((f64::from(p.y) * y_pos) / PDFDocument::pdf_point()).value());
+                new_operations.push(Operation::new("m", vec![x.into(), y.into()]));
             }
             PathSegment::LineTo(p) => {
                 last_point = p;
@@ -349,7 +385,11 @@ fn convert_path(path: &usvg::Path) -> Vec<Operation> {
 /// `convert_image` converts an embedded image in an SVG into a vector of PDF operations.
 ///
 /// Currently ignores all embedded images other than SVGs.
-fn convert_image(image: &usvg::Image) -> Vec<Operation> {
+fn convert_image(
+    image: &usvg::Image,
+    x_pos: ucum::Meter<f64>,
+    y_pos: ucum::Meter<f64>,
+) -> Vec<Operation> {
     use usvg::ImageKind;
     match &image.kind {
         ImageKind::JPEG(_) => {
@@ -367,11 +407,17 @@ fn convert_image(image: &usvg::Image) -> Vec<Operation> {
             warn! {"svg should not contain images or image tags, ignoring"};
             Vec::new()
         }
-        ImageKind::SVG(tree) => loop_nodes(&tree.root),
+        ImageKind::SVG(tree) => loop_nodes(&tree.root, x_pos, y_pos),
     }
 }
 
 impl<'a> PDFDocument<'a> {
+    pub fn pdf_point() -> ucum::Meter<f64> {
+        // default userspace units in PDF are digital printers points
+        //#[allow(clippy::arithmetic_side_effects)]
+        (1.0_f64 / 72.0_f64) * ucum::IN_US
+    }
+
     /// `new` returns a set up and initialized `PDFDocument`
     /// with the specified font paths pre-populated and default page size,
     /// as specified via parameter
@@ -379,6 +425,7 @@ impl<'a> PDFDocument<'a> {
     /// # Errors
     ///
     /// Will error if loading configuration fonts fails
+    #[must_use]
     pub fn new(
         default_page_size: paper::PaperSize,
         font_paths: Vec<PathBuf>,
@@ -447,7 +494,7 @@ impl<'a> PDFDocument<'a> {
         Ok(())
     }
 
-    //TODO: need to add this to the config file
+    //TODO: need to add this to the config file, also this may not need to be public
     /// `load_cfg_font` loads the TTF font specified in the configuration file
     /// via `rustybuzz` and `ttf_parser` and makes it
     /// available in the specified PDF document.
@@ -475,10 +522,7 @@ impl<'a> PDFDocument<'a> {
         &mut self,
         page_index: usize,
         page_size: Option<paper::PaperSize>,
-        left_margin: ucum::Meter<f64>,
-        right_margin: ucum::Meter<f64>,
-        top_margin: ucum::Meter<f64>,
-        bottom_margin: ucum::Meter<f64>,
+        margins: Margins,
     ) {
         self.pages.insert(
             page_index,
@@ -491,24 +535,14 @@ impl<'a> PDFDocument<'a> {
                         self.default_page_size
                     }
                 },
-                left_margin,
-                right_margin,
-                top_margin,
-                bottom_margin,
+                margins,
             },
         );
     }
     /// `push_page` inserts an empty `PDFPage` into self.pages vector
     /// at the end of the vector.
     /// This is a wrapper around vec.push() so it follows the same rules.
-    pub fn push_page(
-        &mut self,
-        page_size: Option<paper::PaperSize>,
-        left_margin: ucum::Meter<f64>,
-        right_margin: ucum::Meter<f64>,
-        top_margin: ucum::Meter<f64>,
-        bottom_margin: ucum::Meter<f64>,
-    ) {
+    pub fn push_page(&mut self, page_size: Option<paper::PaperSize>, margins: Margins) {
         self.pages.push(PDFPage {
             operations: Vec::new(),
             page_size: {
@@ -518,10 +552,7 @@ impl<'a> PDFDocument<'a> {
                     self.default_page_size
                 }
             },
-            left_margin,
-            right_margin,
-            top_margin,
-            bottom_margin,
+            margins,
         });
     }
     /// `write` sets up and writes a pdf file.
@@ -538,9 +569,6 @@ impl<'a> PDFDocument<'a> {
     ) -> Result<(), Error> {
         let pdf_version = "1.7";
         let mut doc = Document::with_version(pdf_version);
-        // default userspace units in PDF are digital printers points
-        #[allow(clippy::arithmetic_side_effects)]
-        let pdf_point = (1.0_f64 / 72.0_f64) * ucum::IN_US;
 
         // Object IDs are used for cross referencing in PDF documents. `lopdf` helps keep track of them
         // for us. They are simple integers.
@@ -696,9 +724,9 @@ impl<'a> PDFDocument<'a> {
                     0_u16.into(),
                     0_u16.into(),
                     #[allow(clippy::arithmetic_side_effects)]
-                    (*(page.page_size.size().0/pdf_point).value()).into(),
+                    (*(page.page_size.size().0/Self::pdf_point()).value()).into(),
                     #[allow(clippy::arithmetic_side_effects)]
-                    (*(page.page_size.size().1/pdf_point).value()).into()
+                    (*(page.page_size.size().1/Self::pdf_point()).value()).into()
                 ],
             });
             page_ids.push(page_id.into());
@@ -730,9 +758,9 @@ impl<'a> PDFDocument<'a> {
                 0_u16.into(),
                 0_u16.into(),
                 #[allow(clippy::arithmetic_side_effects)]
-                (*(self.default_page_size.size().0/pdf_point).value()).into(),
+                (*(self.default_page_size.size().0/Self::pdf_point()).value()).into(),
                 #[allow(clippy::arithmetic_side_effects)]
-                (*(self.default_page_size.size().1/pdf_point).value()).into()
+                (*(self.default_page_size.size().1/Self::pdf_point()).value()).into()
             ],
         };
 

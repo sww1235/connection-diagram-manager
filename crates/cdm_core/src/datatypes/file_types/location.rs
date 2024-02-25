@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use std::collections::HashMap;
+
 /// `Location` represents a physical instance of a pathway
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct Location {
@@ -13,5 +15,19 @@ pub struct Location {
     pub description: Option<String>,
     /// Physical Location
     pub physical_location: Option<String>,
-    //TODO: add sub locations
+    /// Sub Locations. Hashmap enforces unique keys
+    pub sub_locations: HashMap<String, SubLocation>,
+}
+
+/// Unique coordinate triplet within `Location`
+/// TODO: decide on units
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
+#[allow(clippy::module_name_repetitions)]
+pub struct SubLocation {
+    /// Distance from left side of parent location
+    pub x: u64,
+    /// Distance from bottom of parent location
+    pub y: u64,
+    /// Distance from back of parent location
+    pub z: u64,
 }
