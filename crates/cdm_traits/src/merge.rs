@@ -62,6 +62,7 @@ impl ComparedStruct {
 
 /// `Error` is the list of errors that are used in this trait definition
 #[derive(Debug)]
+//#[non_exhaustive]
 pub enum Error {
     ///Failure to merge two different structs
     ///

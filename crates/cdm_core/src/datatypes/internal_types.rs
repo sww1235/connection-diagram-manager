@@ -275,7 +275,7 @@ impl Library {
                             let new_wire_type = Rc::new(RefCell::new(wire_type::WireType::new()));
                             // need to set id of wire type correctly. type_str not
                             // core_id
-                            new_wire_type.borrow_mut().id = core.type_str.clone();
+                            new_wire_type.borrow_mut().id.clone_from(&core.type_str);
                             // insert new_wire_type as core into cable_core_map
                             cable_core_map.insert(
                                 core_id.to_string(),
@@ -288,7 +288,7 @@ impl Library {
                             //cable type
                             let new_cable_type =
                                 Rc::new(RefCell::new(cable_type::CableType::new()));
-                            new_cable_type.borrow_mut().id = core.type_str.clone();
+                            new_cable_type.borrow_mut().id.clone_from(&core.type_str);
                             // insert new_cable_type as core into cable_core_map
                             cable_core_map.insert(
                                 core_id.to_string(),
@@ -532,6 +532,7 @@ impl Library {
                     supplier_part_number: term_cable_types[k].supplier_part_number.clone(),
                     description: term_cable_types[k].description.clone(),
                     wire_cable: {
+                        #[allow(clippy::redundant_else)]
                         if term_cable_types[k].wire.is_some() && term_cable_types[k].cable.is_some()
                         {
                             return Err(Error::DefinitionProcessing {
@@ -554,7 +555,8 @@ impl Library {
                                 datafile_path: datafile.file_path.clone(),
                             });
                         } else {
-                            #[allow(clippy::collapsible_else_if)] // This would change the
+                            #[allow(clippy::collapsible_else_if)]
+                            // Collapsing the else_if would change the
                             // meaning of the logic
                             if let Some(wire_type_id) = term_cable_types[k].wire.clone() {
                                 if self.wire_types.contains_key(&wire_type_id) {
@@ -572,7 +574,7 @@ impl Library {
                                     }
                                     let new_wire_type =
                                         Rc::new(RefCell::new(wire_type::WireType::new()));
-                                    new_wire_type.borrow_mut().id = wire_type_id.clone();
+                                    new_wire_type.borrow_mut().id.clone_from(&wire_type_id);
                                     // first insert new_wire_type into library
                                     self.wire_types
                                         .insert(wire_type_id.clone(), Rc::clone(&new_wire_type));
@@ -993,6 +995,7 @@ impl Project {
                     id: k.to_string(),
                     ctw_type: {
                         // Checking to make sure only one of wire, cable, or term_cable are set
+                        #[allow(clippy::redundant_else)]
                         if (wire_cables[k].wire.is_some()
                             && wire_cables[k].cable.is_some()
                             && wire_cables[k].term_cable.is_some())
@@ -1221,11 +1224,10 @@ impl Project {
             for (k, v) in &equipment {
                 //TODO: re-evaluate the logic for location/sublocation
                 // check if location exists in self.locations first
-                let mut temp_location = Rc::new(RefCell::new(location::Location::new()));
                 #[allow(clippy::map_entry)]
                 // TODO: use entry mechanic to fix this, allowing for now
-                if self.locations.contains_key(&equipment[k].location) {
-                    temp_location = Rc::clone(&self.locations[k]);
+                let temp_location = if self.locations.contains_key(&equipment[k].location) {
+                    Rc::clone(&self.locations[k])
                 } else {
                     // In theory, this location could be defined in another file
                     //TODO: return error here
@@ -1241,25 +1243,25 @@ impl Project {
                     self.locations
                         .insert(equipment[k].location.clone(), Rc::clone(&new_location));
                     // then return reference to struct field
-                    temp_location = Rc::clone(&new_location);
-                }
+                    Rc::clone(&new_location)
+                };
                 //then check if sublocation is defined in location
-                let mut temp_sub_location = location::SubLocation::new();
                 // first want to verify location exists again
-                if temp_location == Rc::new(RefCell::new(location::Location::new())) {
+                let temp_sub_location = if temp_location
+                    == Rc::new(RefCell::new(location::Location::new()))
+                {
                     return Err(Error::DefinitionProcessing {
                 datatype: "Equipment".to_string(),
                 datatype_id: k.clone(),
                 message: format!("Location: {} contained in equipment didn't exist when attempting to parse sublocations. Please fix this", equipment[k].location),
                 datafile_path: datafile.file_path.clone(),
-                    } );
+                    });
                 } else if temp_location
                     .borrow()
                     .sub_locations
                     .contains_key(&equipment[k].sub_location)
                 {
-                    temp_sub_location =
-                        temp_location.borrow().sub_locations[&equipment[k].sub_location].clone();
+                    temp_location.borrow().sub_locations[&equipment[k].sub_location].clone()
                 } else {
                     // Sublocations are defined at the same time as location, so they should be
                     // present if the location is present
@@ -1270,7 +1272,7 @@ impl Project {
                         container_type_id: equipment[k].location.clone(),
                         datafile_path: datafile.file_path.clone(),
                     });
-                }
+                };
 
                 let new_equipment = equipment::Equipment {
                     id: k.to_string(),

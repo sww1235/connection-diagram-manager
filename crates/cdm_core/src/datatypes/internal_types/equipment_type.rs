@@ -78,7 +78,6 @@ pub struct EquipConnector {
 }
 impl EquipmentType {
     /// Creates an empty instance of `EquipmentType`
-    #[allow(clippy::arithmetic_side_effects)]
     #[must_use]
     pub fn new() -> Self {
         Self::default()
@@ -88,8 +87,8 @@ impl EquipmentType {
     #[must_use]
     pub fn visual_rep(&self) -> Svg {
         match &self.faces {
-            Some(faces) => faces["Front"].visual_rep,
-            None => self.visual_rep,
+            Some(faces) => faces["Front"].visual_rep.clone(),
+            None => self.visual_rep.clone(),
         }
     }
 }

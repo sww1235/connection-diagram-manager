@@ -114,7 +114,7 @@ impl fmt::Display for PaperSize {
             //TODO: finish alt mode display implementation
             PaperSize::A0 => {
                 if f.alternate() {
-                    writeln!(f, "")?;
+                    //writeln!(f, "")?;
                 } else {
                     writeln!(f, "A0")?;
                 }

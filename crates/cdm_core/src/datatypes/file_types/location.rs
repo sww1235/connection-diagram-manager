@@ -25,9 +25,9 @@ pub struct Location {
 #[allow(clippy::module_name_repetitions)]
 pub struct SubLocation {
     /// Distance from left side of parent location
-    pub x: u64,
+    pub x: f64,
     /// Distance from bottom of parent location
-    pub y: u64,
+    pub y: f64,
     /// Distance from back of parent location
-    pub z: u64,
+    pub z: f64,
 }

@@ -145,8 +145,8 @@ fn proj_dir_parse_inner(
         }
     } else {
         trace! {"path at else: {}", inner_dir.display()}
+        // not a directory or file (maybe a symlink or something?
         return Ok(());
-        //panic! {"this shouldn't ever happen"}
     }
 
     Ok(())

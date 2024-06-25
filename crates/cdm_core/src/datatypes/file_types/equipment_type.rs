@@ -57,7 +57,7 @@ pub struct EquipConnector {
     /// output, bidirectiona, passive)
     pub direction: Option<String>,
     /// location of connector on face from left of visrep. Origin is bottom left
-    pub x: u64,
+    pub x: f64,
     /// location of connector on face from bottom of visrep. Origin is bottom left
-    pub y: u64,
+    pub y: f64,
 }
