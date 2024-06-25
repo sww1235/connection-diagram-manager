@@ -23,7 +23,7 @@ pub struct Location {
     pub description: Option<String>,
     /// Physical Location
     pub physical_location: Option<String>,
-    /// SubLocation - Actual locations of associated equipment within location
+    /// `SubLocation` - Actual locations of associated equipment within location
     /// Hashmap enforces unique keys
     pub sub_locations: HashMap<String, SubLocation>,
     /// datafile the struct instance was read in from

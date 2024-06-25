@@ -13,7 +13,7 @@ pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
         _ => {
             return Err(syn::Error::new_spanned(
                 input,
-                "this derive macro only works on structs with named fields",
+                "This derive macro only works on structs with named fields.",
             ));
         }
     };
@@ -29,7 +29,7 @@ pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
     if !has_id {
         return Err(syn::Error::new_spanned(
             input,
-            "this derive macro only works on structs with a field called id",
+            "This derive macro only works on structs with a field called id.",
         ));
     };
 

@@ -19,13 +19,15 @@ use super::{
 pub struct WireCable {
     /// Internal `id` of wire or cable instance
     pub id: String,
+    #[allow(clippy::doc_markdown)]
     /// The type of wire, cable or term_cable of this instance
     pub ctw_type: WireCableType,
-    /// The structured name of the wire/cable/termcable instance
+    #[allow(clippy::doc_markdown)]
+    /// The structured name of the wire/cable/term_cable instance
     pub identifier: Option<String>,
     /// Optional description
     pub description: Option<String>,
-    /// length of wire or cable TODO: figure out how to return term_cable_length if it is defined
+    /// length of wire or cable TODO: figure out how to return `term_cable_length` if it is defined
     pub length: Option<ucum::Meter<f64>>,
     /// Pathway containing instance
     pub pathway: Option<Rc<RefCell<Pathway>>>,

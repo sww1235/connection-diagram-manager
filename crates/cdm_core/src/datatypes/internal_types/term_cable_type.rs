@@ -46,9 +46,9 @@ pub struct TermCableType {
 #[derive(Debug, PartialEq, Clone)]
 #[allow(clippy::exhaustive_enums)]
 pub enum WireCable {
-    /// CableType
+    /// `CableType`
     CableType(Rc<RefCell<CableType>>),
-    /// WireType
+    /// `WireType`
     WireType(Rc<RefCell<WireType>>),
 }
 

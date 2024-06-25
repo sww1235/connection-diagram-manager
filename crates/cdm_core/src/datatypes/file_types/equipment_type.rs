@@ -51,7 +51,7 @@ pub struct EquipFace {
 /// a `EquipmentType`
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct EquipConnector {
-    /// ConnectorType
+    /// `ConnectorType`
     pub connector_type: String,
     /// electrical direction, used for basic rule mapping, (input, output, power input, power
     /// output, bidirectiona, passive)

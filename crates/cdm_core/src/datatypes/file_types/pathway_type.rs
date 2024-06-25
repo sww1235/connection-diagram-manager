@@ -6,9 +6,9 @@ use serde::{Deserialize, Serialize};
 /// Examples of Pathways include, conduit, cable tray, free air
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct PathwayType {
-    /// Manufacturer of PathwayType
+    /// Manufacturer of Pathway Type
     pub manufacturer: Option<String>,
-    /// Model of PathwayType
+    /// Model of Pathway Type
     pub model: Option<String>,
     /// Part Number of Pathway Type
     pub part_number: Option<String>,

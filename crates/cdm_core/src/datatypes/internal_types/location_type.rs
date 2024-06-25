@@ -12,13 +12,13 @@ use dimensioned::ucum;
 /// It does not include places these are located.
 #[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
 pub struct LocationType {
-    /// Internal ID of `LocationType`
+    /// Internal ID of Location Type
     pub id: String,
-    /// Manufacturer of LocationType
+    /// Manufacturer of Location Type
     pub manufacturer: Option<String>,
-    /// Model of LocationType
+    /// Model of Location Type
     pub model: Option<String>,
-    /// Part Number of LocationType
+    /// Part Number of Location Type
     pub part_number: Option<String>,
     /// Manufacturer's Part Number
     pub manufacturer_part_number: Option<String>,
@@ -28,19 +28,19 @@ pub struct LocationType {
     pub supplier_part_number: Option<String>,
     /// Optional description
     pub description: Option<String>,
-    /// Main material of LocationType
+    /// Main material of Location Type
     pub material: Option<String>,
-    /// Width of locationType
+    /// Width of Location Type
     pub width: ucum::Meter<f64>,
-    /// Height of locationType
+    /// Height of Location Type
     pub height: ucum::Meter<f64>,
-    /// Depth of locationType
+    /// Depth of Location Type
     pub depth: ucum::Meter<f64>,
-    /// Usable Width of locationType
+    /// Usable Width of Location Type
     pub usable_width: ucum::Meter<f64>,
-    /// Usable Height of locationType
+    /// Usable Height of Location Type
     pub usable_height: ucum::Meter<f64>,
-    /// Usable Depth of locationType
+    /// Usable Depth of Location Type
     pub usable_depth: ucum::Meter<f64>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,

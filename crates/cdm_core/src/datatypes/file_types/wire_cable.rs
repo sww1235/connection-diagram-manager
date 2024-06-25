@@ -10,9 +10,9 @@ pub struct WireCable {
     pub wire: Option<String>,
     /// The type of cable of this instance
     pub cable: Option<String>,
-    /// The type of term_cable of this instance
+    /// The type of `term_cable` of this instance
     pub term_cable: Option<String>,
-    /// The structured name of the wire/cable/termcable instance
+    /// The structured name of the wire/cable/`term_cable` instance
     pub identifier: Option<String>,
     /// Optional description
     pub description: Option<String>,

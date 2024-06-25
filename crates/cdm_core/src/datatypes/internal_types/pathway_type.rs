@@ -11,11 +11,11 @@ use dimensioned::ucum;
 /// Examples of Pathways include, conduit, cable tray, free air
 #[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
 pub struct PathwayType {
-    /// Internal ID of `PathwayType`
+    /// Internal ID of Pathway Type
     pub id: String,
-    /// Manufacturer of PathwayType
+    /// Manufacturer of Pathway Type
     pub manufacturer: Option<String>,
-    /// Model of PathwayType
+    /// Model of Pathway Type
     pub model: Option<String>,
     /// Part Number of Pathway Type
     pub part_number: Option<String>,

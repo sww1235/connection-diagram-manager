@@ -425,7 +425,6 @@ impl<'a> PDFDocument<'a> {
     /// # Errors
     ///
     /// Will error if loading configuration fonts fails
-    #[must_use]
     pub fn new(
         default_page_size: paper::PaperSize,
         font_paths: Vec<PathBuf>,

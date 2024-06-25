@@ -17,7 +17,7 @@ use std::rc::Rc;
 #[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
 pub struct EquipmentType {
     //TODO: add dimensions here
-    /// Internal ID of `EquipmentType`
+    /// Internal ID of Equipment Type
     pub id: String,
     /// Manufacturer of Equipment
     pub manufacturer: Option<String>,
@@ -66,7 +66,7 @@ pub struct EquipFace {
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct EquipConnector {
     /// Internal ID of `EquipmentConnector`
-    /// ConnectorType
+    /// `ConnectorType`
     pub connector_type: Rc<RefCell<ConnectorType>>,
     /// electrical direction, used for basic rule mapping, (input, output, power input, power
     /// output, bidirectiona, passive)
@@ -84,7 +84,8 @@ impl EquipmentType {
         Self::default()
     }
 
-    /// Returns representative svg representation of EquipmnentType
+    /// Returns representative svg representation of `EquipmentType`
+    #[must_use]
     pub fn visual_rep(&self) -> Svg {
         match &self.faces {
             Some(faces) => faces["Front"].visual_rep,

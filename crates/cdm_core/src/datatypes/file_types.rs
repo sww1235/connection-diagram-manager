@@ -41,37 +41,37 @@ pub struct DataFile {
     /// the filepath of the file this data was read in from
     #[serde(skip)]
     pub file_path: path::PathBuf,
-    /// stores all WireTypes read in from file
+    /// stores all `WireTypes` read in from file
     #[serde(rename = "wire_type")]
     pub wire_types: Option<HashMap<String, wire_type::WireType>>,
-    /// stores all CableTypes read in from file
+    /// stores all `CableTypes` read in from file
     #[serde(rename = "cable_type")]
     pub cable_types: Option<HashMap<String, cable_type::CableType>>,
-    /// stores all TermCableTypes read in from file
+    /// stores all `TermCableTypes` read in from file
     #[serde(rename = "term_cable_type")]
     pub term_cable_types: Option<HashMap<String, term_cable_type::TermCableType>>,
-    /// stores all LocationTypes read in from file
+    /// stores all `LocationTypes` read in from file
     #[serde(rename = "location_type")]
     pub location_types: Option<HashMap<String, location_type::LocationType>>,
-    /// stores all ConnectorTypes read in from file
+    /// stores all `ConnectorTypes` read in from file
     #[serde(rename = "connector_type")]
     pub connector_types: Option<HashMap<String, connector_type::ConnectorType>>,
-    /// stores all EquipmentTypes read in from file
+    /// stores all `EquipmentTypes` read in from file
     #[serde(rename = "equipment_type")]
     pub equipment_types: Option<HashMap<String, equipment_type::EquipmentType>>,
-    /// stores all PathwayTypes read in from file
+    /// stores all `PathwayTypes` read in from file
     #[serde(rename = "pathway_type")]
     pub pathway_types: Option<HashMap<String, pathway_type::PathwayType>>,
     /// stores all wires and cables read in from file
     #[serde(rename = "wire_cable")]
     pub wire_cables: Option<HashMap<String, wire_cable::WireCable>>,
-    /// stores all locations read in from file
+    /// stores all `Locations` read in from file
     #[serde(rename = "location")]
     pub locations: Option<HashMap<String, location::Location>>,
-    /// stores all equipment instances read in from file
+    /// stores all `Equipment` instances read in from file
     #[serde(rename = "equipment")]
     pub equipment: Option<HashMap<String, equipment::Equipment>>,
-    /// stores all pathway instances read in from file
+    /// stores all `Pathway` instances read in from file
     #[serde(rename = "pathways")]
     pub pathways: Option<HashMap<String, pathway::Pathway>>,
 }
@@ -89,7 +89,7 @@ fn data_parser(data_file: fs::File) -> Result<DataFile, serde_yaml::Error> {
 /// Will error if:
 /// - reading any of the individual project files fails
 /// - the specified `project_dir` is not a directory
-/// - `os_str` failed to parse to UTF-8
+/// - [`os_str`] failed to parse to UTF-8
 pub fn parse_project_dir(project_dir: path::PathBuf) -> Result<Vec<DataFile>, io::Error> {
     let mut files = Vec::<DataFile>::new();
     if project_dir.as_path().is_dir() {

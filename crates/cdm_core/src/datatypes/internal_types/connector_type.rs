@@ -14,7 +14,7 @@ use cdm_macros::{Empty, Merge, PartialEmpty};
 /// represent a screw terminal on a piece of equipment or a hole for wire to be entered in.
 #[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
 pub struct ConnectorType {
-    /// Internal ID of ConnectorType
+    /// Internal ID of `ConnectorType`
     pub id: String,
     /// Manufacturer of Connector
     pub manufacturer: Option<String>,

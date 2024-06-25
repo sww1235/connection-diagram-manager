@@ -79,7 +79,7 @@ pub struct CableLayer {
     pub volt_rating: Option<ucum::MilliVolt<f64>>,
     /// Temperature rating for insulation layer, specified in K
     pub temp_rating: Option<ucum::Kelvin<f64>>,
-    /// color of CableLayer
+    /// color of `CableLayer`
     pub color: Option<String>,
 }
 
