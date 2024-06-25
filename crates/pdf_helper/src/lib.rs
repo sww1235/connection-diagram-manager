@@ -2,6 +2,9 @@
 /// physical paper sizes.
 pub mod paper;
 
+/// `scale` is a ratio for scaling objects during PDF rendering
+pub mod scale;
+
 use lopdf::content::{Content, Operation};
 use lopdf::dictionary;
 use lopdf::{Document, Object, Stream};
@@ -260,6 +263,7 @@ impl PDFPage {
         svg_string: &str,
         x_pos: ucum::Meter<f64>,
         y_pos: ucum::Meter<f64>,
+        scale: Option<scale::ScalingFactor>,
     ) -> Result<(), Error> {
         use usvg::Tree;
         let parse_options = usvg::Options::default();
@@ -278,14 +282,15 @@ fn loop_nodes(
     parent: &usvg::Group,
     x_pos: ucum::Meter<f64>,
     y_pos: ucum::Meter<f64>,
+    scale: Option<scale::ScalingFactor>,
 ) -> Vec<Operation> {
     let mut group_operations = Vec::new();
     for node in parent.children() {
         //TODO: investigate subroots
         let operation = match node {
-            usvg::Node::Group(group) => loop_nodes(group, x_pos, y_pos),
-            usvg::Node::Path(ref path) => convert_path(path, x_pos, y_pos),
-            usvg::Node::Image(ref image) => convert_image(image, x_pos, y_pos),
+            usvg::Node::Group(group) => loop_nodes(group, x_pos, y_pos, scale),
+            usvg::Node::Path(ref path) => convert_path(path, x_pos, y_pos, scale),
+            usvg::Node::Image(ref image) => convert_image(image, x_pos, y_pos, scale),
             usvg::Node::Text(_) => Vec::new(), // should already be converted into paths
         };
         group_operations.extend(operation);
@@ -294,13 +299,25 @@ fn loop_nodes(
 }
 
 /// `convert_path` convets an SVG path element into a vector of PDF operations
+/// `scale` parameter - optional - specifies the scale of the rendered objects relative to their full size,
+/// represented as `a`:`b`.
+/// For example, 1:2 would double the size of the object on the page, relative to its actual size,
+/// and 2:1 would half the size of the object. This is equal scaling in both X and Y direction.
+
 fn convert_path(
     path: &usvg::Path,
     x_pos: ucum::Meter<f64>,
     y_pos: ucum::Meter<f64>,
+    scale: Option<scale::ScalingFactor>,
 ) -> Vec<Operation> {
     use usvg::tiny_skia_path::{PathSegment, Point};
     let mut new_operations = Vec::new();
+
+    let int_scale: f32 = if let Some(scale) = scale {
+        f32::from(scale.a / scale.b)
+    } else {
+        1.0
+    };
 
     //TODO: determine if we need to start with m operation by looking at the first point in
     //data.points()
@@ -308,21 +325,38 @@ fn convert_path(
     for segment in path.data().segments() {
         match segment {
             PathSegment::MoveTo(p) => {
-                last_point = p;
+                let mut scaled_p = p;
+                scaled_p.x *= int_scale;
+                scaled_p.y *= int_scale;
+                last_point = scaled_p;
                 // begin a new path (subpath in pdf language) by moving the current point to
                 // coordinates (x,y)
                 //TODO: figure out scaling here
-                let x = *(((f64::from(p.x) * x_pos) / PDFDocument::pdf_point()).value());
-                let y = *(((f64::from(p.y) * y_pos) / PDFDocument::pdf_point()).value());
+                let x = *(((f64::from(scaled_p.x) * x_pos) / PDFDocument::pdf_point()).value());
+                let y = *(((f64::from(scaled_p.y) * y_pos) / PDFDocument::pdf_point()).value());
                 new_operations.push(Operation::new("m", vec![x.into(), y.into()]));
             }
             PathSegment::LineTo(p) => {
-                last_point = p;
+                let mut scaled_p = p;
+                scaled_p.x *= int_scale;
+                scaled_p.y *= int_scale;
+                last_point = scaled_p;
                 // append a straight line segment from current point to the point (x,y).
-                new_operations.push(Operation::new("l", vec![p.x.into(), p.y.into()]));
+                new_operations.push(Operation::new(
+                    "l",
+                    vec![scaled_p.x.into(), scaled_p.y.into()],
+                ));
             }
+            // https://web.archive.org/web/20240625010856/https://www.reddit.com/r/AskComputerScience/comments/x0rrd2/does_applying_a_transformation_to_the_control/?rdt=60310
+            // Scaling control points is ok, because the control points define the curve
             // p0 is control point, p1 is end point
             PathSegment::QuadTo(p0, p1) => {
+                let mut scaled_p0 = p0;
+                scaled_p0.x *= int_scale;
+                scaled_p0.y *= int_scale;
+                let mut scaled_p1 = p1;
+                scaled_p1.x *= int_scale;
+                scaled_p1.y *= int_scale;
                 // create psuedo control points for cubic from quadratic.
                 // Formuala from https://stackoverflow.com/a/3162732/3342767
 
@@ -330,13 +364,17 @@ fn convert_path(
                 #[allow(clippy::arithmetic_side_effects)]
                 let cp1 = last_point
                     + Point::from_xy(
-                        (2.0 / 3.0) * (p0 - last_point).x,
-                        (2.0 / 3.0) * (p0 - last_point).y,
+                        (2.0 / 3.0) * (scaled_p0 - last_point).x,
+                        (2.0 / 3.0) * (scaled_p0 - last_point).y,
                     );
                 // end control point
                 #[allow(clippy::arithmetic_side_effects)]
-                let cp2 = p1 + Point::from_xy((2.0 / 3.0) * (p0 - p1).x, (2.0 / 3.0) * (p0 - p1).y);
-                last_point = p1;
+                let cp2 = scaled_p1
+                    + Point::from_xy(
+                        (2.0 / 3.0) * (scaled_p0 - scaled_p1).x,
+                        (2.0 / 3.0) * (scaled_p0 - scaled_p1).y,
+                    );
+                last_point = scaled_p1;
                 // append a cubic bezier curve to current path.
                 // Last 2 points are end point,
                 // First 2 points are begining control point
@@ -348,14 +386,23 @@ fn convert_path(
                         cp1.y.into(),
                         cp2.x.into(),
                         cp2.y.into(),
-                        p1.x.into(),
-                        p1.y.into(),
+                        scaled_p1.x.into(),
+                        scaled_p1.y.into(),
                     ],
                 ));
             }
             // p0 is begining control point, p1 is end control point, p2 is end point
             PathSegment::CubicTo(p0, p1, p2) => {
-                last_point = p1;
+                let mut scaled_p0 = p0;
+                scaled_p0.x *= int_scale;
+                scaled_p0.y *= int_scale;
+                let mut scaled_p1 = p1;
+                scaled_p1.x *= int_scale;
+                scaled_p1.y *= int_scale;
+                let mut scaled_p2 = p2;
+                scaled_p2.x *= int_scale;
+                scaled_p2.y *= int_scale;
+                last_point = scaled_p2;
                 // append a cubic bezier curve to current path.
                 // Last 2 points are end point,
                 // First 2 points are begining control point
@@ -363,12 +410,12 @@ fn convert_path(
                 new_operations.push(Operation::new(
                     "c",
                     vec![
-                        p0.x.into(),
-                        p0.y.into(),
-                        p1.x.into(),
-                        p1.y.into(),
-                        p2.x.into(),
-                        p2.y.into(),
+                        scaled_p0.x.into(),
+                        scaled_p0.y.into(),
+                        scaled_p1.x.into(),
+                        scaled_p1.y.into(),
+                        scaled_p2.x.into(),
+                        scaled_p2.y.into(),
                     ],
                 ));
             }
@@ -389,6 +436,7 @@ fn convert_image(
     image: &usvg::Image,
     x_pos: ucum::Meter<f64>,
     y_pos: ucum::Meter<f64>,
+    scale: Option<scale::ScalingFactor>,
 ) -> Vec<Operation> {
     use usvg::ImageKind;
     match &image.kind() {
@@ -787,6 +835,7 @@ impl<'a> PDFDocument<'a> {
     }
 }
 
+//TODO: switch these to contain the actual error types instead of strings, like cookbook crate
 /// `Error` is the list of errors that can occur in `PDFHelper`
 #[derive(Debug)]
 #[non_exhaustive]
