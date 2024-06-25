@@ -261,14 +261,14 @@ impl PDFPage {
         x_pos: ucum::Meter<f64>,
         y_pos: ucum::Meter<f64>,
     ) -> Result<(), Error> {
-        use usvg::{Tree, TreeParsing};
+        use usvg::Tree;
         let parse_options = usvg::Options::default();
         let tree = Tree::from_str(svg_string, &parse_options)?;
         // TODO: either handle or forbid text nodes
         if tree.has_text_nodes() {
             return Err(Error::Other("Text Nodes in tree".to_string()));
         }
-        let new_operations = loop_nodes(&tree.root, x_pos, y_pos);
+        let new_operations = loop_nodes(tree.root(), x_pos, y_pos, scale);
         self.operations.extend(new_operations);
         Ok(())
     }
@@ -280,7 +280,7 @@ fn loop_nodes(
     y_pos: ucum::Meter<f64>,
 ) -> Vec<Operation> {
     let mut group_operations = Vec::new();
-    for node in &parent.children {
+    for node in parent.children() {
         //TODO: investigate subroots
         let operation = match node {
             usvg::Node::Group(group) => loop_nodes(group, x_pos, y_pos),
@@ -305,7 +305,7 @@ fn convert_path(
     //TODO: determine if we need to start with m operation by looking at the first point in
     //data.points()
     let mut last_point = Point::zero();
-    for segment in path.data.segments() {
+    for segment in path.data().segments() {
         match segment {
             PathSegment::MoveTo(p) => {
                 last_point = p;
@@ -391,7 +391,7 @@ fn convert_image(
     y_pos: ucum::Meter<f64>,
 ) -> Vec<Operation> {
     use usvg::ImageKind;
-    match &image.kind {
+    match &image.kind() {
         ImageKind::JPEG(_) => {
             // only vector graphic elements allowed
             warn! {"svg should not contain images or image tags, ignoring"};
@@ -407,7 +407,7 @@ fn convert_image(
             warn! {"svg should not contain images or image tags, ignoring"};
             Vec::new()
         }
-        ImageKind::SVG(tree) => loop_nodes(&tree.root, x_pos, y_pos),
+        ImageKind::SVG(tree) => loop_nodes(tree.root(), x_pos, y_pos, scale),
     }
 }
 
