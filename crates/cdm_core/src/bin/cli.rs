@@ -106,7 +106,7 @@ struct Cli {
     #[arg(short, long, action = clap::ArgAction::Count)]
     verbose: u8,
     /// Enable PostGresSql features
-    #[arg(short, long)]
+    #[arg(long)]
     enable_post_gres: bool,
     /// PostGres DSN (optional)
     #[arg(short, long)]
