@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 pub struct Equipment {
     //Reminder: don't need id field here, since that is stored in hashmap key.
     /// The type of equipment of the instance
+    #[serde(rename = "type")]
     pub equipment_type: String,
     /// The structured name of the equipment
     pub identifier: Option<String>,

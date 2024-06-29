@@ -8,6 +8,7 @@ pub struct Location {
     /// Internal `id` of location instance
     pub id: String,
     /// Type of location
+    #[serde(rename = "type")]
     pub location_type: String,
     /// structured identifier of location
     pub identifier: Option<String>,

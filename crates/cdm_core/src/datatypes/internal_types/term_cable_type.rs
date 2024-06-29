@@ -35,9 +35,9 @@ pub struct TermCableType {
     /// Actual Length of Terminated Cable
     pub actual_length: Option<ucum::Meter<f64>>,
     /// One end of Terminated Cable.
-    pub end1: Vec<TermCableConnector>,
+    pub end1: Vec<Connector>,
     /// The other end of Terminated Cable
-    pub end2: Vec<TermCableConnector>,
+    pub end2: Vec<Connector>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
 }
@@ -62,7 +62,7 @@ impl Default for WireCable {
 /// `TermCableConnectorTermination` represents the connections between a pin of an individual
 /// `TermCableConnector` and the individual core of the cable.
 #[derive(Debug, Default, PartialEq, Clone)]
-pub struct TermCableConnectorTermination {
+pub struct Termination {
     /// `Core` represents which individual wire inside a cable this pin is connected to
     pub core: Option<u64>,
     /// `Pin` represents which pin in the associated connector the core is connected to
@@ -71,11 +71,11 @@ pub struct TermCableConnectorTermination {
 
 /// `TermCableConnector` represents a connector on one end of a `TermCable`
 #[derive(Debug, Default, PartialEq, Clone)]
-pub struct TermCableConnector {
+pub struct Connector {
     /// `connector_type` represents the connector type that is on the end of a `TermCable`
     pub connector_type: Rc<RefCell<ConnectorType>>,
     /// `terminations` represents the pin/core mapping for this connector
-    pub terminations: Option<Vec<TermCableConnectorTermination>>,
+    pub terminations: Option<Vec<Termination>>,
 }
 impl TermCableType {
     /// Creates an empty instance of `TermCableType`

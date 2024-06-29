@@ -15,6 +15,8 @@ pub mod term_cable_type;
 /// `wire_type` represents an individual wire with optional insulation
 pub mod wire_type;
 
+/// `cable` represents an instance of a `CableType`
+pub mod cable;
 /// `equipment` represents an instance of an `EquipmentType`. This is a physical item
 /// you hold in your hand.
 pub mod equipment;
@@ -22,22 +24,27 @@ pub mod equipment;
 pub mod location;
 /// `pathway` represents an instance of a `PathwayType`
 pub mod pathway;
-/// `wire_cable` represents an instance of either a `WireType`, `CableType` or `TermCableType`
-pub mod wire_cable;
+/// `term_cable` represents an instance of a `TermCableType`
+pub mod term_cable;
+/// `wire` represents an instance of a `WireType`
+pub mod wire;
 
-use log::{error, trace, warn};
+// TODO: improve this documentation
+/// `connection` represents a connection between two different elements
+pub mod connection;
 
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::rc::Rc;
 
+use dimensioned::{f64prefixes, ucum};
+use log::{error, info, trace, warn};
+
 use super::file_types::DataFile;
 use super::util_types::CrossSection;
 use cable_type::{CableCore, LayerType};
 use svg::Svg;
-
-use dimensioned::{f64prefixes, ucum};
 
 use cdm_traits::{merge::ComparedStruct, merge::Merge, partial_empty::PartialEmpty};
 
@@ -67,9 +74,15 @@ pub struct Library {
 pub struct Project {
     /// `equipment` contains all equipment instances read in from files, and/or added in via program logic
     pub equipment: HashMap<String, Rc<RefCell<equipment::Equipment>>>,
-    /// `wire_cables` contains all wire, cable and termcable instances read in from files, and/or
+    /// `wires` contains all `Wire` instances read in from files, and/or
     /// added in via program logic
-    pub wire_cables: HashMap<String, Rc<RefCell<wire_cable::WireCable>>>,
+    pub wires: HashMap<String, Rc<RefCell<wire::Wire>>>,
+    /// `cables` contains all `Cable` instances read in from files, and/or
+    /// added in via program logic
+    pub cables: HashMap<String, Rc<RefCell<cable::Cable>>>,
+    /// `term_cables` contains all `TermCable` instances read in from files, and/or
+    /// added in via program logic
+    pub term_cables: HashMap<String, Rc<RefCell<term_cable::TermCable>>>,
     /// `pathways`contains all pathway instances read in from files and/or added in via program
     /// logic
     pub pathways: HashMap<String, Rc<RefCell<pathway::Pathway>>>,
@@ -227,7 +240,7 @@ impl Library {
                     contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.wire_types.contains_key(k) {
-                    trace! {concat!{
+                    info! {concat!{
                         "WireType: {} with contents: {:#?} ",
                         "has already been loaded. Found again ",
                         "in file {}. Prompting to merge"},
@@ -368,7 +381,7 @@ impl Library {
                     contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.cable_types.contains_key(k) {
-                    trace! {concat!{
+                    info! {concat!{
                         "CableType: {} with contents: {:#?} ",
                         "has already been loaded. Found again in ",
                         "file {}. Check this and merge if necessary"},
@@ -410,7 +423,7 @@ impl Library {
                     contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.pathway_types.contains_key(k) {
-                    trace! {concat!{"PathwayType : {} with ",
+                    info! {concat!{"PathwayType : {} with ",
                     "contents: {:#?} has already been ",
                     "loaded. Found again in file {}. ",
                     "Check this and merge if necessary"},
@@ -447,7 +460,7 @@ impl Library {
                     contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.location_types.contains_key(k) {
-                    trace! {concat!{"LocationType : {} with ",
+                    info! {concat!{"LocationType : {} with ",
                     "contents: {:#?} has already been loaded. ",
                     "Found again in file {}. Check this ",
                     "and merge if necessary"},
@@ -503,7 +516,7 @@ impl Library {
                     contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.connector_types.contains_key(k) {
-                    trace! {concat!{
+                    info! {concat!{
                         "ConnectorType : {} with contents: ",
                         "{:#?} has already been loaded. Found ",
                         "again in file {}. Check this and merge if necessary"
@@ -630,7 +643,7 @@ impl Library {
                     end1: {
                         let mut new_end1 = Vec::new();
                         for connector in &term_cable_types[k].end1 {
-                            let new_connector = term_cable_type::TermCableConnector {
+                            let new_connector = term_cable_type::Connector {
                                 connector_type: {
                                     if self.connector_types.contains_key(&connector.connector_type)
                                     {
@@ -663,11 +676,10 @@ impl Library {
                                     if let Some(terminations) = &connector.terminations {
                                         let mut new_terminations = Vec::new();
                                         for termination in terminations {
-                                            let new_termination =
-                                                term_cable_type::TermCableConnectorTermination {
-                                                    core: termination.core,
-                                                    pin: termination.pin,
-                                                };
+                                            let new_termination = term_cable_type::Termination {
+                                                core: termination.core,
+                                                pin: termination.pin,
+                                            };
                                             new_terminations.push(new_termination);
                                         }
                                         Some(new_terminations)
@@ -683,7 +695,7 @@ impl Library {
                     end2: {
                         let mut new_end2 = Vec::new();
                         for connector in &term_cable_types[k].end2 {
-                            let new_connector = term_cable_type::TermCableConnector {
+                            let new_connector = term_cable_type::Connector {
                                 connector_type: {
                                     if self.connector_types.contains_key(&connector.connector_type)
                                     {
@@ -716,11 +728,10 @@ impl Library {
                                     if let Some(terminations) = &connector.terminations {
                                         let mut new_terminations = Vec::new();
                                         for termination in terminations {
-                                            let new_termination =
-                                                term_cable_type::TermCableConnectorTermination {
-                                                    core: termination.core,
-                                                    pin: termination.pin,
-                                                };
+                                            let new_termination = term_cable_type::Termination {
+                                                core: termination.core,
+                                                pin: termination.pin,
+                                            };
                                             new_terminations.push(new_termination);
                                         }
                                         Some(new_terminations)
@@ -736,7 +747,7 @@ impl Library {
                     contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.term_cable_types.contains_key(k) {
-                    trace! {concat!{
+                    info! {concat!{
                         "TermCableType : {} with contents: ",
                         "{:#?} has already been loaded. ",
                         "Found again in file {}. Check this and merge if necessary"},
@@ -865,7 +876,9 @@ impl Project {
             locations: HashMap::new(),
             equipment: HashMap::new(),
             pathways: HashMap::new(),
-            wire_cables: HashMap::new(),
+            wires: HashMap::new(),
+            cables: HashMap::new(),
+            term_cables: HashMap::new(),
         }
     }
     /// `from_datafiles` converts from the textual representation of datafiles, and the struct
@@ -916,12 +929,30 @@ impl Project {
                 });
             }
         }
-        for wire_cable in self.wire_cables.values() {
-            if wire_cable.borrow().is_partial_empty() {
+        for wire in self.wires.values() {
+            if wire.borrow().is_partial_empty() {
                 return Err(Error::NoDefinitionFound {
-                    datatype: "WireCable".to_string(),
-                    datatype_id: wire_cable.borrow().id.clone(),
-                    datafile_path: wire_cable.borrow().contained_datafile_path.clone(),
+                    datatype: "Wiree".to_string(),
+                    datatype_id: wire.borrow().id.clone(),
+                    datafile_path: wire.borrow().contained_datafile_path.clone(),
+                });
+            }
+        }
+        for cable in self.cables.values() {
+            if cable.borrow().is_partial_empty() {
+                return Err(Error::NoDefinitionFound {
+                    datatype: "Cable".to_string(),
+                    datatype_id: cable.borrow().id.clone(),
+                    datafile_path: cable.borrow().contained_datafile_path.clone(),
+                });
+            }
+        }
+        for term_cable in self.term_cables.values() {
+            if term_cable.borrow().is_partial_empty() {
+                return Err(Error::NoDefinitionFound {
+                    datatype: "TermCable".to_string(),
+                    datatype_id: term_cable.borrow().id.clone(),
+                    datafile_path: term_cable.borrow().contained_datafile_path.clone(),
                 });
             }
         }
@@ -988,124 +1019,332 @@ impl Project {
                 }
             }
         }
-        // wire_cables
-        if let Some(wire_cables) = datafile.wire_cables {
-            for (k, v) in &wire_cables {
-                let new_wire_cable = wire_cable::WireCable {
+        // wires
+        if let Some(wires) = datafile.wires {
+            for (k, v) in &wires {
+                let new_wire = wire::Wire {
                     id: k.to_string(),
-                    ctw_type: {
-                        // Checking to make sure only one of wire, cable, or term_cable are set
-                        #[allow(clippy::redundant_else)]
-                        if (wire_cables[k].wire.is_some()
-                            && wire_cables[k].cable.is_some()
-                            && wire_cables[k].term_cable.is_some())
-                            || (wire_cables[k].wire.is_some() && wire_cables[k].cable.is_some())
-                            || (wire_cables[k].cable.is_some()
-                                && wire_cables[k].term_cable.is_some())
-                            || (wire_cables[k].wire.is_some()
-                                && wire_cables[k].term_cable.is_some())
-                        {
-                            return Err(Error::DefinitionProcessing {
-                                datatype: "WireCable".to_string(),
-                                datatype_id: k.to_string(),
-                                message: concat! {"More than one of Wire, Cable ",
-                                "and TermCable are defined. Please correct this"}
-                                .to_string(),
-                                datafile_path: datafile.file_path.clone(),
-                            });
-                        } else if wire_cables[k].wire.is_none()
-                            && wire_cables[k].cable.is_none()
-                            && wire_cables[k].term_cable.is_none()
-                        {
-                            return Err(Error::DefinitionProcessing {
-                                datatype: "WireCable".to_string(),
-                                datatype_id: k.to_string(),
-                                message: concat! {"Neither Wire, Cable ",
-                                "and TermCable are defined. Please correct this"}
-                                .to_string(),
-                                datafile_path: datafile.file_path.clone(),
-                            });
+                    wire_type: {
+                        if library.wire_types.contains_key(&wires[k].wire_type) {
+                            Rc::clone(&library.wire_types[&wires[k].wire_type])
                         } else {
-                            // at this point, only one of wire, cable and term_cable should
-                            // be set.
-                            //
-                            // clone string here to avoid moving value out of hashmap.
-                            if let Some(wire_type) = wire_cables[k].wire.clone() {
-                                if library.wire_types.contains_key(&wire_type) {
-                                    wire_cable::WireCableType::WireType(Rc::clone(
-                                        &library.wire_types[&wire_type],
-                                    ))
-                                } else {
-                                    // since this is project, not library, we want to error
-                                    // for types not found in library, since they should
-                                    // all have been parsed before parsing project.
-                                    return Err(Error::NoContainedDefinitionFound {
-                                        contained_type: "WireType".to_string(),
-                                        contained_type_id: wire_type.clone(),
-                                        container_type: "WireCable".to_string(),
-                                        container_type_id: k.to_string(),
-                                        datafile_path: datafile.file_path.clone(),
-                                    });
-                                }
-                            // clone string here to avoid moving value out of hashmap.
-                            } else if let Some(cable_type) = wire_cables[k].cable.clone() {
-                                if library.cable_types.contains_key(&cable_type) {
-                                    wire_cable::WireCableType::CableType(Rc::clone(
-                                        &library.cable_types[&cable_type],
-                                    ))
-                                } else {
-                                    // since this is project, not library, we want to error
-                                    // for types not found in library, since they should
-                                    // all have been parsed before parsing project.
-                                    return Err(Error::NoContainedDefinitionFound {
-                                        contained_type: "CableType".to_string(),
-                                        contained_type_id: cable_type.clone(),
-                                        container_type: "WireCable".to_string(),
-                                        container_type_id: k.to_string(),
-                                        datafile_path: datafile.file_path.clone(),
-                                    });
-                                }
-                            // clone string here to avoid moving value out of hashmap.
-                            } else if let Some(term_cable_type) = wire_cables[k].term_cable.clone()
-                            {
-                                if library.term_cable_types.contains_key(&term_cable_type) {
-                                    wire_cable::WireCableType::TermCableType(Rc::clone(
-                                        &library.term_cable_types[&term_cable_type],
-                                    ))
-                                } else {
-                                    // since this is project, not library, we want to error
-                                    // for types not found in library, since they should
-                                    // all have been parsed before parsing project.
-                                    return Err(Error::NoContainedDefinitionFound {
-                                        contained_type: "TermCableType".to_string(),
-                                        contained_type_id: term_cable_type.clone(),
-                                        container_type: "WireCable".to_string(),
-                                        container_type_id: k.to_string(),
-                                        datafile_path: datafile.file_path.clone(),
-                                    });
-                                }
-                            } else {
-                                // this should be impossible
-                                return Err(Error::DefinitionProcessing {
-                                    datatype: "WireCable".to_string(),
-                                    datatype_id: k.to_string(),
-                                    message: concat! {"Neither Wire, Cable ",
-                                    "and TermCable are defined. Please correct this. ",
-                                    "This message should be unreachable!"}
-                                    .to_string(),
-                                    datafile_path: datafile.file_path.clone(),
-                                });
-                            }
+                            // since this is project, not library, we want to error
+                            // for types not found in library, since they should
+                            // all have been parsed before parsing project.
+                            return Err(Error::NoContainedDefinitionFound {
+                                contained_type: "WireType".to_string(),
+                                contained_type_id: wires[k].wire_type.clone(),
+                                container_type: "Wire".to_string(),
+                                container_type_id: k.to_string(),
+                                datafile_path: datafile.file_path.clone(),
+                            });
                         }
                     },
-                    identifier: wire_cables[k].identifier.clone(),
-                    description: wire_cables[k].description.clone(),
-                    length: wire_cables[k]
-                        .length
-                        .map(|x| x * ucum::M * f64prefixes::KILO),
+                    identifier: wires[k].identifier.clone(),
+                    description: wires[k].description.clone(),
+                    length: wires[k].length * ucum::M * f64prefixes::KILO,
                     pathway: {
                         // clone string here to avoid moving value out of hashmap.
-                        if let Some(pathway) = wire_cables[k].pathway.clone() {
+                        if let Some(pathway) = wires[k].pathway.clone() {
+                            if self.pathways.contains_key(k) {
+                                Some(Rc::clone(&self.pathways[k]))
+                            } else {
+                                //these are both project variables so may not be defined
+                                //erroring here is fine.
+                                //
+                                //TODO: actually return error here. fix this
+                                //return Err(Error::NoContainedDefinitionFound {
+                                //    contained_type: "Pathway".to_string(),
+                                //    contained_type_id: pathway.to_string(),
+                                //    container_type: "WireCable".to_string(),
+                                //    container_type_id: k.to_string(),
+                                //    datafile_path: datafile.file_path.clone(),
+                                //});
+                                error! {concat!{
+                                "WireCable: {} is assigned to ",
+                                "Pathway: {} in datafile: {}, ",
+                                "that doesn't exist in any ",
+                                "library either read in from ",
+                                "datafile, or added via program ",
+                                "logic. Not assigning pathway to ",
+                                "WireCable {}. Please check your spelling "},
+                                k, pathway, datafile.file_path.display(), k}
+                                let new_pathway = Rc::new(RefCell::new(pathway::Pathway::new()));
+                                // insert new_pathway into Project
+                                self.pathways.insert(pathway, Rc::clone(&new_pathway));
+                                // then return reference for struct field
+                                Some(Rc::clone(&new_pathway))
+                            }
+                        } else {
+                            None
+                        }
+                    },
+                    end1: {
+                        wire::Connector {
+                            connector_type: {
+                                if library
+                                    .connector_types
+                                    .contains_key(&wires[k].end1.connector_type)
+                                {
+                                    Rc::clone(
+                                        &library.connector_types[&wires[k].end1.connector_type],
+                                    )
+                                } else {
+                                    // since this is project, not library, we want to error
+                                    // for types not found in library, since they should
+                                    // all have been parsed before parsing project.
+                                    return Err(Error::NoContainedDefinitionFound {
+                                        contained_type: "ConnectorType".to_string(),
+                                        contained_type_id: wires[k].end1.connector_type.clone(),
+                                        container_type: "Wire End 1".to_string(),
+                                        container_type_id: k.to_string(),
+                                        datafile_path: datafile.file_path,
+                                    });
+                                }
+                            },
+                        }
+                    },
+                    end2: {
+                        wire::Connector {
+                            connector_type: {
+                                if library
+                                    .connector_types
+                                    .contains_key(&wires[k].end2.connector_type)
+                                {
+                                    Rc::clone(
+                                        &library.connector_types[&wires[k].end2.connector_type],
+                                    )
+                                } else {
+                                    // since this is project, not library, we want to error
+                                    // for types not found in library, since they should
+                                    // all have been parsed before parsing project.
+                                    return Err(Error::NoContainedDefinitionFound {
+                                        contained_type: "ConnectorType".to_string(),
+                                        contained_type_id: wires[k].end2.connector_type.clone(),
+                                        container_type: "Wire End 2".to_string(),
+                                        container_type_id: k.to_string(),
+                                        datafile_path: datafile.file_path,
+                                    });
+                                }
+                            },
+                        }
+                    },
+                    contained_datafile_path: datafile.file_path.clone(),
+                };
+                if self.wires.contains_key(k) {
+                    info! {concat!{
+                        "Wire: {} with contents: ",
+                        "{:#?} has already been loaded. ",
+                        "Found again in file {}. ",
+                        "Check this and merge if necessary"},
+                    k, v, datafile.file_path.clone().display()}
+                    self.wires[k]
+                        .borrow_mut()
+                        .merge_prompt(&new_wire, prompt_fn)?;
+                } else {
+                    trace! {"Inserted Wire: {}, value: {:#?} into main project.",k,v}
+                    self.wires
+                        .insert(k.to_string(), Rc::new(RefCell::new(new_wire)));
+                }
+            }
+        }
+        if let Some(cables) = datafile.cables {
+            for (k, v) in &cables {
+                let new_cable = cable::Cable {
+                    id: k.to_string(),
+                    cable_type: {
+                        // clone string here to avoid moving value out of hashmap.
+                        if library.cable_types.contains_key(&cables[k].cable_type) {
+                            Rc::clone(&library.cable_types[&cables[k].cable_type])
+                        } else {
+                            // since this is project, not library, we want to error
+                            // for types not found in library, since they should
+                            // all have been parsed before parsing project.
+                            return Err(Error::NoContainedDefinitionFound {
+                                contained_type: "CableType".to_string(),
+                                contained_type_id: cables[k].cable_type.clone(),
+                                container_type: "Cable".to_string(),
+                                container_type_id: k.to_string(),
+                                datafile_path: datafile.file_path.clone(),
+                            });
+                        }
+                    },
+                    identifier: cables[k].identifier.clone(),
+                    description: cables[k].description.clone(),
+                    length: cables[k].length * ucum::M * f64prefixes::KILO,
+                    pathway: {
+                        // clone string here to avoid moving value out of hashmap.
+                        if let Some(pathway) = cables[k].pathway.clone() {
+                            if self.pathways.contains_key(k) {
+                                Some(Rc::clone(&self.pathways[k]))
+                            } else {
+                                //these are both project variables so may not be defined
+                                //erroring here is fine.
+                                //
+                                //TODO: actually return error here. fix this
+                                //return Err(Error::NoContainedDefinitionFound {
+                                //    contained_type: "Pathway".to_string(),
+                                //    contained_type_id: pathway.to_string(),
+                                //    container_type: "WireCable".to_string(),
+                                //    container_type_id: k.to_string(),
+                                //    datafile_path: datafile.file_path.clone(),
+                                //});
+                                error! {concat!{
+                                "WireCable: {} is assigned to ",
+                                "Pathway: {} in datafile: {}, ",
+                                "that doesn't exist in any ",
+                                "library either read in from ",
+                                "datafile, or added via program ",
+                                "logic. Not assigning pathway to ",
+                                "WireCable {}. Please check your spelling "},
+                                k, pathway, datafile.file_path.display(), k}
+                                let new_pathway = Rc::new(RefCell::new(pathway::Pathway::new()));
+                                // insert new_pathway into Project
+                                self.pathways.insert(pathway, Rc::clone(&new_pathway));
+                                // then return reference for struct field
+                                Some(Rc::clone(&new_pathway))
+                            }
+                        } else {
+                            None
+                        }
+                    },
+                    end1: {
+                        let mut new_end1 = Vec::new();
+                        for connector in &cables[k].end1 {
+                            let new_connector = cable::Connector {
+                                connector_type: {
+                                    if library
+                                        .connector_types
+                                        .contains_key(&connector.connector_type)
+                                    {
+                                        Rc::clone(
+                                            &library.connector_types[&connector.connector_type],
+                                        )
+                                    } else {
+                                        // since this is project, not library, we want to error
+                                        // for types not found in library, since they should
+                                        // all have been parsed before parsing project.
+                                        return Err(Error::NoContainedDefinitionFound {
+                                            contained_type: "ConnectorType".to_string(),
+                                            contained_type_id: connector.connector_type.clone(),
+                                            container_type: "WireCable End 2".to_string(),
+                                            container_type_id: k.to_string(),
+                                            datafile_path: datafile.file_path,
+                                        });
+                                    }
+                                },
+                                terminations: {
+                                    if let Some(terminations) = &connector.terminations {
+                                        let mut new_terminations = Vec::new();
+                                        for termination in terminations {
+                                            let new_termination = cable::Termination {
+                                                core: termination.core,
+                                                pin: termination.pin,
+                                            };
+                                            new_terminations.push(new_termination);
+                                        }
+                                        Some(new_terminations)
+                                    } else {
+                                        None
+                                    }
+                                },
+                            };
+                            new_end1.push(new_connector);
+                        }
+                        new_end1
+                    },
+                    end2: {
+                        let mut new_end2 = Vec::new();
+                        for connector in &cables[k].end2 {
+                            let new_connector = cable::Connector {
+                                connector_type: {
+                                    if library
+                                        .connector_types
+                                        .contains_key(&connector.connector_type)
+                                    {
+                                        Rc::clone(
+                                            &library.connector_types[&connector.connector_type],
+                                        )
+                                    } else {
+                                        // since this is project, not library, we want to error
+                                        // for types not found in library, since they should
+                                        // all have been parsed before parsing project.
+                                        return Err(Error::NoContainedDefinitionFound {
+                                            contained_type: "ConnectorType".to_string(),
+                                            contained_type_id: connector.connector_type.clone(),
+                                            container_type: "WireCable End 2".to_string(),
+                                            container_type_id: k.to_string(),
+                                            datafile_path: datafile.file_path,
+                                        });
+                                    }
+                                },
+                                terminations: {
+                                    if let Some(terminations) = &connector.terminations {
+                                        let mut new_terminations = Vec::new();
+                                        for termination in terminations {
+                                            let new_termination = cable::Termination {
+                                                core: termination.core,
+                                                pin: termination.pin,
+                                            };
+                                            new_terminations.push(new_termination);
+                                        }
+                                        Some(new_terminations)
+                                    } else {
+                                        None
+                                    }
+                                },
+                            };
+                            new_end2.push(new_connector);
+                        }
+                        new_end2
+                    },
+                    contained_datafile_path: datafile.file_path.clone(),
+                };
+                if self.cables.contains_key(k) {
+                    info! {concat!{
+                        "Cable: {} with contents: ",
+                        "{:#?} has already been loaded. ",
+                        "Found again in file {}. ",
+                        "Check this and merge if necessary"},
+                    k, v, datafile.file_path.clone().display()}
+                    self.cables[k]
+                        .borrow_mut()
+                        .merge_prompt(&new_cable, prompt_fn)?;
+                } else {
+                    trace! {"Inserted Cable: {}, value: {:#?} into main project.",k,v}
+                    self.cables
+                        .insert(k.to_string(), Rc::new(RefCell::new(new_cable)));
+                }
+            }
+        }
+        if let Some(term_cables) = datafile.term_cables {
+            for (k, v) in &term_cables {
+                let new_term_cable = term_cable::TermCable {
+                    id: k.to_string(),
+                    term_cable_type: {
+                        if library
+                            .term_cable_types
+                            .contains_key(&term_cables[k].term_cable_type)
+                        {
+                            Rc::clone(&library.term_cable_types[&term_cables[k].term_cable_type])
+                        } else {
+                            // since this is project, not library, we want to error
+                            // for types not found in library, since they should
+                            // all have been parsed before parsing project.
+                            return Err(Error::NoContainedDefinitionFound {
+                                contained_type: "TermCableType".to_string(),
+                                contained_type_id: term_cables[k].term_cable_type.clone(),
+                                container_type: "WireCable".to_string(),
+                                container_type_id: k.to_string(),
+                                datafile_path: datafile.file_path.clone(),
+                            });
+                        }
+                    },
+                    identifier: term_cables[k].identifier.clone(),
+                    description: term_cables[k].description.clone(),
+                    pathway: {
+                        // clone string here to avoid moving value out of hashmap.
+                        if let Some(pathway) = term_cables[k].pathway.clone() {
                             if self.pathways.contains_key(k) {
                                 Some(Rc::clone(&self.pathways[k]))
                             } else {
@@ -1141,20 +1380,20 @@ impl Project {
                     },
                     contained_datafile_path: datafile.file_path.clone(),
                 };
-                if self.wire_cables.contains_key(k) {
-                    trace! {concat!{
-                        "WireCable: {} with contents: ",
+                if self.term_cables.contains_key(k) {
+                    info! {concat!{
+                        "TermCable: {} with contents: ",
                         "{:#?} has already been loaded. ",
                         "Found again in file {}. ",
                         "Check this and merge if necessary"},
                     k, v, datafile.file_path.clone().display()}
-                    self.wire_cables[k]
+                    self.term_cables[k]
                         .borrow_mut()
-                        .merge_prompt(&new_wire_cable, prompt_fn)?;
+                        .merge_prompt(&new_term_cable, prompt_fn)?;
                 } else {
-                    trace! {"Inserted WireCable: {}, value: {:#?} into main project.",k,v}
-                    self.wire_cables
-                        .insert(k.to_string(), Rc::new(RefCell::new(new_wire_cable)));
+                    trace! {"Inserted TermCable: {}, value: {:#?} into main project.",k,v}
+                    self.term_cables
+                        .insert(k.to_string(), Rc::new(RefCell::new(new_term_cable)));
                 }
             }
         }
@@ -1391,6 +1630,8 @@ pub enum Error {
         /// datafile path of struct called as other
         other_path: String,
     },
+    /// Error from a setter function from one of the `internal_types`
+    SetterError(String),
 }
 
 impl std::error::Error for Error {}
@@ -1467,6 +1708,7 @@ impl std::fmt::Display for Error {
             } => {
                 write!(f, "Attempting to merge two structs of type {datatype} with IDs {self_id} and {other_id} which don't match. They came from datafiles {self_path} and {other_path}. Please check this data and clean it up, as this should not have happened.")
             }
+            Error::SetterError(ref contents) => write!(f, "{contents}"),
         }
     }
 }

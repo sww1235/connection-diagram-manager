@@ -15,6 +15,8 @@ pub mod term_cable_type;
 /// `wire_type` represents an individual wire with optional insulation
 pub mod wire_type;
 
+/// `cable` represents an instance of a `CableType`
+pub mod cable;
 /// `equipment` represents an instance of an `EquipmentType`. This is a physical item
 /// you hold in your hand.
 pub mod equipment;
@@ -22,8 +24,10 @@ pub mod equipment;
 pub mod location;
 /// `pathway` represents an instance of a `PathwayType`
 pub mod pathway;
-/// `wire_cable` represents an instance of a `WireType`, `CableType`, or `TermCableType`
-pub mod wire_cable;
+/// `term_cable` represents an instance of a `TermCableType`
+pub mod term_cable;
+/// `wire` represents an instance of a `WireType`
+pub mod wire;
 
 use log::trace;
 use serde::{Deserialize, Serialize};
@@ -62,9 +66,15 @@ pub struct DataFile {
     /// stores all `PathwayTypes` read in from file
     #[serde(rename = "pathway_type")]
     pub pathway_types: Option<HashMap<String, pathway_type::PathwayType>>,
-    /// stores all wires and cables read in from file
-    #[serde(rename = "wire_cable")]
-    pub wire_cables: Option<HashMap<String, wire_cable::WireCable>>,
+    /// stores all `Wires` read in from file
+    #[serde(rename = "wire")]
+    pub wires: Option<HashMap<String, wire::Wire>>,
+    /// stores all `Cables` read in from file
+    #[serde(rename = "cable")]
+    pub cables: Option<HashMap<String, cable::Cable>>,
+    /// stores all `TermCables` read in from file
+    #[serde(rename = "term_cable")]
+    pub term_cables: Option<HashMap<String, term_cable::TermCable>>,
     /// stores all `Locations` read in from file
     #[serde(rename = "location")]
     pub locations: Option<HashMap<String, location::Location>>,

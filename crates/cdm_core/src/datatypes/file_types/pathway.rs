@@ -6,6 +6,7 @@ pub struct Pathway {
     /// Internal `id` of pathway instance
     pub id: String,
     /// Type of pathway
+    #[serde(rename = "type")]
     pub path_type: String,
     /// structured identifier of pathway
     pub identifier: Option<String>,

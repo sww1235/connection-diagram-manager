@@ -264,6 +264,10 @@ colors: # dictionary of colors. The color name (key) must be unique.
 
 ```
 
+
+
+the difference between `cables` and `term_cables` is that `term_cables` are manufactured to a specific nominal length and `cables` are custom terminated.
+
 ## Project Definitions
 
 ```yaml
@@ -276,18 +280,32 @@ equipment:		# dictionary of equipment defined in project
 		description: <str>			# optional description
 
 
-wire_cables:		# dictonary of all wires, cables and term_cables defined in project
-				# wires and cables can only have two ends, but each end can have
-				# a fan out or split with multiple connectors
+wires:			# dictonary of all wire instances defined in project
+				# wires can only have two ends
 				#
-	<str>:		# unique ID of wire or cable instance.
-				# Wires within cables are assigned IDs automatically and are not listed here
-		type: <str>					# ID of wire/cable/term_cable type
+	<str>:		# unique ID of wire instance.
+		type: <str>					# ID of wire type
 		identifier: <str>			# structured name
 		description: <str>			# optional description
 		pathway: <str>				# ID of pathway instance
-		length: <float>				# length in meters, automatically sourced from
-									# term cable attribute and ignored if specifed again here
+		length: <float>				# length in meters
+		end1:						# connector attached to wire
+			type: <str>				# ID of connector type
+		end2:						# connectors attached to wire
+			type: <str>				# ID of connector type
+
+
+cables:			# dictonary of all cable instances defined in project
+				# cables can only have two ends, but each end can have
+				# a fan out or split with multiple connectors
+				#
+	<str>:		# unique ID of cable instance.
+				# Wires within cables are assigned IDs automatically and are not listed here
+		type: <str>					# ID of cable type
+		identifier: <str>			# structured name
+		description: <str>			# optional description
+		pathway: <str>				# ID of pathway instance
+		length: <float>				# length in meters
 		end1:						# dictionary of connectors attached to cable or wire
 									# technically optional but being excluded will cause
 									# connections specified to be flagged as errors
@@ -308,6 +326,17 @@ wire_cables:		# dictonary of all wires, cables and term_cables defined in projec
 			termination:			# dictionary of core to connector pin mappings for each connector
 									# either auto termination method or manual termination method
 									# must be specified
+
+term_cables:	# dictonary of all term_cable instances defined in project
+				# term_cables can only have two ends, but each end can have
+				# a fan out or split with multiple connectors
+				#
+	<str>:		# unique ID of term_cable instance.
+				# Wires within cables are assigned IDs automatically and are not listed here
+		type: <str>					# ID of term_cable type
+		identifier: <str>			# structured name
+		description: <str>			# optional description
+		pathway: <str>				# ID of pathway instance
 
 
 pathways:		# dictonary of pathways defined in project
