@@ -331,7 +331,6 @@ fn convert_path(
                 last_point = scaled_p;
                 // begin a new path (subpath in pdf language) by moving the current point to
                 // coordinates (x,y)
-                //TODO: figure out scaling here
                 let x = *(((f64::from(scaled_p.x) * x_pos) / PDFDocument::pdf_point()).value());
                 let y = *(((f64::from(scaled_p.y) * y_pos) / PDFDocument::pdf_point()).value());
                 new_operations.push(Operation::new("m", vec![x.into(), y.into()]));

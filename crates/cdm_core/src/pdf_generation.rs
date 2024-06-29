@@ -55,7 +55,7 @@ pub fn pdf_one_location(
 /// * `project` - the `Project` that contains this location
 /// * `reference_location` - the `Location` that will be rendered as a PDF
 /// * `scale` - optional - specifies the scale of the rendered objects relative to their full size,
-/// represented as `.0`:`.1`.
+/// represented as `a`:`b`.
 /// For example, 1:2 would double the size of the object on the page, relative to its actual size,
 /// and 2:1 would half the size of the object. This is equal scaling in both X and Y direction.
 ///
@@ -118,6 +118,8 @@ pub fn render_location(
         )));
     }
     // loop through all equipment in project and render
+
+    let mut equipment_ids_in_location = Vec::new();
     for equipment in project.equipment.values() {
         // select equipment that is within location
         if equipment.borrow().location.borrow().id == reference_location.id {
@@ -130,6 +132,13 @@ pub fn render_location(
             let x = equipment.borrow().sub_location.x;
             let y = equipment.borrow().sub_location.y;
             pdf_page.add_svg(svg_text.as_str(), x, y, scale)?;
+            equipment_ids_in_location.push(equipment.borrow().id.clone());
+        }
+    }
+
+    for equipment in project.equipment.values() {
+        if equipment.borrow().location.borrow().id == reference_location.id {
+            //
         }
     }
     //TODO: now need to figure out which equipment is connected to which other equipment in the
