@@ -13,6 +13,12 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  cargo_deny:
+    name: Cargo Deny
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: EmbarkStudios/cargo-deny-action@v1
   check_and_build:
     name: Build and Check (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -20,7 +26,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        rust: [stable]
+        rust: [stable, beta, nightly]
     env:
       RUST_BACKTRACE: full
     steps:
