@@ -57,14 +57,14 @@ pub struct EquipFace {
     /// visual representation of equipment face, without connectors
     pub visual_rep: Svg,
     /// all connectors that are on this face of equipment
-    pub connectors: Option<Vec<EquipConnector>>,
+    pub connectors: Option<Vec<Connector>>,
 }
 
 //TODO: Make some of these fields enums
 /// `EquipmentConnector` represents an instance of a [`ConnectorType`](super::connector_type::ConnectorType) in
 /// a `EquipmentType`
 #[derive(Debug, Default, PartialEq, Clone)]
-pub struct EquipConnector {
+pub struct Connector {
     /// Internal ID of `EquipmentConnector`
     /// `ConnectorType`
     pub connector_type: Rc<RefCell<ConnectorType>>,
@@ -93,7 +93,7 @@ impl EquipmentType {
     }
 }
 
-impl fmt::Display for EquipConnector {
+impl fmt::Display for Connector {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Equipment Connector:")?;
         writeln!(f, "Connector: {}", &self.connector_type.borrow())?;
