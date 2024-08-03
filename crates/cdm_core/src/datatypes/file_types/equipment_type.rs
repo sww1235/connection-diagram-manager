@@ -30,7 +30,7 @@ pub struct EquipmentType {
     ///
     /// May have 2 faces for something like a patch panel, or 6 for a cube, or 1 for an unrolled
     /// sphere, etc.
-    pub faces: Option<Vec<EquipFace>>,
+    pub faces: Option<Vec<Face>>,
     /// visual representation of the equipment
     // TODO: figure out what angle to standardize on, or
     // just rely on the face vis_rep
@@ -39,18 +39,20 @@ pub struct EquipmentType {
 
 /// `EquipFace` represents one physical face of equipment.
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
-pub struct EquipFace {
+pub struct Face {
     /// Name of face
     pub name: String,
     /// Visual representation of face in SVG format, without connectors
     pub visual_rep: Svg,
     /// all connectors on face
-    pub connectors: Option<Vec<EquipConnector>>,
+    pub connectors: Option<Vec<Connector>>,
 }
 /// `EquipmentConnector` represents an instance of a [`ConnectorType`](super::connector_type::ConnectorType) in
 /// a `EquipmentType`
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
-pub struct EquipConnector {
+pub struct Connector {
+    /// `id` of connector. Must be unique per equipmen type
+    pub id: String,
     /// `ConnectorType`
     pub connector_type: String,
     /// electrical direction, used for basic rule mapping, (input, output, power input, power

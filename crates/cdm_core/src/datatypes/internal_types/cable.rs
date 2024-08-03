@@ -7,7 +7,7 @@ use dimensioned::ucum;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 
-use super::{cable_type::CableType, connector_type::ConnectorType, pathway::Pathway};
+use super::{cable_type::CableType, connector::Connector, pathway::Pathway};
 
 /// `Cable` represents a particular instance of a `CableType`
 /// It represents a physical item.
@@ -26,18 +26,18 @@ pub struct Cable {
     /// Pathway containing instance
     pub pathway: Option<Rc<RefCell<Pathway>>>,
     /// One end of `Cable`.
-    pub end1: Vec<Connector>,
+    pub end1: Vec<ConnectorJoin>,
     /// The other end of `Cable`.
-    pub end2: Vec<Connector>,
+    pub end2: Vec<ConnectorJoin>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
 }
 
 /// `Connector` is a connector on one end of a `Cable`
 #[derive(Default, Debug, PartialEq, Clone)]
-pub struct Connector {
-    /// `connector_type` represents the connector type that is on the end of a `WireCable`
-    pub connector_type: Rc<RefCell<ConnectorType>>,
+pub struct ConnectorJoin {
+    /// `connector` represents the connector type that is on the end of a `Cable`
+    pub connector: Rc<RefCell<Connector>>,
     /// `terminations` represents the pin/core mapping for this connector
     pub terminations: Option<Vec<Termination>>,
 }
@@ -46,9 +46,9 @@ pub struct Connector {
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct Termination {
     /// `Core` represents which individual wire inside a cable this pin is connected to
-    pub core: Option<u64>,
+    pub core: u64,
     /// `Pin` represents which pin in the associated connector the core is connected to
-    pub pin: Option<u64>,
+    pub pin: u64, //TODO: may want to be able to designate alphanumerically
 }
 
 impl Cable {

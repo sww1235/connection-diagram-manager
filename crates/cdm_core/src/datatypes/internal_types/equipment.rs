@@ -33,12 +33,17 @@ pub struct Equipment {
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
 }
+
 impl Equipment {
     /// Creates an empty instance of `Equipment`
     #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
+    // generates equipment instance specific connectors
+    //pub fn connectors() ->
+    //
+    // connector validation
 }
 
 impl fmt::Display for Equipment {

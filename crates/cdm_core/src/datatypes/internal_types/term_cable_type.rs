@@ -6,6 +6,7 @@ use std::rc::Rc;
 use dimensioned::ucum;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
+use cdm_traits::connector;
 
 use super::{cable_type::CableType, connector_type::ConnectorType, wire_type::WireType};
 
@@ -64,9 +65,9 @@ impl Default for WireCable {
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct Termination {
     /// `Core` represents which individual wire inside a cable this pin is connected to
-    pub core: Option<u64>,
+    pub core: u64,
     /// `Pin` represents which pin in the associated connector the core is connected to
-    pub pin: Option<u64>,
+    pub pin: u64,
 }
 
 /// `TermCableConnector` represents a connector on one end of a `TermCable`
@@ -75,13 +76,22 @@ pub struct Connector {
     /// `connector_type` represents the connector type that is on the end of a `TermCable`
     pub connector_type: Rc<RefCell<ConnectorType>>,
     /// `terminations` represents the pin/core mapping for this connector
-    pub terminations: Option<Vec<Termination>>,
+    pub terminations: Vec<Termination>,
 }
 impl TermCableType {
     /// Creates an empty instance of `TermCableType`
     #[must_use]
     pub fn new() -> Self {
         Self::default()
+    }
+}
+
+impl connector::Connector for Connector {
+    fn pin_count(&self) -> u64 {
+        #[allow(clippy::unwrap_used)]
+        // allowing unwrap as I want a panic here if this application
+        // is used on a 128 bit architecture
+        u64::try_from(self.connector_type.borrow().pins.len()).unwrap()
     }
 }
 

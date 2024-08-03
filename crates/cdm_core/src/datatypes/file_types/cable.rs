@@ -27,12 +27,12 @@ pub struct Cable {
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct Termination {
     /// `Core` represents which individual wire inside a cable this pin is connected to
-    pub core: Option<u64>,
+    pub core: u64,
     /// `Pin` represents which pin in the associated connector the core is connected to
-    pub pin: Option<u64>,
+    pub pin: u64,
 }
 
-/// `WireCableConnector` represents a connector on one end of a `Cable`
+/// `Connector` represents a connector on one end of a `Cable`
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct Connector {
     /// `connector_type` represents the connector type that is on the end of a `Cable`
