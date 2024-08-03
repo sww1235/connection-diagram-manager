@@ -36,9 +36,9 @@ pub struct TermCableType {
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct TermCableConnectorTermination {
     /// `Core` represents which individual wire inside a cable this pin is connected to
-    pub core: Option<u64>,
+    pub core: u64,
     /// `Pin` represents which pin in the associated connector the core is connected to
-    pub pin: Option<u64>,
+    pub pin: u64,
 }
 
 /// `TermCableConnector` represents a connector on one end of a `TermCable`
@@ -48,5 +48,5 @@ pub struct TermCableConnector {
     #[serde(rename = "type")]
     pub connector_type: String,
     /// `terminations` represents the pin/core mapping for this connector
-    pub terminations: Option<Vec<TermCableConnectorTermination>>,
+    pub terminations: Vec<TermCableConnectorTermination>,
 }

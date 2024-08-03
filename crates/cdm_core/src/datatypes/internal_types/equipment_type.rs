@@ -1,14 +1,14 @@
-use super::{connector_type::ConnectorType, svg::Svg};
-
-use cdm_macros::{Empty, Merge, PartialEmpty};
-
-use dimensioned::ucum;
-
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::fmt;
 use std::path::PathBuf;
 use std::rc::Rc;
+
+use dimensioned::ucum;
+
+use cdm_macros::{Empty, Merge, PartialEmpty};
+
+use super::{connector::Connector, svg::Svg};
 
 //TODO: Make some of these fields enums
 /// `EquipmentType` represents a type of equipment
@@ -57,17 +57,16 @@ pub struct EquipFace {
     /// visual representation of equipment face, without connectors
     pub visual_rep: Svg,
     /// all connectors that are on this face of equipment
-    pub connectors: Option<Vec<Connector>>,
+    pub connectors: Option<Vec<ConnectorJoin>>,
 }
 
 //TODO: Make some of these fields enums
-/// `EquipmentConnector` represents an instance of a [`ConnectorType`](super::connector_type::ConnectorType) in
+/// `ConnectorJoin` rep in
 /// a `EquipmentType`
 #[derive(Debug, Default, PartialEq, Clone)]
-pub struct Connector {
-    /// Internal ID of `EquipmentConnector`
-    /// `ConnectorType`
-    pub connector_type: Rc<RefCell<ConnectorType>>,
+pub struct ConnectorJoin {
+    /// `Connector`
+    pub connector: Rc<RefCell<Connector>>,
     /// electrical direction, used for basic rule mapping, (input, output, power input, power
     /// output, bidirectiona, passive)
     pub direction: Option<String>,
@@ -93,10 +92,10 @@ impl EquipmentType {
     }
 }
 
-impl fmt::Display for Connector {
+impl fmt::Display for ConnectorJoin {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "Equipment Connector:")?;
-        writeln!(f, "Connector: {}", &self.connector_type.borrow())?;
+        writeln!(f, "Connector: {:?}", &self.connector.borrow())?;
         if let Some(direction) = &self.direction {
             writeln!(f, "Direction: {direction}")?;
         }

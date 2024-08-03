@@ -43,8 +43,9 @@ impl Location {
 /// - Individual DIN rails on a backplane, and then distance along DIN rail //TODO fix this
 /// - Individual keystone slots on a panel
 /// - Rack units/Sub rack units within a panel
-/// TODO: Finish this. Should equipment be assigned to a sublocation vs a location, or both, or
-/// neither? Should sublocations be the same thing as a location?
+
+// TODO: Finish this. Should equipment be assigned to a sublocation vs a location, or both, or
+// neither? Should sublocations be the same thing as a location?
 #[derive(Debug, Clone, Default, PartialEq)]
 #[allow(clippy::module_name_repetitions)]
 pub struct SubLocation {

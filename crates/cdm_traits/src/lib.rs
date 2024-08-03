@@ -11,3 +11,6 @@ pub mod empty;
 
 /// `partial_empty` provides the `PartialEmpty` trait
 pub mod partial_empty;
+
+/// `connector` provides methods common to connectors that may be defined as different types
+pub mod connector;

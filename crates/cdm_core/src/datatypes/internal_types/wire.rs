@@ -6,6 +6,7 @@ use std::rc::Rc;
 use dimensioned::ucum;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
+use cdm_traits::connector;
 
 use super::{connector_type::ConnectorType, pathway::Pathway, wire_type::WireType};
 
@@ -26,14 +27,14 @@ pub struct Wire {
     /// Pathway containing instance
     pub pathway: Option<Rc<RefCell<Pathway>>>,
     /// One end of `Wire` / Cable.
-    pub end1: Connector,
+    pub end1: Rc<RefCell<Connector>>,
     /// The other end of `Wire`
-    pub end2: Connector,
+    pub end2: Rc<RefCell<Connector>>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
 }
 
-/// `WireConnector` is a connector on one end of a `Wire`
+/// `Connector` is a connector on one end of a `Wire`
 #[derive(Default, Debug, PartialEq, Clone)]
 pub struct Connector {
     /// `connector_type` represents the connector type that is on the end of a `Wire`
@@ -44,6 +45,15 @@ impl Wire {
     #[must_use]
     pub fn new() -> Self {
         Self::default()
+    }
+}
+
+impl connector::Connector for Connector {
+    fn pin_count(&self) -> u64 {
+        #[allow(clippy::unwrap_used)]
+        // allowing unwrap as I want a panic here if this application
+        // is used on a 128 bit architecture
+        u64::try_from(self.connector_type.borrow().pins.len()).unwrap()
     }
 }
 

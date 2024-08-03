@@ -17,6 +17,8 @@ pub mod wire_type;
 
 /// `cable` represents an instance of a `CableType`
 pub mod cable;
+/// `connector` represents an instance of a `ConnectorType`
+pub mod connector;
 /// `equipment` represents an instance of an `EquipmentType`. This is a physical item
 /// you hold in your hand.
 pub mod equipment;
@@ -89,6 +91,8 @@ pub struct Project {
     /// `locations` contains all location instances read in from files and/or added in via program
     /// logic
     pub locations: HashMap<String, Rc<RefCell<location::Location>>>,
+    /// `connections` contains all connections between different equipment/cables/wires
+    pub connections: Vec<Rc<RefCell<connection::Connection>>>,
 }
 
 //TODO: need to add datafile reference to each internal_type struct so each appropriate datafile
@@ -673,19 +677,15 @@ impl Library {
                                     }
                                 },
                                 terminations: {
-                                    if let Some(terminations) = &connector.terminations {
-                                        let mut new_terminations = Vec::new();
-                                        for termination in terminations {
-                                            let new_termination = term_cable_type::Termination {
-                                                core: termination.core,
-                                                pin: termination.pin,
-                                            };
-                                            new_terminations.push(new_termination);
-                                        }
-                                        Some(new_terminations)
-                                    } else {
-                                        None
+                                    let mut new_terminations = Vec::new();
+                                    for termination in &connector.terminations {
+                                        let new_termination = term_cable_type::Termination {
+                                            core: termination.core,
+                                            pin: termination.pin,
+                                        };
+                                        new_terminations.push(new_termination);
                                     }
+                                    new_terminations
                                 },
                             };
                             new_end1.push(new_connector);
@@ -725,19 +725,15 @@ impl Library {
                                     }
                                 },
                                 terminations: {
-                                    if let Some(terminations) = &connector.terminations {
-                                        let mut new_terminations = Vec::new();
-                                        for termination in terminations {
-                                            let new_termination = term_cable_type::Termination {
-                                                core: termination.core,
-                                                pin: termination.pin,
-                                            };
-                                            new_terminations.push(new_termination);
-                                        }
-                                        Some(new_terminations)
-                                    } else {
-                                        None
+                                    let mut new_terminations = Vec::new();
+                                    for termination in &connector.terminations {
+                                        let new_termination = term_cable_type::Termination {
+                                            core: termination.core,
+                                            pin: termination.pin,
+                                        };
+                                        new_terminations.push(new_termination);
                                     }
+                                    new_terminations
                                 },
                             };
                             new_end2.push(new_connector);
@@ -787,41 +783,55 @@ impl Library {
                                         if let Some(connectors) = &face.connectors {
                                             let mut new_connectors = Vec::new();
                                             for connector in connectors {
-                                                let new_connector =
-                                                    equipment_type::EquipConnector {
-                                                        connector_type: {
-                                                            if self.connector_types.contains_key(
-                                                                &connector.connector_type,
-                                                            ) {
-                                                                Rc::clone(
-                                                                    &self.connector_types
-                                                                        [&connector.connector_type],
-                                                                )
-                                                            } else {
-                                                                warn! {concat!{
-                                                                "ConnectorType: {} in Equipment: {} ",
-                                                                "from datafile: {}, not found ",
-                                                                "in any library data, ",
-                                                                "either read from file, or ",
-                                                                "created via program logic. ",
-                                                                "Creating empty object for now."},
-                                                                &connector.connector_type,
-                                                                k, datafile.file_path.clone().display()
-                                                                }
-                                                                let new_connector_type = Rc::new(RefCell::new(
+                                                let new_connector_join =
+                                                    equipment_type::ConnectorJoin {
+                                                        connector: Rc::new(RefCell::new(
+                                                            connector::Connector {
+                                                                id: connector.id.clone(),
+                                                                connector_type: {
+                                                                    if self
+                                                                        .connector_types
+                                                                        .contains_key(
+                                                                            &connector
+                                                                                .connector_type,
+                                                                        )
+                                                                    {
+                                                                        Rc::clone(
+                                                                &self.connector_types
+                                                                    [&connector.connector_type],
+                                                            )
+                                                                    } else {
+                                                                        warn! {concat!{
+                                                                        "ConnectorType: {} in Equipment: {} ",
+                                                                        "from datafile: {}, not found ",
+                                                                        "in any library data, ",
+                                                                        "either read from file, or ",
+                                                                        "created via program logic. ",
+                                                                        "Creating empty object for now."},
+                                                                        &connector.connector_type,
+                                                                        k, datafile.file_path.clone().display()
+                                                                        }
+                                                                        let new_connector_type = Rc::new(RefCell::new(
                                                                         connector_type::ConnectorType::new()));
-                                                                // insert new_connector_type into library
-                                                                self.connector_types.insert(
-                                                                    connector
-                                                                        .connector_type
-                                                                        .clone(),
-                                                                    Rc::clone(&new_connector_type),
-                                                                );
-                                                                // then return reference to insert into struct
-                                                                // field
-                                                                Rc::clone(&new_connector_type)
-                                                            }
-                                                        },
+                                                                        // insert new_connector_type into library
+                                                                        self.connector_types
+                                                                            .insert(
+                                                                            connector
+                                                                                .connector_type
+                                                                                .clone(),
+                                                                            Rc::clone(
+                                                                                &new_connector_type,
+                                                                            ),
+                                                                        );
+                                                                        // then return reference to insert into struct
+                                                                        // field
+                                                                        Rc::clone(
+                                                                            &new_connector_type,
+                                                                        )
+                                                                    }
+                                                                },
+                                                            },
+                                                        )),
                                                         direction: connector.direction.clone(),
                                                         x: connector.x
                                                             * ucum::M
@@ -830,7 +840,7 @@ impl Library {
                                                             * ucum::M
                                                             * f64prefixes::MILLI,
                                                     };
-                                                new_connectors.push(new_connector);
+                                                new_connectors.push(new_connector_join);
                                             }
                                             Some(new_connectors)
                                         } else {
@@ -879,6 +889,7 @@ impl Project {
             wires: HashMap::new(),
             cables: HashMap::new(),
             term_cables: HashMap::new(),
+            connections: Vec::new(),
         }
     }
     /// `from_datafiles` converts from the textual representation of datafiles, and the struct
@@ -1080,7 +1091,7 @@ impl Project {
                         }
                     },
                     end1: {
-                        wire::Connector {
+                        Rc::new(RefCell::new(wire::Connector {
                             connector_type: {
                                 if library
                                     .connector_types
@@ -1102,10 +1113,10 @@ impl Project {
                                     });
                                 }
                             },
-                        }
+                        }))
                     },
                     end2: {
-                        wire::Connector {
+                        Rc::new(RefCell::new(wire::Connector {
                             connector_type: {
                                 if library
                                     .connector_types
@@ -1127,7 +1138,7 @@ impl Project {
                                     });
                                 }
                             },
-                        }
+                        }))
                     },
                     contained_datafile_path: datafile.file_path.clone(),
                 };
@@ -1210,28 +1221,38 @@ impl Project {
                     },
                     end1: {
                         let mut new_end1 = Vec::new();
-                        for connector in &cables[k].end1 {
-                            let new_connector = cable::Connector {
-                                connector_type: {
-                                    if library
-                                        .connector_types
-                                        .contains_key(&connector.connector_type)
-                                    {
-                                        Rc::clone(
-                                            &library.connector_types[&connector.connector_type],
-                                        )
-                                    } else {
-                                        // since this is project, not library, we want to error
-                                        // for types not found in library, since they should
-                                        // all have been parsed before parsing project.
-                                        return Err(Error::NoContainedDefinitionFound {
-                                            contained_type: "ConnectorType".to_string(),
-                                            contained_type_id: connector.connector_type.clone(),
-                                            container_type: "WireCable End 2".to_string(),
-                                            container_type_id: k.to_string(),
-                                            datafile_path: datafile.file_path,
-                                        });
-                                    }
+                        for (id_incrementor, connector) in cables[k].end1.iter().enumerate() {
+                            let new_connector_join = cable::ConnectorJoin {
+                                connector: {
+                                    #[allow(clippy::string_add)]
+                                    Rc::new(RefCell::new(connector::Connector {
+                                        id: connector.connector_type.clone()
+                                            + &id_incrementor.to_string(),
+                                        connector_type: {
+                                            if library
+                                                .connector_types
+                                                .contains_key(&connector.connector_type)
+                                            {
+                                                Rc::clone(
+                                                    &library.connector_types
+                                                        [&connector.connector_type],
+                                                )
+                                            } else {
+                                                // since this is project, not library, we want to error
+                                                // for types not found in library, since they should
+                                                // all have been parsed before parsing project.
+                                                return Err(Error::NoContainedDefinitionFound {
+                                                    contained_type: "ConnectorType".to_string(),
+                                                    contained_type_id: connector
+                                                        .connector_type
+                                                        .clone(),
+                                                    container_type: "WireCable End 2".to_string(),
+                                                    container_type_id: k.to_string(),
+                                                    datafile_path: datafile.file_path,
+                                                });
+                                            }
+                                        },
+                                    }))
                                 },
                                 terminations: {
                                     if let Some(terminations) = &connector.terminations {
@@ -1249,34 +1270,45 @@ impl Project {
                                     }
                                 },
                             };
-                            new_end1.push(new_connector);
+                            new_end1.push(new_connector_join);
                         }
                         new_end1
                     },
                     end2: {
                         let mut new_end2 = Vec::new();
-                        for connector in &cables[k].end2 {
-                            let new_connector = cable::Connector {
-                                connector_type: {
-                                    if library
-                                        .connector_types
-                                        .contains_key(&connector.connector_type)
-                                    {
-                                        Rc::clone(
-                                            &library.connector_types[&connector.connector_type],
-                                        )
-                                    } else {
-                                        // since this is project, not library, we want to error
-                                        // for types not found in library, since they should
-                                        // all have been parsed before parsing project.
-                                        return Err(Error::NoContainedDefinitionFound {
-                                            contained_type: "ConnectorType".to_string(),
-                                            contained_type_id: connector.connector_type.clone(),
-                                            container_type: "WireCable End 2".to_string(),
-                                            container_type_id: k.to_string(),
-                                            datafile_path: datafile.file_path,
-                                        });
-                                    }
+                        for (id_incrementor, connector) in cables[k].end2.iter().enumerate() {
+                            let new_connector_join = cable::ConnectorJoin {
+                                connector: {
+                                    #[allow(clippy::string_add)]
+                                    //TODO: only increment per connector type maybe?
+                                    Rc::new(RefCell::new(connector::Connector {
+                                        id: connector.connector_type.clone()
+                                            + &id_incrementor.to_string(),
+                                        connector_type: {
+                                            if library
+                                                .connector_types
+                                                .contains_key(&connector.connector_type)
+                                            {
+                                                Rc::clone(
+                                                    &library.connector_types
+                                                        [&connector.connector_type],
+                                                )
+                                            } else {
+                                                // since this is project, not library, we want to error
+                                                // for types not found in library, since they should
+                                                // all have been parsed before parsing project.
+                                                return Err(Error::NoContainedDefinitionFound {
+                                                    contained_type: "ConnectorType".to_string(),
+                                                    contained_type_id: connector
+                                                        .connector_type
+                                                        .clone(),
+                                                    container_type: "WireCable End 2".to_string(),
+                                                    container_type_id: k.to_string(),
+                                                    datafile_path: datafile.file_path,
+                                                });
+                                            }
+                                        },
+                                    }))
                                 },
                                 terminations: {
                                     if let Some(terminations) = &connector.terminations {
@@ -1294,7 +1326,7 @@ impl Project {
                                     }
                                 },
                             };
-                            new_end2.push(new_connector);
+                            new_end2.push(new_connector_join);
                         }
                         new_end2
                     },
