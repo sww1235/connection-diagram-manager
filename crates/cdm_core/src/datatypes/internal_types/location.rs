@@ -7,11 +7,12 @@ use std::rc::Rc;
 use dimensioned::ucum;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
+use cdm_traits::partial_empty::PartialEmpty;
 
 use super::location_type::LocationType;
 
 /// `Location` represents a physical instance of a locationType
-#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
+#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
 pub struct Location {
     /// Internal `id` of location instance
     pub id: String,

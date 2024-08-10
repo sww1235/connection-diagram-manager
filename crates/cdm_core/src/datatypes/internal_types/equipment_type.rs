@@ -7,6 +7,7 @@ use std::rc::Rc;
 use dimensioned::ucum;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
+use cdm_traits::partial_empty::PartialEmpty;
 
 use super::{connector::Connector, svg::Svg};
 
@@ -14,7 +15,7 @@ use super::{connector::Connector, svg::Svg};
 /// `EquipmentType` represents a type of equipment
 ///
 /// Anything from a rackmount piece of gear to an outlet or terminal block
-#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
+#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
 pub struct EquipmentType {
     //TODO: add dimensions here
     /// Internal ID of Equipment Type

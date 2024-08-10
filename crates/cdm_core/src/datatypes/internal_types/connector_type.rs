@@ -6,13 +6,14 @@ use super::svg::Svg;
 use dimensioned::ucum;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
+use cdm_traits::partial_empty::PartialEmpty;
 
 //TODO: Make some of these fields enums
 /// `ConnectorType` represents a particular type of connector.
 ///
 /// Connector can represent more than just a metal or plastic blob on the end of a cable, it can
 /// represent a screw terminal on a piece of equipment or a hole for wire to be entered in.
-#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
+#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
 pub struct ConnectorType {
     /// Internal ID of `ConnectorType`
     pub id: String,

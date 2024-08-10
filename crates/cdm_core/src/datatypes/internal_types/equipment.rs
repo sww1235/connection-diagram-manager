@@ -9,10 +9,11 @@ use super::{
 };
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
+use cdm_traits::partial_empty::PartialEmpty;
 
 /// `Equipment` represents a particular instance of an `EquipmentType`.
 /// This is the physical unit you would hold in your hand
-#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
+#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
 pub struct Equipment {
     /// Internal `id` of equipment instance
     pub id: String,

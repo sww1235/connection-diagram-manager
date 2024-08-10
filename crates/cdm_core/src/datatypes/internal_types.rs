@@ -359,7 +359,7 @@ impl Library {
                             let new_layer = cable_type::CableLayer {
                                 layer_number: layer.layer_number,
                                 layer_type: {
-                                    let mut layer_type_string = layer.layer_type.to_owned();
+                                    let mut layer_type_string = layer.layer_type.clone();
                                     if let Some(r) = layer_type_string.get_mut(0..1) {
                                         r.make_ascii_uppercase();
                                     }

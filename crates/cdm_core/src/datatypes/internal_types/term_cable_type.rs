@@ -6,12 +6,12 @@ use std::rc::Rc;
 use dimensioned::ucum;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
-use cdm_traits::connector;
+use cdm_traits::{connector, partial_empty::PartialEmpty};
 
 use super::{cable_type::CableType, connector_type::ConnectorType, wire_type::WireType};
 
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
-#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
+#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
 pub struct TermCableType {
     /// Internal ID of `TermCableType`
     pub id: String,

@@ -2,6 +2,7 @@ use std::fmt;
 use std::path::PathBuf;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
+use cdm_traits::partial_empty::PartialEmpty;
 
 use dimensioned::ucum;
 
@@ -11,7 +12,7 @@ use dimensioned::ucum;
 /// mainly provided for logical reasons rather than
 /// functional (model/part number/manufacturer part number
 /// may all be equivalent in some cases)
-#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
+#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
 pub struct WireType {
     /// Internal ID of `WireType`
     pub id: String,
@@ -120,12 +121,11 @@ impl fmt::Display for WireType {
         if let Some(overall_cross_sect_area) = &self.overall_cross_sect_area {
             writeln!(
                 f,
-                "Overall Cross Sectional Area: {:.2} mm^2",
-                overall_cross_sect_area
+                "Overall Cross Sectional Area: {overall_cross_sect_area:.2} mm^2",
             )?;
         }
         if let Some(insulation_thickness) = &self.insulation_thickness {
-            writeln!(f, "Insulation Thickness: {:.2} mm", insulation_thickness)?;
+            writeln!(f, "Insulation Thickness: {insulation_thickness:.2} mm",)?;
         }
         writeln!(f, "Stranded: {}", &self.stranded)?;
         if let Some(num_strands) = &self.num_strands {

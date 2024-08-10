@@ -4,13 +4,14 @@ use std::path::PathBuf;
 use std::rc::Rc;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
+use cdm_traits::partial_empty::PartialEmpty;
 
 use super::pathway_type::PathwayType;
 
 use dimensioned::ucum;
 
 /// `Pathway` represents a physical instance of a pathway
-#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
+#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
 pub struct Pathway {
     /// Internal `id` of pathway instance
     pub id: String,
