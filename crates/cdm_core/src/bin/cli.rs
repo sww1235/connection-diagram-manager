@@ -7,6 +7,7 @@
 //TODO: change datafile parsing to parse individual files, and keep track of which files, which
 //values came from.
 
+use std::io;
 use std::path::PathBuf;
 
 use clap::Parser;
@@ -91,10 +92,55 @@ fn main() {
 
     if cli.export_pdf {}
 }
-//TODO: implement
 fn merge_prompt_fn(input: ComparedStruct) -> ComparedStruct {
+    let mut output = input;
     info!("prompt_function");
-    input
+    println!("Now merging struct: {}", output.struct_name);
+
+    // partial_empty checked in merge_prompt()
+    for field in &mut output.fields {
+        if field.equality {
+            continue;
+        }
+        println!("Self String: {}", field.self_string);
+        println!("Other String: {}", field.other_string);
+
+        //TODO: fix this prompt text
+        let prompt_text = "Do you want to replace the contents of self with other? (y/n)";
+        if prompt_input_yes_no(prompt_text, false) {
+            // use other
+            field.use_other = true;
+        }
+    }
+
+    output
+}
+
+fn prompt_input_yes_no(prompt_text: &str, default: bool) -> bool {
+    let mut num_chars: Option<usize> = None;
+    let mut output = default;
+
+    while num_chars.is_none() {
+        let mut prompt_input = String::new();
+        println!("{prompt_text}");
+        let n = io::stdin().read_line(&mut prompt_input).unwrap();
+        match prompt_input.trim() {
+            "N" | "n" => {
+                num_chars = Some(n);
+                output = false;
+            }
+            "Y" | "y" => {
+                num_chars = Some(n);
+                output = true;
+            }
+            // wrong answer
+            _ => {
+                println!("Answer y or n");
+            }
+        }
+        println!("{num_chars:?}");
+    }
+    output
 }
 
 /// `Cli` holds the defintions for command line arguments used in this binary
