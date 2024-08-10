@@ -439,17 +439,7 @@ fn convert_image(
 ) -> Vec<Operation> {
     use usvg::ImageKind;
     match &image.kind() {
-        ImageKind::JPEG(_) => {
-            // only vector graphic elements allowed
-            warn! {"svg should not contain images or image tags, ignoring"};
-            Vec::new()
-        }
-        ImageKind::PNG(_) => {
-            // only vector graphic elements allowed
-            warn! {"svg should not contain images or image tags, ignoring"};
-            Vec::new()
-        }
-        ImageKind::GIF(_) => {
+        ImageKind::JPEG(_) | ImageKind::PNG(_) | ImageKind::GIF(_) | ImageKind::WEBP(_) => {
             // only vector graphic elements allowed
             warn! {"svg should not contain images or image tags, ignoring"};
             Vec::new()
