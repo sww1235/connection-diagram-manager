@@ -230,9 +230,12 @@ impl Library {
                     conductor_cross_sect_area: wire_types[k].conductor_cross_sect_area
                         * ucum::M2
                         * f64prefixes::MEGA, //TODO: implement unit text option in file_types
-                    overall_cross_sect_area: wire_types[k].overall_cross_sect_area
-                        * ucum::M2
-                        * f64prefixes::MEGA,
+                    overall_cross_sect_area: wire_types[k]
+                        .overall_cross_sect_area
+                        .map(|x| x * ucum::M2 * f64prefixes::MEGA),
+                    insulation_thickness: wire_types[k]
+                        .insulation_thickness
+                        .map(|x| x * ucum::M * f64prefixes::MEGA),
                     stranded: wire_types[k].stranded,
                     num_strands: wire_types[k].num_strands,
                     strand_cross_sect_area: wire_types[k]
@@ -356,7 +359,11 @@ impl Library {
                             let new_layer = cable_type::CableLayer {
                                 layer_number: layer.layer_number,
                                 layer_type: {
-                                    match layer.layer_type.as_str() {
+                                    let mut layer_type_string = layer.layer_type.to_owned();
+                                    if let Some(r) = layer_type_string.get_mut(0..1) {
+                                        r.make_ascii_uppercase();
+                                    }
+                                    match layer_type_string.as_str() {
                                         "Insulation" => LayerType::Insulation,
                                         "Semiconductor" => LayerType::Semiconductor,
                                         "Shield" => LayerType::Shield,

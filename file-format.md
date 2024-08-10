@@ -156,6 +156,7 @@ wire_type:	# dictonary of all available wire types.
 		insulated: <bool>
 		insulation_material: <str>	# PVC, Nylon, thermoplastic, etc
 		wire_type_code: <str>		# THWN, XHHN, etc
+		insulation_thickness: <float> # specified in mm
 		overall_cross_sect_area: <float> # including insulation, specified in mm^2
 		conductor_ cross_sect_area: <float>	# the cross sectional area of the conductor, specified in mm^2.
 		stranded: <bool>
@@ -190,7 +191,7 @@ cable_type: # dictonary of all available raw cable types.
 		diameter: <float>			# diameter of cable if circular, specified in mm
 
 		layer: # list of shields and insulation layers on outside of cable
-			layer_nbr: <int>			# counted from inside to outside of cable
+			layer_number: <int>			# counted from inside to outside of cable
 			layer_type: <str>				# insulation, semiconductor, shield, screen, concentric neutral
 			material: <str>
 			volt_rating: <float>	# voltage rating for insulation layer
@@ -214,14 +215,14 @@ term_cable_type:	# dictionary of available manufactuered cables,
 	  length: <float>			# actual length in meters
 	  end1:						# dictionary of connectors attached to term cable
 		- connector_type: <str>			# ID of connector type
-		  termination:			# dictionary of core to connector pin mappings for each connector
+		  terminations:			# dictionary of core to connector pin mappings for each connector
 								# manual termination between pin and core must be specified
 			- core: <str>
 			  pin: <str>
 
 	  end2:						# dictionary of connectors attached to term cable
 		- connector_type: <str>			# ID of connector type
-		  termination:			# dictionary of core to connector pin mappings for each connector
+		  terminations:			# dictionary of core to connector pin mappings for each connector
 								# manual termination between pin and core must be specified
 			- core: <str>
 			  pin: <str>
@@ -313,7 +314,7 @@ cables:			# dictonary of all cable instances defined in project
 			autoTerm: <str>			# auto termination method, current available values are:
 									# `pin_core` which matches numbered or unique named pins and cores with each other
 									# others to be thought of at a later date.
-			termination:			# dictionary of core to connector pin mappings for each connector
+			terminations:			# dictionary of core to connector pin mappings for each connector
 									# either auto termination method or manual termination method
 									# must be specified
 		end2:						# dictionary of connectors attached to cable or wire
@@ -323,7 +324,7 @@ cables:			# dictonary of all cable instances defined in project
 			autoTerm: <str>			# auto termination method, current available values are:
 									# `pin_core` which matches numbered or unique named pins and cores with each other
 									# others to be thought of at a later date.
-			termination:			# dictionary of core to connector pin mappings for each connector
+			terminations:			# dictionary of core to connector pin mappings for each connector
 									# either auto termination method or manual termination method
 									# must be specified
 
