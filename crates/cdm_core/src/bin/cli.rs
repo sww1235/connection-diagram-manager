@@ -105,10 +105,10 @@ struct Cli {
     /// Increase verbosity of program by adding more v
     #[arg(short, long, action = clap::ArgAction::Count)]
     verbose: u8,
-    /// Enable PostGresSql features
+    /// Enable PostgreSQL features
     #[arg(long)]
     enable_post_gres: bool,
-    /// PostGres DSN (optional)
+    /// Postgres DSN (optional)
     #[arg(short, long)]
     post_gres_dsn: Option<String>,
     /// Only shows log messages with <Error> level. Use twice to completely eliminate output. Takes precidence over verbose
