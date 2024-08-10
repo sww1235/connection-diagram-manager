@@ -11,7 +11,7 @@ use std::path::PathBuf;
 
 use clap::Parser;
 
-use log::{debug, error, LevelFilter};
+use log::{debug, error, info, LevelFilter};
 
 use simple_logger::SimpleLogger;
 
@@ -93,6 +93,7 @@ fn main() {
 }
 //TODO: implement
 fn merge_prompt_fn(input: ComparedStruct) -> ComparedStruct {
+    info!("prompt_function");
     input
 }
 

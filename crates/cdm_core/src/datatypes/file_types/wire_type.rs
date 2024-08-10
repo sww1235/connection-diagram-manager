@@ -34,7 +34,9 @@ pub struct WireType {
     pub conductor_cross_sect_area: f64,
     /// Overall wire cross sectional area, incluidng insulation.
     /// specified in mm^2
-    pub overall_cross_sect_area: f64,
+    pub overall_cross_sect_area: Option<f64>,
+    /// Insulation thickness in mm
+    pub insulation_thickness: Option<f64>,
     /// If conductor is stranded
     pub stranded: bool,
     /// How many strands is conductor made of
