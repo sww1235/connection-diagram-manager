@@ -387,8 +387,8 @@ impl Library {
                 if self.cable_types.contains_key(k) {
                     info! {concat!{
                         "CableType: {} with contents: {:#?} ",
-                        "has already been loaded. Found again in ",
-                        "file {}. Check this and merge if necessary"},
+                        "has already been loaded. Found again ",
+                        "in file {}. Prompting to merge"},
                         k, v, datafile.file_path.clone().display()
                     }
                     self.cable_types[k]
@@ -427,10 +427,10 @@ impl Library {
                     contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.pathway_types.contains_key(k) {
-                    info! {concat!{"PathwayType : {} with ",
-                    "contents: {:#?} has already been ",
-                    "loaded. Found again in file {}. ",
-                    "Check this and merge if necessary"},
+                    info! {concat!{
+                        "PathwayType : {} with contents: {:#?} ",
+                        "has already been loaded. Found again ",
+                        "in file {}. Prompting to merge"},
                     k, v, datafile.file_path.display()}
                     self.pathway_types[k]
                         .borrow_mut()
@@ -464,10 +464,10 @@ impl Library {
                     contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.location_types.contains_key(k) {
-                    info! {concat!{"LocationType : {} with ",
-                    "contents: {:#?} has already been loaded. ",
-                    "Found again in file {}. Check this ",
-                    "and merge if necessary"},
+                    info! {concat!{
+                        "LocationType : {} with contents: {:#?} ",
+                        "has already been loaded. Found again ",
+                        "in file {}. Prompting to merge"},
                     k, v, datafile.file_path.display()}
                     self.location_types[k]
                         .borrow_mut()
@@ -521,9 +521,9 @@ impl Library {
                 };
                 if self.connector_types.contains_key(k) {
                     info! {concat!{
-                        "ConnectorType : {} with contents: ",
-                        "{:#?} has already been loaded. Found ",
-                        "again in file {}. Check this and merge if necessary"
+                        "ConnectorType : {} with contents: {:#?} ",
+                        "has already been loaded. Found again ",
+                        "in file {}. Prompting to merge",
                     },
                     k, v, datafile.file_path.clone().display()}
                     self.connector_types[k]
@@ -744,9 +744,9 @@ impl Library {
                 };
                 if self.term_cable_types.contains_key(k) {
                     info! {concat!{
-                        "TermCableType : {} with contents: ",
-                        "{:#?} has already been loaded. ",
-                        "Found again in file {}. Check this and merge if necessary"},
+                        "TermCableType : {} with contents: {:#?} ",
+                        "has already been loaded. Found again ",
+                        "in file {}. Prompting to merge"},
                     k, v, datafile.file_path.display()}
                     self.term_cable_types[k]
                         .borrow_mut()
@@ -859,10 +859,10 @@ impl Library {
                     contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.equipment_types.contains_key(k) {
-                    trace! {concat!{"EquipmentType : {} with ",
-                    "contents: {:#?} has already been loaded. ",
-                    "Found again in file {}. ",
-                    "Check this and merge if necessary"},
+                    info! {concat!{
+                        "EquipmentType : {} with contents: {:#?} ",
+                        "has already been loaded. Found again ",
+                        "in file {}. Prompting to merge"},
                     k, v, datafile.file_path.clone().display()}
                     self.equipment_types[k]
                         .borrow_mut()
@@ -943,7 +943,7 @@ impl Project {
         for wire in self.wires.values() {
             if wire.borrow().is_partial_empty() {
                 return Err(Error::NoDefinitionFound {
-                    datatype: "Wiree".to_string(),
+                    datatype: "Wire".to_string(),
                     datatype_id: wire.borrow().id.clone(),
                     datafile_path: wire.borrow().contained_datafile_path.clone(),
                 });
@@ -1016,10 +1016,11 @@ impl Project {
                     contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.pathways.contains_key(k) {
-                    trace! {concat!{"Pathway : {} with contents: ",
-                    "{:#?} has already been loaded. Found again ",
-                    "in file {}. Check this and merge if necessary"
-                    }, k, v, datafile.file_path.display()}
+                    info! {concat!{
+                       "Pathway : {} with contents: {:#?} ",
+                       "has already been loaded. Found again ",
+                       "in file {}. Prompting to merge"},
+                    k, v, datafile.file_path.display()}
                     self.pathways[k]
                         .borrow_mut()
                         .merge_prompt(&new_pathway, prompt_fn)?;
@@ -1144,10 +1145,9 @@ impl Project {
                 };
                 if self.wires.contains_key(k) {
                     info! {concat!{
-                        "Wire: {} with contents: ",
-                        "{:#?} has already been loaded. ",
-                        "Found again in file {}. ",
-                        "Check this and merge if necessary"},
+                        "Wire: {} with contents: {:#?} ",
+                        "has already been loaded. Found again ",
+                        "in file {}. Prompting to merge"},
                     k, v, datafile.file_path.clone().display()}
                     self.wires[k]
                         .borrow_mut()
@@ -1334,10 +1334,9 @@ impl Project {
                 };
                 if self.cables.contains_key(k) {
                     info! {concat!{
-                        "Cable: {} with contents: ",
-                        "{:#?} has already been loaded. ",
-                        "Found again in file {}. ",
-                        "Check this and merge if necessary"},
+                        "Cable: {} with contents: {:#?} ",
+                        "has already been loaded. Found again ",
+                        "in file {}. Prompting to merge"},
                     k, v, datafile.file_path.clone().display()}
                     self.cables[k]
                         .borrow_mut()
@@ -1414,10 +1413,9 @@ impl Project {
                 };
                 if self.term_cables.contains_key(k) {
                     info! {concat!{
-                        "TermCable: {} with contents: ",
-                        "{:#?} has already been loaded. ",
-                        "Found again in file {}. ",
-                        "Check this and merge if necessary"},
+                        "TermCable: {} with contents: {:#?} ",
+                        "has already been loaded. Found again ",
+                        "in file {}. Prompting to merge"},
                     k, v, datafile.file_path.clone().display()}
                     self.term_cables[k]
                         .borrow_mut()
@@ -1474,10 +1472,10 @@ impl Project {
                     contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.locations.contains_key(k) {
-                    trace! {concat!{"Location: {} with ",
-                    "contents: {:#?} has already been ",
-                    "loaded. Found again in file {}. ",
-                    "Check this and merge if necessary"},
+                    info! {concat!{
+                        "Location: {} with contents: {:#?} ",
+                        "has already been loaded. Found again ",
+                        "in file {}. Prompting to merge"},
                     k, v, datafile.file_path.clone().display()}
                     self.locations[k]
                         .borrow_mut()
@@ -1574,11 +1572,11 @@ impl Project {
                     contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.equipment.contains_key(k) {
-                    trace! {concat! {"Equipment: {} with ",
-                    "contents: {:#?} has already been ",
-                    "loaded. Found again in file {}. ",
-                    "Check this and merge if necessary"
-                    }, k, v, datafile.file_path.clone().display()}
+                    info! {concat! {
+                       "Equipment: {} with contents: {:#?} ",
+                       "has already been loaded. Found again ",
+                       "in file {}. Prompting to merge"},
+                    k, v, datafile.file_path.clone().display()}
                     self.equipment[k]
                         .borrow_mut()
                         .merge_prompt(&new_equipment, prompt_fn)?;
