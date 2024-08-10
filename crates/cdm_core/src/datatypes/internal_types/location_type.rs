@@ -2,6 +2,7 @@ use std::fmt;
 use std::path::PathBuf;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
+use cdm_traits::partial_empty::PartialEmpty;
 
 use dimensioned::ucum;
 
@@ -10,7 +11,7 @@ use dimensioned::ucum;
 ///
 /// Examples of `LocationType` include junction boxes, racks, panels, etc.
 /// It does not include places these are located.
-#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
+#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
 pub struct LocationType {
     /// Internal ID of Location Type
     pub id: String,

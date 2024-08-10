@@ -1,4 +1,3 @@
-
 /// `PartialEmpty` indicates that an object can be checked to be almost `PartialEq` to `Object::new()`,
 /// excepting the id field
 pub trait PartialEmpty {

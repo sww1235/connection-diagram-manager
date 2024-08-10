@@ -11,10 +11,11 @@ use std::rc::Rc;
 use dimensioned::ucum;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
+use cdm_traits::partial_empty::PartialEmpty;
 
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has one
 /// core, then it is a wire, not a cable.
-#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
+#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
 pub struct CableType {
     /// Unique ID of `CableType`
     pub id: String,

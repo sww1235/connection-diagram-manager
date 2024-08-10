@@ -6,13 +6,13 @@ use std::rc::Rc;
 use dimensioned::ucum;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
-use cdm_traits::connector;
+use cdm_traits::{connector, partial_empty::PartialEmpty};
 
 use super::{connector_type::ConnectorType, pathway::Pathway, wire_type::WireType};
 
 /// `Wire` represents a particular instance of a `WireType`.
 /// It represents a physical item.
-#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
+#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
 pub struct Wire {
     /// Internal `id` of `Wire` instance
     pub id: String,

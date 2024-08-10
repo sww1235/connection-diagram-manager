@@ -1,6 +1,9 @@
 /// `Merge` indicates that an object has the necessary utilities to merge itself with another
 /// instance of the same object type.
-pub trait Merge {
+pub trait Merge
+where
+    Self: Clone,
+{
     /// `merge_prompt` assists the user in merging 2 object instances by prompting the user with
     /// the difference between the object, field by field, and providing sensible defaults.
     ///

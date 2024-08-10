@@ -2,6 +2,7 @@ use std::fmt;
 use std::path::PathBuf;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
+use cdm_traits::partial_empty::PartialEmpty;
 
 use dimensioned::ucum;
 
@@ -9,7 +10,7 @@ use dimensioned::ucum;
 /// [`LocationType`](super::location_type::LocationType) to another.
 ///
 /// Examples of Pathways include, conduit, cable tray, free air
-#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
+#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
 pub struct PathwayType {
     /// Internal ID of Pathway Type
     pub id: String,

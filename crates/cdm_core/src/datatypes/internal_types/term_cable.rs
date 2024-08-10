@@ -6,12 +6,13 @@ use std::rc::Rc;
 use dimensioned::ucum;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
+use cdm_traits::partial_empty::PartialEmpty;
 
 use super::{pathway::Pathway, term_cable_type::TermCableType};
 
 /// `TermCable` represents a particular instance of a `TermCableType`.
 /// It represents a physical item.
-#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
+#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
 pub struct TermCable {
     /// Internal `id` of `TermCable` instance
     pub id: String,

@@ -79,7 +79,6 @@ pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
                 prompt_fn: fn(::cdm_traits::merge::ComparedStruct)
                 -> ::cdm_traits::merge::ComparedStruct
             ) -> Result<(), ::cdm_traits::merge::Error>{
-                //TODO: maybe check for partial_empty/empty here on other
                 if self.id != other.id {
                     return Err(::cdm_traits::merge::Error::DataMergeError{
                         datatype: stringify!(#struct_name).to_string(),
@@ -88,6 +87,16 @@ pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
                         self_path: self.contained_datafile_path.clone().display().to_string(),
                         other_path: other.contained_datafile_path.clone().display().to_string(),
                     } );
+                }
+                // automatically merge if self.is_partial_empty()
+                if self.is_partial_empty() {
+                    *self = other.clone();
+                    return Ok(())
+                }
+                // automatically fall through as the other is empty and no point in
+                // comparing/merging
+                if other.is_partial_empty() {
+                    return Ok(())
                 }
                 let mut equality_results = ::cdm_traits::merge::ComparedStruct::new();
                 equality_results.struct_name = stringify!(#struct_name).to_string();

@@ -7,11 +7,13 @@ use dimensioned::ucum;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 
+use cdm_traits::partial_empty::PartialEmpty;
+
 use super::{cable_type::CableType, connector::Connector, pathway::Pathway};
 
 /// `Cable` represents a particular instance of a `CableType`
 /// It represents a physical item.
-#[derive(Debug, Default, PartialEq, Merge, PartialEmpty, Empty)]
+#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
 pub struct Cable {
     /// Internal `id` of `Cable` instance
     pub id: String,
