@@ -23,7 +23,7 @@ pub struct EquipmentType {
     /// Optional text description
     pub description: Option<String>,
     /// List of mounting options for equipment
-    pub mount_type: Option<String>,
+    pub mount_types: Vec<String>,
     /// Equipment Type (audio, video, mix, lighting, networking, patch panel, power)
     pub equip_type: Option<String>,
     /// `faces` contains representations of each face of the equipment

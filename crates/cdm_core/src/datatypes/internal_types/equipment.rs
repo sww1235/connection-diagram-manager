@@ -22,9 +22,9 @@ pub struct Equipment {
     /// The structured name of the equipment
     pub identifier: Option<String>,
     /// The particular mounting type of this instance
-    /// must be in list of mounting types defined in `equip_type.mounting_type` TODO validate this
-    /// during import
-    pub mounting_type: Option<String>,
+    /// must be in list of mounting types defined in `equip_type.mounting_type`.
+    /// Validated on import
+    pub mount_type: Option<String>,
     /// The contained location
     pub location: Rc<RefCell<Location>>,
     /// The sublocation within the location
@@ -72,8 +72,8 @@ impl fmt::Display for Equipment {
         if let Some(identifier) = &self.identifier {
             writeln!(f, "Equipment Identifier: {identifier}")?;
         }
-        if let Some(mounting_type) = &self.mounting_type {
-            writeln!(f, "Mounting Type: {mounting_type}")?;
+        if let Some(mount_type) = &self.mount_type {
+            writeln!(f, "MountType: {mount_type}")?;
         }
         writeln!(f, "Location: {}", &self.location.borrow())?;
         if let Some(description) = &self.description {

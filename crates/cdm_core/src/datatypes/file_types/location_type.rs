@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-//TODO: create physical location stuff
 /// `LocationType` represents a type/model of location.
 ///
 /// Examples of `LocationType` include junction boxes, racks, panels, etc.

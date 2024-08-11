@@ -35,7 +35,7 @@ pub struct EquipmentType {
     /// Optional text description
     pub description: Option<String>,
     /// List of mounting options for equipment
-    pub mount_type: Option<String>,
+    pub mount_types: Vec<String>,
     /// Equipment Type (audio, video, mix, lighting, networking, patch panel, power)
     pub equip_type: Option<String>,
     /// faces represents a visual representation of each face of a piece of equipment
@@ -129,9 +129,7 @@ impl fmt::Display for EquipmentType {
         if let Some(description) = &self.description {
             write!(f, "Description: {description}")?;
         }
-        if let Some(mount_type) = &self.mount_type {
-            write!(f, "Mount Type: {mount_type}")?;
-        }
+        write!(f, "Mount Types: {:?}", &self.mount_types)?;
         if let Some(equip_type) = &self.equip_type {
             write!(f, "Equipment Type: {equip_type}")?;
         }

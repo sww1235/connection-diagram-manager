@@ -21,7 +21,7 @@ pub struct Location {
 }
 
 /// Unique coordinate triplet within `Location`
-/// TODO: decide on units
+/// specified in mm
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 #[allow(clippy::module_name_repetitions)]
 pub struct SubLocation {

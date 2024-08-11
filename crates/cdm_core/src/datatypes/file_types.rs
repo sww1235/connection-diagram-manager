@@ -111,6 +111,8 @@ pub fn parse_project_dir(project_dir: path::PathBuf) -> Result<Vec<DataFile>, io
             format! {"Provided filepath not a directory {}", project_dir.display()},
         ))
         //TODO: return is not directory error
+        //waiting on https://github.com/rust-lang/rust/issues/86442 or
+        //https://github.com/rust-lang/rust/pull/128316 to be merged
     }
 }
 

@@ -18,7 +18,7 @@ pub struct Equipment {
     pub identifier: Option<String>,
     /// The particular mounting type of this instance
     /// must be in list of mounting types defined in `equip_type.mounting_type`
-    pub mounting_type: Option<String>,
+    pub mount_type: Option<String>,
     /// The contained location
     pub location: String,
     /// The sublocation wthin the location
