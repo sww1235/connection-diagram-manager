@@ -33,7 +33,7 @@ pub struct ConnectorType {
     pub description: Option<String>,
     /// Mounting method of connector
     ///
-    /// Cable, PCB through hole, PCB surface mout, panel
+    /// Cable, PCB through hole, PCB surface mount, panel
     pub mount_type: Option<String>,
     /// Panel Cutout of connector if it is panel mounted
     ///

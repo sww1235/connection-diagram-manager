@@ -270,8 +270,6 @@ impl Library {
                 // needed.
                 let mut cable_core_map = HashMap::new();
                 for (core_id, core) in &cable_types[k].cable_cores {
-                    //TODO: this could result in issues where the cable type is in
-                    //the file, but not read before it is checked for here.
                     if core.is_wire && self.wire_types.contains_key(&core.type_str) {
                         cable_core_map.insert(
                             core_id.to_string(),
@@ -778,7 +776,7 @@ impl Library {
                     supplier: equipment_types[k].supplier.clone(),
                     supplier_part_number: equipment_types[k].supplier_part_number.clone(),
                     description: equipment_types[k].description.clone(),
-                    mount_type: equipment_types[k].mount_type.clone(),
+                    mount_types: equipment_types[k].mount_types.clone(),
                     equip_type: equipment_types[k].equip_type.clone(),
                     faces: {
                         if let Some(faces) = &equipment_types[k].faces {
@@ -1523,32 +1521,37 @@ impl Project {
                 };
                 //then check if sublocation is defined in location
                 // first want to verify location exists again
-                let temp_sub_location = if temp_location
-                    == Rc::new(RefCell::new(location::Location::new()))
-                {
-                    return Err(Error::DefinitionProcessing {
-                datatype: "Equipment".to_string(),
-                datatype_id: k.clone(),
-                message: format!("Location: {} contained in equipment didn't exist when attempting to parse sublocations. Please fix this", equipment[k].location),
-                datafile_path: datafile.file_path.clone(),
-                    });
-                } else if temp_location
-                    .borrow()
-                    .sub_locations
-                    .contains_key(&equipment[k].sub_location)
-                {
-                    temp_location.borrow().sub_locations[&equipment[k].sub_location].clone()
-                } else {
-                    // Sublocations are defined at the same time as location, so they should be
-                    // present if the location is present
-                    return Err(Error::NoContainedDefinitionFound {
-                        contained_type: "SubLocation".to_string(),
-                        contained_type_id: equipment[k].sub_location.clone(),
-                        container_type: "Location".to_string(),
-                        container_type_id: equipment[k].location.clone(),
-                        datafile_path: datafile.file_path.clone(),
-                    });
-                };
+                let temp_sub_location =
+                    if temp_location == Rc::new(RefCell::new(location::Location::new())) {
+                        return Err(Error::DefinitionProcessing {
+                            datatype: "Equipment".to_string(),
+                            datatype_id: k.clone(),
+                            message: format!(
+                                concat! {
+                                "Location: {} contained in equipment ",
+                                "didn't exist when attempting to parse sublocations. ",
+                                "Please fix this"},
+                                equipment[k].location
+                            ),
+                            datafile_path: datafile.file_path.clone(),
+                        });
+                    } else if temp_location
+                        .borrow()
+                        .sub_locations
+                        .contains_key(&equipment[k].sub_location)
+                    {
+                        temp_location.borrow().sub_locations[&equipment[k].sub_location].clone()
+                    } else {
+                        // Sublocations are defined at the same time as location, so they should be
+                        // present if the location is present
+                        return Err(Error::NoContainedDefinitionFound {
+                            contained_type: "SubLocation".to_string(),
+                            contained_type_id: equipment[k].sub_location.clone(),
+                            container_type: "Location".to_string(),
+                            container_type_id: equipment[k].location.clone(),
+                            datafile_path: datafile.file_path.clone(),
+                        });
+                    };
 
                 let new_equipment = equipment::Equipment {
                     id: k.to_string(),
@@ -1572,7 +1575,29 @@ impl Project {
                         }
                     },
                     identifier: equipment[k].identifier.clone(),
-                    mounting_type: equipment[k].mounting_type.clone(),
+                    mount_type: {
+                        if let Some(mount_type) = &equipment[k].mount_type {
+                            if library.equipment_types[&equipment[k].equipment_type]
+                                .borrow()
+                                .mount_types
+                                .contains(mount_type)
+                            {
+                                equipment[k].mount_type.clone()
+                            } else {
+                                return Err(Error::DefinitionProcessing {
+                                    datatype: "Equipment".to_string(),
+                                    datatype_id: k.to_string(),
+                                    message: format!(
+                                    "Mount Type {} on EquipmentID {} not found on EquipmentType {}",
+                                    mount_type, k, equipment[k].equipment_type
+                                ),
+                                    datafile_path: datafile.file_path.clone(),
+                                });
+                            }
+                        } else {
+                            None
+                        }
+                    },
                     location: temp_location,
                     sub_location: temp_sub_location,
                     description: equipment[k].description.clone(),
