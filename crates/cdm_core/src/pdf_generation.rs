@@ -101,7 +101,6 @@ pub fn render_location(
 
     if location_default_scale_fit {
         if scale.is_some() {
-            //TODO: change this to info
             warn!("location fits within page at 1:1 scale. Scale does not need to be specified");
         }
     } else if location_scale_fit {

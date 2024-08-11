@@ -4,6 +4,9 @@ use super::super::file_types::svg::Svg as FileSvg;
 use cdm_traits::partial_empty::PartialEmpty;
 
 use cdm_macros::Empty;
+//TODO: implement svg validation rules here
+//
+//TODO: switch to using usvg/romxmltree instead of just a string
 
 /// Svg represents a full SVG image
 #[derive(Debug, Default, Clone, PartialEq, Empty)]
@@ -26,8 +29,13 @@ impl Svg {
     /// `new()` creates a new SVG
     #[must_use]
     pub fn new() -> Self {
-        //TODO: actually have this be a blank SVG
-        Self(String::new())
+        Self(
+            r#"
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <svg xmlns="http://www.w3.org/2000/svg" width="640" height="120">
+            </svg>"#
+                .to_string(),
+        )
     }
 }
 

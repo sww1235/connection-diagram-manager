@@ -824,21 +824,20 @@ impl<'a> PDFDocument<'a> {
     }
 }
 
-//TODO: switch these to contain the actual error types instead of strings, like cookbook crate
 /// `Error` is the list of errors that can occur in `PDFHelper`
 #[derive(Debug)]
 #[non_exhaustive]
 pub enum Error {
     /// Errors relating to linebreaking
-    ParagraphBreaking(String),
+    ParagraphBreaking(ParagraphError),
     /// Errors relating to PDF creation and export
-    PDFError(String),
+    PDFError(lopdf::Error),
     /// error in loading fonts
-    FontLoading(String),
+    FontLoading(String), //TODO: fix this to use actual error type
     /// error in parsing svg data
-    SVGError(String),
+    SVGError(USVGError),
     /// Errors from [`std::io`]
-    IOError(String),
+    IOError(std::io::Error),
     /// Other errors
     Other(String),
 }
@@ -861,18 +860,18 @@ impl std::fmt::Display for Error {
 
 impl From<ParagraphError> for Error {
     fn from(e: ParagraphError) -> Self {
-        Error::ParagraphBreaking(format!("{e}"))
+        Error::ParagraphBreaking(e)
     }
 }
 
 impl From<io::Error> for Error {
     fn from(e: io::Error) -> Self {
-        Error::IOError(format!("{e}"))
+        Error::IOError(e)
     }
 }
 impl From<USVGError> for Error {
     fn from(e: USVGError) -> Self {
-        Error::SVGError(format!("{e}"))
+        Error::SVGError(e)
     }
 }
 impl From<lopdf::Error> for Error {
@@ -895,8 +894,8 @@ impl From<lopdf::Error> for Error {
             | lopdf::Error::Xref(..)
             | lopdf::Error::Invalid(..)
             | lopdf::Error::NoOutlines
-            | lopdf::Error::Decryption(..) => Error::PDFError(format!("{e}")),
-            lopdf::Error::IO(..) => Error::IOError(format!("{e}")),
+            | lopdf::Error::Decryption(..) => Error::PDFError(e),
+            lopdf::Error::IO(er) => Error::IOError(er),
         }
     }
 }

@@ -1069,28 +1069,13 @@ impl Project {
                                 //these are both project variables so may not be defined
                                 //erroring here is fine.
                                 //
-                                //TODO: actually return error here. fix this
-                                //return Err(Error::NoContainedDefinitionFound {
-                                //    contained_type: "Pathway".to_string(),
-                                //    contained_type_id: pathway.to_string(),
-                                //    container_type: "WireCable".to_string(),
-                                //    container_type_id: k.to_string(),
-                                //    datafile_path: datafile.file_path.clone(),
-                                //});
-                                error! {concat!{
-                                "WireCable: {} is assigned to ",
-                                "Pathway: {} in datafile: {}, ",
-                                "that doesn't exist in any ",
-                                "library either read in from ",
-                                "datafile, or added via program ",
-                                "logic. Not assigning pathway to ",
-                                "WireCable {}. Please check your spelling "},
-                                k, pathway, datafile.file_path.display(), k}
-                                let new_pathway = Rc::new(RefCell::new(pathway::Pathway::new()));
-                                // insert new_pathway into Project
-                                self.pathways.insert(pathway, Rc::clone(&new_pathway));
-                                // then return reference for struct field
-                                Some(Rc::clone(&new_pathway))
+                                return Err(Error::NoContainedDefinitionFound {
+                                    contained_type: "Pathway".to_string(),
+                                    contained_type_id: pathway.to_string(),
+                                    container_type: "Wire".to_string(),
+                                    container_type_id: k.to_string(),
+                                    datafile_path: datafile.file_path.clone(),
+                                });
                             }
                         } else {
                             None
@@ -1197,28 +1182,13 @@ impl Project {
                                 //these are both project variables so may not be defined
                                 //erroring here is fine.
                                 //
-                                //TODO: actually return error here. fix this
-                                //return Err(Error::NoContainedDefinitionFound {
-                                //    contained_type: "Pathway".to_string(),
-                                //    contained_type_id: pathway.to_string(),
-                                //    container_type: "WireCable".to_string(),
-                                //    container_type_id: k.to_string(),
-                                //    datafile_path: datafile.file_path.clone(),
-                                //});
-                                error! {concat!{
-                                "WireCable: {} is assigned to ",
-                                "Pathway: {} in datafile: {}, ",
-                                "that doesn't exist in any ",
-                                "library either read in from ",
-                                "datafile, or added via program ",
-                                "logic. Not assigning pathway to ",
-                                "WireCable {}. Please check your spelling "},
-                                k, pathway, datafile.file_path.display(), k}
-                                let new_pathway = Rc::new(RefCell::new(pathway::Pathway::new()));
-                                // insert new_pathway into Project
-                                self.pathways.insert(pathway, Rc::clone(&new_pathway));
-                                // then return reference for struct field
-                                Some(Rc::clone(&new_pathway))
+                                return Err(Error::NoContainedDefinitionFound {
+                                    contained_type: "Pathway".to_string(),
+                                    contained_type_id: pathway.to_string(),
+                                    container_type: "Cable".to_string(),
+                                    container_type_id: k.to_string(),
+                                    datafile_path: datafile.file_path.clone(),
+                                });
                             }
                         } else {
                             None
@@ -1387,28 +1357,13 @@ impl Project {
                                 //these are both project variables so may not be defined
                                 //erroring here is fine.
                                 //
-                                //TODO: actually return error here. fix this
-                                //return Err(Error::NoContainedDefinitionFound {
-                                //    contained_type: "Pathway".to_string(),
-                                //    contained_type_id: pathway.to_string(),
-                                //    container_type: "WireCable".to_string(),
-                                //    container_type_id: k.to_string(),
-                                //    datafile_path: datafile.file_path.clone(),
-                                //});
-                                error! {concat!{
-                                "WireCable: {} is assigned to ",
-                                "Pathway: {} in datafile: {}, ",
-                                "that doesn't exist in any ",
-                                "library either read in from ",
-                                "datafile, or added via program ",
-                                "logic. Not assigning pathway to ",
-                                "WireCable {}. Please check your spelling "},
-                                k, pathway, datafile.file_path.display(), k}
-                                let new_pathway = Rc::new(RefCell::new(pathway::Pathway::new()));
-                                // insert new_pathway into Project
-                                self.pathways.insert(pathway, Rc::clone(&new_pathway));
-                                // then return reference for struct field
-                                Some(Rc::clone(&new_pathway))
+                                return Err(Error::NoContainedDefinitionFound {
+                                    contained_type: "Pathway".to_string(),
+                                    contained_type_id: pathway.to_string(),
+                                    container_type: "TermCable".to_string(),
+                                    container_type_id: k.to_string(),
+                                    datafile_path: datafile.file_path.clone(),
+                                });
                             }
                         } else {
                             None
