@@ -153,7 +153,6 @@ impl fmt::Display for ConnectorType {
         //if let Some() = &self.pins {
         //    writeln!(f, "Panel Cutout: {}", )?;
         //}
-        //TODO: implement svg validation rules here
         Ok(())
     }
 }

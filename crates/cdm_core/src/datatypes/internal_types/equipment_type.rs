@@ -134,7 +134,6 @@ impl fmt::Display for EquipmentType {
             write!(f, "Equipment Type: {equip_type}")?;
         }
         //TODO: implement loops over faces and connectors
-        //TODO: implement svg validation rules here
         Ok(())
     }
 }
