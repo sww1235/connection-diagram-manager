@@ -111,73 +111,217 @@ impl PaperSize {
 impl fmt::Display for PaperSize {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            //TODO: finish alt mode display implementation
             PaperSize::A0 => {
                 if f.alternate() {
-                    //writeln!(f, "")?;
+                    writeln!(f, "{}×{}", PaperSize::A0.size().0, PaperSize::A0.size().1)?;
                 } else {
                     writeln!(f, "A0")?;
                 }
             }
             PaperSize::A1 => {
-                writeln!(f, "A1")?;
+                if f.alternate() {
+                    writeln!(f, "{}×{}", PaperSize::A1.size().0, PaperSize::A1.size().1)?;
+                } else {
+                    writeln!(f, "A1")?;
+                }
             }
             PaperSize::A2 => {
-                writeln!(f, "A2")?;
+                if f.alternate() {
+                    writeln!(f, "{}×{}", PaperSize::A2.size().0, PaperSize::A2.size().1)?;
+                } else {
+                    writeln!(f, "A2")?;
+                }
             }
             PaperSize::A3 => {
-                writeln!(f, "A3")?;
+                if f.alternate() {
+                    writeln!(f, "{}×{}", PaperSize::A3.size().0, PaperSize::A3.size().1)?;
+                } else {
+                    writeln!(f, "A3")?;
+                }
             }
             PaperSize::A4 => {
-                writeln!(f, "A4")?;
+                if f.alternate() {
+                    writeln!(f, "{}×{}", PaperSize::A4.size().0, PaperSize::A4.size().1)?;
+                } else {
+                    writeln!(f, "A4")?;
+                }
             }
             PaperSize::A5 => {
-                writeln!(f, "A5")?;
+                if f.alternate() {
+                    writeln!(f, "{}×{}", PaperSize::A5.size().0, PaperSize::A5.size().1)?;
+                } else {
+                    writeln!(f, "A5")?;
+                }
             }
             PaperSize::A6 => {
-                writeln!(f, "A6")?;
+                if f.alternate() {
+                    writeln!(f, "{}×{}", PaperSize::A6.size().0, PaperSize::A6.size().1)?;
+                } else {
+                    writeln!(f, "A6")?;
+                }
             }
             PaperSize::AnsiA => {
-                writeln!(f, "ANSI A")?;
+                if f.alternate() {
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::AnsiA.size().0,
+                        PaperSize::AnsiA.size().1
+                    )?;
+                } else {
+                    writeln!(f, "ANSI A")?;
+                }
             }
             PaperSize::AnsiB => {
-                writeln!(f, "ANSI B")?;
+                if f.alternate() {
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::AnsiB.size().0,
+                        PaperSize::AnsiB.size().1
+                    )?;
+                } else {
+                    writeln!(f, "ANSI B")?;
+                }
             }
             PaperSize::AnsiC => {
-                writeln!(f, "ANSI C")?;
+                if f.alternate() {
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::AnsiC.size().0,
+                        PaperSize::AnsiC.size().1
+                    )?;
+                } else {
+                    writeln!(f, "ANSI C")?;
+                }
             }
             PaperSize::AnsiD => {
-                writeln!(f, "ANSI D")?;
+                if f.alternate() {
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::AnsiD.size().0,
+                        PaperSize::AnsiD.size().1
+                    )?;
+                } else {
+                    writeln!(f, "ANSI D")?;
+                }
             }
             PaperSize::AnsiE => {
-                writeln!(f, "ANSI E")?;
+                if f.alternate() {
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::AnsiE.size().0,
+                        PaperSize::AnsiE.size().1
+                    )?;
+                } else {
+                    writeln!(f, "ANSI E")?;
+                }
             }
             PaperSize::ArchA => {
-                writeln!(f, "ARCH A")?;
+                if f.alternate() {
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::ArchA.size().0,
+                        PaperSize::ArchA.size().1
+                    )?;
+                } else {
+                    writeln!(f, "ARCH A")?;
+                }
             }
             PaperSize::ArchB => {
-                writeln!(f, "ARCH B")?;
+                if f.alternate() {
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::ArchB.size().0,
+                        PaperSize::ArchB.size().1
+                    )?;
+                } else {
+                    writeln!(f, "ARCH B")?;
+                }
             }
             PaperSize::ArchC => {
-                writeln!(f, "ARCH C")?;
+                if f.alternate() {
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::ArchC.size().0,
+                        PaperSize::ArchC.size().1
+                    )?;
+                } else {
+                    writeln!(f, "ARCH C")?;
+                }
             }
             PaperSize::ArchD => {
-                writeln!(f, "ARCH D")?;
+                if f.alternate() {
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::ArchD.size().0,
+                        PaperSize::ArchD.size().1
+                    )?;
+                } else {
+                    writeln!(f, "ARCH D")?;
+                }
             }
             PaperSize::ArchE => {
-                writeln!(f, "ARCH E")?;
+                if f.alternate() {
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::ArchE.size().0,
+                        PaperSize::ArchE.size().1
+                    )?;
+                } else {
+                    writeln!(f, "ARCH E")?;
+                }
             }
             PaperSize::Tabloid => {
-                writeln!(f, "TABLOID")?;
+                if f.alternate() {
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::Tabloid.size().0,
+                        PaperSize::Tabloid.size().1
+                    )?;
+                } else {
+                    writeln!(f, "TABLOID")?;
+                }
             }
             PaperSize::Legal => {
-                writeln!(f, "LEGAL")?;
+                if f.alternate() {
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::Legal.size().0,
+                        PaperSize::Legal.size().1
+                    )?;
+                } else {
+                    writeln!(f, "LEGAL")?;
+                }
             }
             PaperSize::Letter => {
-                writeln!(f, "LETTER")?;
+                if f.alternate() {
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::Letter.size().0,
+                        PaperSize::Letter.size().1
+                    )?;
+                } else {
+                    writeln!(f, "LETTER")?;
+                }
             }
-            PaperSize::Custom(_, _) => {
-                writeln!(f, "CUSTOM")?;
+            PaperSize::Custom(x, y) => {
+                if f.alternate() {
+                    writeln!(f, "{}×{}", x, y)?;
+                } else {
+                    writeln!(f, "CUSTOM")?;
+                }
             }
         }
         Ok(())
