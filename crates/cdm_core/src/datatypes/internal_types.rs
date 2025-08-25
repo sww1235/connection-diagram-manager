@@ -241,9 +241,9 @@ impl Library {
                     strand_cross_sect_area: wire_types[k]
                         .strand_cross_sect_area
                         .map(|x| x * ucum::M2 * f64prefixes::MEGA),
-                    insul_volt_rating: wire_types[k].insul_volt_rating.map(|x| x * ucum::V),
-                    insul_temp_rating: wire_types[k].insul_temp_rating.map(|x| x * ucum::K),
-                    insul_color: wire_types[k].insul_color.clone(),
+                    insul_volt_rating: wire_types[k].insulation_volt_rating.map(|x| x * ucum::V),
+                    insul_temp_rating: wire_types[k].insulation_temp_rating.map(|x| x * ucum::K),
+                    insul_color: wire_types[k].insulation_color.clone(),
                     contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.wire_types.contains_key(k) {

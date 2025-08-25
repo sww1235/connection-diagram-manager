@@ -60,10 +60,10 @@ connector_type: # dictionary of all available connector types
 		description: <str>			# free text field for larger descriptions of connectors
 		mount_type: <str>			# cable, pcb through hole, pcb surface mount, panel
 		panel_cutout: <str>			# D, A, etc. optional
-		pn: <str>					# [internal] part number
-		mpn: <str>					# manufacturer part number
+		part_number: <str>					# [internal] part number
+		manufactuer_part_number: <str>					# manufacturer part number
 		supplier: <str>				# supplier
-		spn: <str>					# supplier part number
+		supplier_part_number: <str>					# supplier part number
 		gender: <str>				# (male, female, rpmale, rpfemale, hermaphroditic, unknown)
 		height: <float>				# height of connector in mm
 		width: <float>				# width of connector in mm
@@ -98,10 +98,10 @@ equipment_type: # dictionary of all available equipment types
 
 		manufacturer: <str>
 		model: <str>
-		pn: <str>					# [internal] part number
-		mpn: <str>					# manufacturer part number
+		part_number: <str>					# [internal] part number
+		manufactuer_part_number: <str>					# manufacturer part number
 		supplier: <str>				# supplier
-		spn: <str>					# supplier part number
+		supplier_part_number: <str>					# supplier part number
 		mounting_type: <list>		# (19" rack, 23" rack, 1/2 19" rack, DIN rail,
 									# surface wall mount, inset wall mount, panel, custom)
 		type: <str>					# (audio, video, mix, lighting, networking, patch panel, power)
@@ -128,10 +128,10 @@ pathway_type:	# dictonary of all available cable pathway types.
 				# Some of these definitions may be fluid and can be configured as the user desires.
 	<str>:		# pathway type designator (must be unique)
 		type: <str>					# type of cable pathway (conduit, cable tray, etc)
-		pn: <str>					# [internal] part number
-		mpn: <str>					# manufacturer part number
+		part_number: <str>					# [internal] part number
+		manufacturer_part_number: <str>					# manufacturer part number
 		supplier: <str>				# supplier
-		spn: <str>					# supplier part number
+		supplier_part_number: <str>					# supplier part number
 		size: <str>					# specified and parsed differently depending on type
 									# TODO: need to define specific size defintions
 									# files use metric units
@@ -145,14 +145,15 @@ wire_type:	# dictonary of all available wire types.
 			# if a product has a shield or additional layers, it must be defined as a cable
 			# insulation color is defined on individual wire instance
 			# wire, cable and term_cable designators must all be unique
+			# //TODO: move color to wire_type definition as it affects the mpn/spn/etc
 			#
 	<str>:	# wire type designator (must be unique)
 		material: <str>				# copper, alumninum, ACSR, steel, glass, plastic
 		manufacturer: <str>
-		pn: <str>					# [internal] part number
-		mpn: <str>					# manufacturer part number
+		part_number: <str>					# [internal] part number
+		manufacturer_part_number: <str>					# manufacturer part number
 		supplier: <str>				# supplier
-		spn: <str>					# supplier part number
+		supplier_part_number: <str>					# supplier part number
 		insulated: <bool>
 		insulation_material: <str>	# PVC, Nylon, thermoplastic, etc
 		wire_type_code: <str>		# THWN, XHHN, etc
@@ -161,8 +162,12 @@ wire_type:	# dictonary of all available wire types.
 		conductor_ cross_sect_area: <float>	# the cross sectional area of the conductor, specified in mm^2.
 		stranded: <bool>
 		num_strands: <int>			# number of strands if cable is stranded. defaults to 1 if cable is solid
-		insul_volt_rating: <float>	# voltage rating of insulation.
-		insul_temp_rating: <float>	# temperature rating of insulation. Specified in degrees centigrade.
+		insulation_volt_rating: <float>	# voltage rating of insulation.
+		insulation_temp_rating: <float>	# temperature rating of insulation. Specified in degrees centigrade.
+		insulation_color: <str> 			# insulation color. Pick from following options:
+											# GREEN, BLACK, WHITE, RED, BLUE, YELLOW, ORANGE, BROWN,
+											# PINK, PURPLE, SLATE, ROSE, VIOLET, AQUA, #RRGGBB (hex color code)
+		secondary_insulation_color: <str> 	# same as insulation color
 
 cable_type: # dictonary of all available raw cable types.
 			# A cable is defined as one or more wires mechanically attached together,
@@ -179,10 +184,10 @@ cable_type: # dictonary of all available raw cable types.
 				type: <str>			# identifier of wire/cable type that core is
 				is_wire: <bool>		# is this core a wire?
 		manufacturer: <str>
-		pn: <str>					# [internal] part number
-		mpn: <str>					# manufacturer part number
+		part_number: <str>					# [internal] part number
+		manufacturer_part_number: <str>					# manufacturer part number
 		supplier: <str>				# supplier
-		spn: <str>					# supplier part number
+		supplier_part_number: <str>					# supplier part number
 		cable_type_code: <str>		# SOOW, FC, FCC, TC, MC, AC, MC, UF, PLTC, MV, etc
 		cross_sect_area: <float>	# specified in mm^2. Outer area of cable
 		cross_section: <str>		# oval, circular, siamese
@@ -192,7 +197,7 @@ cable_type: # dictonary of all available raw cable types.
 
 		layer: # list of shields and insulation layers on outside of cable
 			layer_number: <int>			# counted from inside to outside of cable
-			layer_type: <str>				# insulation, semiconductor, shield, screen, concentric neutral
+			layer_type: <str>				# insulation, semiconductor, shield, screen, concentric neutral, jacket
 			material: <str>
 			volt_rating: <float>	# voltage rating for insulation layer
 			temp_rating: <float>	# temp rating for insulation layer. Specified in degrees centigrade
@@ -205,10 +210,10 @@ term_cable_type:	# dictionary of available manufactuered cables,
 					# connectors defined on a term_cable are accessed based on dot notation
 					# wire, cable and term_cable designators must all be unique
 	- manufacturer: <str>		# Manufacturer of term_cable
-	  pn: <str>					# [internal] part number
-	  mpn: <str>				# manufacturer part number
+	  part_number: <str>					# [internal] part number
+	  manufacturer_part_number: <str>				# manufacturer part number
 	  supplier: <str>			# supplier
-	  spn: <str>				# supplier part number
+	  supplier_part_number: <str>				# supplier part number
 	  cable: <str>				# ID of cable. Only one of wire or cable can be specified
 	  wire: <str>				# ID of wire
 	  nom_length: <float>		# nominal length in meters
@@ -231,10 +236,10 @@ term_cable_type:	# dictionary of available manufactuered cables,
 location_type:	# dictionary of available location types
 	<str>:		# unique ID of location type
 		manufacturer: <str>			# Manufacturer of term_cable
-		pn: <str>					# [internal] part number
-		mpn: <str>					# manufacturer part number
+		part_number: <str>					# [internal] part number
+		manufacturer_part_number: <str>					# manufacturer part number
 		supplier: <str>				# supplier
-		spn: <str>					# supplier part number
+		supplier_part_number: <str>					# supplier part number
 		width: <float>				# overall width of location, specified in mm
 		height: <float>				# overall height of location, specified in mm
 		depth: <float>				# overall depth of location, specified in mm
