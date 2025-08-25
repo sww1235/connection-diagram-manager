@@ -8,6 +8,10 @@ use crate::datatypes::internal_types::{location::Location, Library, Project};
 use log::{trace, warn};
 
 //TODO: add page templates with proper borders and titleblocks
+//TODO: instead of page templates, make a configurable page border/titleblock
+//
+//
+//TODO: add function that lays out all locations on one page
 
 /// `pdf_all_locations` generates a pdf for the entire project
 pub fn pdf_all_locations(_project: &Project, _library: &Library, _page_size: PaperSize) {

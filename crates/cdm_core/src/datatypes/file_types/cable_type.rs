@@ -21,7 +21,7 @@ pub struct CableType {
     /// Cable Type Code
     ///
     /// SOOW, NM, USE, etc
-    pub cable_type_code: Option<String>,
+    pub cable_type_code: Option<String>, //TODO: maybe add a flag for plenum vs riser?
     /// Cable cross sectional area, in mm^2
     pub cross_sect_area: f64,
     /// Cable cross section shape
@@ -35,7 +35,7 @@ pub struct CableType {
     /// diameter of cable in mm
     pub diameter: Option<f64>,
     /// map of cores in cable
-    pub cable_cores: HashMap<String, CableCore>,
+    pub cable_cores: HashMap<String, CableCore>, //TODO: some way of indicating twisted pairs?
     /// vector of exterior insulation/shielding layers
     pub insul_layers: Vec<CableLayer>,
 }

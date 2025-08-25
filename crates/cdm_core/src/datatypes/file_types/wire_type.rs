@@ -22,7 +22,7 @@ pub struct WireType {
     pub supplier_part_number: Option<String>,
     /// The material the conductor or central element
     /// of the wire is made out of
-    pub material: Option<String>,
+    pub material: Option<String>, //TODO: make this required
     /// If the wire is insulated
     pub insulated: bool,
     /// What material the wire is insulated with

@@ -7,6 +7,11 @@ use log::{debug, info};
 
 use serde::{Deserialize, Serialize};
 
+//TODO: switch this to toml rather than yaml or find new yaml library. Also switch all library and
+//project formats to same chosen format
+//
+//TODO: Also provide a brief format doc in the introduction.
+
 /// `Config` represents configuration options for the various cdm binary programs
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Config {
@@ -14,7 +19,7 @@ pub struct Config {
     /// [`Library`](crate::datatypes::internal_types::Library)
     pub library_files: Vec<PathBuf>,
     /// `no_default_libraries` prevents loading of default libraries provided with the application
-    pub no_default_libraries: bool,
+    pub no_default_libraries: Option<bool>,
 }
 
 /// `read_config_file` reads an indivdiual configuration yaml file into a [`fs::File`]

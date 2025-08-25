@@ -12,6 +12,7 @@ use cdm_traits::partial_empty::PartialEmpty;
 use super::location_type::LocationType;
 
 /// `Location` represents a physical instance of a locationType
+/// TODO: add page/sheet number for pdf generation and printing
 #[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
 pub struct Location {
     /// Internal `id` of location instance

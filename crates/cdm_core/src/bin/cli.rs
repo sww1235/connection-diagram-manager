@@ -3,6 +3,8 @@
 //! `cdm_cli` is a command line interface for Connection Diagram Manager
 //! that allows for basic operations directly, as well as launching both
 //! a TUI and a proper GUI.
+//!
+//! Config file can live in either root project directory or src directory under root directory.
 
 //TODO: change datafile parsing to parse individual files, and keep track of which files, which
 //values came from.

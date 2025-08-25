@@ -59,7 +59,7 @@ pub struct WireType {
     /// Specified in K
     pub insul_temp_rating: Option<ucum::Kelvin<f64>>,
     /// Insulation Color
-    pub insul_color: Option<String>,
+    pub insul_color: Option<String>, //TODO: change to enum
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
 }
