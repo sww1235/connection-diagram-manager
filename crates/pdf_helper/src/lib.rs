@@ -5,15 +5,13 @@ pub mod paper;
 /// `scale` is a ratio for scaling objects during PDF rendering
 pub mod scale;
 
+use dimensioned::{ucum, Dimensionless};
+use log::warn;
 use lopdf::content::{Content, Operation};
 use lopdf::dictionary;
 use lopdf::{Document, Object, Stream};
+use thiserror::Error;
 
-use dimensioned::{ucum, Dimensionless};
-
-use log::warn;
-
-use std::io;
 use std::path::{Path, PathBuf};
 use std::str;
 
@@ -109,14 +107,14 @@ impl PDFPage {
     /// * `text`: the text that will be added to the pdf page
     /// * `font`: a `PDFFont` object representing a font defined for use in a PDF document
     /// * `font_size`: Font size specified in points. This is used internally as a multiple
-    ///     of the standard PDF user space unit size 1/72 inch
+    ///   of the standard PDF user space unit size 1/72 inch
     /// * `line_spacing`: text line spacing in multiples of line height
     /// * `text width`: An optional parameter that defines the width of the text element. If
-    ///     `None`, the width of the page minus the margins is used.
+    ///   `None`, the width of the page minus the margins is used.
     /// * `x_pos`: horizontal starting position of text insertion, with 0 on left side of page
-    ///     inside the margin
+    ///   inside the margin
     /// * `y_pos`: vertical starting position of text insertion, with 0 on the bottom side of page,
-    ///     inside the margin
+    ///   inside the margin
     ///
     /// # Errors
     ///
@@ -248,10 +246,10 @@ impl PDFPage {
     /// * `text`: the text that will be added to the pdf page
     /// * `font`: a `PDFFont` object representing a font defined for use in a PDF document
     /// * `font_size`: Font size specified in points. This is used internally as a multiple
-    ///     of the standard PDF user space unit size 1/72 inch
+    ///   of the standard PDF user space unit size 1/72 inch
     /// * `line_spacing`: text line spacing in multiples of line height
     /// * `text width`: An optional parameter that defines the width of the text element. If
-    ///     `None`, the width of the page minus the margins is used.
+    ///   `None`, the width of the page minus the margins is used.
     /// * `x_pos`: horizontal starting position of text insertion, with 0 on left side of page
     /// * `y_pos`: vertical starting position of text insertion, with 0 on the bottom side of page
     ///
@@ -289,8 +287,8 @@ fn loop_nodes(
         //TODO: investigate subroots
         let operation = match node {
             usvg::Node::Group(group) => loop_nodes(group, x_pos, y_pos, scale),
-            usvg::Node::Path(ref path) => convert_path(path, x_pos, y_pos, scale),
-            usvg::Node::Image(ref image) => convert_image(image, x_pos, y_pos, scale),
+            usvg::Node::Path(path) => convert_path(path, x_pos, y_pos, scale),
+            usvg::Node::Image(image) => convert_image(image, x_pos, y_pos, scale),
             usvg::Node::Text(_) => Vec::new(), // should already be converted into paths
         };
         group_operations.extend(operation);
@@ -303,7 +301,6 @@ fn loop_nodes(
 /// represented as `a`:`b`.
 /// For example, 1:2 would double the size of the object on the page, relative to its actual size,
 /// and 2:1 would half the size of the object. This is equal scaling in both X and Y direction.
-
 fn convert_path(
     path: &usvg::Path,
     x_pos: ucum::Meter<f64>,
@@ -668,7 +665,7 @@ impl<'a> PDFDocument<'a> {
                     font.font_face.global_bounding_box().x_max.into(),
                     font.font_face.global_bounding_box().y_max.into(),
                 ],
-                "ItalicAngle" => font.font_face.italic_angle().unwrap_or(0.0),
+                "ItalicAngle" => font.font_face.italic_angle(),
                 "Ascent" => font.font_face.ascender(),
                 "Decent" => font.font_face.descender(),
                 "Leading" => font.font_face.line_gap(),
@@ -825,24 +822,22 @@ impl<'a> PDFDocument<'a> {
 }
 
 /// `Error` is the list of errors that can occur in `PDFHelper`
-#[derive(Debug)]
+#[derive(Error, Debug)]
 #[non_exhaustive]
 pub enum Error {
     /// Errors relating to linebreaking
-    ParagraphBreaking(ParagraphError),
+    ParagraphBreaking(#[from] ParagraphError),
     /// Errors relating to PDF creation and export
-    PDFError(lopdf::Error),
+    PDFError(#[from] lopdf::Error),
     /// error in loading fonts
     FontLoading(String), //TODO: fix this to use actual error type
     /// error in parsing svg data
-    SVGError(USVGError),
+    SVGError(#[from] USVGError),
     /// Errors from [`std::io`]
-    IOError(std::io::Error),
+    IOError(#[from] std::io::Error),
     /// Other errors
     Other(String),
 }
-
-impl std::error::Error for Error {}
 
 #[allow(clippy::match_same_arms)]
 impl std::fmt::Display for Error {
@@ -854,48 +849,6 @@ impl std::fmt::Display for Error {
             Error::SVGError(ref e) => write!(f, "SVG: {e}"),
             Error::IOError(ref e) => write!(f, "IO error: {e}"),
             Error::Other(ref e) => write!(f, "{e}"),
-        }
-    }
-}
-
-impl From<ParagraphError> for Error {
-    fn from(e: ParagraphError) -> Self {
-        Error::ParagraphBreaking(e)
-    }
-}
-
-impl From<io::Error> for Error {
-    fn from(e: io::Error) -> Self {
-        Error::IOError(e)
-    }
-}
-impl From<USVGError> for Error {
-    fn from(e: USVGError) -> Self {
-        Error::SVGError(e)
-    }
-}
-impl From<lopdf::Error> for Error {
-    fn from(e: lopdf::Error) -> Self {
-        match e {
-            lopdf::Error::ContentDecode
-            | lopdf::Error::DictKey
-            | lopdf::Error::Header
-            | lopdf::Error::ObjectIdMismatch
-            | lopdf::Error::ObjectNotFound
-            | lopdf::Error::Offset(..)
-            | lopdf::Error::PageNumberNotFound(..)
-            | lopdf::Error::Parse { .. }
-            | lopdf::Error::ReferenceLimit
-            | lopdf::Error::BracketLimit
-            | lopdf::Error::Trailer
-            | lopdf::Error::Type
-            | lopdf::Error::UTF8
-            | lopdf::Error::Syntax(..)
-            | lopdf::Error::Xref(..)
-            | lopdf::Error::Invalid(..)
-            | lopdf::Error::NoOutlines
-            | lopdf::Error::Decryption(..) => Error::PDFError(e),
-            lopdf::Error::IO(er) => Error::IOError(er),
         }
     }
 }

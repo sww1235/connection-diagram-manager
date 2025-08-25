@@ -31,7 +31,7 @@ pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
             input,
             "This derive macro only works on structs with a field called id.",
         ));
-    };
+    }
 
     let struct_name = input.ident;
 
@@ -40,11 +40,12 @@ pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
     #[allow(clippy::explicit_iter_loop)]
     for f in fields.iter() {
         let field_name = f.ident.clone();
-        if let Some(fname) = &field_name {
-            if fname == "id" {
-                continue;
-            }
+        if let Some(fname) = &field_name
+            && fname == "id"
+        {
+            continue;
         }
+
         // use colons to set field values dummy
         equality_checks.push(quote! {
             let field = ::cdm_traits::merge::StructField {

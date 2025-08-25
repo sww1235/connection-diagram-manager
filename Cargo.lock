@@ -177,6 +177,7 @@ dependencies = [
  "paragraph_breaker",
  "pdf_helper",
  "simple_logger",
+ "thiserror",
  "usvg",
 ]
 
@@ -311,6 +312,7 @@ dependencies = [
  "serde",
  "serde_yaml",
  "simple_logger",
+ "thiserror",
  "usvg",
 ]
 
@@ -576,6 +578,7 @@ version = "0.0.1"
 dependencies = [
  "log",
  "simple_logger",
+ "thiserror",
 ]
 
 [[package]]
@@ -874,6 +877,7 @@ dependencies = [
  "lopdf",
  "rustybuzz",
  "simple_logger",
+ "thiserror",
 ]
 
 [[package]]
@@ -892,6 +896,7 @@ dependencies = [
  "paragraph_breaker",
  "rustybuzz",
  "simple_logger",
+ "thiserror",
  "usvg",
 ]
 

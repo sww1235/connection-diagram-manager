@@ -17,6 +17,7 @@ log.workspace = true
 lopdf.workspace = true
 rustybuzz.workspace = true
 simple_logger.workspace = true
+thiserror.workspace = true
 usvg.workspace = true
 paragraph_breaker.workspace = true
 # uom.workspace = true

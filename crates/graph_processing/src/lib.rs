@@ -49,6 +49,7 @@ pub struct Node {
 
 impl Graph {
     /// create an empty graph
+    #[must_use]
     pub fn init() -> Self {
         Self { nodes: Vec::new() }
     }
@@ -61,25 +62,27 @@ impl Graph {
         // the entries in visited_list are the indexes of nodes in self.nodes
         let mut visited_list = Vec::new();
         if let Some(node) = self.nodes.first() {
-            self.depth_first_search_inner(node.clone(), &mut visited_list)
+            self.depth_first_search_inner(Rc::clone(node), &mut visited_list);
         }
     }
 
+    /// Recursive inner function in depth first search algorithm
     fn depth_first_search_inner(
         &self,
         node: Rc<RefCell<Node>>,
         visited_list: &mut Vec<Rc<RefCell<Node>>>,
     ) {
-        visited_list.push(node.clone());
+        visited_list.push(Rc::clone(&node));
         for edge in &node.borrow().edges {
             if !visited_list.contains(&edge.destination) {
-                self.depth_first_search_inner(edge.destination.clone(), visited_list);
+                self.depth_first_search_inner(Rc::clone(&edge.destination), visited_list);
             }
         }
     }
 }
 impl Node {
     /// create an empty node
+    #[must_use]
     pub fn new() -> Self {
         Self {
             id: String::new(),
@@ -101,9 +104,9 @@ impl Node {
         self.edges.push(Edge {
             id: id.to_string(),
             destination: node,
-            directed: directed,
-            weight: weight,
-        })
+            directed,
+            weight,
+        });
     }
     /// outputs the degree of the node
     pub fn degree(&self) -> usize {

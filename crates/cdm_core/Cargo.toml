@@ -24,6 +24,7 @@ rustybuzz.workspace = true
 serde.workspace = true
 serde_yaml.workspace = true
 simple_logger.workspace = true
+thiserror.workspace = true
 # uom.workspace = true
 dimensioned.workspace = true
 usvg.workspace = true

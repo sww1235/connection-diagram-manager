@@ -216,7 +216,7 @@ impl Library {
         if let Some(wire_types) = datafile.wire_types {
             for (k, v) in &wire_types {
                 let new_wire_type = wire_type::WireType {
-                    id: k.to_string(),
+                    id: k.clone(),
                     manufacturer: wire_types[k].manufacturer.clone(),
                     model: wire_types[k].model.clone(),
                     part_number: wire_types[k].part_number.clone(),
@@ -257,9 +257,9 @@ impl Library {
                         .borrow_mut()
                         .merge_prompt(&new_wire_type, prompt_fn)?;
                 } else {
-                    trace! {"Inserted WireType: {}, value: {:#?} into main library.",k,v}
+                    trace! {"Inserted WireType: {k}, value: {v:#?} into main library."}
                     self.wire_types
-                        .insert(k.to_string(), Rc::new(RefCell::new(new_wire_type)));
+                        .insert(k.clone(), Rc::new(RefCell::new(new_wire_type)));
                 }
             }
         }
@@ -272,12 +272,12 @@ impl Library {
                 for (core_id, core) in &cable_types[k].cable_cores {
                     if core.is_wire && self.wire_types.contains_key(&core.type_str) {
                         cable_core_map.insert(
-                            core_id.to_string(),
+                            core_id.clone(),
                             CableCore::WireType(Rc::clone(&self.wire_types[&core.type_str])),
                         );
                     } else if !core.is_wire && self.cable_types.contains_key(&core.type_str) {
                         cable_core_map.insert(
-                            core_id.to_string(),
+                            core_id.clone(),
                             CableCore::CableType(Rc::clone(&self.cable_types[&core.type_str])),
                         );
                     } else {
@@ -296,7 +296,7 @@ impl Library {
                             new_wire_type.borrow_mut().id.clone_from(&core.type_str);
                             // insert new_wire_type as core into cable_core_map
                             cable_core_map.insert(
-                                core_id.to_string(),
+                                core_id.clone(),
                                 CableCore::WireType(Rc::clone(&new_wire_type)),
                             );
                             // also insert new_wire_type into library
@@ -309,7 +309,7 @@ impl Library {
                             new_cable_type.borrow_mut().id.clone_from(&core.type_str);
                             // insert new_cable_type as core into cable_core_map
                             cable_core_map.insert(
-                                core_id.to_string(),
+                                core_id.clone(),
                                 CableCore::CableType(Rc::clone(&new_cable_type)),
                             );
                             // also insert new_cable_type into library
@@ -319,7 +319,7 @@ impl Library {
                     }
                 }
                 let new_cable_type = cable_type::CableType {
-                    id: k.to_string(),
+                    id: k.clone(),
                     manufacturer: cable_types[k].manufacturer.clone(),
                     model: cable_types[k].model.clone(),
                     part_number: cable_types[k].part_number.clone(),
@@ -400,10 +400,10 @@ impl Library {
                         .borrow_mut()
                         .merge_prompt(&new_cable_type, prompt_fn)?;
                 } else {
-                    trace! {"Inserted CableType: {}, value: {:#?} into main datastore.",k,v}
+                    trace! {"Inserted CableType: {k}, value: {v:#?} into main datastore."}
 
                     self.cable_types
-                        .insert(k.to_string(), Rc::new(RefCell::new(new_cable_type)));
+                        .insert(k.clone(), Rc::new(RefCell::new(new_cable_type)));
                 }
             }
         }
@@ -412,7 +412,7 @@ impl Library {
         if let Some(pathway_types) = datafile.pathway_types {
             for (k, v) in &pathway_types {
                 let new_pathway_type = pathway_type::PathwayType {
-                    id: k.to_string(),
+                    id: k.clone(),
                     manufacturer: pathway_types[k].manufacturer.clone(),
                     model: pathway_types[k].model.clone(),
                     part_number: pathway_types[k].part_number.clone(),
@@ -441,9 +441,9 @@ impl Library {
                         .borrow_mut()
                         .merge_prompt(&new_pathway_type, prompt_fn)?;
                 } else {
-                    trace! {"Inserted PathwayType: {}, value: {:#?} into main datastore.",k,v}
+                    trace! {"Inserted PathwayType: {k}, value: {v:#?} into main datastore."}
                     self.pathway_types
-                        .insert(k.to_string(), Rc::new(RefCell::new(new_pathway_type)));
+                        .insert(k.clone(), Rc::new(RefCell::new(new_pathway_type)));
                 }
             }
         }
@@ -451,7 +451,7 @@ impl Library {
         if let Some(location_types) = datafile.location_types {
             for (k, v) in &location_types {
                 let new_location_type = location_type::LocationType {
-                    id: k.to_string(),
+                    id: k.clone(),
                     manufacturer: location_types[k].manufacturer.clone(),
                     model: location_types[k].model.clone(),
                     part_number: location_types[k].part_number.clone(),
@@ -478,9 +478,9 @@ impl Library {
                         .borrow_mut()
                         .merge_prompt(&new_location_type, prompt_fn)?;
                 } else {
-                    trace! {"Inserted LocationType: {}, value: {:#?} into main datastore.",k,v}
+                    trace! {"Inserted LocationType: {k}, value: {v:#?} into main datastore."}
                     self.location_types
-                        .insert(k.to_string(), Rc::new(RefCell::new(new_location_type)));
+                        .insert(k.clone(), Rc::new(RefCell::new(new_location_type)));
                 }
             }
         }
@@ -489,7 +489,7 @@ impl Library {
         if let Some(connector_types) = datafile.connector_types {
             for (k, v) in &connector_types {
                 let new_connector_type = connector_type::ConnectorType {
-                    id: k.to_string(),
+                    id: k.clone(),
                     manufacturer: connector_types[k].manufacturer.clone(),
                     model: connector_types[k].model.clone(),
                     part_number: connector_types[k].part_number.clone(),
@@ -535,9 +535,9 @@ impl Library {
                         .borrow_mut()
                         .merge_prompt(&new_connector_type, prompt_fn)?;
                 } else {
-                    trace! {"Inserted ConnectorType: {}, value: {:#?} into main datastore.",k,v}
+                    trace! {"Inserted ConnectorType: {k}, value: {v:#?} into main datastore."}
                     self.connector_types
-                        .insert(k.to_string(), Rc::new(RefCell::new(new_connector_type)));
+                        .insert(k.clone(), Rc::new(RefCell::new(new_connector_type)));
                 }
             }
         }
@@ -545,7 +545,7 @@ impl Library {
         if let Some(term_cable_types) = datafile.term_cable_types {
             for (k, v) in &term_cable_types {
                 let new_term_cable_type = term_cable_type::TermCableType {
-                    id: k.to_string(),
+                    id: k.clone(),
                     manufacturer: term_cable_types[k].manufacturer.clone(),
                     model: term_cable_types[k].model.clone(),
                     part_number: term_cable_types[k].part_number.clone(),
@@ -619,12 +619,10 @@ impl Library {
                                     }
                                     let new_cable_type =
                                         Rc::new(RefCell::new(cable_type::CableType::new()));
-                                    new_cable_type.borrow_mut().id = cable_type_id.to_string();
+                                    new_cable_type.borrow_mut().id = cable_type_id.clone();
                                     // insert new_cable_type into library
-                                    self.cable_types.insert(
-                                        cable_type_id.to_string(),
-                                        Rc::clone(&new_cable_type),
-                                    );
+                                    self.cable_types
+                                        .insert(cable_type_id.clone(), Rc::clone(&new_cable_type));
                                     // then return reference to insert into struct field
                                     term_cable_type::WireCable::CableType(Rc::clone(
                                         &new_cable_type,
@@ -757,9 +755,9 @@ impl Library {
                         .borrow_mut()
                         .merge_prompt(&new_term_cable_type, prompt_fn)?;
                 } else {
-                    trace! {"Inserted TermCableType: {}, value: {:#?} into main datastore.",k,v}
+                    trace! {"Inserted TermCableType: {k}, value: {v:#?} into main datastore."}
                     self.term_cable_types
-                        .insert(k.to_string(), Rc::new(RefCell::new(new_term_cable_type)));
+                        .insert(k.clone(), Rc::new(RefCell::new(new_term_cable_type)));
                 }
             }
         }
@@ -768,7 +766,7 @@ impl Library {
         if let Some(equipment_types) = datafile.equipment_types {
             for (k, v) in &equipment_types {
                 let new_equipment_type = equipment_type::EquipmentType {
-                    id: k.to_string(),
+                    id: k.clone(),
                     manufacturer: equipment_types[k].manufacturer.clone(),
                     model: equipment_types[k].model.clone(),
                     part_number: equipment_types[k].part_number.clone(),
@@ -873,9 +871,9 @@ impl Library {
                         .borrow_mut()
                         .merge_prompt(&new_equipment_type, prompt_fn)?;
                 } else {
-                    trace! {"Inserted EquipmentType: {}, value: {:#?} into main datastore.",k,v}
+                    trace! {"Inserted EquipmentType: {k}, value: {v:#?} into main datastore."}
                     self.equipment_types
-                        .insert(k.to_string(), Rc::new(RefCell::new(new_equipment_type)));
+                        .insert(k.clone(), Rc::new(RefCell::new(new_equipment_type)));
                 }
             }
         }
@@ -997,7 +995,7 @@ impl Project {
         if let Some(pathways) = datafile.pathways {
             for (k, v) in &pathways {
                 let new_pathway = pathway::Pathway {
-                    id: k.to_string(),
+                    id: k.clone(),
                     path_type: {
                         if library.pathway_types.contains_key(&pathways[k].path_type) {
                             Rc::clone(&library.pathway_types[&pathways[k].path_type])
@@ -1009,7 +1007,7 @@ impl Project {
                                 contained_type: "PathwayType".to_string(),
                                 contained_type_id: pathways[k].path_type.clone(),
                                 container_type: "Pathway".to_string(),
-                                container_type_id: k.to_string(),
+                                container_type_id: k.clone(),
                                 datafile_path: datafile.file_path,
                             });
                         }
@@ -1030,9 +1028,9 @@ impl Project {
                         .borrow_mut()
                         .merge_prompt(&new_pathway, prompt_fn)?;
                 } else {
-                    trace! {"Inserted Pathway: {}, value: {:#?} into main datastore.",k,v}
+                    trace! {"Inserted Pathway: {k}, value: {v:#?} into main datastore."}
                     self.pathways
-                        .insert(k.to_string(), Rc::new(RefCell::new(new_pathway)));
+                        .insert(k.clone(), Rc::new(RefCell::new(new_pathway)));
                 }
             }
         }
@@ -1040,7 +1038,7 @@ impl Project {
         if let Some(wires) = datafile.wires {
             for (k, v) in &wires {
                 let new_wire = wire::Wire {
-                    id: k.to_string(),
+                    id: k.clone(),
                     wire_type: {
                         if library.wire_types.contains_key(&wires[k].wire_type) {
                             Rc::clone(&library.wire_types[&wires[k].wire_type])
@@ -1052,7 +1050,7 @@ impl Project {
                                 contained_type: "WireType".to_string(),
                                 contained_type_id: wires[k].wire_type.clone(),
                                 container_type: "Wire".to_string(),
-                                container_type_id: k.to_string(),
+                                container_type_id: k.clone(),
                                 datafile_path: datafile.file_path.clone(),
                             });
                         }
@@ -1071,9 +1069,9 @@ impl Project {
                                 //
                                 return Err(Error::NoContainedDefinitionFound {
                                     contained_type: "Pathway".to_string(),
-                                    contained_type_id: pathway.to_string(),
+                                    contained_type_id: pathway.clone(),
                                     container_type: "Wire".to_string(),
-                                    container_type_id: k.to_string(),
+                                    container_type_id: k.clone(),
                                     datafile_path: datafile.file_path.clone(),
                                 });
                             }
@@ -1099,7 +1097,7 @@ impl Project {
                                         contained_type: "ConnectorType".to_string(),
                                         contained_type_id: wires[k].end1.connector_type.clone(),
                                         container_type: "Wire End 1".to_string(),
-                                        container_type_id: k.to_string(),
+                                        container_type_id: k.clone(),
                                         datafile_path: datafile.file_path,
                                     });
                                 }
@@ -1124,7 +1122,7 @@ impl Project {
                                         contained_type: "ConnectorType".to_string(),
                                         contained_type_id: wires[k].end2.connector_type.clone(),
                                         container_type: "Wire End 2".to_string(),
-                                        container_type_id: k.to_string(),
+                                        container_type_id: k.clone(),
                                         datafile_path: datafile.file_path,
                                     });
                                 }
@@ -1143,16 +1141,16 @@ impl Project {
                         .borrow_mut()
                         .merge_prompt(&new_wire, prompt_fn)?;
                 } else {
-                    trace! {"Inserted Wire: {}, value: {:#?} into main project.",k,v}
+                    trace! {"Inserted Wire: {k}, value: {v:#?} into main project."}
                     self.wires
-                        .insert(k.to_string(), Rc::new(RefCell::new(new_wire)));
+                        .insert(k.clone(), Rc::new(RefCell::new(new_wire)));
                 }
             }
         }
         if let Some(cables) = datafile.cables {
             for (k, v) in &cables {
                 let new_cable = cable::Cable {
-                    id: k.to_string(),
+                    id: k.clone(),
                     cable_type: {
                         // clone string here to avoid moving value out of hashmap.
                         if library.cable_types.contains_key(&cables[k].cable_type) {
@@ -1165,7 +1163,7 @@ impl Project {
                                 contained_type: "CableType".to_string(),
                                 contained_type_id: cables[k].cable_type.clone(),
                                 container_type: "Cable".to_string(),
-                                container_type_id: k.to_string(),
+                                container_type_id: k.clone(),
                                 datafile_path: datafile.file_path.clone(),
                             });
                         }
@@ -1184,9 +1182,9 @@ impl Project {
                                 //
                                 return Err(Error::NoContainedDefinitionFound {
                                     contained_type: "Pathway".to_string(),
-                                    contained_type_id: pathway.to_string(),
+                                    contained_type_id: pathway.clone(),
                                     container_type: "Cable".to_string(),
-                                    container_type_id: k.to_string(),
+                                    container_type_id: k.clone(),
                                     datafile_path: datafile.file_path.clone(),
                                 });
                             }
@@ -1222,7 +1220,7 @@ impl Project {
                                                         .connector_type
                                                         .clone(),
                                                     container_type: "WireCable End 2".to_string(),
-                                                    container_type_id: k.to_string(),
+                                                    container_type_id: k.clone(),
                                                     datafile_path: datafile.file_path,
                                                 });
                                             }
@@ -1278,7 +1276,7 @@ impl Project {
                                                         .connector_type
                                                         .clone(),
                                                     container_type: "WireCable End 2".to_string(),
-                                                    container_type_id: k.to_string(),
+                                                    container_type_id: k.clone(),
                                                     datafile_path: datafile.file_path,
                                                 });
                                             }
@@ -1317,16 +1315,16 @@ impl Project {
                         .borrow_mut()
                         .merge_prompt(&new_cable, prompt_fn)?;
                 } else {
-                    trace! {"Inserted Cable: {}, value: {:#?} into main project.",k,v}
+                    trace! {"Inserted Cable: {k}, value: {v:#?} into main project."}
                     self.cables
-                        .insert(k.to_string(), Rc::new(RefCell::new(new_cable)));
+                        .insert(k.clone(), Rc::new(RefCell::new(new_cable)));
                 }
             }
         }
         if let Some(term_cables) = datafile.term_cables {
             for (k, v) in &term_cables {
                 let new_term_cable = term_cable::TermCable {
-                    id: k.to_string(),
+                    id: k.clone(),
                     term_cable_type: {
                         if library
                             .term_cable_types
@@ -1341,7 +1339,7 @@ impl Project {
                                 contained_type: "TermCableType".to_string(),
                                 contained_type_id: term_cables[k].term_cable_type.clone(),
                                 container_type: "WireCable".to_string(),
-                                container_type_id: k.to_string(),
+                                container_type_id: k.clone(),
                                 datafile_path: datafile.file_path.clone(),
                             });
                         }
@@ -1359,9 +1357,9 @@ impl Project {
                                 //
                                 return Err(Error::NoContainedDefinitionFound {
                                     contained_type: "Pathway".to_string(),
-                                    contained_type_id: pathway.to_string(),
+                                    contained_type_id: pathway.clone(),
                                     container_type: "TermCable".to_string(),
-                                    container_type_id: k.to_string(),
+                                    container_type_id: k.clone(),
                                     datafile_path: datafile.file_path.clone(),
                                 });
                             }
@@ -1381,9 +1379,9 @@ impl Project {
                         .borrow_mut()
                         .merge_prompt(&new_term_cable, prompt_fn)?;
                 } else {
-                    trace! {"Inserted TermCable: {}, value: {:#?} into main project.",k,v}
+                    trace! {"Inserted TermCable: {k}, value: {v:#?} into main project."}
                     self.term_cables
-                        .insert(k.to_string(), Rc::new(RefCell::new(new_term_cable)));
+                        .insert(k.clone(), Rc::new(RefCell::new(new_term_cable)));
                 }
             }
         }
@@ -1391,7 +1389,7 @@ impl Project {
         if let Some(locations) = datafile.locations {
             for (k, v) in &locations {
                 let new_location = location::Location {
-                    id: k.to_string(),
+                    id: k.clone(),
                     location_type: {
                         if library
                             .location_types
@@ -1406,7 +1404,7 @@ impl Project {
                                 contained_type: "LocationType".to_string(),
                                 contained_type_id: locations[k].location_type.clone(),
                                 container_type: "Location".to_string(),
-                                container_type_id: k.to_string(),
+                                container_type_id: k.clone(),
                                 datafile_path: datafile.file_path.clone(),
                             });
                         }
@@ -1441,9 +1439,9 @@ impl Project {
                         .borrow_mut()
                         .merge_prompt(&new_location, prompt_fn)?;
                 } else {
-                    trace! {"Inserted Location: {}, value: {:#?} into main project.",k,v}
+                    trace! {"Inserted Location: {k}, value: {v:#?} into main project."}
                     self.locations
-                        .insert(k.to_string(), Rc::new(RefCell::new(new_location)));
+                        .insert(k.clone(), Rc::new(RefCell::new(new_location)));
                 }
             }
         }
@@ -1509,7 +1507,7 @@ impl Project {
                     };
 
                 let new_equipment = equipment::Equipment {
-                    id: k.to_string(),
+                    id: k.clone(),
                     equip_type: {
                         if library
                             .equipment_types
@@ -1524,7 +1522,7 @@ impl Project {
                                 contained_type: "EquipmentType".to_string(),
                                 contained_type_id: equipment[k].equipment_type.clone(),
                                 container_type: "Equipment".to_string(),
-                                container_type_id: k.to_string(),
+                                container_type_id: k.clone(),
                                 datafile_path: datafile.file_path.clone(),
                             });
                         }
@@ -1541,7 +1539,7 @@ impl Project {
                             } else {
                                 return Err(Error::DefinitionProcessing {
                                     datatype: "Equipment".to_string(),
-                                    datatype_id: k.to_string(),
+                                    datatype_id: k.clone(),
                                     message: format!(
                                     "Mount Type {} on EquipmentID {} not found on EquipmentType {}",
                                     mount_type, k, equipment[k].equipment_type
@@ -1568,9 +1566,9 @@ impl Project {
                         .borrow_mut()
                         .merge_prompt(&new_equipment, prompt_fn)?;
                 } else {
-                    trace! {"Inserted Equipment: {}, value: {:#?} into main project.",k,v}
+                    trace! {"Inserted Equipment: {k}, value: {v:#?} into main project."}
                     self.equipment
-                        .insert(k.to_string(), Rc::new(RefCell::new(new_equipment)));
+                        .insert(k.clone(), Rc::new(RefCell::new(new_equipment)));
                 }
             }
         }
@@ -1683,7 +1681,7 @@ impl std::fmt::Display for Error {
             } => {
                 write!(
                     f,
-                    "{datatype}: {datatype_id} was specified in file: {datafile_path:?}, but no definition was found."
+                    "{datatype}: {datatype_id} was specified in file: {}, but no definition was found.",datafile_path.display()
                 )
             }
             Error::DefinitionProcessing {
@@ -1694,7 +1692,7 @@ impl std::fmt::Display for Error {
             } => {
                 write!(
                     f,
-                    "{datatype}: {datatype_id} found in file: {datafile_path:?}, had error during processing: {message}."
+                    "{datatype}: {datatype_id} found in file: {}, had error during processing: {message}.",datafile_path.display()
                 )
             }
             Error::DefinitionEmpty {
@@ -1704,7 +1702,8 @@ impl std::fmt::Display for Error {
             } => {
                 write!(
                     f,
-                    "Definition empty for {datatype}: {datatype_id} in file: {datafile_path:?}"
+                    "Definition empty for {datatype}: {datatype_id} in file: {}",
+                    datafile_path.display()
                 )
             }
             Error::NoContainedDefinitionFound {
@@ -1714,7 +1713,7 @@ impl std::fmt::Display for Error {
                 ref container_type_id,
                 ref datafile_path,
             } => {
-                write!(f, "{contained_type}: {contained_type_id} specified in {container_type}: {container_type_id} in file: {datafile_path:?}, not found in libraries, either read from datafiles or implemented in program logic. Check your spelling.")
+                write!(f, "{contained_type}: {contained_type_id} specified in {container_type}: {container_type_id} in file: {}, not found in libraries, either read from datafiles or implemented in program logic. Check your spelling.", datafile_path.display())
             }
             Error::DataMergeError {
                 ref datatype,

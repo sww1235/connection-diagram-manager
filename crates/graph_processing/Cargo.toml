@@ -16,6 +16,7 @@ workspace = true
 [dependencies]
 log.workspace = true
 simple_logger.workspace = true
+thiserror.workspace = true
 
 
 [lib]

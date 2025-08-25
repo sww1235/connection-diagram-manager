@@ -31,9 +31,9 @@ pub fn pdf_all_locations(_project: &Project, _library: &Library, _page_size: Pap
 /// * `page_size` - the target page size of the PDF file
 /// * `margins` - the margin sizes of the PDF page
 /// * `scale` - optional - specifies the scale of the rendered objects relative to their full size,
-///     represented as a:b.
-///     For example, 1:2 would double the size of the object on the page, relative to its actual size,
-///     and 2:1 would half the size of the object
+///   represented as a:b.
+///   For example, 1:2 would double the size of the object on the page, relative to its actual size,
+///   and 2:1 would half the size of the object
 ///
 /// # Errors
 ///
@@ -59,9 +59,9 @@ pub fn pdf_one_location(
 /// * `project` - the `Project` that contains this location
 /// * `reference_location` - the `Location` that will be rendered as a PDF
 /// * `scale` - optional - specifies the scale of the rendered objects relative to their full size,
-///     represented as `a`:`b`.
-///     For example, 1:2 would double the size of the object on the page, relative to its actual size,
-///     and 2:1 would half the size of the object. This is equal scaling in both X and Y direction.
+///   represented as `a`:`b`.
+///   For example, 1:2 would double the size of the object on the page, relative to its actual size,
+///   and 2:1 would half the size of the object. This is equal scaling in both X and Y direction.
 ///
 /// # Errors
 ///

@@ -31,7 +31,7 @@ pub fn expand_partial_empty(input: DeriveInput) -> syn::Result<TokenStream> {
             input,
             "this derive macro only works on structs with a field called id",
         ));
-    };
+    }
 
     let struct_name = input.ident;
 
