@@ -1,0 +1,23 @@
+[package]
+name = "graph_processing"
+version = "0.0.1"
+authors.workspace = true
+edition.workspace = true
+repository.workspace = true
+description = "Graph Layout and Processing Library"
+keywords = ["Graph", "Layout", "Routing", "Crossing"]
+categories = ["Algorithms"]
+license.workspace = true
+
+[lints]
+workspace = true
+
+
+[dependencies]
+log.workspace = true
+simple_logger.workspace = true
+
+
+[lib]
+name = "graph_processing"
+path = "src/lib.rs"
