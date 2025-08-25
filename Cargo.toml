@@ -5,7 +5,7 @@ resolver = "2"
 
 [workspace.package]
 authors = ["Stephen Walker-Weinshenker"]
-edition = "2021"
+edition = "2024"
 repository = "https://github.com/sww1235/connection-diagram-manager-rust"
 license = "MIT OR Apache-2.0"
 
@@ -16,7 +16,7 @@ log = "~0"
 rustybuzz = "~0"
 serde = { version = "~1", features = ["derive"] }
 serde_yaml = "~0"
-simple_logger = "~4"
+simple_logger = "~5"
 usvg = "~0"
 lopdf = "~0"
 cdm_macros = {path = "crates/cdm_macros/", version = "~0"}
@@ -24,6 +24,7 @@ cdm_traits = {path = "crates/cdm_traits/", version = "~0"}
 paragraph_breaker = {path = "crates/paragraph_breaker/", version = "~0"}
 pdf_helper = {path = "crates/pdf_helper/", version = "~0"}
 #unit_utils = {path = "crates/unit_utils", version = "~0"}
+graph_processing = {path = "crates/graph_processing", version = "~0"}
 
 # per uom docs, enabling serde support for bigint and bigrational stuff
 #num-rational = { version = "*", features = ["serde"] }
