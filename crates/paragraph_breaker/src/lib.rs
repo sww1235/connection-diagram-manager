@@ -1,6 +1,10 @@
 //https://github.com/jaroslov/knuth-plass-thoughts/blob/master/plass.md
 
-use dimensioned::{ucum, MapUnsafe};
+use num_rational::Rational64;
+use uom::{
+    num::Zero,
+    si::{length::point_printers, rational64::Length},
+};
 
 use log::trace;
 
@@ -14,7 +18,7 @@ struct ParagraphWord {
     /// index of next word
     next: Option<usize>,
     /// word breaking score
-    score: Option<ucum::Meter<f64>>,
+    score: Option<Length>,
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -30,7 +34,7 @@ pub fn to_lines(
     text: &str,
     font_data: &rustybuzz::Face,
     font_size: u32,
-    textbox_width: ucum::Meter<f64>,
+    textbox_width: Length,
     text_direction: rustybuzz::Direction,
     text_language: rustybuzz::Language,
 ) -> Result<(Vec<String>, rustybuzz::GlyphBuffer), Error> {
@@ -68,17 +72,17 @@ pub fn to_lines(
     let units_per_em: u32 = u32::try_from(font_data.units_per_em()).unwrap_or(u32::MIN);
     trace! {"units_per_em: {}", units_per_em};
 
-    let point = (1.0_f64 / 72.0_f64) * ucum::IN_US;
     //https://stackoverflow.com/a/68387730/3342767
-    let em_width = f64::from(font_size) * point;
+    let em_width = Length::new::<point_printers>(Rational64::from_integer(font_size.into()));
 
-    let space_width =
-        f64::from(space_buffer.glyph_positions()[0].x_advance) * em_width / f64::from(units_per_em);
+    let space_width = Rational64::from_integer(space_buffer.glyph_positions()[0].x_advance.into())
+        * em_width
+        / Rational64::from_integer(units_per_em.into());
 
     let mut words = text_to_words(text)?;
 
     let max_width = textbox_width;
-    let ideal_width = textbox_width - (textbox_width * 0.1_f64);
+    let ideal_width = textbox_width - (textbox_width * Rational64::new(1, 10));
 
     line_break_internal(
         &mut words,
@@ -99,41 +103,43 @@ pub fn to_lines(
 fn line_break_internal(
     words: &mut [ParagraphWord],
     shaped_text: &rustybuzz::GlyphBuffer,
-    em_width: ucum::Meter<f64>,
-    space_width: ucum::Meter<f64>,
+    em_width: Length,
+    space_width: Length,
     units_per_em: u32,
     current_word_index: usize,
-    ideal_width: ucum::Meter<f64>,
-    max_width: ucum::Meter<f64>,
+    ideal_width: Length,
+    max_width: Length,
 ) -> Result<(), Error> {
     let glyph_infos = shaped_text.glyph_infos();
     let glyph_positions = shaped_text.glyph_positions();
 
     let mut next_word_index = current_word_index + 1;
 
-    let mut line_length = 0.0_f64 * ucum::M; // any unit will do here
+    let mut line_length = Length::zero();
     let first = words[current_word_index].first.unwrap_or(0);
     let last = words[current_word_index].last.unwrap_or(0);
     // current line length is length of first word.
     for glyph in &glyph_positions[first..last] {
-        line_length += f64::from(glyph.x_advance) * em_width / f64::from(units_per_em);
+        line_length += Rational64::from_integer(glyph.x_advance.into()) * em_width
+            / Rational64::from_integer(units_per_em.into());
     }
     // the best score is current line length, squared
     let mut best_score = ideal_width - line_length;
-    // I think this works?
-    best_score = best_score.map_unsafe(|v| v * v);
+    // I think this works, but it is ugly and will probably break.
+    best_score.value = best_score.value * best_score.value;
     // best tail is current break
     let mut best_tail = next_word_index;
 
     // scan down word list looking for better entries
     while next_word_index < words.len() {
         // get width of new potential word
-        let mut word_width = 0.0_f64 * ucum::M; // any unit will do here
+        let mut word_width = Length::zero();
 
         let first = words[next_word_index].first.unwrap_or(0);
         let last = words[next_word_index].last.unwrap_or(0);
         for glyph in &glyph_positions[first..last] {
-            word_width += f64::from(glyph.x_advance) * em_width / f64::from(units_per_em);
+            word_width += Rational64::from_integer(glyph.x_advance.into()) * em_width
+                / Rational64::from_integer(units_per_em.into());
         }
         // if the new word will make the line too long, stop
         if (line_length + word_width) >= max_width {
@@ -142,7 +148,7 @@ fn line_break_internal(
         // compute a new line length score
         let mut line_score = ideal_width - (line_length + word_width);
         // I think this works?
-        line_score = line_score.map_unsafe(|v| v * v);
+        line_score.value = line_score.value * line_score.value;
         // add a word and a space to the current line
         line_length += word_width + space_width; // need to figure out space width
 
@@ -162,9 +168,9 @@ fn line_break_internal(
         }
 
         // is this new line_score better than current best_score
-        if (line_score + words[next_word_index].score.unwrap_or(0.0_f64 * ucum::M)) < best_score {
+        if (line_score + words[next_word_index].score.unwrap_or(Length::zero())) < best_score {
             // update to this new score
-            best_score = line_score + words[next_word_index].score.unwrap_or(0.0_f64 * ucum::M);
+            best_score = line_score + words[next_word_index].score.unwrap_or(Length::zero());
             // track the new tail
             best_tail = next_word_index;
         }
@@ -177,7 +183,7 @@ fn line_break_internal(
 
     // the last word of the paragraph doesn't contribute to the score
     if (words[current_word_index].next.unwrap_or(0) + 1) == words.len() {
-        words[current_word_index].score = Some(0.0_f64 * ucum::M);
+        words[current_word_index].score = Some(Length::zero());
     }
     Ok(())
 }
@@ -223,7 +229,7 @@ fn text_to_words(text: &str) -> Result<Vec<ParagraphWord>, Error> {
         first: None,
         last: None,
         next: None,
-        score: Some(0.0_f64 * ucum::M),
+        score: Some(Length::zero()),
     });
     Ok(words)
 }
@@ -275,31 +281,32 @@ fn to_lines_internal(words: &[ParagraphWord], text: &str) -> Vec<String> {
 fn greedy_break(
     words: &mut [ParagraphWord],
     shaped_text: &rustybuzz::GlyphBuffer,
-    em_width: ucum::Meter<f64>,
-    space_width: ucum::Meter<f64>,
+    em_width: Length,
+    space_width: Length,
     units_per_em: u16,
-    ideal_width: ucum::Meter<f64>,
-    max_width: ucum::Meter<f64>,
+    ideal_width: Length,
+    max_width: Length,
 ) -> Result<(), Error> {
     let glyph_positions = shaped_text.glyph_positions();
 
-    let mut line_length = 0.0_f64 * ucum::M; // any unit will do here
+    let mut line_length = Length::zero();
 
     let mut line_next = 0;
 
     let mut internal_index = 0;
 
     while internal_index < words.len() {
-        let mut word_width = 0.0_f64 * ucum::M;
+        let mut word_width = Length::zero();
         let first = words[internal_index].first.unwrap_or(0);
         let last = words[internal_index].last.unwrap_or(0);
         for glyph in &glyph_positions[first..last] {
-            word_width += f64::from(glyph.x_advance) * em_width / f64::from(units_per_em);
+            word_width += Rational64::from_integer(glyph.x_advance.into()) * em_width
+                / Rational64::from_integer(units_per_em.into());
         }
         if (line_length + word_width + space_width) >= ideal_width {
             words[line_next].next = Some(internal_index - 1);
             line_next = internal_index - 1;
-            line_length = 0.0_f64 * ucum::M;
+            line_length = Length::zero();
         }
         line_length += word_width + space_width; // This should work
         if line_length < max_width {

@@ -20,8 +20,8 @@ simple_logger.workspace = true
 thiserror.workspace = true
 usvg.workspace = true
 paragraph_breaker.workspace = true
-# uom.workspace = true
-dimensioned.workspace = true
+uom.workspace = true
+#dimensioned.workspace = true
 
 
 [lib]
