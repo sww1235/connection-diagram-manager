@@ -4,7 +4,7 @@ use std::fmt;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use dimensioned::ucum;
+use uom::si::{length::millimeter, rational64::Length};
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::partial_empty::PartialEmpty;
@@ -72,9 +72,9 @@ pub struct ConnectorJoin {
     /// output, bidirectiona, passive)
     pub direction: Option<String>,
     /// location of connector on face from left of visrep. Origin is bottom left
-    pub x: ucum::Meter<f64>,
+    pub x: Length,
     /// location of connector on face from bottom of visrep. Origin is bottom left
-    pub y: ucum::Meter<f64>,
+    pub y: Length,
 }
 impl EquipmentType {
     /// Creates an empty instance of `EquipmentType`
@@ -100,8 +100,9 @@ impl fmt::Display for ConnectorJoin {
         if let Some(direction) = &self.direction {
             writeln!(f, "Direction: {direction}")?;
         }
-        writeln!(f, "X coordinate: {}", self.x)?;
-        writeln!(f, "Y coordinate: {}", self.y)?;
+        //TODO: allow specifying units
+        writeln!(f, "X coordinate: {}", self.x.get::<millimeter>())?;
+        writeln!(f, "Y coordinate: {}", self.y.get::<millimeter>())?;
         Ok(())
     }
 }

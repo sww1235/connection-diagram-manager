@@ -5,18 +5,25 @@ pub mod paper;
 /// `scale` is a ratio for scaling objects during PDF rendering
 pub mod scale;
 
-use dimensioned::{ucum, Dimensionless};
+use std::path::{Path, PathBuf};
+use std::str;
+
 use log::warn;
 use lopdf::content::{Content, Operation};
 use lopdf::dictionary;
 use lopdf::{Document, Object, Stream};
+use num_rational::Rational64;
 use thiserror::Error;
-
-use std::path::{Path, PathBuf};
-use std::str;
+use uom::{
+    num::{ToPrimitive, Zero},
+    si::{
+        length::{millimeter, point_printers},
+        rational64::Length,
+    },
+};
+use usvg::Error as USVGError;
 
 use paragraph_breaker::Error as ParagraphError;
-use usvg::Error as USVGError;
 
 /// `PDFDocument` is a helper type to properly generate PDFs
 /// It allows for easier tracking of default page size, available fonts
@@ -53,7 +60,7 @@ pub struct PDFPage {
 
 /// `PDFTextRenderMode` is an enumeration
 /// of defined text rendering modes in pdf documents
-#[allow(clippy::exhaustive_enums)]
+#[expect(clippy::exhaustive_enums)]
 pub enum PDFTextRenderMode {
     /// Normal Text, colored with current non-stroking color
     Fill,
@@ -75,13 +82,13 @@ pub enum PDFTextRenderMode {
 #[derive(Debug, Default, PartialEq, Clone, Copy)]
 pub struct Margins {
     /// `top` margin
-    pub top: ucum::Meter<f64>,
+    pub top: Length,
     /// `bottom` margin
-    pub bottom: ucum::Meter<f64>,
+    pub bottom: Length,
     /// `left` margin
-    pub left: ucum::Meter<f64>,
+    pub left: Length,
     /// `right` margin
-    pub right: ucum::Meter<f64>,
+    pub right: Length,
 }
 
 impl PDFTextRenderMode {
@@ -119,16 +126,16 @@ impl PDFPage {
     /// # Errors
     ///
     /// Can error if text position is incorrect, or if text fails to shape or split into lines
-    #[allow(clippy::too_many_arguments)]
+    #[expect(clippy::too_many_arguments)]
     pub fn add_text(
         &mut self,
         text: String,
         font_size: u32,
         font: &PDFFont,
         line_spacing: u32,
-        text_width: ucum::Meter<f64>,
-        x_pos: ucum::Meter<f64>,
-        y_pos: ucum::Meter<f64>,
+        text_width: Length,
+        x_pos: Length,
+        y_pos: Length,
         text_direction: rustybuzz::Direction,
         text_language: rustybuzz::Language,
         text_render_mode: &PDFTextRenderMode,
@@ -148,30 +155,34 @@ impl PDFPage {
         // then check to see if text starts inside page boundaries.
         let current_page_size = self.page_size.size();
 
-        #[allow(clippy::arithmetic_side_effects)]
         if x_pos > current_page_size.0
-            || x_pos < 0.0_f64 * ucum::IN_US
+            || x_pos < Length::zero()
             || y_pos > current_page_size.1
-            || y_pos < 0.0_f64 * ucum::IN_US
+            || y_pos < Length::zero()
         {
             return Err(Error::Other(format!(
                 concat!(
                     "Position of text X: {}, Y: {}, ",
                     "is outside page boundaries. Please fix this"
                 ),
-                current_page_size.0, current_page_size.1,
+                //TODO: allow user to configure default units
+                x_pos.get::<millimeter>(),
+                y_pos.get::<millimeter>(),
             )));
         }
-        #[allow(clippy::arithmetic_side_effects)]
+        #[expect(clippy::arithmetic_side_effects)]
         if x_pos > current_page_size.0 - self.margins.right
-            || x_pos < 0.0_f64 * ucum::IN_US + self.margins.left
+            || x_pos < self.margins.left
             || y_pos > current_page_size.1 - self.margins.top
-            || y_pos < 0.0_f64 * ucum::IN_US + self.margins.bottom
+            || y_pos < self.margins.bottom
         {
             warn! {concat!{"Position of text X: {}, Y: {}, ",
             "is outside page margin boundaries. ",
             "Please fix this if unintentional"},
-            current_page_size.0, current_page_size.1}
+                //TODO: allow user to configure default units
+                x_pos.get::<millimeter>(),
+                y_pos.get::<millimeter>(),
+            }
         }
 
         // BT begins a text element. it takes no operands
@@ -194,10 +205,37 @@ impl PDFPage {
         // time after BT, it sets the initial text position on the page.
         // Note: PDF documents have Y=0 at the bottom. Thus 600 to print text near the top.
         // This is setting the position of the first line
-        let x = *(((x_pos + self.margins.left) / PDFDocument::pdf_point()).value());
-        let y = *(((y_pos + self.margins.bottom) / PDFDocument::pdf_point()).value());
-        self.operations
-            .push(Operation::new("Td", vec![x.into(), y.into()]));
+        let x = x_pos + self.margins.left;
+        let y = y_pos + self.margins.bottom;
+        self.operations.push(Operation::new(
+            "Td",
+            vec![
+                {
+                    if x.get::<point_printers>().is_integer() {
+                        x.get::<point_printers>().to_integer().into()
+                    } else {
+                        x.get::<point_printers>()
+                            .to_f64()
+                            .ok_or(Error::Other(
+                                "Converting from Rational64 to f64 failed".to_string(),
+                            ))?
+                            .into()
+                    }
+                },
+                {
+                    if y.get::<point_printers>().is_integer() {
+                        y.get::<point_printers>().to_integer().into()
+                    } else {
+                        y.get::<point_printers>()
+                            .to_f64()
+                            .ok_or(Error::Other(
+                                "Converting from Rational64 to f64 failed".to_string(),
+                            ))?
+                            .into()
+                    }
+                },
+            ],
+        ));
 
         // sets rendering mode of text
         self.operations
@@ -259,8 +297,8 @@ impl PDFPage {
     pub fn add_svg(
         &mut self,
         svg_string: &str,
-        x_pos: ucum::Meter<f64>,
-        y_pos: ucum::Meter<f64>,
+        x_pos: Length,
+        y_pos: Length,
         scale: Option<scale::ScalingFactor>,
     ) -> Result<(), Error> {
         use usvg::Tree;
@@ -270,7 +308,7 @@ impl PDFPage {
         if tree.has_text_nodes() {
             return Err(Error::Other("Text Nodes in tree".to_string()));
         }
-        let new_operations = loop_nodes(tree.root(), x_pos, y_pos, scale);
+        let new_operations = loop_nodes(tree.root(), x_pos, y_pos, scale)?;
         self.operations.extend(new_operations);
         Ok(())
     }
@@ -278,22 +316,22 @@ impl PDFPage {
 /// `loop_nodes` loops over a SVG tree or subtree and outputs a vector of PDF operations
 fn loop_nodes(
     parent: &usvg::Group,
-    x_pos: ucum::Meter<f64>,
-    y_pos: ucum::Meter<f64>,
+    x_pos: Length,
+    y_pos: Length,
     scale: Option<scale::ScalingFactor>,
-) -> Vec<Operation> {
+) -> Result<Vec<Operation>, Error> {
     let mut group_operations = Vec::new();
     for node in parent.children() {
         //TODO: investigate subroots
         let operation = match node {
-            usvg::Node::Group(group) => loop_nodes(group, x_pos, y_pos, scale),
-            usvg::Node::Path(path) => convert_path(path, x_pos, y_pos, scale),
-            usvg::Node::Image(image) => convert_image(image, x_pos, y_pos, scale),
+            usvg::Node::Group(group) => loop_nodes(group, x_pos, y_pos, scale)?,
+            usvg::Node::Path(path) => convert_path(path, x_pos, y_pos, scale)?,
+            usvg::Node::Image(image) => convert_image(image, x_pos, y_pos, scale)?,
             usvg::Node::Text(_) => Vec::new(), // should already be converted into paths
         };
         group_operations.extend(operation);
     }
-    group_operations
+    Ok(group_operations)
 }
 
 /// `convert_path` convets an SVG path element into a vector of PDF operations
@@ -303,10 +341,10 @@ fn loop_nodes(
 /// and 2:1 would half the size of the object. This is equal scaling in both X and Y direction.
 fn convert_path(
     path: &usvg::Path,
-    x_pos: ucum::Meter<f64>,
-    y_pos: ucum::Meter<f64>,
+    x_pos: Length,
+    y_pos: Length,
     scale: Option<scale::ScalingFactor>,
-) -> Vec<Operation> {
+) -> Result<Vec<Operation>, Error> {
     use usvg::tiny_skia_path::{PathSegment, Point};
     let mut new_operations = Vec::new();
 
@@ -328,9 +366,41 @@ fn convert_path(
                 last_point = scaled_p;
                 // begin a new path (subpath in pdf language) by moving the current point to
                 // coordinates (x,y)
-                let x = *(((f64::from(scaled_p.x) * x_pos) / PDFDocument::pdf_point()).value());
-                let y = *(((f64::from(scaled_p.y) * y_pos) / PDFDocument::pdf_point()).value());
-                new_operations.push(Operation::new("m", vec![x.into(), y.into()]));
+                let x = Rational64::approximate_float(scaled_p.x).ok_or(Error::Other(
+                    "Converting from Rational64 to f64 failed".to_string(),
+                ))? * x_pos;
+                let y = Rational64::approximate_float(scaled_p.y).ok_or(Error::Other(
+                    "Converting from Rational64 to f64 failed".to_string(),
+                ))? * y_pos;
+                new_operations.push(Operation::new(
+                    "m",
+                    vec![
+                        {
+                            if x.get::<point_printers>().is_integer() {
+                                x.get::<point_printers>().to_integer().into()
+                            } else {
+                                x.get::<point_printers>()
+                                    .to_f64()
+                                    .ok_or(Error::Other(
+                                        "Converting from Rational64 to f64 failed".to_string(),
+                                    ))?
+                                    .into()
+                            }
+                        },
+                        {
+                            if y.get::<point_printers>().is_integer() {
+                                y.get::<point_printers>().to_integer().into()
+                            } else {
+                                y.get::<point_printers>()
+                                    .to_f64()
+                                    .ok_or(Error::Other(
+                                        "Converting from Rational64 to f64 failed".to_string(),
+                                    ))?
+                                    .into()
+                            }
+                        },
+                    ],
+                ));
             }
             PathSegment::LineTo(p) => {
                 let mut scaled_p = p;
@@ -357,14 +427,14 @@ fn convert_path(
                 // Formuala from https://stackoverflow.com/a/3162732/3342767
 
                 // begining control point
-                #[allow(clippy::arithmetic_side_effects)]
+                #[expect(clippy::arithmetic_side_effects)]
                 let cp1 = last_point
                     + Point::from_xy(
                         (2.0 / 3.0) * (scaled_p0 - last_point).x,
                         (2.0 / 3.0) * (scaled_p0 - last_point).y,
                     );
                 // end control point
-                #[allow(clippy::arithmetic_side_effects)]
+                #[expect(clippy::arithmetic_side_effects)]
                 let cp2 = scaled_p1
                     + Point::from_xy(
                         (2.0 / 3.0) * (scaled_p0 - scaled_p1).x,
@@ -422,7 +492,7 @@ fn convert_path(
             }
         }
     }
-    new_operations
+    Ok(new_operations)
 }
 
 /// `convert_image` converts an embedded image in an SVG into a vector of PDF operations.
@@ -430,26 +500,26 @@ fn convert_path(
 /// Currently ignores all embedded images other than SVGs.
 fn convert_image(
     image: &usvg::Image,
-    x_pos: ucum::Meter<f64>,
-    y_pos: ucum::Meter<f64>,
+    x_pos: Length,
+    y_pos: Length,
     scale: Option<scale::ScalingFactor>,
-) -> Vec<Operation> {
+) -> Result<Vec<Operation>, Error> {
     use usvg::ImageKind;
     match &image.kind() {
         ImageKind::JPEG(_) | ImageKind::PNG(_) | ImageKind::GIF(_) | ImageKind::WEBP(_) => {
             // only vector graphic elements allowed
-            warn! {"svg should not contain images or image tags, ignoring"};
-            Vec::new()
+            return Err(Error::Other(
+                "svg should not contain images or image tags".to_string(),
+            ));
         }
         ImageKind::SVG(tree) => loop_nodes(tree.root(), x_pos, y_pos, scale),
     }
 }
 
 impl<'a> PDFDocument<'a> {
-    pub fn pdf_point() -> ucum::Meter<f64> {
+    pub fn pdf_point() -> Length {
         // default userspace units in PDF are digital printers points
-        //#[allow(clippy::arithmetic_side_effects)]
-        (1.0_f64 / 72.0_f64) * ucum::IN_US
+        Length::new::<point_printers>(Rational64::new(1, 1))
     }
 
     /// `new` returns a set up and initialized `PDFDocument`
@@ -593,7 +663,7 @@ impl<'a> PDFDocument<'a> {
     /// # Errors
     ///
     /// Saving the file can error with [`std::io`] errors
-    #[allow(clippy::too_many_lines)]
+    #[expect(clippy::too_many_lines)]
     pub fn write(
         &mut self,
         out_path: &Path,
@@ -648,12 +718,12 @@ impl<'a> PDFDocument<'a> {
                     //
                     // From table 123 of the PDF1.7 specification pdf.
                     let mut font_descriptor_flag: u32 = 0;
-                    #[allow(clippy::arithmetic_side_effects)]
+                    #[expect(clippy::arithmetic_side_effects)]
                     if font.font_face.is_monospaced(){font_descriptor_flag += 2_u32.pow(0); }
                     //if font.font_face.
                     //if
                     //if
-                    #[allow(clippy::arithmetic_side_effects)]
+                    #[expect(clippy::arithmetic_side_effects)]
                     if font.font_face.is_italic() || font.font_face.is_oblique() {font_descriptor_flag += 2_u32.pow(6);}
                     font_descriptor_flag
 
@@ -756,10 +826,20 @@ impl<'a> PDFDocument<'a> {
                 "MediaBox" => vec![
                     0_u16.into(),
                     0_u16.into(),
-                    #[allow(clippy::arithmetic_side_effects)]
-                    (*(page.page_size.size().0/Self::pdf_point()).value()).into(),
-                    #[allow(clippy::arithmetic_side_effects)]
-                    (*(page.page_size.size().1/Self::pdf_point()).value()).into()
+                    #[expect(clippy::arithmetic_side_effects)]
+                    page.page_size.size().0.get::<point_printers>()
+                            .to_f64()
+                            .ok_or(Error::Other(
+                                "Converting from Rational64 to f64 failed".to_string(),
+                            ))?
+                            .into(),
+                    #[expect(clippy::arithmetic_side_effects)]
+                    page.page_size.size().1.get::<point_printers>()
+                            .to_f64()
+                            .ok_or(Error::Other(
+                                "Converting from Rational64 to f64 failed".to_string(),
+                            ))?
+                            .into(),
                 ],
             });
             page_ids.push(page_id.into());
@@ -790,10 +870,21 @@ impl<'a> PDFDocument<'a> {
             "MediaBox" => vec![
                 0_u16.into(),
                 0_u16.into(),
-                #[allow(clippy::arithmetic_side_effects)]
-                (*(self.default_page_size.size().0/Self::pdf_point()).value()).into(),
-                #[allow(clippy::arithmetic_side_effects)]
-                (*(self.default_page_size.size().1/Self::pdf_point()).value()).into()
+                self.default_page_size.size().0.get::<point_printers>()
+                            .to_f64()
+                            .ok_or(Error::Other(
+                                "Converting from Rational64 to f64 failed".to_string(),
+                            ))?
+                            .into(),
+
+                #[expect(clippy::arithmetic_side_effects)]
+                self.default_page_size.size().1.get::<point_printers>()
+                            .to_f64()
+                            .ok_or(Error::Other(
+                                "Converting from Rational64 to f64 failed".to_string(),
+                            ))?
+                            .into(),
+
             ],
         };
 
@@ -839,7 +930,7 @@ pub enum Error {
     Other(String),
 }
 
-#[allow(clippy::match_same_arms)]
+#[expect(clippy::match_same_arms)]
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match *self {

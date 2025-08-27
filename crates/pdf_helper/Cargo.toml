@@ -21,6 +21,7 @@ thiserror.workspace = true
 usvg.workspace = true
 paragraph_breaker.workspace = true
 uom.workspace = true
+num-rational.workspace = true
 #dimensioned.workspace = true
 
 

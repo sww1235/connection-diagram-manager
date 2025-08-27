@@ -1,3 +1,4 @@
+use num_rational::Rational64;
 use serde::{Deserialize, Serialize};
 
 /// `WireType` represents a particular type of wire
@@ -31,25 +32,25 @@ pub struct WireType {
     pub wire_type_code: Option<String>,
     /// Conductor cross sectional area.
     /// specified in mm^2
-    pub conductor_cross_sect_area: f64,
+    pub conductor_cross_sect_area: Rational64,
     /// Overall wire cross sectional area, incluidng insulation.
     /// specified in mm^2
-    pub overall_cross_sect_area: Option<f64>,
+    pub overall_cross_sect_area: Option<Rational64>,
     /// Insulation thickness in mm
-    pub insulation_thickness: Option<f64>,
+    pub insulation_thickness: Option<Rational64>,
     /// If conductor is stranded
     pub stranded: bool,
     /// How many strands is conductor made of
     pub num_strands: Option<u64>,
     /// cross sectional area of individual strand.
     /// specified in mm^2
-    pub strand_cross_sect_area: Option<f64>,
+    pub strand_cross_sect_area: Option<Rational64>,
     /// Insulation voltage rating.
     /// Specified in volts
-    pub insulation_volt_rating: Option<f64>,
+    pub insulation_volt_rating: Option<Rational64>,
     /// Insulation temperature rating.
     /// Specified in ℃
-    pub insulation_temp_rating: Option<f64>,
+    pub insulation_temp_rating: Option<Rational64>,
     /// Insulation color
     pub insulation_color: Option<String>,
     /// Secondary insulation color, for stripe or marker

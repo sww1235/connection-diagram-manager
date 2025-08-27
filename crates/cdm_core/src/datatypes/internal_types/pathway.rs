@@ -3,12 +3,12 @@ use std::fmt;
 use std::path::PathBuf;
 use std::rc::Rc;
 
+use uom::si::{length::millimeter, rational64::Length};
+
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::partial_empty::PartialEmpty;
 
 use super::pathway_type::PathwayType;
-
-use dimensioned::ucum;
 
 /// `Pathway` represents a physical instance of a pathway
 #[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
@@ -21,8 +21,8 @@ pub struct Pathway {
     pub identifier: Option<String>,
     /// Optional description
     pub description: Option<String>,
-    /// length TODO: change to correct units
-    pub length: ucum::Meter<f64>,
+    /// length
+    pub length: Length,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
 }
@@ -60,7 +60,7 @@ impl fmt::Display for Pathway {
         if let Some(identifier) = &self.identifier {
             writeln!(f, "Equipment Identifier: {identifier}")?;
         }
-        writeln!(f, "Length: {}", &self.length)?;
+        writeln!(f, "Length: {}", &self.length.get::<millimeter>())?;
 
         if let Some(description) = &self.description {
             writeln!(f, "Description: {description}")?;

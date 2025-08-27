@@ -1,6 +1,7 @@
-use serde::{Deserialize, Serialize};
-
 use std::collections::HashMap;
+
+use num_rational::Rational64;
+use serde::{Deserialize, Serialize};
 
 /// `Location` represents a physical instance of a pathway
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
@@ -26,9 +27,9 @@ pub struct Location {
 #[allow(clippy::module_name_repetitions)]
 pub struct SubLocation {
     /// Distance from left side of parent location
-    pub x: f64,
+    pub x: Rational64,
     /// Distance from bottom of parent location
-    pub y: f64,
+    pub y: Rational64,
     /// Distance from back of parent location
-    pub z: f64,
+    pub z: Rational64,
 }

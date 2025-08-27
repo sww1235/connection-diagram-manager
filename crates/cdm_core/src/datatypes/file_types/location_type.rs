@@ -1,3 +1,4 @@
+use num_rational::Rational64;
 use serde::{Deserialize, Serialize};
 
 /// `LocationType` represents a type/model of location.
@@ -23,15 +24,15 @@ pub struct LocationType {
     /// Main material of Location Type
     pub material: Option<String>,
     /// Width of Location Type
-    pub width: f64,
+    pub width: Rational64,
     /// Height of Location Type
-    pub height: f64,
+    pub height: Rational64,
     /// Depth of Location Type
-    pub depth: f64,
+    pub depth: Rational64,
     /// Usable Width of Location Type
-    pub usable_width: f64,
+    pub usable_width: Rational64,
     /// Usable Height of Location Type
-    pub usable_height: f64,
+    pub usable_height: Rational64,
     /// Usable Depth of Location Type
-    pub usable_depth: f64,
+    pub usable_depth: Rational64,
 }

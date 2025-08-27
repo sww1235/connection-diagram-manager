@@ -1,3 +1,4 @@
+use num_rational::Rational64;
 use serde::{Deserialize, Serialize};
 
 /// `Cable` represents a particular instance of a `CableType`
@@ -14,7 +15,7 @@ pub struct Cable {
     /// Optional description
     pub description: Option<String>,
     /// length of cable
-    pub length: f64,
+    pub length: Rational64,
     /// Pathway containing instance
     pub pathway: Option<String>,
     /// Connectors on one end of `Cable`

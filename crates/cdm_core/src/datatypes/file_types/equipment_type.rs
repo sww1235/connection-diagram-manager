@@ -1,5 +1,7 @@
-use super::svg::Svg;
+use num_rational::Rational64;
 use serde::{Deserialize, Serialize};
+
+use super::svg::Svg;
 
 /// `EquipmentType` represents a type of equipment.
 ///
@@ -59,7 +61,7 @@ pub struct Connector {
     /// output, bidirectiona, passive)
     pub direction: Option<String>,
     /// location of connector on face from left of visrep. Origin is bottom left
-    pub x: f64,
+    pub x: Rational64,
     /// location of connector on face from bottom of visrep. Origin is bottom left
-    pub y: f64,
+    pub y: Rational64,
 }

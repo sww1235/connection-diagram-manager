@@ -40,8 +40,14 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use dimensioned::{f64prefixes, ucum};
 use log::{error, info, trace, warn};
+use uom::si::{
+    area::square_millimeter,
+    electric_potential::volt,
+    length::millimeter,
+    rational64::{Area, ElectricPotential, Length, TemperatureInterval},
+    temperature_interval::kelvin,
+};
 
 use super::file_types::DataFile;
 use super::util_types::CrossSection;
@@ -227,22 +233,28 @@ impl Library {
                     insulated: wire_types[k].insulated,
                     insulation_material: wire_types[k].insulation_material.clone(),
                     wire_type_code: wire_types[k].wire_type_code.clone(),
-                    conductor_cross_sect_area: wire_types[k].conductor_cross_sect_area
-                        * ucum::M2
-                        * f64prefixes::MEGA, //TODO: implement unit text option in file_types
+                    //FIXME: Added these conversions as stopgap to get this to compile after
+                    //switching to uom. Investigating directly using serde to do this instead.
+                    conductor_cross_sect_area: Area::new::<square_millimeter>(
+                        wire_types[k].conductor_cross_sect_area,
+                    ),
                     overall_cross_sect_area: wire_types[k]
                         .overall_cross_sect_area
-                        .map(|x| x * ucum::M2 * f64prefixes::MEGA),
+                        .map(|x| Area::new::<square_millimeter>(x)),
                     insulation_thickness: wire_types[k]
                         .insulation_thickness
-                        .map(|x| x * ucum::M * f64prefixes::MEGA),
+                        .map(|x| Length::new::<millimeter>(x)),
                     stranded: wire_types[k].stranded,
                     num_strands: wire_types[k].num_strands,
                     strand_cross_sect_area: wire_types[k]
                         .strand_cross_sect_area
-                        .map(|x| x * ucum::M2 * f64prefixes::MEGA),
-                    insul_volt_rating: wire_types[k].insulation_volt_rating.map(|x| x * ucum::V),
-                    insul_temp_rating: wire_types[k].insulation_temp_rating.map(|x| x * ucum::K),
+                        .map(|x| Area::new::<square_millimeter>(x)),
+                    insul_volt_rating: wire_types[k]
+                        .insulation_volt_rating
+                        .map(|x| ElectricPotential::new::<volt>(x)),
+                    insul_temp_rating: wire_types[k]
+                        .insulation_temp_rating
+                        .map(|x| TemperatureInterval::new::<kelvin>(x)),
                     insul_color: wire_types[k].insulation_color.clone(),
                     contained_datafile_path: datafile.file_path.clone(),
                 };
@@ -327,12 +339,12 @@ impl Library {
                     supplier: cable_types[k].supplier.clone(),
                     supplier_part_number: cable_types[k].supplier_part_number.clone(),
                     cable_type_code: cable_types[k].cable_type_code.clone(),
-                    cross_sect_area: cable_types[k].cross_sect_area * ucum::M2 * f64prefixes::MEGA,
-                    height: cable_types[k].height * ucum::M * f64prefixes::KILO,
-                    width: cable_types[k].width * ucum::M * f64prefixes::KILO,
+                    cross_sect_area: Area::new::<square_millimeter>(cable_types[k].cross_sect_area),
+                    height: Length::new::<millimeter>(cable_types[k].height),
+                    width: Length::new::<millimeter>(cable_types[k].width),
                     diameter: cable_types[k]
                         .diameter
-                        .map(|x| x * ucum::M * f64prefixes::MEGA),
+                        .map(|x| Length::new::<millimeter>(x)),
                     cross_section: {
                         match cable_types[k].cross_section.to_uppercase().as_str() {
                             "OVAL" => CrossSection::Oval,
@@ -379,8 +391,12 @@ impl Library {
                                     }
                                 },
                                 material: layer.material.clone(),
-                                volt_rating: layer.volt_rating.map(|x| x * ucum::V),
-                                temp_rating: layer.temp_rating.map(|x| x * ucum::K),
+                                volt_rating: layer
+                                    .volt_rating
+                                    .map(|x| ElectricPotential::new::<volt>(x)),
+                                temp_rating: layer
+                                    .temp_rating
+                                    .map(|x| TemperatureInterval::new::<kelvin>(x)),
                                 color: layer.color.clone(),
                             };
                             new_layers.push(new_layer);
@@ -422,12 +438,12 @@ impl Library {
                     description: pathway_types[k].description.clone(),
                     size: pathway_types[k].size.clone(),
                     trade_size: pathway_types[k].trade_size.clone(),
-                    width: pathway_types[k].width * ucum::M * f64prefixes::KILO,
-                    height: pathway_types[k].height * ucum::M * f64prefixes::KILO,
+                    width: Length::new::<millimeter>(pathway_types[k].width),
+                    height: Length::new::<millimeter>(pathway_types[k].height),
                     // no clone needed since numeric types have easy copy implementation
-                    cross_sect_area: pathway_types[k].cross_sect_area
-                        * ucum::M2
-                        * f64prefixes::MEGA,
+                    cross_sect_area: Area::new::<square_millimeter>(
+                        pathway_types[k].cross_sect_area,
+                    ),
                     material: pathway_types[k].material.clone(),
                     contained_datafile_path: datafile.file_path.clone(),
                 };

@@ -1,3 +1,4 @@
+use num_rational::Rational64;
 use serde::{Deserialize, Serialize};
 
 /// `Pathway` represents a physical instance of a pathway
@@ -13,5 +14,5 @@ pub struct Pathway {
     /// Optional description
     pub description: Option<String>,
     /// Length of pathway
-    pub length: f64,
+    pub length: Rational64,
 }

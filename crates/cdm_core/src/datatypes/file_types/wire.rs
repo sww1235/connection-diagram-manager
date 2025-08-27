@@ -1,3 +1,4 @@
+use num_rational::Rational64;
 use serde::{Deserialize, Serialize};
 
 /// `Wire` represents a particular instance of a `WireType`
@@ -14,7 +15,7 @@ pub struct Wire {
     /// Optional description
     pub description: Option<String>,
     /// length of `Wire`
-    pub length: f64,
+    pub length: Rational64,
     /// Pathway containing instance
     pub pathway: Option<String>,
     /// Connectors on one end of `Wire`

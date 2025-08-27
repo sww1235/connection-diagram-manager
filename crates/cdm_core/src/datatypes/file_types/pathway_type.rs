@@ -1,3 +1,4 @@
+use num_rational::Rational64;
 use serde::{Deserialize, Serialize};
 
 /// `PathwayType` represents a route for wires and cables to take from one
@@ -25,11 +26,11 @@ pub struct PathwayType {
     /// Trade Size of pathway
     pub trade_size: Option<String>,
     /// Height of pathway in mm
-    pub height: f64,
+    pub height: Rational64,
     /// Width of pathway in mm
-    pub width: f64,
+    pub width: Rational64,
     /// Inner cross sectional area of pathway
-    pub cross_sect_area: f64,
+    pub cross_sect_area: Rational64,
     /// Main material of pathway
     pub material: Option<String>,
 }

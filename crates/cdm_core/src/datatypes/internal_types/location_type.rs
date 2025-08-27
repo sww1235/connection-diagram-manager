@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::partial_empty::PartialEmpty;
 
-use dimensioned::ucum;
+use uom::si::{length::millimeter, rational64::Length};
 
 //TODO: create physical location stuff
 /// `LocationType` represents a type/model of location.
@@ -32,24 +32,24 @@ pub struct LocationType {
     /// Main material of Location Type
     pub material: Option<String>,
     /// Width of Location Type
-    pub width: ucum::Meter<f64>,
+    pub width: Length,
     /// Height of Location Type
-    pub height: ucum::Meter<f64>,
+    pub height: Length,
     /// Depth of Location Type
-    pub depth: ucum::Meter<f64>,
+    pub depth: Length,
     /// Usable Width of Location Type
-    pub usable_width: ucum::Meter<f64>,
+    pub usable_width: Length,
     /// Usable Height of Location Type
-    pub usable_height: ucum::Meter<f64>,
+    pub usable_height: Length,
     /// Usable Depth of Location Type
-    pub usable_depth: ucum::Meter<f64>,
+    pub usable_depth: Length,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
 }
 
 impl LocationType {
     /// Creates an empty instance of `LocationType`
-    #[allow(clippy::arithmetic_side_effects)]
+    #[expect(clippy::arithmetic_side_effects)]
     #[must_use]
     pub fn new() -> Self {
         Self::default()
@@ -83,12 +83,16 @@ impl fmt::Display for LocationType {
         if let Some(material) = &self.material {
             writeln!(f, "Material: {material}")?;
         }
-        writeln!(f, "Width: {}", self.width)?;
-        writeln!(f, "Height: {}", self.height)?;
-        writeln!(f, "Depth: {}", self.depth)?;
-        writeln!(f, "Usable Width: {}", self.usable_width)?;
-        writeln!(f, "Usable Height: {}", self.usable_height)?;
-        writeln!(f, "Usable Depth: {}", self.usable_depth)?;
+        writeln!(f, "Width: {}", self.width.get::<millimeter>())?;
+        writeln!(f, "Height: {}", self.height.get::<millimeter>())?;
+        writeln!(f, "Depth: {}", self.depth.get::<millimeter>())?;
+        writeln!(f, "Usable Width: {}", self.usable_width.get::<millimeter>())?;
+        writeln!(
+            f,
+            "Usable Height: {}",
+            self.usable_height.get::<millimeter>()
+        )?;
+        writeln!(f, "Usable Depth: {}", self.usable_depth.get::<millimeter>())?;
         Ok(())
     }
 }

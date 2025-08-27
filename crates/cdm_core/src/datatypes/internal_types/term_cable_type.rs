@@ -3,7 +3,7 @@ use std::fmt;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use dimensioned::ucum;
+use uom::si::{length::millimeter, rational64::Length};
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::{connector, partial_empty::PartialEmpty};
@@ -32,9 +32,9 @@ pub struct TermCableType {
     /// Underlying wire or cable type of Terminated Cable
     pub wire_cable: WireCable,
     /// Nominal Length of Terminated Cable
-    pub nominal_length: Option<ucum::Meter<f64>>, //TODO: decide if one of these should be optional or not
+    pub nominal_length: Option<Length>,
     /// Actual Length of Terminated Cable
-    pub actual_length: Option<ucum::Meter<f64>>,
+    pub actual_length: Option<Length>,
     /// One end of Terminated Cable.
     pub end1: Vec<Connector>,
     /// The other end of Terminated Cable
@@ -125,11 +125,15 @@ impl fmt::Display for TermCableType {
         }
         if let Some(nominal_length) = &self.nominal_length {
             //TODO: implement units functions to do proper conversions
-            write!(f, "Nominal Length: {nominal_length}mm")?;
+            write!(
+                f,
+                "Nominal Length: {}mm",
+                nominal_length.get::<millimeter>()
+            )?;
         }
         if let Some(actual_length) = &self.actual_length {
             //TODO: implement units functions to do proper conversions
-            write!(f, "Actual Length: {actual_length} mm")?;
+            write!(f, "Actual Length: {} mm", actual_length.get::<millimeter>())?;
         }
         //TODO: implement loops for cable ends.
         Ok(())

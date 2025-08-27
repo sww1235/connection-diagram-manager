@@ -1,5 +1,7 @@
-use super::svg::Svg;
+use num_rational::Rational64;
 use serde::{Deserialize, Serialize};
+
+use super::svg::Svg;
 /// `ConnectorType` represents a particular type of connector.
 ///
 /// Connector can represent more than just a metal or plastic blob on the end of a cable, it can
@@ -33,13 +35,13 @@ pub struct ConnectorType {
     /// Male, Female, RPMale, RPFemale, Hermaphrodidic, unknown
     pub gender: Option<String>,
     /// height of connector in mm
-    pub height: f64,
+    pub height: Rational64,
     /// width of connector in mm
-    pub width: f64,
+    pub width: Rational64,
     /// depth of connector in mm
-    pub depth: f64,
+    pub depth: Rational64,
     /// diameter of circular connectors in mm
-    pub diameter: Option<f64>,
+    pub diameter: Option<Rational64>,
     /// pins inside connector.
     ///
     /// Pin index is not guaranteed to be the same. Use `ConnectorPin.id` for confirming equality.

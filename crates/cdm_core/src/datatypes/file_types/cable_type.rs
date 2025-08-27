@@ -1,3 +1,4 @@
+use num_rational::Rational64;
 use serde::{Deserialize, Serialize};
 
 use std::collections::HashMap;
@@ -23,17 +24,17 @@ pub struct CableType {
     /// SOOW, NM, USE, etc
     pub cable_type_code: Option<String>, //TODO: maybe add a flag for plenum vs riser?
     /// Cable cross sectional area, in mm^2
-    pub cross_sect_area: f64,
+    pub cross_sect_area: Rational64,
     /// Cable cross section shape
     ///
     /// Oval, circular, siamese
     pub cross_section: String,
     /// height of cable in mm
-    pub height: f64,
+    pub height: Rational64,
     /// width of cable in mm
-    pub width: f64,
+    pub width: Rational64,
     /// diameter of cable in mm
-    pub diameter: Option<f64>,
+    pub diameter: Option<Rational64>,
     /// map of cores in cable
     pub cable_cores: HashMap<String, CableCore>, //TODO: some way of indicating twisted pairs?
     /// vector of exterior insulation/shielding layers
@@ -59,9 +60,9 @@ pub struct CableLayer {
     /// `Material of CableLayer`
     pub material: Option<String>,
     /// Voltage rating for insuation layer
-    pub volt_rating: Option<f64>,
+    pub volt_rating: Option<Rational64>,
     /// Temperature rating for insulation layer, specified in ℃
-    pub temp_rating: Option<f64>,
+    pub temp_rating: Option<Rational64>,
     /// color of `CableLayer`
     pub color: Option<String>,
 }

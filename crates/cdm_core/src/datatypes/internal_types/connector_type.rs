@@ -1,9 +1,9 @@
 use std::fmt;
 use std::path::PathBuf;
 
-use super::svg::Svg;
+use uom::si::{length::millimeter, rational64::Length};
 
-use dimensioned::ucum;
+use super::svg::Svg;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::partial_empty::PartialEmpty;
@@ -43,14 +43,14 @@ pub struct ConnectorType {
     ///
     /// Male, Female, RPMale, RPFemale, Hermaphrodidic, unknown
     pub gender: Option<String>,
-    /// height of connector in mm
-    pub height: ucum::Meter<f64>,
-    /// width of connector in mm
-    pub width: ucum::Meter<f64>,
-    /// depth of connector in mm
-    pub depth: ucum::Meter<f64>,
-    /// diameter of circular connectors in mm
-    pub diameter: Option<ucum::Meter<f64>>,
+    /// height of connector
+    pub height: Length,
+    /// width of connector
+    pub width: Length,
+    /// depth of connector
+    pub depth: Length,
+    /// diameter of circular connectors
+    pub diameter: Option<Length>,
     /// pins inside connector.
     ///
     /// Pin index is not guaranteed to be the same. Use `ConnectorPin.id` for confirming equality.
@@ -61,6 +61,7 @@ pub struct ConnectorType {
     pub contained_datafile_path: PathBuf,
 }
 
+//TODO: store pin cross sectional area or something equivalent, also store pin type
 /// Represents an individual pin in a `ConnectorType`
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct ConnectorPin {
@@ -141,10 +142,10 @@ impl fmt::Display for ConnectorType {
         if let Some(gender) = &self.gender {
             writeln!(f, "Gender: {gender}")?;
         }
-        writeln!(f, "Height: {:.2}", self.height)?;
-        writeln!(f, "Width: {:.2}", self.width)?;
+        writeln!(f, "Height: {:.2}", self.height.get::<millimeter>())?;
+        writeln!(f, "Width: {:.2}", self.width.get::<millimeter>())?;
         if let Some(diameter) = &self.diameter {
-            writeln!(f, "Diameter: {diameter:.2} mm")?;
+            writeln!(f, "Diameter: {:.2} mm", diameter.get::<millimeter>())?;
         }
         for pin in &self.pins {
             writeln!(f, "{pin}")?;

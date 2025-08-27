@@ -1,11 +1,12 @@
 use std::fmt;
 use std::path::PathBuf;
 
+use log::{trace, warn};
+use num_rational::Rational64;
+
 use pdf_helper::{paper::PaperSize, scale::ScalingFactor, Margins, PDFDocument, PDFPage};
 
 use crate::datatypes::internal_types::{location::Location, Library, Project};
-
-use log::{trace, warn};
 
 //TODO: add page templates with proper borders and titleblocks
 //TODO: instead of page templates, make a configurable page border/titleblock
@@ -94,12 +95,17 @@ pub fn render_location(
     // check if location will fit on page at specified scale
     #[allow(clippy::arithmetic_side_effects)]
     let location_scale_fit = {
-        (reference_location.location_type.borrow().width * f64::from(scale.unwrap_or_default().a)
-            / f64::from(scale.unwrap_or_default().b))
+        (reference_location.location_type.borrow().width
+            * Rational64::new(
+                scale.unwrap_or_default().a.into(),
+                scale.unwrap_or_default().b.into(),
+            ))
             < (page_width - pdf_page.margins.left - pdf_page.margins.right)
             && (reference_location.location_type.borrow().height
-                * f64::from(scale.unwrap_or_default().a)
-                / f64::from(scale.unwrap_or_default().b))
+                * Rational64::new(
+                    scale.unwrap_or_default().a.into(),
+                    scale.unwrap_or_default().b.into(),
+                ))
                 < (page_height - pdf_page.margins.top - pdf_page.margins.bottom)
     };
 

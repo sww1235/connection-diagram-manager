@@ -4,7 +4,7 @@ use std::fmt;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use dimensioned::ucum;
+use uom::si::{length::millimeter, rational64::Length};
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::partial_empty::PartialEmpty;
@@ -52,11 +52,11 @@ impl Location {
 #[allow(clippy::module_name_repetitions)]
 pub struct SubLocation {
     /// Distance from left side of parent location
-    pub x: ucum::Meter<f64>, //TODO: Units?
+    pub x: Length,
     /// Distance from bottom of parent location
-    pub y: ucum::Meter<f64>,
+    pub y: Length,
     /// Distance from back of parent location
-    pub z: ucum::Meter<f64>,
+    pub z: Length,
 }
 
 impl SubLocation {
@@ -107,7 +107,13 @@ impl fmt::Display for Location {
 
 impl fmt::Display for SubLocation {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "x: {}, y: {}, z: {}", self.x, self.y, self.z)?;
+        writeln!(
+            f,
+            "x: {}, y: {}, z: {}",
+            self.x.get::<millimeter>(),
+            self.y.get::<millimeter>(),
+            self.z.get::<millimeter>()
+        )?;
 
         Ok(())
     }

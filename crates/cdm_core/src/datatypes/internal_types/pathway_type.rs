@@ -1,10 +1,14 @@
 use std::fmt;
 use std::path::PathBuf;
 
+use uom::si::{
+    area::square_millimeter,
+    length::millimeter,
+    rational64::{Area, Length},
+};
+
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::partial_empty::PartialEmpty;
-
-use dimensioned::ucum;
 
 /// `PathwayType` represents a route for wires and cables to take from one
 /// [`LocationType`](super::location_type::LocationType) to another.
@@ -32,12 +36,12 @@ pub struct PathwayType {
     pub size: Option<String>,
     /// Trade Size of pathway
     pub trade_size: Option<String>,
-    /// height of pathway in mm
-    pub height: ucum::Meter<f64>,
-    /// width of pathway in mm
-    pub width: ucum::Meter<f64>,
+    /// height of pathway
+    pub height: Length,
+    /// width of pathway
+    pub width: Length,
     /// Inner cross sectional area of pathway
-    pub cross_sect_area: ucum::Meter2<f64>,
+    pub cross_sect_area: Area,
     /// Main material of pathway
     pub material: Option<String>,
     /// datafile the struct instance was read in from
@@ -82,10 +86,14 @@ impl fmt::Display for PathwayType {
         if let Some(trade_size) = &self.trade_size {
             writeln!(f, "Trade Size: {trade_size}")?;
         }
-        writeln!(f, "Height: {:.2}", self.height)?;
-        writeln!(f, "Width: {:.2}", self.width)?;
+        writeln!(f, "Height: {:.2}", self.height.get::<millimeter>())?;
+        writeln!(f, "Width: {:.2}", self.width.get::<millimeter>())?;
         //TODO: implement unit conversion function
-        writeln!(f, "Cross Sectional Area: {:.2} mm^2", self.cross_sect_area)?;
+        writeln!(
+            f,
+            "Cross Sectional Area: {:.2} mm^2",
+            self.cross_sect_area.get::<square_millimeter>()
+        )?;
         if let Some(material) = &self.material {
             writeln!(f, "Material: {material}")?;
         }

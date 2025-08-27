@@ -1,5 +1,11 @@
-use dimensioned::{f64prefixes, ucum};
 use std::fmt;
+
+use num_rational::Rational64;
+use uom::si::{
+    length::{inch, millimeter},
+    rational64::Length,
+};
+
 /// `PaperSize` represents standard paper sizes,
 /// along with options to declare custom sizes in various units.
 /// The provided paper sizes are defined in portrait orientation,
@@ -51,7 +57,7 @@ pub enum PaperSize {
     /// ANSI Arch E paper size
     ArchE,
     /// custom paper size
-    Custom(ucum::Meter<f64>, ucum::Meter<f64>),
+    Custom(Length, Length),
 }
 
 impl PaperSize {
@@ -59,50 +65,81 @@ impl PaperSize {
     /// paper size as a tuple in the specified order.
     #[allow(clippy::arithmetic_side_effects)]
     #[must_use]
-    pub fn size(self) -> (ucum::Meter<f64>, ucum::Meter<f64>) {
+    pub fn size(self) -> (Length, Length) {
         match self {
             // ISO paper sizes are specified in mm
             PaperSize::A0 => (
-                841.0_f64 * ucum::M * f64prefixes::MILLI,
-                1189.0_f64 * ucum::M * f64prefixes::MILLI,
+                Length::new::<millimeter>(Rational64::from_integer(841)),
+                Length::new::<millimeter>(Rational64::from_integer(1189)),
             ),
             PaperSize::A1 => (
-                594.0_f64 * ucum::M * f64prefixes::MILLI,
-                841.0_f64 * ucum::M * f64prefixes::MILLI,
+                Length::new::<millimeter>(Rational64::from_integer(594)),
+                Length::new::<millimeter>(Rational64::from_integer(841)),
             ),
             PaperSize::A2 => (
-                420.0_f64 * ucum::M * f64prefixes::MILLI,
-                594.0_f64 * ucum::M * f64prefixes::MILLI,
+                Length::new::<millimeter>(Rational64::from_integer(420)),
+                Length::new::<millimeter>(Rational64::from_integer(594)),
             ),
             PaperSize::A3 => (
-                297.0_f64 * ucum::M * f64prefixes::MILLI,
-                420.0_f64 * ucum::M * f64prefixes::MILLI,
+                Length::new::<millimeter>(Rational64::from_integer(297)),
+                Length::new::<millimeter>(Rational64::from_integer(420)),
             ),
             PaperSize::A4 => (
-                210.0_f64 * ucum::M * f64prefixes::MILLI,
-                297.0_f64 * ucum::M * f64prefixes::MILLI,
+                Length::new::<millimeter>(Rational64::from_integer(210)),
+                Length::new::<millimeter>(Rational64::from_integer(297)),
             ),
             PaperSize::A5 => (
-                148.0_f64 * ucum::M * f64prefixes::MILLI,
-                210.0_f64 * ucum::M * f64prefixes::MILLI,
+                Length::new::<millimeter>(Rational64::from_integer(148)),
+                Length::new::<millimeter>(Rational64::from_integer(210)),
             ),
             PaperSize::A6 => (
-                105.0_f64 * ucum::M * f64prefixes::MILLI,
-                148.0_f64 * ucum::M * f64prefixes::MILLI,
+                Length::new::<millimeter>(Rational64::from_integer(105)),
+                Length::new::<millimeter>(Rational64::from_integer(148)),
             ),
-            PaperSize::AnsiA => (8.5_f64 * ucum::IN_US, 11.0_f64 * ucum::IN_US),
-            PaperSize::AnsiB => (11.0_f64 * ucum::IN_US, 17.0_f64 * ucum::IN_US),
-            PaperSize::AnsiC => (17.0_f64 * ucum::IN_US, 22.0_f64 * ucum::IN_US),
-            PaperSize::AnsiD => (22.0_f64 * ucum::IN_US, 34.0_f64 * ucum::IN_US),
-            PaperSize::AnsiE => (34.0_f64 * ucum::IN_US, 44.0_f64 * ucum::IN_US),
-            PaperSize::ArchA => (9.0_f64 * ucum::IN_US, 12.0_f64 * ucum::IN_US),
-            PaperSize::ArchB => (12.0_f64 * ucum::IN_US, 18.0_f64 * ucum::IN_US),
-            PaperSize::ArchC => (18.0_f64 * ucum::IN_US, 24.0_f64 * ucum::IN_US),
-            PaperSize::ArchD => (24.0_f64 * ucum::IN_US, 36.0_f64 * ucum::IN_US),
-            PaperSize::ArchE => (36.0_f64 * ucum::IN_US, 48.0_f64 * ucum::IN_US),
-            PaperSize::Tabloid => PaperSize::AnsiB.size(),
-            PaperSize::Legal => (8.5_f64 * ucum::IN_US, 14.0_f64 * ucum::IN_US),
-            PaperSize::Letter => PaperSize::AnsiA.size(),
+            PaperSize::AnsiA | PaperSize::Letter => (
+                Length::new::<inch>(Rational64::new(17, 2)),
+                Length::new::<inch>(Rational64::from_integer(11)),
+            ),
+            PaperSize::AnsiB | PaperSize::Tabloid => (
+                Length::new::<inch>(Rational64::from_integer(11)),
+                Length::new::<inch>(Rational64::from_integer(17)),
+            ),
+            PaperSize::AnsiC => (
+                Length::new::<inch>(Rational64::from_integer(17)),
+                Length::new::<inch>(Rational64::from_integer(22)),
+            ),
+            PaperSize::AnsiD => (
+                Length::new::<inch>(Rational64::from_integer(22)),
+                Length::new::<inch>(Rational64::from_integer(34)),
+            ),
+            PaperSize::AnsiE => (
+                Length::new::<inch>(Rational64::from_integer(34)),
+                Length::new::<inch>(Rational64::from_integer(44)),
+            ),
+            PaperSize::ArchA => (
+                Length::new::<inch>(Rational64::from_integer(9)),
+                Length::new::<inch>(Rational64::from_integer(12)),
+            ),
+            PaperSize::ArchB => (
+                Length::new::<inch>(Rational64::from_integer(12)),
+                Length::new::<inch>(Rational64::from_integer(18)),
+            ),
+            PaperSize::ArchC => (
+                Length::new::<inch>(Rational64::from_integer(18)),
+                Length::new::<inch>(Rational64::from_integer(24)),
+            ),
+            PaperSize::ArchD => (
+                Length::new::<inch>(Rational64::from_integer(24)),
+                Length::new::<inch>(Rational64::from_integer(36)),
+            ),
+            PaperSize::ArchE => (
+                Length::new::<inch>(Rational64::from_integer(36)),
+                Length::new::<inch>(Rational64::from_integer(48)),
+            ),
+            PaperSize::Legal => (
+                Length::new::<inch>(Rational64::new(17, 2)),
+                Length::new::<inch>(Rational64::from_integer(14)),
+            ),
             PaperSize::Custom(short, long) => (short, long),
         }
     }
@@ -113,49 +150,84 @@ impl fmt::Display for PaperSize {
         match self {
             PaperSize::A0 => {
                 if f.alternate() {
-                    writeln!(f, "{}×{}", PaperSize::A0.size().0, PaperSize::A0.size().1)?;
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::A0.size().0.get::<millimeter>(),
+                        PaperSize::A0.size().1.get::<millimeter>()
+                    )?;
                 } else {
                     writeln!(f, "A0")?;
                 }
             }
             PaperSize::A1 => {
                 if f.alternate() {
-                    writeln!(f, "{}×{}", PaperSize::A1.size().0, PaperSize::A1.size().1)?;
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::A1.size().0.get::<millimeter>(),
+                        PaperSize::A1.size().1.get::<millimeter>()
+                    )?;
                 } else {
                     writeln!(f, "A1")?;
                 }
             }
             PaperSize::A2 => {
                 if f.alternate() {
-                    writeln!(f, "{}×{}", PaperSize::A2.size().0, PaperSize::A2.size().1)?;
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::A2.size().0.get::<millimeter>(),
+                        PaperSize::A2.size().1.get::<millimeter>()
+                    )?;
                 } else {
                     writeln!(f, "A2")?;
                 }
             }
             PaperSize::A3 => {
                 if f.alternate() {
-                    writeln!(f, "{}×{}", PaperSize::A3.size().0, PaperSize::A3.size().1)?;
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::A3.size().0.get::<millimeter>(),
+                        PaperSize::A3.size().1.get::<millimeter>()
+                    )?;
                 } else {
                     writeln!(f, "A3")?;
                 }
             }
             PaperSize::A4 => {
                 if f.alternate() {
-                    writeln!(f, "{}×{}", PaperSize::A4.size().0, PaperSize::A4.size().1)?;
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::A4.size().0.get::<millimeter>(),
+                        PaperSize::A4.size().1.get::<millimeter>()
+                    )?;
                 } else {
                     writeln!(f, "A4")?;
                 }
             }
             PaperSize::A5 => {
                 if f.alternate() {
-                    writeln!(f, "{}×{}", PaperSize::A5.size().0, PaperSize::A5.size().1)?;
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::A5.size().0.get::<millimeter>(),
+                        PaperSize::A5.size().1.get::<millimeter>()
+                    )?;
                 } else {
                     writeln!(f, "A5")?;
                 }
             }
             PaperSize::A6 => {
                 if f.alternate() {
-                    writeln!(f, "{}×{}", PaperSize::A6.size().0, PaperSize::A6.size().1)?;
+                    writeln!(
+                        f,
+                        "{}×{}",
+                        PaperSize::A6.size().0.get::<millimeter>(),
+                        PaperSize::A6.size().1.get::<millimeter>()
+                    )?;
                 } else {
                     writeln!(f, "A6")?;
                 }
@@ -165,8 +237,8 @@ impl fmt::Display for PaperSize {
                     writeln!(
                         f,
                         "{}×{}",
-                        PaperSize::AnsiA.size().0,
-                        PaperSize::AnsiA.size().1
+                        PaperSize::AnsiA.size().0.get::<inch>(),
+                        PaperSize::AnsiA.size().1.get::<inch>()
                     )?;
                 } else {
                     writeln!(f, "ANSI A")?;
@@ -177,8 +249,8 @@ impl fmt::Display for PaperSize {
                     writeln!(
                         f,
                         "{}×{}",
-                        PaperSize::AnsiB.size().0,
-                        PaperSize::AnsiB.size().1
+                        PaperSize::AnsiB.size().0.get::<inch>(),
+                        PaperSize::AnsiB.size().1.get::<inch>()
                     )?;
                 } else {
                     writeln!(f, "ANSI B")?;
@@ -189,8 +261,8 @@ impl fmt::Display for PaperSize {
                     writeln!(
                         f,
                         "{}×{}",
-                        PaperSize::AnsiC.size().0,
-                        PaperSize::AnsiC.size().1
+                        PaperSize::AnsiC.size().0.get::<inch>(),
+                        PaperSize::AnsiC.size().1.get::<inch>()
                     )?;
                 } else {
                     writeln!(f, "ANSI C")?;
@@ -201,8 +273,8 @@ impl fmt::Display for PaperSize {
                     writeln!(
                         f,
                         "{}×{}",
-                        PaperSize::AnsiD.size().0,
-                        PaperSize::AnsiD.size().1
+                        PaperSize::AnsiD.size().0.get::<inch>(),
+                        PaperSize::AnsiD.size().1.get::<inch>()
                     )?;
                 } else {
                     writeln!(f, "ANSI D")?;
@@ -213,8 +285,8 @@ impl fmt::Display for PaperSize {
                     writeln!(
                         f,
                         "{}×{}",
-                        PaperSize::AnsiE.size().0,
-                        PaperSize::AnsiE.size().1
+                        PaperSize::AnsiE.size().0.get::<inch>(),
+                        PaperSize::AnsiE.size().1.get::<inch>()
                     )?;
                 } else {
                     writeln!(f, "ANSI E")?;
@@ -225,8 +297,8 @@ impl fmt::Display for PaperSize {
                     writeln!(
                         f,
                         "{}×{}",
-                        PaperSize::ArchA.size().0,
-                        PaperSize::ArchA.size().1
+                        PaperSize::ArchA.size().0.get::<inch>(),
+                        PaperSize::ArchA.size().1.get::<inch>()
                     )?;
                 } else {
                     writeln!(f, "ARCH A")?;
@@ -237,8 +309,8 @@ impl fmt::Display for PaperSize {
                     writeln!(
                         f,
                         "{}×{}",
-                        PaperSize::ArchB.size().0,
-                        PaperSize::ArchB.size().1
+                        PaperSize::ArchB.size().0.get::<inch>(),
+                        PaperSize::ArchB.size().1.get::<inch>()
                     )?;
                 } else {
                     writeln!(f, "ARCH B")?;
@@ -249,8 +321,8 @@ impl fmt::Display for PaperSize {
                     writeln!(
                         f,
                         "{}×{}",
-                        PaperSize::ArchC.size().0,
-                        PaperSize::ArchC.size().1
+                        PaperSize::ArchC.size().0.get::<inch>(),
+                        PaperSize::ArchC.size().1.get::<inch>()
                     )?;
                 } else {
                     writeln!(f, "ARCH C")?;
@@ -261,8 +333,8 @@ impl fmt::Display for PaperSize {
                     writeln!(
                         f,
                         "{}×{}",
-                        PaperSize::ArchD.size().0,
-                        PaperSize::ArchD.size().1
+                        PaperSize::ArchD.size().0.get::<inch>(),
+                        PaperSize::ArchD.size().1.get::<inch>()
                     )?;
                 } else {
                     writeln!(f, "ARCH D")?;
@@ -273,8 +345,8 @@ impl fmt::Display for PaperSize {
                     writeln!(
                         f,
                         "{}×{}",
-                        PaperSize::ArchE.size().0,
-                        PaperSize::ArchE.size().1
+                        PaperSize::ArchE.size().0.get::<inch>(),
+                        PaperSize::ArchE.size().1.get::<inch>()
                     )?;
                 } else {
                     writeln!(f, "ARCH E")?;
@@ -285,8 +357,8 @@ impl fmt::Display for PaperSize {
                     writeln!(
                         f,
                         "{}×{}",
-                        PaperSize::Tabloid.size().0,
-                        PaperSize::Tabloid.size().1
+                        PaperSize::Tabloid.size().0.get::<inch>(),
+                        PaperSize::Tabloid.size().1.get::<inch>()
                     )?;
                 } else {
                     writeln!(f, "TABLOID")?;
@@ -297,8 +369,8 @@ impl fmt::Display for PaperSize {
                     writeln!(
                         f,
                         "{}×{}",
-                        PaperSize::Legal.size().0,
-                        PaperSize::Legal.size().1
+                        PaperSize::Legal.size().0.get::<inch>(),
+                        PaperSize::Legal.size().1.get::<inch>()
                     )?;
                 } else {
                     writeln!(f, "LEGAL")?;
@@ -309,8 +381,8 @@ impl fmt::Display for PaperSize {
                     writeln!(
                         f,
                         "{}×{}",
-                        PaperSize::Letter.size().0,
-                        PaperSize::Letter.size().1
+                        PaperSize::Letter.size().0.get::<inch>(),
+                        PaperSize::Letter.size().1.get::<inch>()
                     )?;
                 } else {
                     writeln!(f, "LETTER")?;
@@ -318,7 +390,7 @@ impl fmt::Display for PaperSize {
             }
             PaperSize::Custom(x, y) => {
                 if f.alternate() {
-                    writeln!(f, "{}×{}", x, y)?;
+                    //writeln!(f, "{}×{}", x, y)?;
                 } else {
                     writeln!(f, "CUSTOM")?;
                 }

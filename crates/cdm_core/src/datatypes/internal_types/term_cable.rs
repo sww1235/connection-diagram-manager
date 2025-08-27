@@ -3,7 +3,7 @@ use std::fmt;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use dimensioned::ucum;
+use uom::si::{length::millimeter, rational64::Length};
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::partial_empty::PartialEmpty;
@@ -36,7 +36,7 @@ impl TermCable {
 
     /// length of `TermCableType`
     #[must_use]
-    pub fn len(&self) -> ucum::Meter<f64> {
+    pub fn len(&self) -> Length {
         self.term_cable_type.borrow().actual_length.unwrap_or(
             self.term_cable_type
                 .borrow()
@@ -75,7 +75,7 @@ impl fmt::Display for TermCable {
         {
             writeln!(f, "Supplier Part Number: {supplier_part_number}")?;
         }
-        writeln!(f, "Length: {}", self.len())?;
+        writeln!(f, "Length: {}", self.len().get::<millimeter>())?;
         if let Some(identifier) = &self.identifier {
             writeln!(f, "Equipment Identifier: {identifier}")?;
         }

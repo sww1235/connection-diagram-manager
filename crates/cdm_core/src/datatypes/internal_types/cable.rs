@@ -3,7 +3,7 @@ use std::fmt;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use dimensioned::ucum;
+use uom::si::{length::millimeter, rational64::Length};
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 
@@ -24,7 +24,7 @@ pub struct Cable {
     /// Optional description
     pub description: Option<String>,
     /// length of wire or cable
-    pub length: ucum::Meter<f64>,
+    pub length: Length,
     /// Pathway containing instance
     pub pathway: Option<Rc<RefCell<Pathway>>>,
     /// One end of `Cable`.
@@ -85,7 +85,7 @@ impl fmt::Display for Cable {
         if let Some(supplier_part_number) = self.cable_type.borrow().supplier_part_number.clone() {
             writeln!(f, "Supplier Part Number: {supplier_part_number}")?;
         }
-        writeln!(f, "Length: {}", self.length)?;
+        writeln!(f, "Length: {}", self.length.get::<millimeter>())?;
 
         if let Some(identifier) = &self.identifier {
             writeln!(f, "Equipment Identifier: {identifier}")?;

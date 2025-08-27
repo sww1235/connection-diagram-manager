@@ -1,17 +1,20 @@
-use super::super::util_types::CrossSection;
-
-use super::wire_type::WireType;
-
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::fmt;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use dimensioned::ucum;
+use uom::si::{
+    area::square_millimeter,
+    length::millimeter,
+    rational64::{Area, ElectricPotential, Length, TemperatureInterval},
+};
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::partial_empty::PartialEmpty;
+
+use super::super::util_types::CrossSection;
+use super::wire_type::WireType;
 
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has one
 /// core, then it is a wire, not a cable.
@@ -35,18 +38,18 @@ pub struct CableType {
     ///
     /// SOOW, NM, USE, etc
     pub cable_type_code: Option<String>,
-    /// Cable cross sectional area, in mm^2
-    pub cross_sect_area: ucum::Meter2<f64>,
+    /// Cable cross sectional area
+    pub cross_sect_area: Area,
     /// Cable cross section shape
     ///
     /// Oval, circular, siamese
     pub cross_section: CrossSection,
-    /// height of cable in mm
-    pub height: ucum::Meter<f64>,
-    /// width of cable in mm
-    pub width: ucum::Meter<f64>,
-    /// diameter of cable in mm
-    pub diameter: Option<ucum::Meter<f64>>,
+    /// height of cable
+    pub height: Length,
+    /// width of cable
+    pub width: Length,
+    /// diameter of cable
+    pub diameter: Option<Length>,
     /// map of cores in cable
     pub cable_cores: HashMap<String, CableCore>,
     /// vector of exterior insulation/shielding layers
@@ -77,9 +80,9 @@ pub struct CableLayer {
     /// `Material of CableLayer`
     pub material: Option<String>,
     /// Voltage rating for insuation layer
-    pub volt_rating: Option<ucum::MilliVolt<f64>>,
-    /// Temperature rating for insulation layer, specified in K
-    pub temp_rating: Option<ucum::Kelvin<f64>>,
+    pub volt_rating: Option<ElectricPotential>,
+    /// Temperature rating for insulation layer
+    pub temp_rating: Option<TemperatureInterval>,
     /// color of `CableLayer`
     pub color: Option<String>,
 }
@@ -139,16 +142,21 @@ impl fmt::Display for CableType {
         }
         if f.alternate() {
             //TODO: implement mm^2 to awg conversion function. include function for changing units
-            writeln!(f, "Cross Sectional Area: {:.2} AWG", &self.cross_sect_area)?;
+            //writeln!(f, "Cross Sectional Area: {:.2} AWG", &self.cross_sect_area)?;
         } else {
-            writeln!(f, "Cross Sectional Area: {:.2} mm^2", &self.cross_sect_area)?;
+            writeln!(
+                f,
+                "Cross Sectional Area: {:.2} mm^2",
+                &self.cross_sect_area.get::<square_millimeter>()
+            )?;
         }
 
+        //TODO: allow selecting different units for display
         writeln!(f, "Cross Section: {}", &self.cross_section)?;
-        writeln!(f, "Height: {:.2} mm", &self.height)?;
-        writeln!(f, "Width: {:.2} mm", &self.width)?;
+        writeln!(f, "Height: {:.2} mm", &self.height.get::<millimeter>())?;
+        writeln!(f, "Width: {:.2} mm", &self.width.get::<millimeter>())?;
         if let Some(diameter) = &self.diameter {
-            writeln!(f, "Diameter: {diameter:.2} mm")?;
+            writeln!(f, "Diameter: {:.2} mm", diameter.get::<millimeter>())?;
         }
         //TODO: implement loops here to print all layers of cable
         //if let Some() = &self.model {

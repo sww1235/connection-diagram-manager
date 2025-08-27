@@ -306,6 +306,7 @@ dependencies = [
  "fltk",
  "fltk-theme",
  "log",
+ "num-rational",
  "pdf_helper",
  "rustybuzz",
  "serde",
@@ -925,6 +926,7 @@ version = "0.0.1"
 dependencies = [
  "log",
  "lopdf",
+ "num-rational",
  "paragraph_breaker",
  "rustybuzz",
  "simple_logger",
