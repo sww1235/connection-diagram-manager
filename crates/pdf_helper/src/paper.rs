@@ -12,7 +12,7 @@ use uom::si::{
 /// with the long edge as the Y coordinate, or height, and
 /// the short edge as the X coordinate or width.
 /// Custom sizes should be defined similarly.
-#[allow(clippy::module_name_repetitions)]
+#[expect(clippy::module_name_repetitions)]
 #[non_exhaustive]
 #[derive(Clone, Copy)]
 pub enum PaperSize {
@@ -63,7 +63,6 @@ pub enum PaperSize {
 impl PaperSize {
     /// `size` outputs the short and long side measurements of the specified
     /// paper size as a tuple in the specified order.
-    #[allow(clippy::arithmetic_side_effects)]
     #[must_use]
     pub fn size(self) -> (Length, Length) {
         match self {

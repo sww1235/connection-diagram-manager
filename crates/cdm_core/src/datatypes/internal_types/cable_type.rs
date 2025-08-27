@@ -62,7 +62,7 @@ pub struct CableType {
 
 /// `CableCore` represents an individual conductor, strength member or optical fiber in a cable.
 #[derive(Debug, PartialEq, Clone)]
-#[allow(clippy::exhaustive_enums)]
+#[expect(clippy::exhaustive_enums)]
 pub enum CableCore {
     /// `WireType`
     WireType(Rc<RefCell<WireType>>),
@@ -109,7 +109,6 @@ pub enum LayerType {
 
 impl CableType {
     /// Creates an empty instance of `CableType`
-    #[allow(clippy::arithmetic_side_effects)]
     #[must_use]
     pub fn new() -> Self {
         Self::default()

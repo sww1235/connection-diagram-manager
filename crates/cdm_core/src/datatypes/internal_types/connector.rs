@@ -16,7 +16,7 @@ pub struct Connector {
 
 impl connector::Connector for Connector {
     fn pin_count(&self) -> u64 {
-        #[allow(clippy::unwrap_used)]
+        #[expect(clippy::unwrap_used)]
         // allowing unwrap as I want a panic here if this application
         // is used on a 128 bit architecture
         u64::try_from(self.connector_type.borrow().pins.len()).unwrap()

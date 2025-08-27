@@ -3,7 +3,7 @@ use quote::quote;
 use syn::{Data, DataStruct, DeriveInput, Fields};
 
 /// `expand_merge` is the actual logic of deriving the `Merge` trait
-#[allow(clippy::module_name_repetitions)]
+#[expect(clippy::module_name_repetitions)]
 pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
     let fields = match input.data {
         Data::Struct(DataStruct {
@@ -37,7 +37,7 @@ pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
 
     // First check for equality between each field, and
     let mut equality_checks = Vec::new();
-    #[allow(clippy::explicit_iter_loop)]
+    #[expect(clippy::explicit_iter_loop)]
     for f in fields.iter() {
         let field_name = f.ident.clone();
         if let Some(fname) = &field_name
@@ -61,7 +61,7 @@ pub fn expand_merge(input: DeriveInput) -> syn::Result<TokenStream> {
     }
     // then use results from merge to process
     let mut merge_ops = Vec::new();
-    #[allow(clippy::explicit_iter_loop)]
+    #[expect(clippy::explicit_iter_loop)]
     for f in fields.iter() {
         let field_name = f.ident.clone();
         merge_ops.push(quote! {

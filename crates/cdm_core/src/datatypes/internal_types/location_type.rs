@@ -49,7 +49,6 @@ pub struct LocationType {
 
 impl LocationType {
     /// Creates an empty instance of `LocationType`
-    #[expect(clippy::arithmetic_side_effects)]
     #[must_use]
     pub fn new() -> Self {
         Self::default()

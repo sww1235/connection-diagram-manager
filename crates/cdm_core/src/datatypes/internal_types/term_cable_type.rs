@@ -45,7 +45,7 @@ pub struct TermCableType {
 
 /// `WireCable` allows either a `WireType` or `CableType` to be the root of a `TermCableType`
 #[derive(Debug, PartialEq, Clone)]
-#[allow(clippy::exhaustive_enums)]
+#[expect(clippy::exhaustive_enums)]
 pub enum WireCable {
     /// `CableType`
     CableType(Rc<RefCell<CableType>>),
@@ -88,7 +88,7 @@ impl TermCableType {
 
 impl connector::Connector for Connector {
     fn pin_count(&self) -> u64 {
-        #[allow(clippy::unwrap_used)]
+        #[expect(clippy::unwrap_used)]
         // allowing unwrap as I want a panic here if this application
         // is used on a 128 bit architecture
         u64::try_from(self.connector_type.borrow().pins.len()).unwrap()

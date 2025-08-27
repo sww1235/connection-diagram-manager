@@ -25,9 +25,8 @@ pub struct Wire {
 }
 
 //TODO: somehow validate that this connector only has one pin
-/// `WireConnector` represents a connector on one end of a `Wire`
+/// `Connector` represents a connector on one end of a `Wire`
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
-#[allow(clippy::module_name_repetitions)]
 pub struct Connector {
     /// `connector_type` represents the connector type that is on the end of a `Wire`
     pub connector_type: String,

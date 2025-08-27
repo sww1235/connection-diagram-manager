@@ -21,8 +21,8 @@ struct ParagraphWord {
     score: Option<Length>,
 }
 
-#[allow(clippy::too_many_arguments)]
-#[allow(clippy::arithmetic_side_effects)]
+#[expect(clippy::too_many_arguments)]
+#[expect(clippy::arithmetic_side_effects)]
 /// A simplified implementation of the Knuth-Plass algorithm, as found
 /// [here](https://github.com/jaroslov/knuth-plass-thoughts/blob/master/plass.cpp)
 /// and converted into rust.
@@ -96,9 +96,9 @@ pub fn to_lines(
     )?;
     Ok((to_lines_internal(&words, text), glyph_buffer))
 }
-#[allow(clippy::too_many_arguments)]
-#[allow(clippy::arithmetic_side_effects)]
-#[allow(clippy::shadow_unrelated)]
+#[expect(clippy::too_many_arguments)]
+#[expect(clippy::arithmetic_side_effects)]
+#[expect(clippy::shadow_unrelated)]
 /// `lineBreakInternal` scores each `ParagraphWord` for breaking possibilities
 fn line_break_internal(
     words: &mut [ParagraphWord],
@@ -188,7 +188,7 @@ fn line_break_internal(
     Ok(())
 }
 
-#[allow(clippy::arithmetic_side_effects)]
+#[expect(clippy::arithmetic_side_effects)]
 /// `text_to_words` splits a utf8 string into an array of [`ParagraphWord`]s
 fn text_to_words(text: &str) -> Result<Vec<ParagraphWord>, Error> {
     let mut index = 0;
@@ -233,8 +233,8 @@ fn text_to_words(text: &str) -> Result<Vec<ParagraphWord>, Error> {
     });
     Ok(words)
 }
-#[allow(clippy::similar_names)]
-#[allow(clippy::arithmetic_side_effects)]
+#[expect(clippy::similar_names)]
+#[expect(clippy::arithmetic_side_effects)]
 /// `toLines` takes in a vector of `ParagraphWord`s and converts them to a vector of strings
 /// of the correct lengths.
 fn to_lines_internal(words: &[ParagraphWord], text: &str) -> Vec<String> {
@@ -275,8 +275,8 @@ fn to_lines_internal(words: &[ParagraphWord], text: &str) -> Vec<String> {
     output
 }
 
-#[allow(clippy::too_many_arguments)]
-#[allow(clippy::arithmetic_side_effects)]
+#[expect(clippy::too_many_arguments)]
+#[expect(clippy::arithmetic_side_effects)]
 /// `greedy_break`
 fn greedy_break(
     words: &mut [ParagraphWord],

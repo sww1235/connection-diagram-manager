@@ -81,7 +81,6 @@ pub struct ConnectorPin {
 
 impl ConnectorType {
     /// Creates an empty instance of `ConnectorType`
-    #[allow(clippy::arithmetic_side_effects)]
     #[must_use]
     pub fn new() -> Self {
         Self::default()

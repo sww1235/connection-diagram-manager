@@ -508,9 +508,9 @@ fn convert_image(
     match &image.kind() {
         ImageKind::JPEG(_) | ImageKind::PNG(_) | ImageKind::GIF(_) | ImageKind::WEBP(_) => {
             // only vector graphic elements allowed
-            return Err(Error::Other(
+            Err(Error::Other(
                 "svg should not contain images or image tags".to_string(),
-            ));
+            ))
         }
         ImageKind::SVG(tree) => loop_nodes(tree.root(), x_pos, y_pos, scale),
     }
@@ -826,14 +826,12 @@ impl<'a> PDFDocument<'a> {
                 "MediaBox" => vec![
                     0_u16.into(),
                     0_u16.into(),
-                    #[expect(clippy::arithmetic_side_effects)]
                     page.page_size.size().0.get::<point_printers>()
                             .to_f64()
                             .ok_or(Error::Other(
                                 "Converting from Rational64 to f64 failed".to_string(),
                             ))?
                             .into(),
-                    #[expect(clippy::arithmetic_side_effects)]
                     page.page_size.size().1.get::<point_printers>()
                             .to_f64()
                             .ok_or(Error::Other(
@@ -877,7 +875,6 @@ impl<'a> PDFDocument<'a> {
                             ))?
                             .into(),
 
-                #[expect(clippy::arithmetic_side_effects)]
                 self.default_page_size.size().1.get::<point_printers>()
                             .to_f64()
                             .ok_or(Error::Other(
@@ -930,7 +927,6 @@ pub enum Error {
     Other(String),
 }
 
-#[expect(clippy::match_same_arms)]
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match *self {

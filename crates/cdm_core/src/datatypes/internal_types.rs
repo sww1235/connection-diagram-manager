@@ -125,7 +125,6 @@ impl Library {
     ///
     /// - `Error::NoDefinitionFound`
     ///
-    #[allow(clippy::too_many_lines)]
     // TODO: see if this can be split up
     pub fn from_datafiles(
         &mut self,
@@ -205,14 +204,13 @@ impl Library {
     }
 
     /// inserts the correct values from a datafile into the called upon `Library` struct
-    #[allow(clippy::wrong_self_convention)]
+    #[expect(clippy::wrong_self_convention)]
     // this is not a type conversion function so does not
     // need to follow the same rules
     // TODO: maybe rename this to something that doesn't
     // sound like a type conversion function
-    #[allow(clippy::too_many_lines)]
+    #[expect(clippy::too_many_lines)]
     // TODO: see if this can be split up
-    #[allow(clippy::arithmetic_side_effects)]
     fn from_datafile(
         &mut self,
         datafile: DataFile,
@@ -240,21 +238,21 @@ impl Library {
                     ),
                     overall_cross_sect_area: wire_types[k]
                         .overall_cross_sect_area
-                        .map(|x| Area::new::<square_millimeter>(x)),
+                        .map(Area::new::<square_millimeter>),
                     insulation_thickness: wire_types[k]
                         .insulation_thickness
-                        .map(|x| Length::new::<millimeter>(x)),
+                        .map(Length::new::<millimeter>),
                     stranded: wire_types[k].stranded,
                     num_strands: wire_types[k].num_strands,
                     strand_cross_sect_area: wire_types[k]
                         .strand_cross_sect_area
-                        .map(|x| Area::new::<square_millimeter>(x)),
+                        .map(Area::new::<square_millimeter>),
                     insul_volt_rating: wire_types[k]
                         .insulation_volt_rating
-                        .map(|x| ElectricPotential::new::<volt>(x)),
+                        .map(ElectricPotential::new::<volt>),
                     insul_temp_rating: wire_types[k]
                         .insulation_temp_rating
-                        .map(|x| TemperatureInterval::new::<kelvin>(x)),
+                        .map(TemperatureInterval::new::<kelvin>),
                     insul_color: wire_types[k].insulation_color.clone(),
                     contained_datafile_path: datafile.file_path.clone(),
                 };
@@ -342,9 +340,7 @@ impl Library {
                     cross_sect_area: Area::new::<square_millimeter>(cable_types[k].cross_sect_area),
                     height: Length::new::<millimeter>(cable_types[k].height),
                     width: Length::new::<millimeter>(cable_types[k].width),
-                    diameter: cable_types[k]
-                        .diameter
-                        .map(|x| Length::new::<millimeter>(x)),
+                    diameter: cable_types[k].diameter.map(Length::new::<millimeter>),
                     cross_section: {
                         match cable_types[k].cross_section.to_uppercase().as_str() {
                             "OVAL" => CrossSection::Oval,
@@ -391,12 +387,10 @@ impl Library {
                                     }
                                 },
                                 material: layer.material.clone(),
-                                volt_rating: layer
-                                    .volt_rating
-                                    .map(|x| ElectricPotential::new::<volt>(x)),
+                                volt_rating: layer.volt_rating.map(ElectricPotential::new::<volt>),
                                 temp_rating: layer
                                     .temp_rating
-                                    .map(|x| TemperatureInterval::new::<kelvin>(x)),
+                                    .map(TemperatureInterval::new::<kelvin>),
                                 color: layer.color.clone(),
                             };
                             new_layers.push(new_layer);
@@ -476,12 +470,12 @@ impl Library {
                     supplier_part_number: location_types[k].supplier_part_number.clone(),
                     description: location_types[k].description.clone(),
                     material: location_types[k].material.clone(),
-                    height: location_types[k].height * ucum::M * f64prefixes::KILO,
-                    width: location_types[k].width * ucum::M * f64prefixes::KILO,
-                    depth: location_types[k].depth * ucum::M * f64prefixes::KILO,
-                    usable_width: location_types[k].usable_width * ucum::M * f64prefixes::KILO,
-                    usable_height: location_types[k].usable_height * ucum::M * f64prefixes::KILO,
-                    usable_depth: location_types[k].usable_depth * ucum::M * f64prefixes::KILO,
+                    height: Length::new::<millimeter>(location_types[k].height),
+                    width: Length::new::<millimeter>(location_types[k].width),
+                    depth: Length::new::<millimeter>(location_types[k].depth),
+                    usable_width: Length::new::<millimeter>(location_types[k].usable_width),
+                    usable_height: Length::new::<millimeter>(location_types[k].usable_height),
+                    usable_depth: Length::new::<millimeter>(location_types[k].usable_depth),
                     contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.location_types.contains_key(k) {
@@ -516,12 +510,10 @@ impl Library {
                     mount_type: connector_types[k].mount_type.clone(),
                     panel_cutout: connector_types[k].panel_cutout.clone(),
                     gender: connector_types[k].gender.clone(),
-                    height: connector_types[k].height * ucum::M * f64prefixes::KILO,
-                    width: connector_types[k].width * ucum::M * f64prefixes::KILO,
-                    depth: connector_types[k].depth * ucum::M * f64prefixes::KILO,
-                    diameter: connector_types[k]
-                        .diameter
-                        .map(|x| x * ucum::M * f64prefixes::KILO),
+                    height: Length::new::<millimeter>(connector_types[k].height),
+                    width: Length::new::<millimeter>(connector_types[k].width),
+                    depth: Length::new::<millimeter>(connector_types[k].depth),
+                    diameter: connector_types[k].diameter.map(Length::new::<millimeter>),
                     pins: {
                         let mut new_pins = Vec::new();
                         for pin in &connector_types[k].pins {
@@ -570,7 +562,7 @@ impl Library {
                     supplier_part_number: term_cable_types[k].supplier_part_number.clone(),
                     description: term_cable_types[k].description.clone(),
                     wire_cable: {
-                        #[allow(clippy::redundant_else)]
+                        #[expect(clippy::redundant_else)]
                         if term_cable_types[k].wire.is_some() && term_cable_types[k].cable.is_some()
                         {
                             return Err(Error::DefinitionProcessing {
@@ -593,7 +585,7 @@ impl Library {
                                 datafile_path: datafile.file_path.clone(),
                             });
                         } else {
-                            #[allow(clippy::collapsible_else_if)]
+                            #[expect(clippy::collapsible_else_if)]
                             // Collapsing the else_if would change the
                             // meaning of the logic
                             if let Some(wire_type_id) = term_cable_types[k].wire.clone() {
@@ -659,10 +651,10 @@ impl Library {
                     },
                     nominal_length: term_cable_types[k]
                         .nominal_length
-                        .map(|x| x * ucum::M * f64prefixes::KILO),
+                        .map(Length::new::<millimeter>),
                     actual_length: term_cable_types[k]
                         .actual_length
-                        .map(|x| x * ucum::M * f64prefixes::KILO),
+                        .map(Length::new::<millimeter>),
                     end1: {
                         let mut new_end1 = Vec::new();
                         for connector in &term_cable_types[k].end1 {
@@ -852,12 +844,8 @@ impl Library {
                                                             },
                                                         )),
                                                         direction: connector.direction.clone(),
-                                                        x: connector.x
-                                                            * ucum::M
-                                                            * f64prefixes::MILLI,
-                                                        y: connector.y
-                                                            * ucum::M
-                                                            * f64prefixes::MILLI,
+                                                        x: Length::new::<millimeter>(connector.x),
+                                                        y: Length::new::<millimeter>(connector.y),
                                                     };
                                                 new_connectors.push(new_connector_join);
                                             }
@@ -993,14 +981,14 @@ impl Project {
     /// within, into the `Project` struct this method is called on. It will check `Library` for
     /// defined types to assign as references within the various project data imported from
     /// `datafile`
-    #[allow(clippy::wrong_self_convention)]
+    #[expect(clippy::wrong_self_convention)]
     // this is not a type conversion function so does not
     // need to follow the same rules
     // TODO: maybe rename this to something that doesn't
     // sound like a type conversion function
-    #[allow(clippy::too_many_lines)]
+    #[expect(clippy::too_many_lines)]
     // TODO: see if this can be split up
-    #[allow(clippy::arithmetic_side_effects)]
+    #[expect(clippy::arithmetic_side_effects)]
     fn from_datafile(
         &mut self,
         datafile: DataFile,
@@ -1031,7 +1019,7 @@ impl Project {
                     identifier: pathways[k].identifier.clone(),
                     description: pathways[k].description.clone(),
                     //TODO: figure out how to parse units from file
-                    length: pathways[k].length * ucum::M * f64prefixes::MILLI,
+                    length: Length::new::<millimeter>(pathways[k].length),
                     contained_datafile_path: datafile.file_path.clone(),
                 };
                 if self.pathways.contains_key(k) {
@@ -1073,7 +1061,7 @@ impl Project {
                     },
                     identifier: wires[k].identifier.clone(),
                     description: wires[k].description.clone(),
-                    length: wires[k].length * ucum::M * f64prefixes::KILO,
+                    length: Length::new::<millimeter>(wires[k].length),
                     pathway: {
                         // clone string here to avoid moving value out of hashmap.
                         if let Some(pathway) = wires[k].pathway.clone() {
@@ -1186,7 +1174,7 @@ impl Project {
                     },
                     identifier: cables[k].identifier.clone(),
                     description: cables[k].description.clone(),
-                    length: cables[k].length * ucum::M * f64prefixes::KILO,
+                    length: Length::new::<millimeter>(cables[k].length),
                     pathway: {
                         // clone string here to avoid moving value out of hashmap.
                         if let Some(pathway) = cables[k].pathway.clone() {
@@ -1213,7 +1201,7 @@ impl Project {
                         for (id_incrementor, connector) in cables[k].end1.iter().enumerate() {
                             let new_connector_join = cable::ConnectorJoin {
                                 connector: {
-                                    #[allow(clippy::string_add)]
+                                    #[expect(clippy::string_add)]
                                     Rc::new(RefCell::new(connector::Connector {
                                         id: connector.connector_type.clone()
                                             + &id_incrementor.to_string(),
@@ -1268,7 +1256,7 @@ impl Project {
                         for (id_incrementor, connector) in cables[k].end2.iter().enumerate() {
                             let new_connector_join = cable::ConnectorJoin {
                                 connector: {
-                                    #[allow(clippy::string_add)]
+                                    #[expect(clippy::string_add)]
                                     //TODO: only increment per connector type maybe?
                                     Rc::new(RefCell::new(connector::Connector {
                                         id: connector.connector_type.clone()
@@ -1435,9 +1423,9 @@ impl Project {
                             sub_locations.insert(
                                 subkey,
                                 location::SubLocation {
-                                    x: subloc.x * ucum::M * f64prefixes::MILLI,
-                                    y: subloc.y * ucum::M * f64prefixes::MILLI,
-                                    z: subloc.z * ucum::M * f64prefixes::MILLI,
+                                    x: Length::new::<millimeter>(subloc.x),
+                                    y: Length::new::<millimeter>(subloc.y),
+                                    z: Length::new::<millimeter>(subloc.z),
                                 },
                             );
                         }
@@ -1467,7 +1455,7 @@ impl Project {
             for (k, v) in &equipment {
                 //TODO: re-evaluate the logic for location/sublocation
                 // check if location exists in self.locations first
-                #[allow(clippy::map_entry)]
+                #[expect(clippy::map_entry)]
                 // TODO: use entry mechanic to fix this, allowing for now
                 let temp_location = if self.locations.contains_key(&equipment[k].location) {
                     Rc::clone(&self.locations[k])

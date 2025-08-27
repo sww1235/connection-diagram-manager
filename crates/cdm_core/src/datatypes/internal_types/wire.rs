@@ -3,7 +3,7 @@ use std::fmt;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use dimensioned::ucum;
+use uom::si::{length::millimeter, rational64::Length};
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::{connector, partial_empty::PartialEmpty};
@@ -23,7 +23,7 @@ pub struct Wire {
     /// Optional description
     pub description: Option<String>,
     /// length of wire
-    pub length: ucum::Meter<f64>,
+    pub length: Length,
     /// Pathway containing instance
     pub pathway: Option<Rc<RefCell<Pathway>>>,
     /// One end of `Wire` / Cable.
@@ -50,7 +50,7 @@ impl Wire {
 
 impl connector::Connector for Connector {
     fn pin_count(&self) -> u64 {
-        #[allow(clippy::unwrap_used)]
+        #[expect(clippy::unwrap_used)]
         // allowing unwrap as I want a panic here if this application
         // is used on a 128 bit architecture
         u64::try_from(self.connector_type.borrow().pins.len()).unwrap()
@@ -81,7 +81,7 @@ impl fmt::Display for Wire {
         if let Some(supplier_part_number) = self.wire_type.borrow().supplier_part_number.clone() {
             writeln!(f, "Supplier Part Number: {supplier_part_number}")?;
         }
-        writeln!(f, "Length: {}", &self.length)?;
+        writeln!(f, "Length: {}", &self.length.get::<millimeter>())?;
         if let Some(identifier) = &self.identifier {
             writeln!(f, "Equipment Identifier: {identifier}")?;
         }

@@ -3,7 +3,7 @@ use quote::quote;
 use syn::{Data, DataStruct, DeriveInput, Fields};
 
 /// `expand_partial_empty` is the actual logic of deriving the `PartialEmpty` trait
-#[allow(clippy::module_name_repetitions)]
+#[expect(clippy::module_name_repetitions)]
 pub fn expand_partial_empty(input: DeriveInput) -> syn::Result<TokenStream> {
     let fields = match input.data {
         Data::Struct(DataStruct {

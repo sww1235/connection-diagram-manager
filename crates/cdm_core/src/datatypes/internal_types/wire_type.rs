@@ -1,10 +1,16 @@
 use std::fmt;
 use std::path::PathBuf;
 
+use uom::si::{
+    area::square_millimeter,
+    electric_potential::volt,
+    length::millimeter,
+    rational64::{Area, ElectricPotential, Length, TemperatureInterval},
+    temperature_interval::degree_celsius,
+};
+
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::partial_empty::PartialEmpty;
-
-use dimensioned::ucum;
 
 /// `WireType` represents a particular type of wire
 ///
@@ -38,26 +44,24 @@ pub struct WireType {
     /// The standard wire type code (THHN, XHHW, SIS, etc)
     pub wire_type_code: Option<String>,
     /// Conductor cross sectional area.
-    /// specified in mm^2
-    pub conductor_cross_sect_area: ucum::Meter2<f64>,
+    pub conductor_cross_sect_area: Area,
     /// Overall wire cross sectional area, incluidng insulation.
-    /// specified in mm^2
-    pub overall_cross_sect_area: Option<ucum::Meter2<f64>>,
-    /// insulation thickness in mm
-    pub insulation_thickness: Option<ucum::Meter<f64>>,
+    pub overall_cross_sect_area: Option<Area>,
+    /// insulation thickness
+    pub insulation_thickness: Option<Length>,
     /// If conductor is stranded
     pub stranded: bool,
     /// How many strands is conductor made of
     pub num_strands: Option<u64>,
     /// cross sectional area of individual strand.
     /// specified in mm^2
-    pub strand_cross_sect_area: Option<ucum::Meter2<f64>>,
+    pub strand_cross_sect_area: Option<Area>,
     /// Insulation voltage rating.
     /// Specified in volts
-    pub insul_volt_rating: Option<ucum::MilliVolt<f64>>,
+    pub insul_volt_rating: Option<ElectricPotential>,
     /// Insulation temperature rating.
     /// Specified in K
-    pub insul_temp_rating: Option<ucum::Kelvin<f64>>,
+    pub insul_temp_rating: Option<TemperatureInterval>,
     /// Insulation Color
     pub insul_color: Option<String>, //TODO: change to enum
     /// datafile the struct instance was read in from
@@ -66,7 +70,6 @@ pub struct WireType {
 
 impl WireType {
     /// Creates an empty instance of `WireType`
-    #[allow(clippy::arithmetic_side_effects)]
     #[must_use]
     pub fn new() -> Self {
         Self::default()
@@ -106,26 +109,31 @@ impl fmt::Display for WireType {
         }
         if f.alternate() {
             //TODO: implement mm^2 to AWG conversion, with auht and kcm display
-            writeln!(
-                f,
-                "Conductor Cross Sectional Area: {} AWG",
-                self.conductor_cross_sect_area
-            )?;
+            //writeln!(
+            //    f,
+            //    "Conductor Cross Sectional Area: {} AWG",
+            //    self.conductor_cross_sect_area.get::<square_millimeter>()
+            //)?;
         } else {
             writeln!(
                 f,
                 "Conductor Cross Sectional Area: {:.2} mm^2",
-                self.conductor_cross_sect_area
+                self.conductor_cross_sect_area.get::<square_millimeter>()
             )?;
         }
         if let Some(overall_cross_sect_area) = &self.overall_cross_sect_area {
             writeln!(
                 f,
-                "Overall Cross Sectional Area: {overall_cross_sect_area:.2} mm^2",
+                "Overall Cross Sectional Area: {:.2} mm^2",
+                overall_cross_sect_area.get::<square_millimeter>()
             )?;
         }
         if let Some(insulation_thickness) = &self.insulation_thickness {
-            writeln!(f, "Insulation Thickness: {insulation_thickness:.2} mm",)?;
+            writeln!(
+                f,
+                "Insulation Thickness: {:.2} mm",
+                insulation_thickness.get::<millimeter>()
+            )?;
         }
         writeln!(f, "Stranded: {}", &self.stranded)?;
         if let Some(num_strands) = &self.num_strands {
@@ -134,22 +142,31 @@ impl fmt::Display for WireType {
         if let Some(strand_cross_sect_area) = &self.strand_cross_sect_area {
             if f.alternate() {
                 //TODO: implement mm^2 to AWG conversion, with auht and kcm display
-                writeln!(
-                    f,
-                    "Strand Cross Sectional Area: {strand_cross_sect_area} AWG"
-                )?;
+                //writeln!(
+                //    f,
+                //    "Strand Cross Sectional Area: {strand_cross_sect_area} AWG"
+                //)?;
             } else {
                 writeln!(
                     f,
-                    "Strand Cross Sectional Area: {strand_cross_sect_area:.2} mm^2"
+                    "Strand Cross Sectional Area: {:.2} mm^2",
+                    strand_cross_sect_area.get::<square_millimeter>()
                 )?;
             }
         }
         if let Some(insul_volt_rating) = &self.insul_volt_rating {
-            writeln!(f, "Insulation Voltage Rating: {insul_volt_rating}V")?;
+            writeln!(
+                f,
+                "Insulation Voltage Rating: {}V",
+                insul_volt_rating.get::<volt>()
+            )?;
         }
         if let Some(insul_temp_rating) = &self.insul_temp_rating {
-            writeln!(f, "Insulation Temperature Rating: {insul_temp_rating}℃")?;
+            writeln!(
+                f,
+                "Insulation Temperature Rating: {}℃",
+                insul_temp_rating.get::<degree_celsius>()
+            )?;
         }
         Ok(())
     }

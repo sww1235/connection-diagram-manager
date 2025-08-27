@@ -24,7 +24,7 @@ pub struct Location {
 /// Unique coordinate triplet within `Location`
 /// specified in mm
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
-#[allow(clippy::module_name_repetitions)]
+#[expect(clippy::module_name_repetitions)]
 pub struct SubLocation {
     /// Distance from left side of parent location
     pub x: Rational64,

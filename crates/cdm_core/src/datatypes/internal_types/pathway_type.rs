@@ -49,7 +49,6 @@ pub struct PathwayType {
 }
 impl PathwayType {
     /// Creates an empty instance of `PathwayType`
-    #[allow(clippy::arithmetic_side_effects)]
     #[must_use]
     pub fn new() -> Self {
         Self::default()

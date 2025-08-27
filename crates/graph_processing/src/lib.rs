@@ -109,6 +109,7 @@ impl Node {
         });
     }
     /// outputs the degree of the node
+    #[must_use]
     pub fn degree(&self) -> usize {
         self.edges.len()
     }

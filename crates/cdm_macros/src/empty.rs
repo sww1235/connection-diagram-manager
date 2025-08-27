@@ -3,7 +3,7 @@ use quote::quote;
 use syn::DeriveInput;
 
 /// `expand_empty` is the actual logic of deriving the `Empty` trait
-#[allow(clippy::module_name_repetitions)]
+#[expect(clippy::module_name_repetitions)]
 pub fn expand_empty(input: DeriveInput) -> TokenStream {
     let struct_name = input.ident;
 

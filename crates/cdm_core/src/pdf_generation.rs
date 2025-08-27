@@ -84,7 +84,7 @@ pub fn render_location(
     let page_width = pdf_page.page_size.size().0;
     let page_height = pdf_page.page_size.size().1;
     // check if location will fit within page at 1:1 scale
-    #[allow(clippy::arithmetic_side_effects)]
+    #[expect(clippy::arithmetic_side_effects)]
     let location_default_scale_fit = {
         reference_location.location_type.borrow().width
             < (page_width - pdf_page.margins.left - pdf_page.margins.right)
@@ -93,7 +93,7 @@ pub fn render_location(
     };
 
     // check if location will fit on page at specified scale
-    #[allow(clippy::arithmetic_side_effects)]
+    #[expect(clippy::arithmetic_side_effects)]
     let location_scale_fit = {
         (reference_location.location_type.borrow().width
             * Rational64::new(

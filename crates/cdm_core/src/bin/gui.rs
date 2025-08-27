@@ -55,7 +55,7 @@ fn main() {
         _ => logger.with_level(LevelFilter::Off),
     };
 
-    #[allow(clippy::unwrap_used)]
+    #[expect(clippy::unwrap_used)]
     //TODO: investigate to see if it is worth trying to handle these
     //errors manually
     logger.with_colors(true).init().unwrap();

@@ -1,13 +1,15 @@
 //! test
 
-use dimensioned::ucum;
+use uom::{
+    num::Zero,
+    si::{length::millimeter, rational64::Length},
+};
 
 fn main() {
-    #[allow(clippy::arithmetic_side_effects)]
-    let test = 0.0_f64 * ucum::M;
+    let test = Length::zero();
 
-    let test2: ucum::Meter<f64> = ucum::Meter::default();
+    //let test2: Length = ucum::Meter::default();
 
-    println!("zero: {test}");
-    println!("default: {test2}");
+    println!("zero: {}", test.get::<millimeter>());
+    //println!("default: {test2}");
 }

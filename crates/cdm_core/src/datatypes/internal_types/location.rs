@@ -49,7 +49,7 @@ impl Location {
 // TODO: Finish this. Should equipment be assigned to a sublocation vs a location, or both, or
 // neither? Should sublocations be the same thing as a location?
 #[derive(Debug, Clone, Default, PartialEq)]
-#[allow(clippy::module_name_repetitions)]
+#[expect(clippy::module_name_repetitions)]
 pub struct SubLocation {
     /// Distance from left side of parent location
     pub x: Length,
