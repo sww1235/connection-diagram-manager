@@ -15,7 +15,8 @@ uom = { version = "~0.37", default-features = false, features = ["autoconvert", 
 log = "~0"
 rustybuzz = "~0"
 serde = { version = "~1", features = ["derive"] }
-serde_yaml = "~0"
+toml = { version = "~0" }
+figment = { version = "~0.10", features = ["toml"] }
 simple_logger = "~5"
 thiserror = "~2"
 usvg = "~0"

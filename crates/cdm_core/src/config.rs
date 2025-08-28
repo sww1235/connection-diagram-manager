@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 
 /// `Config` represents configuration options for the various cdm binary programs
 #[derive(Serialize, Deserialize, Debug, Default)]
-pub struct Config {
+pub struct ApplicationConfig {
     /// `library_files` contains an optional list of additional files to read into the main
     /// [`Library`](crate::datatypes::internal_types::Library)
     pub library_files: Vec<PathBuf>,
@@ -89,7 +89,7 @@ fn read_config_file(project_directory: &Path) -> Option<fs::File> {
         None
     }
 }
-impl Config {
+impl ApplicationConfig {
     /// `parse_config` reads and selects the correct config file within the project directory
     ///
     /// # Errors
@@ -104,10 +104,10 @@ impl Config {
             None
         };
         if let Some(config_file) = config_file {
-            let config: Config = serde_yaml::from_reader(config_file)?;
+            let config: ApplicationConfig = serde_yaml::from_reader(config_file)?;
             Ok(config) // need to have Ok here to return when everything is fine
         } else {
-            let config = Config::default();
+            let config = ApplicationConfig::default();
             Ok(config) // need to have Ok here to return when everything is fine
         }
     }
