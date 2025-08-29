@@ -44,6 +44,9 @@ All file format references show the data type using angle brackets, like
 syntax below. When filling out the files, they need to be valid TOML documents.
 See [the TOML documentation](https://toml.io/en/v1.0.0) for more details.
 
+Per the TOML spec, root tables do not need to be defined if not needed. They
+are defined in the examples below for clarity.
+
 ### Application Configuration File
 
 This file must be named `cdm_config.toml` and be in the following list of
@@ -66,7 +69,9 @@ a full list of supported units.
 ```toml
 # optional
 # Paths can be either relative or absolute
-default_library_files = [<path string>]
+# If a path listed is a directory, all `.toml` files within
+# will be treated as library files.
+default_library_locations = [<path string>]
 
 # optional
 # enable the usage of a postgres database
@@ -136,7 +141,9 @@ The project configuration file contains options and metadata for its specific pr
 
 See package documentation for full details on required options.
 
-TODO: add component tag format and options, wire number format and options, cross-reference options, styles (arrow, plc, fan-in/fan-out, wire cross, wire tee, wire connection,
+TODO: add component tag format and options, wire number format and options,
+cross-reference options, styles (arrow, plc, fan-in/fan-out, wire cross, wire
+tee, wire connection,
 
 ```toml
 # Required
@@ -147,6 +154,8 @@ load_default_libraries = <bool>
 
 # optional
 # Paths can be either relative or absolute
+# If a path listed is a directory, all `.toml` files within
+# will be treated as library files.
 library_paths = [<path string>]
 
 # optional
@@ -170,7 +179,14 @@ description = <str>
 Library files must contain at least one of the base tables as shown in the file
 reference below.
 
-**NOTE:** Any number that is not specifically an integer, is implemented internally as a `[Rational64]` to work around precision issues with floats. You must specify both a numerator and denominator in the array or you will get an error. As an example, if you wanted to represent the number 1/3, a float of 0.333333... isn't exact. With Rational types, you can specify it as exactly 1/3 and be satisfied. Floating point numbers are still used, especially to produce decimal output from Rational types but all the math internally is done with Rational types and just the output step is converted.
+**NOTE:** Any number that is not specifically an integer, is implemented
+internally as a `[Rational64]` to work around precision issues with floats. You
+must specify both a numerator and denominator in the array or you will get an
+error. As an example, if you wanted to represent the number 1/3, a float of
+0.333333... isn't exact. With Rational types, you can specify it as exactly 1/3
+and be satisfied. Floating point numbers are still used, especially to produce
+decimal output from Rational types but all the math internally is done with
+Rational types and just the output step is converted.
 
 All images are specified as SVG, so drawings can scale easily.
 
@@ -236,7 +252,7 @@ manufacturer = <str>
 # connector model description
 model = <str>
 
-# free text field for larger descriptions of connectors
+# free text field for larger descriptions
 description = <str>
 
 # [internal] part number
@@ -346,7 +362,7 @@ manufacturer = <str>
 # equipment type model description
 model = <str>
 
-# free text field for larger descriptions of equipment type
+# free text field for larger descriptions
 description = <str>
 
 # [internal] part number
@@ -391,7 +407,7 @@ x = <integer>
 # location of connector from bottom left of visrep of face up
 y = <integer>
 
-# dictonary of all available wire or cable pathway types.
+# Table (dictonary) of all available pathway types.
 # This is used for things like conduit, and cable tray,
 # but also includes things like J-hooks, or free-air cables.
 [pathway_type]
@@ -406,15 +422,23 @@ y = <integer>
 # type of cable pathway (conduit, cable tray, etc)
 type = <str>
 
-# specified and parsed differently depending on type
+# actual size measurements. Not parsed
 size = <str>
 
 # optional
 trade_size = <str>
 
 # optional
+# array of schematic symbols that can represent this pathway_type
+# values must be the sub-table name
+schematic_symbol = [<str>]
+
+# optional
 # Interior cross sectional area - used for conduit fill calculations
 cross_sect_area =  [<num>,<denom>]
+
+# optional
+cross_sect_area_unit = <str>
 
 # primary material of pathway
 material = <str>
@@ -430,7 +454,91 @@ manufacturer = <str>
 # equipment type model description
 model = <str>
 
-# free text field for larger descriptions of equipment type
+# free text field for larger descriptions
+description = <str>
+
+# [internal] part number
+part_number = <str>
+
+# manufacturer part number
+manufactuer_part_number = <str>
+
+# supplier
+supplier = <str>
+
+# supplier part number
+supplier_part_number = <str>
+
+# Table (dictonary) of all available wire types.
+# A wire is defined as a material (not necessarily conductive) with optional insulation.
+# if a product has a shield or additional layers, it must be defined as a cable
+# insulation color is defined on individual wire instance
+[wire_type]
+
+# Table (dictionary) representing one wire type
+# The `<str>` is the wire type identifier. This is a `key` in TOML and
+# must comply with the TOML spec.
+
+# Most keys in a wire_type sub-table are optional
+[wire_type.<str>]
+
+# copper, alumninum, ACSR, steel, glass, plastic
+material = <str>
+
+insulated = <bool>
+
+# PVC, Nylon, thermoplastic, etc
+insulation_material = <str>
+
+# THWN, XHHN, etc
+wire_type_code = <str>
+
+
+insulation_thickness =  [<num>,<denom>]
+
+insulation_thickness_unit = <str>
+
+# including insulation
+overall_cross_sect_area =  [<num>,<denom>]
+
+# the cross sectional area of the conductor
+conductor_ cross_sect_area =  [<num>,<denom>]
+
+stranded = <bool>
+
+# number of strands if cable is stranded. overriden to 1 if cable is not stranded
+num_strands = <int>
+
+# voltage rating of insulation
+insulation_potential_rating =  [<num>,<denom>]
+
+# unit for insulation_potential
+insulation_potential_rating_unit = <str>
+
+# temperature rating of insulation.
+insulation_temp_rating =  [<num>,<denom>]
+
+insulation_temp_rating_unit = <str>
+
+# insulation color. Pick from following options:
+# GREEN, BLACK, WHITE, RED, BLUE, YELLOW, ORANGE, BROWN,
+# PINK, PURPLE, SLATE, ROSE, VIOLET, AQUA, #RRGGBB (hex color code)
+insulation_color = <str>
+
+# same as insulation color
+secondary_insulation_color = <str>
+
+# Catalog subtable for each wire_type. Groups common properties
+# All fields here are optional, but highly encouraged.
+[wire_type.<str>.catalog]
+
+# manufacturer name
+manufacturer = <str>
+
+# equipment type model description
+model = <str>
+
+# free text field for larger descriptions
 description = <str>
 
 # [internal] part number
@@ -446,113 +554,287 @@ supplier = <str>
 supplier_part_number = <str>
 
 
-wire_type =	# dictonary of all available wire types.
-			# A wire is defined as a material (not necessarily conductive) with optional insulation.
-			# if a product has a shield or additional layers, it must be defined as a cable
-			# insulation color is defined on individual wire instance
-			# wire, cable and term_cable designators must all be unique
-			# //TODO: move color to wire_type definition as it affects the mpn/spn/etc
-			#
-	<str> =	# wire type designator (must be unique)
-		material = <str>				# copper, alumninum, ACSR, steel, glass, plastic
-		manufacturer = <str>
-		part_number = <str>					# [internal] part number
-		manufacturer_part_number = <str>					# manufacturer part number
-		supplier = <str>				# supplier
-		supplier_part_number = <str>					# supplier part number
-		insulated = <bool>
-		insulation_material = <str>	# PVC, Nylon, thermoplastic, etc
-		wire_type_code = <str>		# THWN, XHHN, etc
-		insulation_thickness =  [<num>,<denom>] # specified in mm
-		overall_cross_sect_area =  [<num>,<denom>] # including insulation, specified in mm^2
-		conductor_ cross_sect_area =  [<num>,<denom>]	# the cross sectional area of the conductor, specified in mm^2.
-		stranded = <bool>
-		num_strands = <int>			# number of strands if cable is stranded. defaults to 1 if cable is solid
-		insulation_volt_rating =  [<num>,<denom>]	# voltage rating of insulation.
-		insulation_temp_rating =  [<num>,<denom>]	# temperature rating of insulation. Specified in degrees centigrade.
-		insulation_color = <str> 			# insulation color. Pick from following options:
-											# GREEN, BLACK, WHITE, RED, BLUE, YELLOW, ORANGE, BROWN,
-											# PINK, PURPLE, SLATE, ROSE, VIOLET, AQUA, #RRGGBB (hex color code)
-		secondary_insulation_color = <str> 	# same as insulation color
-
-cable_type = # dictonary of all available raw cable types.
-			# A cable is defined as one or more wires mechanically attached together,
-			# with optional insulation and semiconducting layers, and optional shields
-			# if a product has a shield or additional layers, it must be defined as a cable
-			# wire insulation color is defined on individual wire instance
-			# individual wire instances within cable are accessed with dot notation
-			# wire, cable and term_cable designators must all be unique
-			#
-	<str> =	# cable type designator (must be unique)
-		core =	# dictionary of wire or cable cores inside cable.
-				# strength members are treated as a wire
-			<str> = # identifier of individual core. Must be unique per cable_type.
-				type = <str>			# identifier of wire/cable type that core is
-				is_wire = <bool>		# is this core a wire?
-		manufacturer = <str>
-		part_number = <str>					# [internal] part number
-		manufacturer_part_number = <str>					# manufacturer part number
-		supplier = <str>				# supplier
-		supplier_part_number = <str>					# supplier part number
-		cable_type_code = <str>		# SOOW, FC, FCC, TC, MC, AC, MC, UF, PLTC, MV, etc
-		cross_sect_area =  [<num>,<denom>]	# specified in mm^2. Outer area of cable
-		cross_section = <str>		# oval, circular, siamese
-		height =  [<num>,<denom>]				# height of cable if oval or siamese, specified in mm
-		width =  [<num>,<denom>]				# width of cable if oval or siamese, specified in mm
-		diameter =  [<num>,<denom>]			# diameter of cable if circular, specified in mm
-
-		layer = # list of shields and insulation layers on outside of cable
-			layer_number = <int>			# counted from inside to outside of cable
-			layer_type = <str>				# insulation, semiconductor, shield, screen, concentric neutral, jacket
-			material = <str>
-			volt_rating =  [<num>,<denom>]	# voltage rating for insulation layer
-			temp_rating =  [<num>,<denom>]	# temp rating for insulation layer. Specified in degrees centigrade
-			color = <str>			# color of insulation or semiconductor
-
-term_cable_type =	# dictionary of available manufactuered cables,
-					# consisting of a raw cable or wire type and connector specifications.
-					# term cables can only have two ends, but each end can have
-					# a fan out or split with multiple connectors
-					# connectors defined on a term_cable are accessed based on dot notation
-					# wire, cable and term_cable designators must all be unique
-	- manufacturer = <str>		# Manufacturer of term_cable
-	  part_number = <str>					# [internal] part number
-	  manufacturer_part_number = <str>				# manufacturer part number
-	  supplier = <str>			# supplier
-	  supplier_part_number = <str>				# supplier part number
-	  cable = <str>				# ID of cable. Only one of wire or cable can be specified
-	  wire = <str>				# ID of wire
-	  nom_length =  [<num>,<denom>]		# nominal length in meters
-	  length =  [<num>,<denom>]			# actual length in meters
-	  end1 =						# dictionary of connectors attached to term cable
-		- connector_type = <str>			# ID of connector type
-		  terminations =			# dictionary of core to connector pin mappings for each connector
-								# manual termination between pin and core must be specified
-			- core = <str>
-			  pin = <str>
-
-	  end2 =						# dictionary of connectors attached to term cable
-		- connector_type = <str>			# ID of connector type
-		  terminations =			# dictionary of core to connector pin mappings for each connector
-								# manual termination between pin and core must be specified
-			- core = <str>
-			  pin = <str>
+# Table (dictonary) of all available cable types.
+# A cable is defined as one or more wires mechanically attached together,
+# with optional insulation and semiconducting layers, and optional shields
+# if a product has a shield or additional layers, it must be defined as a cable
+# wire insulation color is defined on individual wire instance
+[cable_type]
 
 
-location_type =	# dictionary of available location types
-	<str> =		# unique ID of location type
-		manufacturer = <str>			# Manufacturer of term_cable
-		part_number = <str>					# [internal] part number
-		manufacturer_part_number = <str>					# manufacturer part number
-		supplier = <str>				# supplier
-		supplier_part_number = <str>					# supplier part number
-		width =  [<num>,<denom>]				# overall width of location, specified in mm
-		height =  [<num>,<denom>]				# overall height of location, specified in mm
-		depth =  [<num>,<denom>]				# overall depth of location, specified in mm
-		usableWidth =  [<num>,<denom>]		# usable internal width of location, specified in mm
-		usableDepth =  [<num>,<denom>]		# usable internal depth of location, specified in mm
-		usableHeight =  [<num>,<denom>]		# usable internal height of location, specified in mm.
 
+# Table (dictionary) representing one cable type
+# The `<str>` is the cable type identifier. This is a `key` in TOML and
+# must comply with the TOML spec.
+
+# Most keys in a cable_type sub-table are optional
+[cable_type.<str>]
+
+# SOOW, FC, FCC, TC, MC, AC, MC, UF, PLTC, MV, etc
+cable_type_code = <str>
+
+
+# Outer cross sectional area of cable
+cross_sect_area =  [<num>,<denom>]
+
+# SOOW, FC, FCC, TC, MC, AC, MC, UF, PLTC, MV, etc
+cross_section = <str>
+
+# height of cable if oval or siamese
+height =  [<num>,<denom>]
+
+height_unit = <str>
+
+# width of cable if oval or siamese
+width =  [<num>,<denom>]
+
+width_unit = <str>
+
+# optional
+# diameter of cable if circular
+diameter =  [<num>,<denom>]
+
+diameter_unit = <str>
+
+# table of outer layers of cable
+# Includes insulation, semiconductor, shields, screens,
+# concentric neutrals, jackets, mechanical armor
+[cable_type.<str>.layer]
+
+# table of attributes for an individual layer
+[cable_type.<str>.layer.<str>]
+
+# counted from inside to outside of cable
+layer_number = <int>
+
+# insulation, semiconductor, shield, screen, concentric neutral, jacket
+layer_type = <str>
+
+material = <str>
+
+# electric potential rating for insulation layer
+electric_potential_rating =  [<num>,<denom>]
+
+electric_potential_unit = <>
+
+# temp rating for insulation layer
+temp_rating =  [<num>,<denom>]
+
+temp_rating_unit = <str>
+
+# layer thickness
+thickness = [<num>, <denom>]
+
+thickness_unit = <str>
+
+# color of insulation or semiconductor
+color = <str>
+
+
+# dictionary of wire or cable cores inside cable.
+# strength members are treated as a wire
+[cable_type.<str>.core]
+
+# second <str> is identifier of individual core. Must be unique per cable_type
+[cable_type.<str>.core.<str>]
+
+
+# third <str> should either be `wire` or `cable` to
+# indicate the core is a wire or a cable
+[cable_type.<str>.core.<str>.<str>]
+
+# identifier of wire/cable type that core is
+contained_type = <str>
+
+
+# Catalog subtable for each cable_type. Groups common properties
+# All fields here are optional, but highly encouraged.
+[cable_type.<str>.catalog]
+
+# manufacturer name
+manufacturer = <str>
+
+# equipment type model description
+model = <str>
+
+# free text field for larger descriptions
+description = <str>
+
+# [internal] part number
+part_number = <str>
+
+# manufacturer part number
+manufactuer_part_number = <str>
+
+# supplier
+supplier = <str>
+
+# supplier part number
+supplier_part_number = <str>
+
+
+# Table (dictonary) of all available term_cable_types.
+# A term_cable or Pre-terminated cable is an assembly of
+# a cable_type or wire_type, and connectors. It may be manufactured or custom-assembled
+# but it is used in the project as an assembled unit, rather than being
+# assembled as part of the project.
+# term cables can only have two ends, but each end can have
+# a fan out or split with multiple connectors
+[term_cable_type]
+
+# Table (dictionary) representing one term_cable_type
+# The `<str>` is the cable type identifier. This is a `key` in TOML and
+# must comply with the TOML spec.
+
+# Most keys in a term_cable_type sub-table are optional
+[term_cable_type.<str>]
+
+nominal_length =  [<num>,<denom>]
+
+nominal_length_unit = <str>
+
+# actual length of cable
+length =  [<num>,<denom>]
+
+length_unit = <str>
+
+# Catalog subtable for each cable_type. Groups common properties
+# All fields here are optional, but highly encouraged.
+[cable_type.<str>.catalog]
+
+# manufacturer name
+manufacturer = <str>
+
+# equipment type model description
+model = <str>
+
+# free text field for larger descriptions
+description = <str>
+
+# [internal] part number
+part_number = <str>
+
+# manufacturer part number
+manufactuer_part_number = <str>
+
+# supplier
+supplier = <str>
+
+# supplier part number
+supplier_part_number = <str>
+
+# The flexible portion of the term_cable.
+# The second <str> either needs to be wire or cable, to indicate if
+# the included core_id is for a wire_type or cable_type
+[term_cable_type.<str>.<str>]
+
+# either a wire_type id or a cable_type id based on what is defined above.
+core_id = <str>
+
+# table of connectors attached to one end of term_cable
+[term_cable_type.<str>.end1]
+
+# table of attributes for a specific connector on end 1
+[term_cable_type.<str>.end1.<str>]
+
+# ID of connector type
+connector_type = <str>
+
+# array of tables of core to connector pin mappings for each connector
+# specify one table for each pin-core mapping
+[[term_cable_type.<str>.end1.<str>.terminations]]
+
+core = <str>
+pin = <str>
+
+# table of connectors attached to the other end of term_cable
+[term_cable_type.<str>.end2]
+
+# table of attributes for a specific connector on end 1
+[term_cable_type.<str>.end2.<str>]
+
+# ID of connector type
+connector_type = <str>
+
+# array of tables of core to connector pin mappings for each connector
+# specify one table for each pin-core mapping
+[[term_cable_type.<str>.end2.<str>.terminations]]
+
+core = <str>
+pin = <str>
+
+
+# Table (dictonary) of all available enclosure_types.
+# An enclosure is a physical container or space like a
+# junction box, gutter or rack.
+[enclosure_type]
+
+# Table (dictionary) representing one enclosure_type
+# The `<str>` is the cable type identifier. This is a `key` in TOML and
+# must comply with the TOML spec.
+
+# Most keys in a enclosure_type sub-table are optional
+[enclosure_type.<str>]
+
+# optional
+# array of schematic symbols that can represent this enclosure
+# values must be the sub-table name
+schematic_symbol = [<str>]
+
+# overall width of enclosure
+width =  [<num>,<denom>]
+
+width_unit = <str>
+
+# overall height of enclosure
+height =  [<num>,<denom>]
+
+height_unit = <str>
+
+# overall depth of enclosure
+depth =  [<num>,<denom>]
+
+depth_unit = <str>
+
+# usable internal width of enclosure
+usable_width =  [<num>,<denom>]
+
+useable_width_unit = <str>
+
+# usable internal depth of enclosure
+usable_depth =  [<num>,<denom>]
+
+usable_depth_unit = <str>
+
+# usable internal height of enclosure
+usable_height =  [<num>,<denom>]
+
+usable_height_unit = <str>
+
+# Catalog subtable for each enclosure_type. Groups common properties
+# All fields here are optional, but highly encouraged.
+[enclosure_type.<str>.catalog]
+
+# manufacturer name
+manufacturer = <str>
+
+# model description
+model = <str>
+
+# free text field for larger descriptions
+description = <str>
+
+# [internal] part number
+part_number = <str>
+
+# manufacturer part number
+manufactuer_part_number = <str>
+
+# supplier
+supplier = <str>
+
+# supplier part number
+supplier_part_number = <str>
 
 
 # initial value list.
@@ -577,10 +859,6 @@ TODO: Schematic symbols
 
 TODO: Terminal definitions - also reuse for pins
 ```
-
-
-
-the difference between `cables` and `term_cables` is that `term_cables` are manufactured to a specific nominal length and `cables` are custom terminated.
 
 ### Project Definitions
 
