@@ -329,7 +329,7 @@ connector_type_mate = [<str>]
 # optional
 # (19" rack, 23" rack, 1/2 19" rack, DIN rail,
 # surface wall mount, inset wall mount, panel, custom)
-mounting_type = <list>
+mounting_type = [<str>]
 
 # optional
 # (audio, video, mix, lighting, networking, patch panel, power)
@@ -408,7 +408,7 @@ x = <integer>
 y = <integer>
 
 # Table (dictonary) of all available pathway types.
-# This is used for things like conduit, and cable tray,
+# This is used for things like conduit, panduit and cable tray,
 # but also includes things like J-hooks, or free-air cables.
 [pathway_type]
 
@@ -434,6 +434,10 @@ trade_size = <str>
 schematic_symbol = [<str>]
 
 # optional
+# used to display a representation of the pathway on panel diagrams
+visual_representation = <svg>
+
+# optional
 # Interior cross sectional area - used for conduit fill calculations
 cross_sect_area =  [<num>,<denom>]
 
@@ -451,7 +455,7 @@ material = <str>
 # manufacturer name
 manufacturer = <str>
 
-# equipment type model description
+# pathway type model description
 model = <str>
 
 # free text field for larger descriptions
@@ -506,7 +510,7 @@ conductor_ cross_sect_area =  [<num>,<denom>]
 
 stranded = <bool>
 
-# number of strands if cable is stranded. overriden to 1 if cable is not stranded
+# number of strands if cable is stranded. overriden to 1 if wire is not stranded
 num_strands = <int>
 
 # voltage rating of insulation
@@ -535,7 +539,7 @@ secondary_insulation_color = <str>
 # manufacturer name
 manufacturer = <str>
 
-# equipment type model description
+# wire type model description
 model = <str>
 
 # free text field for larger descriptions
@@ -615,7 +619,7 @@ material = <str>
 # electric potential rating for insulation layer
 electric_potential_rating =  [<num>,<denom>]
 
-electric_potential_unit = <>
+electric_potential_unit = <str>
 
 # temp rating for insulation layer
 temp_rating =  [<num>,<denom>]
@@ -654,7 +658,7 @@ contained_type = <str>
 # manufacturer name
 manufacturer = <str>
 
-# equipment type model description
+# cable type model description
 model = <str>
 
 # free text field for larger descriptions
@@ -700,12 +704,12 @@ length_unit = <str>
 
 # Catalog subtable for each cable_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[cable_type.<str>.catalog]
+[term_cable_type.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
 
-# equipment type model description
+# term_cable type model description
 model = <str>
 
 # free text field for larger descriptions
@@ -858,105 +862,185 @@ colors = # dictionary of colors. The color name (key) must be unique.
 TODO: Schematic symbols
 
 TODO: Terminal definitions - also reuse for pins
+
+TODO: Mounting rail
 ```
 
 ### Project Definitions
 
-```yaml
-equipment =		# dictionary of equipment defined in project
-	<str> =		# unique ID of equipment instance
-		type = <str>					# ID of equipment type
-		identifier = <str>			# structured name
-		mounting_type = <str>		# must be in list of mounting types defined on equipment type
-		location = <str>				# ID of location instance
-		description = <str>			# optional description
+```toml
+# dictionary of equipment defined in project
+[equipment]
+
+# table of attributes for an equipment instance
+[equipment.<str>]
+
+# ID of equipment type
+equipment_type = <str>
+
+# structured name
+identifier = <str>
+
+# must be in list of mounting types defined on equipment type
+mounting_type = <str>
+
+# ID of enclosure instance
+enclosure = <str>
+
+# optional description
+description = <str>
+
+[equipment.<str>.iec_codes]
+location = <str>
+installation = <str>
 
 
-wires =			# dictonary of all wire instances defined in project
-				# wires can only have two ends
-				#
-	<str> =		# unique ID of wire instance.
-		type = <str>					# ID of wire type
-		identifier = <str>			# structured name
-		description = <str>			# optional description
-		pathway = <str>				# ID of pathway instance
-		length =  [<num>,<denom>]				# length in meters
-		end1 =						# connector attached to wire
-			type = <str>				# ID of connector type
-		end2 =						# connectors attached to wire
-			type = <str>				# ID of connector type
+# dictionary of wires defined in project
+# wires can only have two ends
+# Wires within cables are assigned IDs automatically and are not listed here
+[wires]
+
+# table of attributes for wire instance
+[wires.<str>]
+
+# ID of wire type
+wire_type = <str>
+
+# structured name
+identifier = <str>
+
+# optional description
+description = <str>
+
+# ID of containing pathway instance
+pathway = <str>
+
+# wire length
+length =  [<num>,<denom>]
+
+length_unit = <str>
+
+# will be checked for 1 pin only
+# intended for things like ferrules, ring terminals, etc.
+end1_connector_type = <str>
+
+end2_connector_type = <str>
+
+[wires.<str>.iec_codes]
+location = <str>
+installation = <str>
+
+# table of all cables within project
+[cables]
+
+# table of attributes on cable instance
+[cables.<str>]
+# ID of cable type
+cable_type = <str>
+
+# structured name
+identifier = <str>
+
+# optional description
+description = <str>
+
+# ID of pathway instance
+pathway = <str>
+
+length =  [<num>,<denom>]
+
+length_unit = <str>
+
+[cables.<str>.iec_codes]
+location = <str>
+installation = <str>
 
 
-cables =			# dictonary of all cable instances defined in project
-				# cables can only have two ends, but each end can have
-				# a fan out or split with multiple connectors
-				#
-	<str> =		# unique ID of cable instance.
-				# Wires within cables are assigned IDs automatically and are not listed here
-		type = <str>					# ID of cable type
-		identifier = <str>			# structured name
-		description = <str>			# optional description
-		pathway = <str>				# ID of pathway instance
-		length =  [<num>,<denom>]				# length in meters
-		end1 =						# dictionary of connectors attached to cable or wire
-									# technically optional but being excluded will cause
-									# connections specified to be flagged as errors
-			type = <str>				# ID of connector type
-			autoTerm = <str>			# auto termination method, current available values are:
-									# `pin_core` which matches numbered or unique named pins and cores with each other
-									# others to be thought of at a later date.
-			terminations =			# dictionary of core to connector pin mappings for each connector
-									# either auto termination method or manual termination method
-									# must be specified
-		end2 =						# dictionary of connectors attached to cable or wire
-									# technically optional but being excluded will cause
-									# connections specified to be flagged as errors
-			type = <str>				# ID of connector type
-			autoTerm = <str>			# auto termination method, current available values are:
-									# `pin_core` which matches numbered or unique named pins and cores with each other
-									# others to be thought of at a later date.
-			terminations =			# dictionary of core to connector pin mappings for each connector
-									# either auto termination method or manual termination method
-									# must be specified
+# table of all term_cables in project
+[term_cables]
 
-term_cables =	# dictonary of all term_cable instances defined in project
-				# term_cables can only have two ends, but each end can have
-				# a fan out or split with multiple connectors
-				#
-	<str> =		# unique ID of term_cable instance.
-				# Wires within cables are assigned IDs automatically and are not listed here
-		type = <str>					# ID of term_cable type
-		identifier = <str>			# structured name
-		description = <str>			# optional description
-		pathway = <str>				# ID of pathway instance
+# table of attributes on a pathway instance
+[term_cables.<str>]
+
+# ID of term_cable type
+term_cable_type = <str>
+
+# structured name
+identifier = <str>
+
+# optional description
+description = <str>
+
+# ID of pathway instance
+pathway = <str>
+
+[term_cables.<str>.iec_codes]
+location = <str>
+installation = <str>
 
 
-pathways =		# dictonary of pathways defined in project
-	<str> =		# unique ID of pathway
-		type = <str>					# ID of pathway type
-		identifier = <str>			# structured name
-		description = <str>			# optional description
-		length =  [<num>,<denom>]				# length in meters
+# Table of all pathways defined in project
+[pathways]
 
-locations =		# dictionary of locations defined in project
-				# locations may have sublocations defined in them.
-				# examples of sublocations would be coordinate pairs on a backplane,
-				# individual DIN rails on a backplane, and then the distance along the DIN rail
-				# individual keystone slots on a panel
-				# rack units / sub rack units within a rack
-				#
-				# Need to check sublocations for recursion
-				#
-	<str> =		# unique ID of location instance
-		type = <str>					# ID of location type
-		identifier = <str>			# structured name
-		description = <str>			# optional description
-		phyiscalLocation = <str>		# street address, coordinates, description
-		sublocations =				# dictionary  of sublocations
-			id =	<str>				# unique id of location, no recursion
-			x =  [<num>,<denom>]				# distance from left side of parent location, specified in mm
-			y =  [<num>,<denom>]				# distance from bottom of parent location, specified in mm
-			z =  [<num>,<denom>]				# distance from back of parent location, specified in mm
+# Table of attributes on a pathway instance
+[pathways.<str>]
+
+# ID of pathway type
+pathway_type = <str>
+
+# structured name
+identifier = <str>
+
+# optional description
+description = <str>
+
+length =  [<num>,<denom>]
+
+length_unit = <str>
+
+[pathways.<str>.iec_codes]
+location = <str>
+installation = <str>
+
+# table of all enclosure instances defined in project
+[enclosures]
+
+# table of attributes on enclosure instance
+[enclosures.<str>]
+# ID of enclosure type
+enclosure_type = <str>
+
+# structured name
+identifier = <str>
+
+# optional description
+description = <str>
+
+# street address, coordinates, description
+phyiscal_location = <str>
+
+[enclosures.<str>.iec_codes]
+location = <str>
+installation = <str>
+
+
+# array of tables of sublocations/mounting locations within the enclosure
+# used to represent DIN rail, or just specific coordinate locations in a specific location
+
+# examples of subenclosures would be coordinate pairs on a backplane,
+# individual DIN rails on a backplane, and then the distance along the DIN rail
+# individual keystone slots on a panel
+# rack units / sub rack units within a rack
+# TODO: flesh this out more
+[[enclosures.<str>.location]]
+
+			x =  [<num>,<denom>]				# distance from left side of parent enclosure, specified in mm
+			y =  [<num>,<denom>]				# distance from bottom of parent enclosure, specified in mm
+			z =  [<num>,<denom>]				# distance from back of parent enclosure, specified in mm
+
+
+
+TODO: Terminals, terminal blocks, jumpers,
 
 
 connection =		# list of all connections defined in project, with submappings to identify the objects that are connected
