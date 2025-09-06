@@ -35,7 +35,7 @@ the project configuration file.
 On import, all project data will be validated against the library definitions.
 If values are found in the project that are not present in the library, an
 error log will be produced, both on the command line (if running in a terminal)
-and into a log file. File parsing will not stop on the first error, and should
+and into a log file. File parsing should not stop on errors, and should
 output a complete list of errors, however this is not guaranteed. Multiple
 attempts to open the project may be needed to catch all errors.
 
@@ -180,15 +180,45 @@ Library files must contain at least one of the base tables as shown in the file
 reference below.
 
 **NOTE:** Any number that is not specifically an integer, is implemented
-internally as a `[Rational64]` to work around precision issues with floats. You
-must specify both a numerator and denominator in the array or you will get an
-error. As an example, if you wanted to represent the number 1/3, a float of
-0.333333... isn't exact. With Rational types, you can specify it as exactly 1/3
-and be satisfied. Floating point numbers are still used, especially to produce
-decimal output from Rational types but all the math internally is done with
-Rational types and just the output step is converted.
+internally as a
+[Rational64](https://docs.rs/num-rational/latest/num_rational/type.Rational64.html)
+to work around precision issues with floats. You must specify both a numerator
+and denominator in the array or you will get an error. As an example, if you
+wanted to represent the number 1/3, a float of 0.3333̅33̅. isn't exact. With
+Rational types, you can specify it as exactly 1/3 and be satisfied. Floating
+point numbers are still used, especially to produce decimal output from
+Rational types but all the math internally is done with Rational types and just
+the output step is converted.
 
 All images are specified as SVG, so drawings can scale easily.
+
+Where a color `<str>` is specified, you can choose from the following options,
+or specify a custom RGB color using hexadecimal #RRGGBB syntax (not finalized yet).
+
+If anyone has official color standards/values for these, along with the
+acompanying RGB values, please submit a pull request.
+
+#### Color Value List.
+
+| Color Name | Abbreviation | RGB Color Code | Color Standard |
+| ---------- | ------------ | -------------- | -------------- |
+| Red        | RED          | #FF0000        |                |
+| Orange     | ORN          | #FF5100        |                |
+| Yellow     | YEL          | #FFFF00        |                |
+| Green      | GRN          | #00FF00        |                |
+| Blue       | BLU          | #0000FF        |                |
+| Purple     | PUR          | #6700FF        |                |
+| Violet     | VIO          | #EE82EE        |                |
+| Pink       | PNK          | #FFE4E1        |                |
+| Rose       | RSE          | #FFE4E1        |                |
+| Brown      | BRN          | #8B4513        |                |
+| Black      | BLK          | #000000        |                |
+| White      | WHT          | #FFFFFF        |                |
+| Gray       | GRY          | #808080        |                |
+| Slate      | SLT          | #808080        |                |
+| Clear      | CLR          | #FFFFFF        |                |
+| Cyan       | CYN          | #00FFFF        |                |
+| Aqua       | AQA          | #00FFFF        |                |
 
 ```toml
 # table (dictionary) of all available connector types
@@ -238,9 +268,31 @@ diameter = [<num>, <denom>]
 diameter_unit = <str>
 
 # optional
+# connector color
+# used to label the color of a flag or tag or ring on the connector
+color = <str>
+
+# optional
+# component designator
+component_designator = <str>
+
+# optional
 # array of schematic symbols that can represent this connector
 # values must be the sub-table name
 schematic_symbol = [<str>]
+
+# optional
+# TODO: decide if these should be filepaths or directly included SVGs
+# SVGs should be layed out for a horizontal orientation when defined.
+# instances can be rotated when defined in project.
+# if not defined, a generic diagram will be used
+# this is the panel representation image
+visual_representation = <svg>
+
+# optional
+# array of which connectors mate with which other connectors
+# needs to be populated with sub-table key of connectors
+connector_type_mate = [<str>]
 
 # Catalog subtable for each connector-type. Groups common properties
 # All fields here are optional, but highly encouraged.
@@ -296,18 +348,10 @@ pincolors = [<str>]
 pin_signal_type = [<str>]
 
 # optional
-# TODO: decide if these should be filepaths or directly included SVGs
-# SVG image of connector front
-visual_representation = <svg>
-
-# optional
 # SVG image shows pin layout of connector with pin labels
 pin_visual_representation = <svg>
 
-# optional
-# array of which connectors mate with which other connectors
-# needs to be populated with sub-table key of connectors
-connector_type_mate = [<str>]
+
 
 # Equipment type is not an abstract type of equipment
 # (like PLC, relay, circuit breaker, etc), but a manufacturer product.
@@ -385,6 +429,8 @@ supplier_part_number = <str>
 # table of attributes of each face
 [equipment_type.<str>.faces.<str>]
 # TODO: use custom SVG tags to store locations of connectors instead of x/y coordinates
+# SVGs should be layed out for a horizontal orientation when defined.
+# instances can be rotated when defined in project.
 visual_representation = <svg>
 
 
@@ -406,6 +452,9 @@ x = <integer>
 
 # location of connector from bottom left of visrep of face up
 y = <integer>
+
+
+
 
 # Table (dictonary) of all available pathway types.
 # This is used for things like conduit, panduit and cable tray,
@@ -429,12 +478,8 @@ size = <str>
 trade_size = <str>
 
 # optional
-# array of schematic symbols that can represent this pathway_type
-# values must be the sub-table name
-schematic_symbol = [<str>]
-
-# optional
 # used to display a representation of the pathway on panel diagrams
+# mainly used for things like panduit or wireway mounted to panel directly
 visual_representation = <svg>
 
 # optional
@@ -446,7 +491,6 @@ cross_sect_area_unit = <str>
 
 # primary material of pathway
 material = <str>
-
 
 # Catalog subtable for each pathway_type. Groups common properties
 # All fields here are optional, but highly encouraged.
@@ -473,6 +517,27 @@ supplier = <str>
 # supplier part number
 supplier_part_number = <str>
 
+# all items here are optional
+# and will use defaults if not specified
+# schematic appearance of linear items
+[pathway_type.<str>.schematic_style]
+
+color = <str>
+
+secondary_color = <str>
+
+line_thickness = [<num>,<denom>]
+
+line_thickness_unit = <str>
+
+# array of lengths/percentages of dashes and gaps
+# uses same specification as SVG stroke-dasharray field.
+line_appearance = [<int>]
+
+
+
+
+
 # Table (dictonary) of all available wire types.
 # A wire is defined as a material (not necessarily conductive) with optional insulation.
 # if a product has a shield or additional layers, it must be defined as a cable
@@ -496,7 +561,6 @@ insulation_material = <str>
 
 # THWN, XHHN, etc
 wire_type_code = <str>
-
 
 insulation_thickness =  [<num>,<denom>]
 
@@ -524,13 +588,28 @@ insulation_temp_rating =  [<num>,<denom>]
 
 insulation_temp_rating_unit = <str>
 
-# insulation color. Pick from following options:
-# GREEN, BLACK, WHITE, RED, BLUE, YELLOW, ORANGE, BROWN,
-# PINK, PURPLE, SLATE, ROSE, VIOLET, AQUA, #RRGGBB (hex color code)
+
 insulation_color = <str>
 
-# same as insulation color
 secondary_insulation_color = <str>
+
+# all items here are optional
+# and will use defaults or insulation color values if not specified
+# schematic appearance of linear items
+[wire_type.<str>.schematic_style]
+
+color = <str>
+
+secondary_color = <str>
+
+line_thickness = [<num>,<denom>]
+
+line_thickness_unit = <str>
+
+# array of lengths/percentages of dashes and gaps
+# uses same specification as SVG stroke-dasharray field.
+line_appearance = [<int>]
+
 
 # Catalog subtable for each wire_type. Groups common properties
 # All fields here are optional, but highly encouraged.
@@ -558,14 +637,16 @@ supplier = <str>
 supplier_part_number = <str>
 
 
+
+
 # Table (dictonary) of all available cable types.
 # A cable is defined as one or more wires mechanically attached together,
 # with optional insulation and semiconducting layers, and optional shields
 # if a product has a shield or additional layers, it must be defined as a cable
 # wire insulation color is defined on individual wire instance
+
+# Cable_types can be composed of cable_types.
 [cable_type]
-
-
 
 # Table (dictionary) representing one cable type
 # The `<str>` is the cable type identifier. This is a `key` in TOML and
@@ -650,6 +731,22 @@ color = <str>
 # identifier of wire/cable type that core is
 contained_type = <str>
 
+# all items here are optional
+# and will use defaults or cable outer jacket/insulation color if not specified
+# schematic appearance of linear items
+[cable_type_type.<str>.schematic_style]
+
+color = <str>
+
+secondary_color = <str>
+
+line_thickness = [<num>,<denom>]
+
+line_thickness_unit = <str>
+
+# array of lengths/percentages of dashes and gaps
+# uses same specification as SVG stroke-dasharray field.
+line_appearance = [<int>]
 
 # Catalog subtable for each cable_type. Groups common properties
 # All fields here are optional, but highly encouraged.
@@ -702,7 +799,24 @@ length =  [<num>,<denom>]
 
 length_unit = <str>
 
-# Catalog subtable for each cable_type. Groups common properties
+# all items here are optional
+# and will use defaults or outer insulation color if not specified
+# schematic appearance of linear items
+[term_cable_type.<str>.schematic_style]
+
+color = <str>
+
+secondary_color = <str>
+
+line_thickness = [<num>,<denom>]
+
+line_thickness_unit = <str>
+
+# array of lengths/percentages of dashes and gaps
+# uses same specification as SVG stroke-dasharray field.
+line_appearance = [<int>]
+
+# Catalog subtable for each cable_type. Group200ggs common properties
 # All fields here are optional, but highly encouraged.
 [term_cable_type.<str>.catalog]
 
@@ -738,15 +852,18 @@ core_id = <str>
 # table of connectors attached to one end of term_cable
 [term_cable_type.<str>.end1]
 
-# table of attributes for a specific connector on end 1
-[term_cable_type.<str>.end1.<str>]
+[term_cable_type.<str>.end1.connectors]
+
+# table defining a specific connector on end 1
+# connector id is end <str>
+[term_cable_type.<str>.end1.connectors.<str>]
 
 # ID of connector type
 connector_type = <str>
 
 # array of tables of core to connector pin mappings for each connector
 # specify one table for each pin-core mapping
-[[term_cable_type.<str>.end1.<str>.terminations]]
+[[term_cable_type.<str>.end1.connectors.<str>.terminations]]
 
 core = <str>
 pin = <str>
@@ -754,18 +871,25 @@ pin = <str>
 # table of connectors attached to the other end of term_cable
 [term_cable_type.<str>.end2]
 
-# table of attributes for a specific connector on end 1
-[term_cable_type.<str>.end2.<str>]
+[term_cable_type.<str>.end2.connectors]
+
+# table defining a specific connector on end 2
+# connector id is end <str>
+[term_cable_type.<str>.end2.connectors.<str>]
 
 # ID of connector type
 connector_type = <str>
 
 # array of tables of core to connector pin mappings for each connector
 # specify one table for each pin-core mapping
-[[term_cable_type.<str>.end2.<str>.terminations]]
+[[term_cable_type.<str>.end2.connectors.<str>.terminations]]
 
 core = <str>
 pin = <str>
+
+
+
+
 
 
 # Table (dictonary) of all available enclosure_types.
@@ -779,11 +903,6 @@ pin = <str>
 
 # Most keys in a enclosure_type sub-table are optional
 [enclosure_type.<str>]
-
-# optional
-# array of schematic symbols that can represent this enclosure
-# values must be the sub-table name
-schematic_symbol = [<str>]
 
 # overall width of enclosure
 width =  [<num>,<denom>]
@@ -815,6 +934,15 @@ usable_height =  [<num>,<denom>]
 
 usable_height_unit = <str>
 
+# optional
+# if not defined, a generic drawing will be used instead
+# SVGs should be layed out for a horizontal orientation when defined.
+# instances can be rotated when defined in project.
+visual_representation = <svg>
+
+# optional
+color = <str>
+
 # Catalog subtable for each enclosure_type. Groups common properties
 # All fields here are optional, but highly encouraged.
 [enclosure_type.<str>.catalog]
@@ -841,29 +969,387 @@ supplier = <str>
 supplier_part_number = <str>
 
 
-# initial value list.
-#- Red (RED)
-#- Orange (ORN)
-#- Yellow (YEL)
-#- Green (GRN)
-#- Blue (BLU)
-#- Purple (PUR)
-#- Brown (BRN)
-#- Black (BLK)
-#- Gray (GRY)
-#- Slate (SLT)
-#- Clear (CLR)
-#- Cyan (CYN)
+# Table (dictionary) of all available terminal block types.
+# Terminal blocks are separated out into their own category
+# due to some special case things with them, including
+# the accessories, and ganging.
+[terminal_block_type]
 
 
-colors = # dictionary of colors. The color name (key) must be unique.
-	<str> = <str>					# name: abbreviation
+# Table (dictionary) of all attributes on one particular terminal block type
+[terminal_block_type.<str>]
 
-TODO: Schematic symbols
+# optional
+color = <str>
 
-TODO: Terminal definitions - also reuse for pins
+# optional
+secondary_color = <str>
 
-TODO: Mounting rail
+# optional
+# used to display a representation of the terminal on panel diagrams
+# SVGs should be layed out for a horizontal orientation when defined.
+# instances can be rotated when defined in project.
+visual_representation = <svg>
+
+# optional
+# component designator
+component_designator = <str>
+
+# optional
+# If a number is not provided here, the terminal block is
+# considered to be unfused.
+fused = [<num>,<denom>]
+
+# overall width of enclosure
+width =  [<num>,<denom>]
+
+width_unit = <str>
+
+# overall height of enclosure
+height =  [<num>,<denom>]
+
+height_unit = <str>
+
+# overall depth of enclosure
+depth =  [<num>,<denom>]
+
+depth_unit = <str>
+
+# array defining terminal_block layers
+# at least one layer is required for a terminal block
+# last <str> is unique layer identifier within terminal block
+[terminal_block_type.<str>.layers.<str>]
+
+# array defining the number of connection points per terminal block layer
+# define 1 instance of this table array per connection point per layer
+[[terminal_block_type.<str>.layers.<str>.connections]]
+
+# connection designation
+# must be unique among connection points on a layer
+# only used to fill out the internal_connections section below
+connection_description = <str>
+
+# connection type of terminal
+# allowed options are:
+# - Screw terminal
+# - Bolt
+# - Plug-in
+# - Push-in
+# - Quick Connect
+# - Spade
+# - Spring Cage
+type = <str>
+
+# optional
+# connection entry angle
+entry_angle = <str>
+
+# maximum number of wires allowed to be connected to this terminal.
+# can be lower than manufacturer recommended values
+max_wires = <int>
+
+maximum_wire_diameter = [<num>,<denom>]
+
+maximum_wire_diameter_unit = <str>
+
+minimum_wire_diameter = [<num>,<denom>]
+
+minimum_wire_diameter_unit = <str>
+
+# what types of wire/connectors are supported by terminal connection
+# current supported list is:
+# - solid
+# - stranded
+# - stranded_ferrule
+# - spade
+wire_types_accepted = [<str>]
+
+# internal connections within terminal block
+# define one instance of this table array per set of connected terminals
+[[terminal_block_type.<str>.internal_connections]]
+
+# array of terminal designations.
+# use layer_designation.connection_designation in each array value
+# to show what terminals are connected together
+connected_terminals = [<str>]
+
+# optional
+# used to indicate a connection from this set of internal connections
+# to the mounting rail.
+# mainly used for PE/grounding terminal blocks.
+mount_connection = <bool>
+
+
+# Catalog subtable for each terminal_block_type. Groups common properties
+# All fields here are optional, but highly encouraged.
+[terminal_block_type.<str>.catalog]
+
+# manufacturer name
+manufacturer = <str>
+
+# model description
+model = <str>
+
+# free text field for larger descriptions
+description = <str>
+
+# [internal] part number
+part_number = <str>
+
+# manufacturer part number
+manufactuer_part_number = <str>
+
+# supplier
+supplier = <str>
+
+# supplier part number
+supplier_part_number = <str>
+
+
+# Table of terminal block jumpers in library
+[terminal_block_jumper_type]
+
+# table of attributes for one jumper type
+[terminal_block_jumper_type.<str>]
+
+# terminal block types compatible with
+# If a jumper is compatible with multiple sizes of terminal blocks
+# like the phoenix contact reducing bridges, then use the per-pin arrays to specify
+compatible_terminal_block_type = [<str>]
+
+number_of_positions = <int>
+
+# SVGs should be layed out for a horizontal orientation when defined.
+# instances can be rotated when defined in project.
+visual_representation = <svg>
+
+color = <str>
+
+# optional
+# per pin compatible terminal_block_types
+# specify an array of terminal_block_types per pin
+# terminal block jumpers are reversable when specified in a terminal_strip
+pin_compatible_terminal_block_types = [[<str>], [<str>]]
+
+# Catalog subtable for each terminal_block_jumper_type. Groups common properties
+# All fields here are optional, but highly encouraged.
+[terminal_block_jumper_type.<str>.catalog]
+
+# manufacturer name
+manufacturer = <str>
+
+# model description
+model = <str>
+
+# free text field for larger descriptions
+description = <str>
+
+# [internal] part number
+part_number = <str>
+
+# manufacturer part number
+manufactuer_part_number = <str>
+
+# supplier
+supplier = <str>
+
+# supplier part number
+supplier_part_number = <str>
+
+
+# Table of terminal block accessories in library
+# Terminal block accessories are things like end plates or spacers
+# that are incorporated into a terminal_strip linearly
+# This does not include things like DIN rail stops.
+[terminal_block_accessory_type]
+
+
+# table of attributes for one terminal_block_accessory_type
+[terminal_block_accessory_type.<str>]
+
+# terminal block types compatible with
+compatible_terminal_block_type = [<str>]
+
+# SVGs should be layed out for a horizontal orientation when defined.
+# instances can be rotated when defined in project.
+visual_representation = <svg>
+
+
+# Catalog subtable for each terminal_block_accessory_type. Groups common properties
+# All fields here are optional, but highly encouraged.
+[terminal_block_accessory_type.<str>.catalog]
+
+# manufacturer name
+manufacturer = <str>
+
+# model description
+model = <str>
+
+# free text field for larger descriptions
+description = <str>
+
+# [internal] part number
+part_number = <str>
+
+# manufacturer part number
+manufactuer_part_number = <str>
+
+# supplier
+supplier = <str>
+
+# supplier part number
+supplier_part_number = <str>
+
+
+
+# table of schematic symbol types
+# These usually represent multiple different models/manufacturers of equipment
+# but can be used to represent just 1 equipment type if desired
+# symbols should be layed out for a horizontal orientation when defined.
+# instances can be rotated.
+[schematic_symbol_type]
+
+# table of attributes for a specific symbol
+[schematic_symbol_type.<str>]
+
+visual_representation = <svg>
+
+# optional free-form description
+description = <str>
+
+# optional
+# if this is true, svg will be searched
+# for special tags that indicate where dashed link lines
+# will connect.
+# supports_links = <bool>
+
+
+
+
+# table of mounting rail types
+# mounting rails are defined and generated parametrically
+# to make usage easier.
+# They can also be defined with SVG segments showing beginning and end of rail
+# and the join points.
+#
+# mounting rail types are defined as if they are being mounted horizontally
+# when placed in a project, they can be oriented in any orientation.
+# any SVG files need to be designed to accomodate this layout.
+[mounting_rail_type]
+
+# table of attributes for specific mounting rail type
+# origin is defined as center left of mounting rail
+[mounting_rail_type.<str>]
+
+# overall height of rail
+# rail center point will be at
+# rail_height / 2
+rail_height = [<num>,<denom>]
+
+rail_height_unit = <str>
+
+# total height of center/recessed section of mounting rail
+# centered on total height
+rail_center_height = [<num>,<denom>]
+
+rail_center_height_unit = <str>
+
+# does mounting rail have slots
+slots = <bool>
+
+# linear distance between origin and center of first slot
+# will also be used for the distance between the last slot
+# and the end of the rail.
+first_slot_center = [<num>,<denom>]
+
+first_slot_center_unit = <str>
+
+# linear center to center distance between slots.
+slot_center_to_center = [<num>,<denom>]
+
+slot_center_to_center_unit = <str>
+
+# slot length, includes length of rounded ends
+slot_length = [<num>,<denom>]
+
+slot_length_unit = <str>
+
+slot_height = [<num>,<denom>]
+
+slot_height_unit = <str>
+
+# the length of rail as specified by the manufacturer/supplier part number
+standard_rail_length = [<num>,<denom>]
+
+standard_rail_length_unit = <str>
+
+# User specified minimum length.
+# If not specified, will be set to 2x the first_slot_center distance
+# if instance length is set smaller than default minimum_rail_length
+# and no_partial_holes is false, then minimum_rail_length
+# will be ignored.
+minimum_rail_length = [<num>,<denom>]
+
+minimum_rail_length_unit = <str>
+
+# will extend rail so there are no partial holes
+no_partial_holes = <bool>
+
+# distance between top center_line and origin
+top_rail_center_height = [<num>,<denom>]
+
+top_rail_center_height_unit = <str>
+
+# distance between bottom center_line and origin
+bottom_rail_center_height = [<num>,<denom>]
+
+bottom_rail_center_height_unit = <str>
+
+# distance between origin and slot vertical center
+# positive above origin, negative below origin
+slot_vertical_center = [<num>,<denom>]
+
+slot_vertical_center_unit = <str>
+
+# SVG files for start, end and middle of mounting rail
+# minimum rail length should be set to the length of the
+# start and end SVGs to not cause graphical issues
+# if minimum rail length is not set, the middle SVG
+# might get cut off unexpectedly.
+#
+# the start, middle and end images should not have lines where they join
+# so when the images are placed together, there is no overlap.
+
+start_image = <svg>
+
+middle_image = <svg>
+
+end_image = <svg>
+
+# Catalog subtable for each mounting_rail_type. Groups common properties
+# All fields here are optional, but highly encouraged.
+[mounting_rail_type.<str>.catalog]
+
+# manufacturer name
+manufacturer = <str>
+
+# model description
+model = <str>
+
+# free text field for larger descriptions
+description = <str>
+
+# [internal] part number
+part_number = <str>
+
+# manufacturer part number
+manufactuer_part_number = <str>
+
+# supplier
+supplier = <str>
+
+# supplier part number
+supplier_part_number = <str>
 ```
 
 ### Project Definitions
@@ -894,6 +1380,19 @@ description = <str>
 location = <str>
 installation = <str>
 
+# custom fields for user specified data. Not parsed
+[equipment.<str>.user_fields]
+user0 = <str>
+user1 = <str>
+user2 = <str>
+user3 = <str>
+user4 = <str>
+user5 = <str>
+user6 = <str>
+user7 = <str>
+user8 = <str>
+user9 = <str>
+
 
 # dictionary of wires defined in project
 # wires can only have two ends
@@ -906,7 +1405,7 @@ installation = <str>
 # ID of wire type
 wire_type = <str>
 
-# structured name
+# structured name / wire number
 identifier = <str>
 
 # optional description
@@ -930,6 +1429,19 @@ end2_connector_type = <str>
 location = <str>
 installation = <str>
 
+# custom fields for user specified data. Not parsed
+[wires.<str>.user_fields]
+user0 = <str>
+user1 = <str>
+user2 = <str>
+user3 = <str>
+user4 = <str>
+user5 = <str>
+user6 = <str>
+user7 = <str>
+user8 = <str>
+user9 = <str>
+
 # table of all cables within project
 [cables]
 
@@ -938,7 +1450,7 @@ installation = <str>
 # ID of cable type
 cable_type = <str>
 
-# structured name
+# structured name / cable number
 identifier = <str>
 
 # optional description
@@ -953,7 +1465,21 @@ length_unit = <str>
 
 [cables.<str>.iec_codes]
 location = <str>
+
 installation = <str>
+
+# custom fields for user specified data. Not parsed
+[cables.<str>.user_fields]
+user0 = <str>
+user1 = <str>
+user2 = <str>
+user3 = <str>
+user4 = <str>
+user5 = <str>
+user6 = <str>
+user7 = <str>
+user8 = <str>
+user9 = <str>
 
 
 # table of all term_cables in project
@@ -965,7 +1491,7 @@ installation = <str>
 # ID of term_cable type
 term_cable_type = <str>
 
-# structured name
+# structured name / cable number
 identifier = <str>
 
 # optional description
@@ -978,6 +1504,19 @@ pathway = <str>
 location = <str>
 installation = <str>
 
+# custom fields for user specified data. Not parsed
+[term_cables.<str>.user_fields]
+user0 = <str>
+user1 = <str>
+user2 = <str>
+user3 = <str>
+user4 = <str>
+user5 = <str>
+user6 = <str>
+user7 = <str>
+user8 = <str>
+user9 = <str>
+
 
 # Table of all pathways defined in project
 [pathways]
@@ -988,7 +1527,7 @@ installation = <str>
 # ID of pathway type
 pathway_type = <str>
 
-# structured name
+# structured name / pathway identifier
 identifier = <str>
 
 # optional description
@@ -1001,6 +1540,22 @@ length_unit = <str>
 [pathways.<str>.iec_codes]
 location = <str>
 installation = <str>
+
+# custom fields for user specified data. Not parsed
+[pathways.<str>.user_fields]
+user0 = <str>
+user1 = <str>
+user2 = <str>
+user3 = <str>
+user4 = <str>
+user5 = <str>
+user6 = <str>
+user7 = <str>
+user8 = <str>
+user9 = <str>
+
+
+
 
 # table of all enclosure instances defined in project
 [enclosures]
@@ -1023,6 +1578,18 @@ phyiscal_location = <str>
 location = <str>
 installation = <str>
 
+# custom fields for user specified data. Not parsed
+[enclosures.<str>.user_fields]
+user0 = <str>
+user1 = <str>
+user2 = <str>
+user3 = <str>
+user4 = <str>
+user5 = <str>
+user6 = <str>
+user7 = <str>
+user8 = <str>
+user9 = <str>
 
 # array of tables of sublocations/mounting locations within the enclosure
 # used to represent DIN rail, or just specific coordinate locations in a specific location
@@ -1034,23 +1601,155 @@ installation = <str>
 # TODO: flesh this out more
 [[enclosures.<str>.location]]
 
-			x =  [<num>,<denom>]				# distance from left side of parent enclosure, specified in mm
-			y =  [<num>,<denom>]				# distance from bottom of parent enclosure, specified in mm
-			z =  [<num>,<denom>]				# distance from back of parent enclosure, specified in mm
+# optional id tag for sub-location
+# if this sub-location has children,
+# then this must be defined.
+id = <str>
+
+# optional parent sub-location
+# if not defined, will be child of enclosure
+parent_sublocation = <str>
+
+# optional mounting rail id
+# this ID must be defined in the project.
+mounting_rail_id = <str>
+
+# distance from left side of parent enclosure or location
+x =  [<num>,<denom>]
+
+x_unit = <str>
+
+# distance from bottom of parent enclosure
+y =  [<num>,<denom>]
+
+y_unit = <str>
+
+# distance along left side of location or rail
+# allows you to not have to specify another sub-location for every single rail mounted component
+distance = [<num>, <denom>]
+
+distance_unit = <str>
+
+# table of all terminal strips defined in the project
+# all terminal blocks are part of a terminal strip
+# a terminal strip is a collection of one or more terminal blocks
+[terminal_strips]
+
+# table of attributes for a specific terminal strip
+[terminal_strips.<str>]
+
+# structured name/tag strip ID / terminal strip name
+identifier = <str>
+
+# ID of sub-location instance defined in project
+# where this terminal strip is located
+location_id = <str>
+
+# array of tables defining individual terminal blocks
+# in terminal_strip.
+# Definitions proceed left to right, horizontally.
+[[terminal_strips.<str>.terminals]]
+
+# number used for display order, defined left to right
+terminal_number = <int>
+
+# structured name / terminal number
+identifier = <str>
+
+# optional descriptive label
+label = <str>
+
+# defining either terminal_block or terminal_block_accessory type
+# must be defined under the defintion of the terminal_block array it applies to
+# second <str> can either be `term` or `accy`
+[terminal_strips.<str>.terminals.<str>]
+
+# ID of terminal_block_type or terminal_block_accessory_type
+component_type = <str>
+
+# array of jumpers defined in terminal strip
+# these are only jumpers that exist within
+# one terminal strip.
+# wire jumpers that cross terminal strips
+# should be defined as wires
+[[terminal_strips.<str>.jumpers]]
+
+# id of jumper type
+jumper_type = <str>
+
+# structured name / terminal number
+identifier = <str>
+
+# optional descriptive label
+label = <str>
+
+# array of `terminal_number`s as defined in the terminals array
+# that indicate which terminals within a terminal strip
+# this jumper connects
+# can optionally have the terminal layer indicated with a dot and
+# the terminal layer designation, allowing for multi-layer jumpers
+jumper_connections = [<str>]
+
+[terminal_strips.<str>.iec_codes]
+location = <str>
+installation = <str>
+
+# custom fields for user specified data. Not parsed
+[terminal_strips.<str>.user_fields]
+user0 = <str>
+user1 = <str>
+user2 = <str>
+user3 = <str>
+user4 = <str>
+user5 = <str>
+user6 = <str>
+user7 = <str>
+user8 = <str>
+user9 = <str>
 
 
 
-TODO: Terminals, terminal blocks, jumpers,
+# list of mounting rails in project
+[mounting_rails]
+
+# table of attributes for a specific mounting rail
+[mounting_rails.<str>]
+
+mounting_rail_type = <str>
+
+length = [<nom>, <denom>]
+
+length_unit = <str>
+
+# custom fields for user specified data. Not parsed
+[mounting_rails.<str>.user_fields]
+user0 = <str>
+user1 = <str>
+user2 = <str>
+user3 = <str>
+user4 = <str>
+user5 = <str>
+user6 = <str>
+user7 = <str>
+user8 = <str>
+user9 = <str>
 
 
-connection =		# list of all connections defined in project, with submappings to identify the objects that are connected
-				# connections are uniquely identified by concatenating the two ids of the connected objects together
-				#
-	- end1 = <str>					# unique identifier of connected object.
-									# If connected object contains subobjects, and they are not specifically
-									# connected together, but their parents are, application logic will assume
-									# connection patterns for the subobjects.
-	- end2 = <str>					# unique identifier of connected object. Cannot be the same as end1.
+# Connections between two objects, commonly either wires/cables/term_cables and a terminal/connector on equipment
+# This is the only root level item in the project definition that is an array rather than a table with sub-tables
+# This is because there are no human generated identifiers. Individual connections are tracked internally. 
+
+# <str> for both end1 and end2 are dot joined ids of the specific objects
+# prefixed with codes indicating what object type it is.
+# for example to connect a wire within a cable to a connection on a terminal block
+# TODO finish this example
+[[connections]]
+
+end1 = <str>
+
+end2 = <str>
+
+TODO: schematic symbols, drawings
 
 ```
 
