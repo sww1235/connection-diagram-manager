@@ -1,5 +1,7 @@
 use std::fmt;
 
+use serde::{Deserialize, Serialize};
+
 /// Cross section of wire or cable
 #[non_exhaustive]
 #[derive(Debug, Default, PartialEq, Clone)]
@@ -22,4 +24,23 @@ impl fmt::Display for CrossSection {
             CrossSection::Siamese => write! {f, "Siamese"},
         }
     }
+}
+
+/// Common Catalog information for Library Types
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+pub struct Catalog {
+    /// manufacturer name
+    pub manufacturer: Option<String>,
+    /// connector model description
+    pub model: Option<String>,
+    /// free text field for larger descriptions
+    pub description: Option<String>,
+    /// [internal] part number
+    pub part_number: Option<String>,
+    /// manufacturer part number
+    pub manufacturer_part_number: Option<String>,
+    /// supplier name
+    pub supplier: Option<String>,
+    /// supplier part number
+    pub supplier_part_number: Option<String>,
 }

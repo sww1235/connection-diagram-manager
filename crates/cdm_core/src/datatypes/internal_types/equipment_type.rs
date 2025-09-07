@@ -1,10 +1,10 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::fmt;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use uom::si::{length::millimeter, rational64::Length};
+use serde::{Deserialize, Serialize};
+use uom::si::rational64::Length;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::partial_empty::PartialEmpty;
@@ -15,7 +15,7 @@ use super::{connector::Connector, svg::Svg};
 /// `EquipmentType` represents a type of equipment
 ///
 /// Anything from a rackmount piece of gear to an outlet or terminal block
-#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct EquipmentType {
     //TODO: add dimensions here
     /// Internal ID of Equipment Type
@@ -53,7 +53,7 @@ pub struct EquipmentType {
 ///
 /// May have 2 faces for something like a patch panel, or 6 for a cube, or 1 for an unrolled
 /// sphere, etc.
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct EquipFace {
     /// visual representation of equipment face, without connectors
     pub visual_rep: Svg,
@@ -64,7 +64,7 @@ pub struct EquipFace {
 //TODO: Make some of these fields enums
 /// `ConnectorJoin` rep in
 /// a `EquipmentType`
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct ConnectorJoin {
     /// `Connector`
     pub connector: Rc<RefCell<Connector>>,
@@ -90,51 +90,5 @@ impl EquipmentType {
             Some(faces) => faces["Front"].visual_rep.clone(),
             None => self.visual_rep.clone(),
         }
-    }
-}
-
-impl fmt::Display for ConnectorJoin {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Equipment Connector:")?;
-        writeln!(f, "Connector: {:?}", &self.connector.borrow())?;
-        if let Some(direction) = &self.direction {
-            writeln!(f, "Direction: {direction}")?;
-        }
-        //TODO: allow specifying units
-        writeln!(f, "X coordinate: {}", self.x.get::<millimeter>())?;
-        writeln!(f, "Y coordinate: {}", self.y.get::<millimeter>())?;
-        Ok(())
-    }
-}
-impl fmt::Display for EquipmentType {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Equipment Type:")?;
-        if let Some(manufacturer) = &self.manufacturer {
-            write!(f, "Manufacturer: {manufacturer}")?;
-        }
-        if let Some(model) = &self.model {
-            write!(f, "Model: {model}")?;
-        }
-        if let Some(part_number) = &self.part_number {
-            write!(f, "Part Number: {part_number}")?;
-        }
-        if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
-            write!(f, "Manufacturer Part Number: {manufacturer_part_number}")?;
-        }
-        if let Some(supplier) = &self.supplier {
-            write!(f, "Supplier: {supplier}")?;
-        }
-        if let Some(supplier_part_number) = &self.supplier_part_number {
-            write!(f, "Supplier Part Number: {supplier_part_number}")?;
-        }
-        if let Some(description) = &self.description {
-            write!(f, "Description: {description}")?;
-        }
-        write!(f, "Mount Types: {:?}", &self.mount_types)?;
-        if let Some(equip_type) = &self.equip_type {
-            write!(f, "Equipment Type: {equip_type}")?;
-        }
-        //TODO: implement loops over faces and connectors
-        Ok(())
     }
 }

@@ -5,3 +5,6 @@ pub mod internal_types;
 ///`util_types` contains utility types that are used in multiple other different types and files,
 ///including generic enums.
 pub mod util_types;
+
+/// `project` contains the types that define a project.
+pub mod project;

@@ -1,5 +1,7 @@
 use std::fmt;
 
+use serde::{Deserialize, Serialize};
+
 use super::super::file_types::svg::Svg as FileSvg;
 use cdm_traits::partial_empty::PartialEmpty;
 
@@ -11,7 +13,7 @@ use cdm_macros::Empty;
 //TODO: provide a method of specifying the units of the SVG file
 
 /// Svg represents a full SVG image
-#[derive(Debug, Default, Clone, PartialEq, Empty)]
+#[derive(Debug, Default, Clone, PartialEq, Empty, Serialize, Deserialize)]
 pub struct Svg(pub String);
 
 impl From<FileSvg> for Svg {

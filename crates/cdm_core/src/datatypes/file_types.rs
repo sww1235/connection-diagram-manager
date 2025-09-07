@@ -86,80 +86,80 @@ pub struct DataFile {
     pub pathways: Option<HashMap<String, pathway::Pathway>>,
 }
 
-/// `data_parser` deserializes a provided file handle into a `DataFile`
-fn data_parser(data_file: fs::File) -> Result<DataFile, serde_yaml::Error> {
-    let data: DataFile = serde_yaml::from_reader(data_file)?;
-    Ok(data)
-}
+// `data_parser` deserializes a provided file handle into a `DataFile`
+//fn data_parser(data_file: fs::File) -> Result<DataFile, serde_yaml::Error> {
+//    let data: DataFile = serde_yaml::from_reader(data_file)?;
+//    Ok(data)
+//}
 
-/// `project_dir_parser` takes in a project directory and parses all source files found within
-///
-/// # Errors
-///
-/// Will error if:
-/// - reading any of the individual project files fails
-/// - the specified `project_dir` is not a directory
-/// - [`os_str`] failed to parse to UTF-8
-pub fn parse_project_dir(project_dir: path::PathBuf) -> Result<Vec<DataFile>, io::Error> {
-    let mut files = Vec::<DataFile>::new();
-    if project_dir.as_path().is_dir() {
-        proj_dir_parse_inner(project_dir, &mut files)?;
-        Ok(files)
-    } else {
-        Err(io::Error::new(
-            io::ErrorKind::InvalidInput,
-            format! {"Provided filepath not a directory {}", project_dir.display()},
-        ))
-        //TODO: return is not directory error
-        //waiting on https://github.com/rust-lang/rust/issues/86442 or
-        //https://github.com/rust-lang/rust/pull/128316 to be merged
-    }
-}
+// `project_dir_parser` takes in a project directory and parses all source files found within
+//
+// # Errors
+//
+// Will error if:
+// - reading any of the individual project files fails
+// - the specified `project_dir` is not a directory
+// - [`os_str`] failed to parse to UTF-8
+//pub fn parse_project_dir(project_dir: path::PathBuf) -> Result<Vec<DataFile>, io::Error> {
+//    let mut files = Vec::<DataFile>::new();
+//    if project_dir.as_path().is_dir() {
+//        proj_dir_parse_inner(project_dir, &mut files)?;
+//        Ok(files)
+//    } else {
+//        Err(io::Error::new(
+//            io::ErrorKind::InvalidInput,
+//            format! {"Provided filepath not a directory {}", project_dir.display()},
+//        ))
+//        //TODO: return is not directory error
+//        //waiting on https://github.com/rust-lang/rust/issues/86442 or
+//        //https://github.com/rust-lang/rust/pull/128316 to be merged
+//    }
+//}
 
-/// `proj_dir_parse_inner` is the recursive function to parse all project directories
-fn proj_dir_parse_inner(
-    inner_dir: path::PathBuf,
-    datafiles: &mut Vec<DataFile>,
-) -> Result<(), io::Error> {
-    let ext = match inner_dir.extension() {
-        Some(ext) => match ext.to_str() {
-            Some(ext) => ext,
-            None => {
-                return Err(io::Error::new(
-                    io::ErrorKind::InvalidData,
-                    "os_str failed to parse to valid utf-8",
-                ))
-            }
-        },
-        None => "",
-    };
-    if inner_dir.is_file() && (ext == "yaml" || ext == "yml") {
-        trace! {"path at is_file: {}", inner_dir.display()}
-        let file_handle = File::open(&inner_dir)?;
-        let mut data = match data_parser(file_handle) {
-            Ok(data) => data,
-            Err(error) => {
-                return Err(io::Error::new(
-                    io::ErrorKind::InvalidData,
-                    format! {"Parsing yaml file {} failed: {}", inner_dir.display(), error},
-                ))
-            }
-        };
-        data.file_path = inner_dir;
-        datafiles.push(data);
-    } else if inner_dir.is_dir() {
-        for entry in fs::read_dir(&inner_dir)? {
-            let entry = entry?; // read_dir returns result
-            let path = entry.path();
-            trace! {"path of entry in inner_dir: {}", path.display()}
-            trace! {"{}", inner_dir.display()}
-            proj_dir_parse_inner(path, datafiles)?;
-        }
-    } else {
-        trace! {"path at else: {}", inner_dir.display()}
-        // not a directory or file (maybe a symlink or something?
-        return Ok(());
-    }
-
-    Ok(())
-}
+// `proj_dir_parse_inner` is the recursive function to parse all project directories
+//fn proj_dir_parse_inner(
+//    inner_dir: path::PathBuf,
+//    datafiles: &mut Vec<DataFile>,
+//) -> Result<(), io::Error> {
+//    let ext = match inner_dir.extension() {
+//        Some(ext) => match ext.to_str() {
+//            Some(ext) => ext,
+//            None => {
+//                return Err(io::Error::new(
+//                    io::ErrorKind::InvalidData,
+//                    "os_str failed to parse to valid utf-8",
+//                ))
+//            }
+//        },
+//        None => "",
+//    };
+//    if inner_dir.is_file() && (ext == "yaml" || ext == "yml") {
+//        trace! {"path at is_file: {}", inner_dir.display()}
+//        let file_handle = File::open(&inner_dir)?;
+//        let mut data = match data_parser(file_handle) {
+//            Ok(data) => data,
+//            Err(error) => {
+//                return Err(io::Error::new(
+//                    io::ErrorKind::InvalidData,
+//                    format! {"Parsing yaml file {} failed: {}", inner_dir.display(), error},
+//                ))
+//            }
+//        };
+//        data.file_path = inner_dir;
+//        datafiles.push(data);
+//    } else if inner_dir.is_dir() {
+//        for entry in fs::read_dir(&inner_dir)? {
+//            let entry = entry?; // read_dir returns result
+//            let path = entry.path();
+//            trace! {"path of entry in inner_dir: {}", path.display()}
+//            trace! {"{}", inner_dir.display()}
+//            proj_dir_parse_inner(path, datafiles)?;
+//        }
+//    } else {
+//        trace! {"path at else: {}", inner_dir.display()}
+//        // not a directory or file (maybe a symlink or something?
+//        return Ok(());
+//    }
+//
+//    Ok(())
+//}

@@ -1,9 +1,11 @@
-use std::fmt;
+use std::collections::HashMap;
 use std::path::PathBuf;
 
-use uom::si::{length::millimeter, rational64::Length};
+use serde::{Deserialize, Serialize};
+use uom::si::rational64::Length;
 
 use super::svg::Svg;
+use crate::datatypes::util_types::Catalog;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::partial_empty::PartialEmpty;
@@ -13,24 +15,12 @@ use cdm_traits::partial_empty::PartialEmpty;
 ///
 /// Connector can represent more than just a metal or plastic blob on the end of a cable, it can
 /// represent a screw terminal on a piece of equipment or a hole for wire to be entered in.
-#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct ConnectorType {
     /// Internal ID of `ConnectorType`
     pub id: String,
-    /// Manufacturer of Connector
-    pub manufacturer: Option<String>,
-    /// Model of Connector
-    pub model: Option<String>,
-    /// Part Number of Connector
-    pub part_number: Option<String>,
-    /// Manufacturer's Part Number
-    pub manufacturer_part_number: Option<String>,
-    /// Supplier of Connector
-    pub supplier: Option<String>,
-    /// Supplier's Part Number
-    pub supplier_part_number: Option<String>,
-    /// Optional text description
-    pub description: Option<String>,
+    /// Catalog information
+    pub catalog: Option<Catalog>,
     /// Mounting method of connector
     ///
     /// Cable, PCB through hole, PCB surface mount, panel
@@ -45,16 +35,28 @@ pub struct ConnectorType {
     pub gender: Option<String>,
     /// height of connector
     pub height: Length,
+    height_unit: String,
     /// width of connector
     pub width: Length,
+    width_unit: String,
     /// depth of connector
     pub depth: Length,
+    depth_unit: String,
     /// diameter of circular connectors
     pub diameter: Option<Length>,
+    diameter_unit: Option<String>,
+    /// connector color
+    pub color: Option<String>,
+    /// component designator
+    pub component_designator: Option<String>,
+    /// Vector of schematic symbols that can represent this connector_type
+    pub schematic_symbol: Option<Vec<String>>,
+    /// Optional list of other connector types this one can mate with
+    pub connector_type_mate: Option<Vec<String>>,
     /// pins inside connector.
     ///
     /// Pin index is not guaranteed to be the same. Use `ConnectorPin.id` for confirming equality.
-    pub pins: Vec<ConnectorPin>,
+    pub pins: HashMap<String, ConnectorPin>,
     /// overall diagram of connector TODO: figure out what angle this should be
     pub visual_rep: Svg,
     /// datafile the struct instance was read in from
@@ -63,10 +65,10 @@ pub struct ConnectorType {
 
 //TODO: store pin cross sectional area or something equivalent, also store pin type
 /// Represents an individual pin in a `ConnectorType`
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct ConnectorPin {
-    /// Pin number or identifier in connector
-    pub id: String,
+    /// Pin Designation
+    pub designation: String,
     /// Pin label or name
     pub label: Option<String>,
     /// Pin signal type
@@ -84,75 +86,5 @@ impl ConnectorType {
     #[must_use]
     pub fn new() -> Self {
         Self::default()
-    }
-}
-
-impl fmt::Display for ConnectorPin {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Pin:")?;
-        writeln!(f, "Pin ID: {}", self.id)?;
-        if let Some(label) = &self.label {
-            writeln!(f, "Pin Label: {label}")?;
-        }
-        if let Some(signal_type) = &self.signal_type {
-            writeln!(f, "Pin Signal Type: {signal_type}")?;
-        }
-        if let Some(color) = &self.color {
-            writeln!(f, "Pin Color: {color}")?;
-        }
-        if let Some(gender) = &self.gender {
-            writeln!(f, "Pin Gender: {gender}")?;
-        }
-        //TODO: provide a way of showing visual representation
-        Ok(())
-    }
-}
-
-impl fmt::Display for ConnectorType {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Connector Type:")?;
-        if let Some(manufacturer) = &self.manufacturer {
-            writeln!(f, "Manufacturer: {manufacturer}")?;
-        }
-        if let Some(model) = &self.model {
-            writeln!(f, "Model: {model}")?;
-        }
-        if let Some(part_number) = &self.part_number {
-            writeln!(f, "Part Number: {part_number}")?;
-        }
-        if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
-            writeln!(f, "Manufacturer Part Number: {manufacturer_part_number}")?;
-        }
-        if let Some(supplier) = &self.supplier {
-            writeln!(f, "Supplier: {supplier}")?;
-        }
-        if let Some(supplier_part_number) = &self.supplier_part_number {
-            writeln!(f, "Supplier Part Number: {supplier_part_number}")?;
-        }
-        if let Some(description) = &self.description {
-            writeln!(f, "Description: {description}")?;
-        }
-        if let Some(mount_type) = &self.mount_type {
-            writeln!(f, "Mount Type: {mount_type}")?;
-        }
-        if let Some(panel_cutout) = &self.panel_cutout {
-            writeln!(f, "Panel Cutout: {panel_cutout}")?;
-        }
-        if let Some(gender) = &self.gender {
-            writeln!(f, "Gender: {gender}")?;
-        }
-        writeln!(f, "Height: {:.2}", self.height.get::<millimeter>())?;
-        writeln!(f, "Width: {:.2}", self.width.get::<millimeter>())?;
-        if let Some(diameter) = &self.diameter {
-            writeln!(f, "Diameter: {:.2} mm", diameter.get::<millimeter>())?;
-        }
-        for pin in &self.pins {
-            writeln!(f, "{pin}")?;
-        }
-        //TODO: implement loop here to print all pins
-        //if let Some() = &self.pins {
-        //    writeln!(f, "Panel Cutout: {}", )?;
-        //}
-        Ok(())
     }
 }

@@ -71,6 +71,7 @@ a full list of supported units.
 # Paths can be either relative or absolute
 # If a path listed is a directory, all `.toml` files within
 # will be treated as library files.
+# hidden files/directories will be ignored
 default_library_locations = [<path string>]
 
 # optional
@@ -81,10 +82,10 @@ enable_post_gres = <bool>
 post_gres_dsn = <str>
 
 # optional
-default_length_unit = <str>
+default_area_unit = <str>
 
 # optional
-default_area_unit = <str>
+default_length_unit = <str>
 
 # optional
 # used for cross sectional area of wires
@@ -125,8 +126,8 @@ defaults are not specified in a configuration file.
 default_library_files = []
 enable_post_gres = false
 post_gres_dsn = ""
-default_length_unit = "mm"
 default_area_unit = "mm²"
+default_length_unit = "mm"
 default_cross_section_area_unit = "mm²"
 default_electric_potential_unit = "V"
 default_temperature_interval_unit = "°C"
@@ -155,8 +156,21 @@ load_default_libraries = <bool>
 # optional
 # Paths can be either relative or absolute
 # If a path listed is a directory, all `.toml` files within
-# will be treated as library files.
+# it or subidirectories will be treated as library files.
+# Hidden files/directories are ignored
 library_paths = [<path string>]
+
+# optional
+# If this is not defined, all TOML files in the directory that the cfg file is in,
+# and sub-directories will be parsed as project files
+# Paths can be either relative or absolute
+# If a path listed is a directory, all `.toml` files within
+# it or sub-directories will be treated as project files.
+# if this is not defined, then all other TOML files found within the
+# root directory or subidirectories of the project will be parsed as
+# project files.
+# Hidden files/directories are ignored
+source_paths = [<path string>]
 
 # optional
 # Code reference used for wire ampacity checks and conduit fill, etc.
@@ -230,6 +244,7 @@ acompanying RGB values, please submit a pull request.
 
 # Most keys in a connector_type sub-table are optional
 [connector_type.<str>]
+
 # cable, pcb through hole, pcb surface mount, panel
 mount_type = <str>
 
@@ -281,7 +296,6 @@ component_designator = <str>
 # values must be the sub-table name
 schematic_symbol = [<str>]
 
-# optional
 # TODO: decide if these should be filepaths or directly included SVGs
 # SVGs should be layed out for a horizontal orientation when defined.
 # instances can be rotated when defined in project.
@@ -290,7 +304,7 @@ schematic_symbol = [<str>]
 visual_representation = <svg>
 
 # optional
-# array of which connectors mate with which other connectors
+# array of which connector types mate with this connector type
 # needs to be populated with sub-table key of connectors
 connector_type_mate = [<str>]
 
@@ -313,44 +327,38 @@ part_number = <str>
 # manufacturer part number
 manufactuer_part_number = <str>
 
-# supplier
+# supplier name
 supplier = <str>
 
 # supplier part number
 supplier_part_number = <str>
 
-# Pinout subtable for each connector-type.
-[connector_type.<str>.pinout]
+# Pin Info subtables for each connector-type.
+# each entry in this array describes one pin
+[connector_type.<str>.pins]
+
+# Table of attributes for a specific pin within
+# the connector.
+# <str> is the id of the pin within the connector
+[connector_type.<str>.pins.<str>]
+
+designation = <str>
 
 # optional
-# if omitted, is set to length of specified list(s)
-pincount = <int>
-# at least one of pins, or pinlabels must be specified
-# or pincount can be used to autopopulate both.
-
-# array of pin designations. These have to be unique.
-# if omitted, is autofilled with [1, 2, ..., pincount]
-pins = [<str>]
-
-# array of pin label descriptions
-# if omitted, is autofilled with blanks
-pinlabels = [<str>]
+label = <str>
 
 # optional
-# pin color marks
-# list of colors to be assigned
-# goes in order of pin count/pin list
-# if fewer colors are specified than pins, end of list will have no colors specified
-pincolors = [<str>]
+signal_type = <str>
 
 # optional
-# same specifications as pincolors
-pin_signal_type = [<str>]
+color = <str>
 
 # optional
-# SVG image shows pin layout of connector with pin labels
-pin_visual_representation = <svg>
+visual_rep = <str>
 
+# optional
+# pin specific gender
+gender = <str>
 
 
 # Equipment type is not an abstract type of equipment
@@ -1737,7 +1745,7 @@ user9 = <str>
 
 # Connections between two objects, commonly either wires/cables/term_cables and a terminal/connector on equipment
 # This is the only root level item in the project definition that is an array rather than a table with sub-tables
-# This is because there are no human generated identifiers. Individual connections are tracked internally. 
+# This is because there are no human generated identifiers. Individual connections are tracked internally.
 
 # <str> for both end1 and end2 are dot joined ids of the specific objects
 # prefixed with codes indicating what object type it is.
