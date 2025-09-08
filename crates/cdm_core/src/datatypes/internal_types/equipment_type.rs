@@ -4,12 +4,14 @@ use std::path::PathBuf;
 use std::rc::Rc;
 
 use serde::{Deserialize, Serialize};
-use uom::si::rational64::Length;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::partial_empty::PartialEmpty;
 
-use super::{connector::Connector, svg::Svg};
+use crate::datatypes::{
+    internal_types::{connector_type::ConnectorType, svg::Svg},
+    util_types::{Catalog, Dimension},
+};
 
 //TODO: Make some of these fields enums
 /// `EquipmentType` represents a type of equipment
@@ -17,65 +19,58 @@ use super::{connector::Connector, svg::Svg};
 /// Anything from a rackmount piece of gear to an outlet or terminal block
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct EquipmentType {
-    //TODO: add dimensions here
-    /// Internal ID of Equipment Type
-    pub id: String,
-    /// Manufacturer of Equipment
-    pub manufacturer: Option<String>,
-    /// Model of Equipment
-    pub model: Option<String>,
-    /// Part Number of Equipment
-    pub part_number: Option<String>,
-    /// Manufacturer's Part Number
-    pub manufacturer_part_number: Option<String>,
-    /// Supplier of Equipment
-    pub supplier: Option<String>,
-    /// Supplier's Part Number
-    pub supplier_part_number: Option<String>,
-    /// Optional text description
-    pub description: Option<String>,
+    /// Catalog information
+    pub catalog: Option<Catalog>,
+    /// Dimensional information of equipment
+    pub dimensions: Option<Dimension>,
     /// List of mounting options for equipment
     pub mount_types: Vec<String>,
     /// Equipment Type (audio, video, mix, lighting, networking, patch panel, power)
-    pub equip_type: Option<String>,
-    /// faces represents a visual representation of each face of a piece of equipment
-    pub faces: Option<HashMap<String, EquipFace>>,
+    pub category: Option<String>,
+    /// Equipment supertype: Relay, PLC, Motor, Relay, Circuit breaker, etc.
+    pub supertype: Option<String>,
+    /// Component Designator
+    pub component_designator: Option<String>,
+    /// Vector of schematic symbols that can represent this equipment.
+    /// values must be the id of the symbol_type
+    pub schematic_symbols: Option<Vec<String>>,
     /// visual representation of the equipment
     // TODO: figure out what angle to standardize on, or
     // just rely on the face vis_rep
     // TODO: create associated method to return correct face here
-    pub visual_rep: Svg,
+    pub visual_representation: Option<Svg>,
+    /// faces represents a visual representation of each face of a piece of equipment
+    pub faces: Option<HashMap<String, EquipFace>>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
 }
 
+// TODO: use custom SVG tags to store locations of connectors instead of x/y coordinates
 /// `EquipFace` represents one physical face of equipment.
 ///
 /// May have 2 faces for something like a patch panel, or 6 for a cube, or 1 for an unrolled
 /// sphere, etc.
+/// SVGs should be layed out for a horizontal orientation when defined.
+/// instances can be rotated when defined in project.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct EquipFace {
     /// visual representation of equipment face, without connectors
-    pub visual_rep: Svg,
+    pub visual_representation: Option<Svg>,
     /// all connectors that are on this face of equipment
-    pub connectors: Option<Vec<ConnectorJoin>>,
+    pub connectors: Option<HashMap<String, FaceConnector>>,
 }
 
-//TODO: Make some of these fields enums
-/// `ConnectorJoin` rep in
-/// a `EquipmentType`
+/// `FaceConnector` represents
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-pub struct ConnectorJoin {
-    /// `Connector`
-    pub connector: Rc<RefCell<Connector>>,
-    /// electrical direction, used for basic rule mapping, (input, output, power input, power
-    /// output, bidirectiona, passive)
-    pub direction: Option<String>,
-    /// location of connector on face from left of visrep. Origin is bottom left
-    pub x: Length,
-    /// location of connector on face from bottom of visrep. Origin is bottom left
-    pub y: Length,
+pub struct FaceConnector {
+    //TODO: refcounted?
+    /// Connector Type
+    connector_type: ConnectorType,
+    direction: Option<String>,
+    x: u64,
+    y: u64,
 }
+
 impl EquipmentType {
     /// Creates an empty instance of `EquipmentType`
     #[must_use]
@@ -87,8 +82,16 @@ impl EquipmentType {
     #[must_use]
     pub fn visual_rep(&self) -> Svg {
         match &self.faces {
-            Some(faces) => faces["Front"].visual_rep.clone(),
-            None => self.visual_rep.clone(),
+            Some(faces) => faces["Front"]
+                .visual_representation
+                .clone()
+                .unwrap_or_default()
+                .clone(),
+            None => self
+                .visual_representation
+                .clone()
+                .unwrap_or_default()
+                .clone(),
         }
     }
 }

@@ -2,10 +2,12 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
-use uom::si::rational64::Length;
 
-use super::svg::Svg;
-use crate::datatypes::util_types::Catalog;
+use crate::datatypes::{
+    color::Color,
+    internal_types::svg::Svg,
+    util_types::{Catalog, Dimension},
+};
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::partial_empty::PartialEmpty;
@@ -17,10 +19,10 @@ use cdm_traits::partial_empty::PartialEmpty;
 /// represent a screw terminal on a piece of equipment or a hole for wire to be entered in.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct ConnectorType {
-    /// Internal ID of `ConnectorType`
-    pub id: String,
     /// Catalog information
     pub catalog: Option<Catalog>,
+    /// Dimensional information of connector
+    pub dimensions: Option<Dimension>,
     /// Mounting method of connector
     ///
     /// Cable, PCB through hole, PCB surface mount, panel
@@ -33,20 +35,8 @@ pub struct ConnectorType {
     ///
     /// Male, Female, RPMale, RPFemale, Hermaphrodidic, unknown
     pub gender: Option<String>,
-    /// height of connector
-    pub height: Length,
-    height_unit: String,
-    /// width of connector
-    pub width: Length,
-    width_unit: String,
-    /// depth of connector
-    pub depth: Length,
-    depth_unit: String,
-    /// diameter of circular connectors
-    pub diameter: Option<Length>,
-    diameter_unit: Option<String>,
     /// connector color
-    pub color: Option<String>,
+    pub color: Option<Color>,
     /// component designator
     pub component_designator: Option<String>,
     /// Vector of schematic symbols that can represent this connector_type
@@ -58,7 +48,7 @@ pub struct ConnectorType {
     /// Pin index is not guaranteed to be the same. Use `ConnectorPin.id` for confirming equality.
     pub pins: HashMap<String, ConnectorPin>,
     /// overall diagram of connector TODO: figure out what angle this should be
-    pub visual_rep: Svg,
+    pub visual_representation: Option<Svg>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
 }
@@ -74,7 +64,7 @@ pub struct ConnectorPin {
     /// Pin signal type
     pub signal_type: Option<String>,
     /// Pin color
-    pub color: Option<String>,
+    pub color: Option<Color>,
     /// visual representation of an individual pin
     pub visual_rep: Option<Svg>,
     /// gender of pin

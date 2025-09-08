@@ -1,50 +1,45 @@
 use std::cell::RefCell;
-use std::fmt;
+use std::collections::HashMap;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use uom::si::{length::millimeter, rational64::Length};
+use serde::{Deserialize, Serialize};
+use uom::si::rational64::Length;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::{connector, partial_empty::PartialEmpty};
 
-use super::{cable_type::CableType, connector_type::ConnectorType, wire_type::WireType};
+use crate::datatypes::{
+    color::Color,
+    internal_types::{cable_type::CableType, connector_type::ConnectorType, wire_type::WireType},
+    util_types::{Catalog, LineStyle},
+};
 
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
-#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct TermCableType {
-    /// Internal ID of `TermCableType`
-    pub id: String,
-    /// Manufacturer of Terminated cable
-    pub manufacturer: Option<String>,
-    /// Model of Terminated Cable
-    pub model: Option<String>,
-    /// Part Number of Terminated Cable
-    pub part_number: Option<String>,
-    /// Manufacturers part number of Terminated Cable
-    pub manufacturer_part_number: Option<String>,
-    /// Supplier of Terminated Cable
-    pub supplier: Option<String>,
-    /// Supplier part number of Terminated Cable
-    pub supplier_part_number: Option<String>,
-    /// Optional text description of Terminated Cable
-    pub description: Option<String>,
+    /// Catalog information
+    pub catalog: Option<Catalog>,
     /// Underlying wire or cable type of Terminated Cable
     pub wire_cable: WireCable,
     /// Nominal Length of Terminated Cable
     pub nominal_length: Option<Length>,
+    nominal_length_unit: Option<String>,
     /// Actual Length of Terminated Cable
     pub actual_length: Option<Length>,
+    actual_length_unit: Option<String>,
+    /// appearance in schematics
+    pub line_style: Option<LineStyle>,
     /// One end of Terminated Cable.
-    pub end1: Vec<Connector>,
+    pub end1: HashMap<String, Connector>,
     /// The other end of Terminated Cable
-    pub end2: Vec<Connector>,
+    pub end2: HashMap<String, Connector>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
 }
 
 /// `WireCable` allows either a `WireType` or `CableType` to be the root of a `TermCableType`
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(clippy::exhaustive_enums)]
 pub enum WireCable {
     /// `CableType`
@@ -62,16 +57,16 @@ impl Default for WireCable {
 
 /// `TermCableConnectorTermination` represents the connections between a pin of an individual
 /// `TermCableConnector` and the individual core of the cable.
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Termination {
     /// `Core` represents which individual wire inside a cable this pin is connected to
-    pub core: u64,
+    pub core: String,
     /// `Pin` represents which pin in the associated connector the core is connected to
-    pub pin: u64,
+    pub pin: String,
 }
 
 /// `TermCableConnector` represents a connector on one end of a `TermCable`
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Connector {
     /// `connector_type` represents the connector type that is on the end of a `TermCable`
     pub connector_type: Rc<RefCell<ConnectorType>>,
@@ -92,50 +87,5 @@ impl connector::Connector for Connector {
         // allowing unwrap as I want a panic here if this application
         // is used on a 128 bit architecture
         u64::try_from(self.connector_type.borrow().pins.len()).unwrap()
-    }
-}
-
-impl fmt::Display for TermCableType {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Connector Type:")?;
-        if let Some(manufacturer) = &self.manufacturer {
-            write!(f, "Manufacturer: {manufacturer}")?;
-        }
-        if let Some(model) = &self.model {
-            write!(f, "Model: {model}")?;
-        }
-        if let Some(part_number) = &self.part_number {
-            write!(f, "Part Number: {part_number}")?;
-        }
-        if let Some(manufacturer_part_number) = &self.manufacturer_part_number {
-            write!(f, "Manufacturer Part Number: {manufacturer_part_number}")?;
-        }
-        if let Some(supplier) = &self.supplier {
-            write!(f, "Supplier: {supplier}")?;
-        }
-        if let Some(supplier_part_number) = &self.supplier_part_number {
-            write!(f, "Supplier Part Number: {supplier_part_number}")?;
-        }
-        if let Some(description) = &self.description {
-            write!(f, "Description: {description}")?;
-        }
-        match &self.wire_cable {
-            WireCable::CableType(cable) => write!(f, "Cable Type: {}", cable.borrow())?,
-            WireCable::WireType(wire) => write!(f, "Wire Type: {}", wire.borrow())?,
-        }
-        if let Some(nominal_length) = &self.nominal_length {
-            //TODO: implement units functions to do proper conversions
-            write!(
-                f,
-                "Nominal Length: {}mm",
-                nominal_length.get::<millimeter>()
-            )?;
-        }
-        if let Some(actual_length) = &self.actual_length {
-            //TODO: implement units functions to do proper conversions
-            write!(f, "Actual Length: {} mm", actual_length.get::<millimeter>())?;
-        }
-        //TODO: implement loops for cable ends.
-        Ok(())
     }
 }

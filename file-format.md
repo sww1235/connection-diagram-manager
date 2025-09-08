@@ -229,6 +229,7 @@ acompanying RGB values, please submit a pull request.
 | Black      | BLK          | #000000        |                |
 | White      | WHT          | #FFFFFF        |                |
 | Gray       | GRY          | #808080        |                |
+| Grey       | GRY          | #808080        |                |
 | Slate      | SLT          | #808080        |                |
 | Clear      | CLR          | #FFFFFF        |                |
 | Cyan       | CYN          | #00FFFF        |                |
@@ -256,32 +257,6 @@ panel_cutout = <str>
 # (male, female, rpmale, rpfemale, hermaphroditic, unknown, unspecified)
 gender = <str>
 
-# height of connector
-height = [<num>, <denom>]
-
-# unit that height is specified in
-height_unit = <str>
-
-# width of connector
-width = [<num>, <denom>]
-
-# unit that width is specified in
-width_unit = <str>
-
-# depth of connector
-depth = [<num>, <denom>]
-
-# unit that depth is specified in
-depth_unit = <str>
-
-# optional
-# diameter of circular connectors
-diameter = [<num>, <denom>]
-
-# optional
-# unit that diameter is specified in
-diameter_unit = <str>
-
 # optional
 # connector color
 # used to label the color of a flag or tag or ring on the connector
@@ -307,6 +282,35 @@ visual_representation = <svg>
 # array of which connector types mate with this connector type
 # needs to be populated with sub-table key of connectors
 connector_type_mate = [<str>]
+
+# Dimension subtable for each connector-type. Groups common properties
+[connector_type.<str>.dimensions]
+
+# height of connector
+height = [<num>, <denom>]
+
+# unit that height is specified in
+height_unit = <str>
+
+# width of connector
+width = [<num>, <denom>]
+
+# unit that width is specified in
+width_unit = <str>
+
+# depth of connector
+depth = [<num>, <denom>]
+
+# unit that depth is specified in
+depth_unit = <str>
+
+# optional
+# diameter of circular connectors
+diameter = [<num>, <denom>]
+
+# optional
+# unit that diameter is specified in
+diameter_unit = <str>
 
 # Catalog subtable for each connector-type. Groups common properties
 # All fields here are optional, but highly encouraged.
@@ -402,7 +406,39 @@ visual_representation = <svg>
 # optional
 # array of schematic symbols that can represent this equipment
 # values must be the sub-table name
-schematic_symbol = [<str>]
+schematic_symbols = [<str>]
+
+# Dimension subtable for each equipment-type. Groups common properties
+[equipment_type.<str>.dimensions]
+
+# height of equipment
+height = [<num>, <denom>]
+
+# unit that height is specified in
+height_unit = <str>
+
+# width of equipment
+width = [<num>, <denom>]
+
+# unit that width is specified in
+width_unit = <str>
+
+# optional
+# depth of equipment
+depth = [<num>, <denom>]
+
+# optional
+# unit that depth is specified in
+depth_unit = <str>
+
+# optional
+# diameter of equipment
+diameter = [<num>, <denom>]
+
+# optional
+# unit that diameter is specified in
+diameter_unit = <str>
+
 
 # Catalog subtable for each equipment_type. Groups common properties
 # All fields here are optional, but highly encouraged.
@@ -476,8 +512,8 @@ y = <integer>
 # Most keys in a pathway_type sub-table are optional
 [pathway_type.<str>]
 
-# type of cable pathway (conduit, cable tray, etc)
-type = <str>
+# supertype of cable pathway (conduit, cable tray, etc)
+supertype = <str>
 
 # actual size measurements. Not parsed
 size = <str>
@@ -499,6 +535,33 @@ cross_sect_area_unit = <str>
 
 # primary material of pathway
 material = <str>
+
+# primary color of pathway
+color = <str>
+
+# optional
+# Dimension subtable for each pathway_type. Groups common properties
+[pathway_type.<str>.dimensions]
+
+# height of pathway
+height = [<num>, <denom>]
+
+# unit that height is specified in
+height_unit = <str>
+
+# width of pathway
+width = [<num>, <denom>]
+
+# unit that width is specified in
+width_unit = <str>
+
+# optional
+# diameter of pathway
+diameter = [<num>, <denom>]
+
+# optional
+# unit that diameter is specified in
+diameter_unit = <str>
 
 # Catalog subtable for each pathway_type. Groups common properties
 # All fields here are optional, but highly encouraged.
@@ -528,7 +591,7 @@ supplier_part_number = <str>
 # all items here are optional
 # and will use defaults if not specified
 # schematic appearance of linear items
-[pathway_type.<str>.schematic_style]
+[pathway_type.<str>.line_style]
 
 color = <str>
 
@@ -559,6 +622,9 @@ line_appearance = [<int>]
 # Most keys in a wire_type sub-table are optional
 [wire_type.<str>]
 
+# THWN, XHHN, etc
+wire_type_code = <str>
+
 # copper, alumninum, ACSR, steel, glass, plastic
 material = <str>
 
@@ -567,23 +633,25 @@ insulated = <bool>
 # PVC, Nylon, thermoplastic, etc
 insulation_material = <str>
 
-# THWN, XHHN, etc
-wire_type_code = <str>
-
 insulation_thickness =  [<num>,<denom>]
 
 insulation_thickness_unit = <str>
 
+# the cross sectional area of the conductor
+conductor_cross_sect_area =  [<num>,<denom>]
+
 # including insulation
 overall_cross_sect_area =  [<num>,<denom>]
 
-# the cross sectional area of the conductor
-conductor_ cross_sect_area =  [<num>,<denom>]
-
+# If conductor is stranded
 stranded = <bool>
 
 # number of strands if cable is stranded. overriden to 1 if wire is not stranded
 num_strands = <int>
+
+strand_cross_sect_area = [<num>, <denom>]
+
+strand_cross_sect_area_unit = <str>
 
 # voltage rating of insulation
 insulation_potential_rating =  [<num>,<denom>]
@@ -592,9 +660,9 @@ insulation_potential_rating =  [<num>,<denom>]
 insulation_potential_rating_unit = <str>
 
 # temperature rating of insulation.
-insulation_temp_rating =  [<num>,<denom>]
+insulation_temperature_rating =  [<num>,<denom>]
 
-insulation_temp_rating_unit = <str>
+insulation_temperature_rating_unit = <str>
 
 
 insulation_color = <str>
@@ -604,7 +672,7 @@ secondary_insulation_color = <str>
 # all items here are optional
 # and will use defaults or insulation color values if not specified
 # schematic appearance of linear items
-[wire_type.<str>.schematic_style]
+[wire_type.<str>.line_style]
 
 color = <str>
 
@@ -666,33 +734,19 @@ supplier_part_number = <str>
 # SOOW, FC, FCC, TC, MC, AC, MC, UF, PLTC, MV, etc
 cable_type_code = <str>
 
-
 # Outer cross sectional area of cable
 cross_sect_area =  [<num>,<denom>]
 
-# SOOW, FC, FCC, TC, MC, AC, MC, UF, PLTC, MV, etc
+cross_sect_area_unit = <str>
+
+# Oval, Circular, Siamese
 cross_section = <str>
 
-# height of cable if oval or siamese
-height =  [<num>,<denom>]
-
-height_unit = <str>
-
-# width of cable if oval or siamese
-width =  [<num>,<denom>]
-
-width_unit = <str>
-
-# optional
-# diameter of cable if circular
-diameter =  [<num>,<denom>]
-
-diameter_unit = <str>
-
-# table of outer layers of cable
+# array of tables of outer layers of cable
+# define a new array instance for each layer
 # Includes insulation, semiconductor, shields, screens,
 # concentric neutrals, jackets, mechanical armor
-[cable_type.<str>.layer]
+[[cable_type.<str>.layer]]
 
 # table of attributes for an individual layer
 [cable_type.<str>.layer.<str>]
@@ -700,7 +754,7 @@ diameter_unit = <str>
 # counted from inside to outside of cable
 layer_number = <int>
 
-# insulation, semiconductor, shield, screen, concentric neutral, jacket
+# insulation, semiconductor, shield, screen, concentric neutral, jacket, armor
 layer_type = <str>
 
 material = <str>
@@ -711,9 +765,9 @@ electric_potential_rating =  [<num>,<denom>]
 electric_potential_unit = <str>
 
 # temp rating for insulation layer
-temp_rating =  [<num>,<denom>]
+temperature_rating =  [<num>,<denom>]
 
-temp_rating_unit = <str>
+temperature_rating_unit = <str>
 
 # layer thickness
 thickness = [<num>, <denom>]
@@ -726,15 +780,15 @@ color = <str>
 
 # dictionary of wire or cable cores inside cable.
 # strength members are treated as a wire
-[cable_type.<str>.core]
+[cable_type.<str>.cores]
 
 # second <str> is identifier of individual core. Must be unique per cable_type
-[cable_type.<str>.core.<str>]
+[cable_type.<str>.cores.<str>]
 
 
 # third <str> should either be `wire` or `cable` to
 # indicate the core is a wire or a cable
-[cable_type.<str>.core.<str>.<str>]
+[cable_type.<str>.cores.<str>.<str>]
 
 # identifier of wire/cable type that core is
 contained_type = <str>
@@ -742,7 +796,7 @@ contained_type = <str>
 # all items here are optional
 # and will use defaults or cable outer jacket/insulation color if not specified
 # schematic appearance of linear items
-[cable_type_type.<str>.schematic_style]
+[cable_type.<str>.line_style]
 
 color = <str>
 
@@ -755,6 +809,31 @@ line_thickness_unit = <str>
 # array of lengths/percentages of dashes and gaps
 # uses same specification as SVG stroke-dasharray field.
 line_appearance = [<int>]
+
+# optional
+# Dimension subtable for each cable_type. Groups common properties
+[cable_type.<str>.dimensions]
+
+# height of cable
+height = [<num>, <denom>]
+
+# unit that height is specified in
+height_unit = <str>
+
+# width of cable
+width = [<num>, <denom>]
+
+# unit that width is specified in
+width_unit = <str>
+
+# optional
+# diameter of cable
+diameter = [<num>, <denom>]
+
+# optional
+# unit that diameter is specified in
+diameter_unit = <str>
+
 
 # Catalog subtable for each cable_type. Groups common properties
 # All fields here are optional, but highly encouraged.
@@ -810,7 +889,7 @@ length_unit = <str>
 # all items here are optional
 # and will use defaults or outer insulation color if not specified
 # schematic appearance of linear items
-[term_cable_type.<str>.schematic_style]
+[term_cable_type.<str>.line_style]
 
 color = <str>
 
@@ -824,7 +903,7 @@ line_thickness_unit = <str>
 # uses same specification as SVG stroke-dasharray field.
 line_appearance = [<int>]
 
-# Catalog subtable for each cable_type. Group200ggs common properties
+# Catalog subtable for each cable_type. Groups common properties
 # All fields here are optional, but highly encouraged.
 [term_cable_type.<str>.catalog]
 
@@ -850,7 +929,7 @@ supplier = <str>
 supplier_part_number = <str>
 
 # The flexible portion of the term_cable.
-# The second <str> either needs to be wire or cable, to indicate if
+# The second <str> either needs to be wire_type or cable_type, to indicate if
 # the included core_id is for a wire_type or cable_type
 [term_cable_type.<str>.<str>]
 
@@ -860,18 +939,16 @@ core_id = <str>
 # table of connectors attached to one end of term_cable
 [term_cable_type.<str>.end1]
 
-[term_cable_type.<str>.end1.connectors]
-
 # table defining a specific connector on end 1
 # connector id is end <str>
-[term_cable_type.<str>.end1.connectors.<str>]
+[term_cable_type.<str>.end1.<str>]
 
 # ID of connector type
 connector_type = <str>
 
 # array of tables of core to connector pin mappings for each connector
 # specify one table for each pin-core mapping
-[[term_cable_type.<str>.end1.connectors.<str>.terminations]]
+[[term_cable_type.<str>.end1.<str>.terminations]]
 
 core = <str>
 pin = <str>
@@ -879,18 +956,16 @@ pin = <str>
 # table of connectors attached to the other end of term_cable
 [term_cable_type.<str>.end2]
 
-[term_cable_type.<str>.end2.connectors]
-
 # table defining a specific connector on end 2
 # connector id is end <str>
-[term_cable_type.<str>.end2.connectors.<str>]
+[term_cable_type.<str>.end2.<str>]
 
 # ID of connector type
 connector_type = <str>
 
 # array of tables of core to connector pin mappings for each connector
 # specify one table for each pin-core mapping
-[[term_cable_type.<str>.end2.connectors.<str>.terminations]]
+[[term_cable_type.<str>.end2.<str>.terminations]]
 
 core = <str>
 pin = <str>
@@ -911,21 +986,6 @@ pin = <str>
 
 # Most keys in a enclosure_type sub-table are optional
 [enclosure_type.<str>]
-
-# overall width of enclosure
-width =  [<num>,<denom>]
-
-width_unit = <str>
-
-# overall height of enclosure
-height =  [<num>,<denom>]
-
-height_unit = <str>
-
-# overall depth of enclosure
-depth =  [<num>,<denom>]
-
-depth_unit = <str>
 
 # usable internal width of enclosure
 usable_width =  [<num>,<denom>]
@@ -950,6 +1010,37 @@ visual_representation = <svg>
 
 # optional
 color = <str>
+
+# optional
+# Dimension subtable for each enclosure_type. Groups common properties
+[enclosure_type.<str>.dimensions]
+
+# overall height of enclosure
+height = [<num>, <denom>]
+
+# unit that height is specified in
+height_unit = <str>
+
+# overall width of enclosure
+width = [<num>, <denom>]
+
+# unit that width is specified in
+width_unit = <str>
+
+# optional
+# overall depth of enclosure
+depth =  [<num>,<denom>]
+
+depth_unit = <str>
+
+# optional
+# diameter of cable
+diameter = [<num>, <denom>]
+
+# optional
+# unit that diameter is specified in
+diameter_unit = <str>
+
 
 # Catalog subtable for each enclosure_type. Groups common properties
 # All fields here are optional, but highly encouraged.
@@ -977,15 +1068,19 @@ supplier = <str>
 supplier_part_number = <str>
 
 
-# Table (dictionary) of all available terminal block types.
-# Terminal blocks are separated out into their own category
+# Table (dictionary) of all available terminal types.
+# Terminal are separated out into their own category
 # due to some special case things with them, including
 # the accessories, and ganging.
-[terminal_block_type]
+# Terminal definitions include both DIN rail mounted terminals, WAGO lever nuts,
+# Wire nuts
+# Ferrules, ring/space/fork terminals, etc should be defined as connectors since
+# they associate with wires
+[terminal_type]
 
 
-# Table (dictionary) of all attributes on one particular terminal block type
-[terminal_block_type.<str>]
+# Table (dictionary) of all attributes on one particular terminal type
+[terminal_type.<str>]
 
 # optional
 color = <str>
@@ -1003,34 +1098,14 @@ visual_representation = <svg>
 # component designator
 component_designator = <str>
 
-# optional
-# If a number is not provided here, the terminal block is
-# considered to be unfused.
-fused = [<num>,<denom>]
+# dictionary defining terminal layers
+# at least one layer is required for a terminal
+# last <str> is unique layer identifier within terminal
+[terminal_type.<str>.layers.<str>]
 
-# overall width of enclosure
-width =  [<num>,<denom>]
-
-width_unit = <str>
-
-# overall height of enclosure
-height =  [<num>,<denom>]
-
-height_unit = <str>
-
-# overall depth of enclosure
-depth =  [<num>,<denom>]
-
-depth_unit = <str>
-
-# array defining terminal_block layers
-# at least one layer is required for a terminal block
-# last <str> is unique layer identifier within terminal block
-[terminal_block_type.<str>.layers.<str>]
-
-# array defining the number of connection points per terminal block layer
+# array defining the number of connection points per terminal layer
 # define 1 instance of this table array per connection point per layer
-[[terminal_block_type.<str>.layers.<str>.connections]]
+[[terminal_type.<str>.layers.<str>.connections]]
 
 # connection designation
 # must be unique among connection points on a layer
@@ -1046,6 +1121,7 @@ connection_description = <str>
 # - Quick Connect
 # - Spade
 # - Spring Cage
+# - Crimp
 type = <str>
 
 # optional
@@ -1074,7 +1150,7 @@ wire_types_accepted = [<str>]
 
 # internal connections within terminal block
 # define one instance of this table array per set of connected terminals
-[[terminal_block_type.<str>.internal_connections]]
+[[terminal_type.<str>.internal_connections]]
 
 # array of terminal designations.
 # use layer_designation.connection_designation in each array value
@@ -1088,9 +1164,39 @@ connected_terminals = [<str>]
 mount_connection = <bool>
 
 
+# optional
+# Dimension subtable for each terminal_type. Groups common properties
+[terminal_type.<str>.dimensions]
+
+# overall height of terminal
+height = [<num>, <denom>]
+
+# unit that height is specified in
+height_unit = <str>
+
+# overall width of terminal
+width = [<num>, <denom>]
+
+# unit that width is specified in
+width_unit = <str>
+
+# optional
+# overall depth of terminal
+depth =  [<num>,<denom>]
+
+depth_unit = <str>
+
+# optional
+# diameter of terminal
+diameter = [<num>, <denom>]
+
+# optional
+# unit that diameter is specified in
+diameter_unit = <str>
+
 # Catalog subtable for each terminal_block_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[terminal_block_type.<str>.catalog]
+[terminal_type.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
@@ -1115,15 +1221,15 @@ supplier_part_number = <str>
 
 
 # Table of terminal block jumpers in library
-[terminal_block_jumper_type]
+[terminal_strip_jumper_type]
 
 # table of attributes for one jumper type
-[terminal_block_jumper_type.<str>]
+[terminal_strip_jumper_type.<str>]
 
 # terminal block types compatible with
 # If a jumper is compatible with multiple sizes of terminal blocks
 # like the phoenix contact reducing bridges, then use the per-pin arrays to specify
-compatible_terminal_block_type = [<str>]
+compatible_terminal_type = [<str>]
 
 number_of_positions = <int>
 
@@ -1137,11 +1243,11 @@ color = <str>
 # per pin compatible terminal_block_types
 # specify an array of terminal_block_types per pin
 # terminal block jumpers are reversable when specified in a terminal_strip
-pin_compatible_terminal_block_types = [[<str>], [<str>]]
+pin_compatible_terminal_types = [[<str>], [<str>]]
 
 # Catalog subtable for each terminal_block_jumper_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[terminal_block_jumper_type.<str>.catalog]
+[terminal_strip_jumper_type.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
@@ -1164,28 +1270,31 @@ supplier = <str>
 # supplier part number
 supplier_part_number = <str>
 
+#TODO: add in new section for terminal block functional accessories
+# like fuse holders, component holders, etc
+[terminal_accessory_type]
 
 # Table of terminal block accessories in library
 # Terminal block accessories are things like end plates or spacers
 # that are incorporated into a terminal_strip linearly
 # This does not include things like DIN rail stops.
-[terminal_block_accessory_type]
+[terminal_strip_accessory_type]
 
 
 # table of attributes for one terminal_block_accessory_type
-[terminal_block_accessory_type.<str>]
+[terminal_strip_accessory_type.<str>]
 
-# terminal block types compatible with
-compatible_terminal_block_type = [<str>]
+# terminal types compatible with
+compatible_terminal_type = [<str>]
 
 # SVGs should be layed out for a horizontal orientation when defined.
 # instances can be rotated when defined in project.
 visual_representation = <svg>
 
 
-# Catalog subtable for each terminal_block_accessory_type. Groups common properties
+# Catalog subtable for each terminal_strip_accessory_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[terminal_block_accessory_type.<str>.catalog]
+[terminal_strip_accessory_type.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
@@ -1667,12 +1776,19 @@ identifier = <str>
 # optional descriptive label
 label = <str>
 
-# defining either terminal_block or terminal_block_accessory type
+# terminal functional accessories
+# These are things like fuses/fuse holders, component holders,
+# lights, etc.
+# <str> is accessory_type_id
+accessories = [<str>]
+
+
+# defining either terminal or terminal_strip_accessory type
 # must be defined under the defintion of the terminal_block array it applies to
 # second <str> can either be `term` or `accy`
 [terminal_strips.<str>.terminals.<str>]
 
-# ID of terminal_block_type or terminal_block_accessory_type
+# ID of terminal_block_type or terminal_strip_accessory_type
 component_type = <str>
 
 # array of jumpers defined in terminal strip

@@ -2,16 +2,19 @@
 pub mod cable_type;
 /// `connector_type` represents a connector
 pub mod connector_type;
+/// `enclosure_type` represents a type of enclosure
+pub mod enclosure_type;
 /// `equipment_type` represents a type of equipment
 pub mod equipment_type;
-/// `location_type` represents a type of location
-pub mod location_type;
 /// `pathway_type` represents a type of pathway for wires or cables
 pub mod pathway_type;
 /// `svg` represents a complete SVG image
 pub mod svg;
 /// `term_cable_type` represents a cable that has connectors assembled on to it
 pub mod term_cable_type;
+/// `terminal_type` represents a type of terminal
+/// This module also includes related defintions including accessories and jumpers
+pub mod terminal_type;
 /// `wire_type` represents an individual wire with optional insulation
 pub mod wire_type;
 
@@ -19,11 +22,11 @@ pub mod wire_type;
 pub mod cable;
 /// `connector` represents an instance of a `ConnectorType`
 pub mod connector;
+/// `enclosure` represents an instance of a `EnclosureType`
+pub mod enclosure;
 /// `equipment` represents an instance of an `EquipmentType`. This is a physical item
 /// you hold in your hand.
 pub mod equipment;
-/// `location` represents an instance of a `LocationType`
-pub mod location;
 /// `pathway` represents an instance of a `PathwayType`
 pub mod pathway;
 /// `term_cable` represents an instance of a `TermCableType`
