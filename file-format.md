@@ -1069,7 +1069,7 @@ supplier_part_number = <str>
 
 
 # Table (dictionary) of all available terminal types.
-# Terminal are separated out into their own category
+# Terminals are separated out into their own category
 # due to some special case things with them, including
 # the accessories, and ganging.
 # Terminal definitions include both DIN rail mounted terminals, WAGO lever nuts,
@@ -1098,6 +1098,48 @@ visual_representation = <svg>
 # component designator
 component_designator = <str>
 
+# If this terminal type accepts plug in accessories
+# like fuses or component holders
+accepts_accessories = <bool>
+
+# Fuse terminal block
+# only set to true if the terminal block is a true fuse only terminal block
+# and not a terminal block that can accept a fuse holder accessory
+fuse_terminal = <bool>
+
+# optional
+# fuse rating inside terminal block
+# only use if fuse_terminal = true
+fuse_rating = <str>
+
+# optional
+# if there is an indicator present
+# usually this is an LED on a fuse holder or integrated into the terminal block
+indicator_present = <bool>
+
+# non-parsed string indicating the indicator type
+indicator_type = <str>
+
+# non-parsed string for indicator voltage/current ratings
+indicator_rating = <str>
+
+# if there is a discrete component embedded inside the terminal
+# like a Diode or resistor
+# This should only be marked if the component is non-replaceable while in
+# a terminal strip or not replaceable at all.
+discrete_component_present = <bool>
+
+# non-parsed string for component rating
+discrete_component_rating = <str>
+
+# type of discrete component
+# resistor, diode, etc.
+discrete_component_type = <str>
+
+# if there is an integrated, non-removable disconnect present
+# if the disconnect is removable, use an accessory
+integrated_disconnect_present = <bool>
+
 # dictionary defining terminal layers
 # at least one layer is required for a terminal
 # last <str> is unique layer identifier within terminal
@@ -1121,8 +1163,8 @@ connection_description = <str>
 # - Quick Connect
 # - Spade
 # - Spring Cage
-# - Crimp
-type = <str>
+# - Lever Lock
+connection_type = <str>
 
 # optional
 # connection entry angle
@@ -1130,15 +1172,15 @@ entry_angle = <str>
 
 # maximum number of wires allowed to be connected to this terminal.
 # can be lower than manufacturer recommended values
-max_wires = <int>
+maxiumum_wires = <int>
 
-maximum_wire_diameter = [<num>,<denom>]
+maximum_wire_cross_section = [<num>,<denom>]
 
-maximum_wire_diameter_unit = <str>
+maximum_wire_cross_section_unit = <str>
 
-minimum_wire_diameter = [<num>,<denom>]
+minimum_wire_cross_section = [<num>,<denom>]
 
-minimum_wire_diameter_unit = <str>
+minimum_wire_cross_section_unit = <str>
 
 # what types of wire/connectors are supported by terminal connection
 # current supported list is:
@@ -1155,9 +1197,8 @@ wire_types_accepted = [<str>]
 # array of terminal designations.
 # use layer_designation.connection_designation in each array value
 # to show what terminals are connected together
-connected_terminals = [<str>]
+connected_connections = [<str>]
 
-# optional
 # used to indicate a connection from this set of internal connections
 # to the mounting rail.
 # mainly used for PE/grounding terminal blocks.
@@ -1245,6 +1286,35 @@ color = <str>
 # terminal block jumpers are reversable when specified in a terminal_strip
 pin_compatible_terminal_types = [[<str>], [<str>]]
 
+# optional
+# Dimension subtable for each terminal_strip_jumper_type. Groups common properties
+[terminal_strip_jumper_type.<str>.dimensions]
+
+# overall height of terminal
+height = [<num>, <denom>]
+
+# unit that height is specified in
+height_unit = <str>
+
+# overall width of terminal
+width = [<num>, <denom>]
+
+# unit that width is specified in
+width_unit = <str>
+
+# optional
+# overall depth of terminal
+depth =  [<num>,<denom>]
+
+depth_unit = <str>
+
+# optional
+# diameter of terminal
+diameter = [<num>, <denom>]
+
+# optional
+# unit that diameter is specified in
+diameter_unit = <str>
 # Catalog subtable for each terminal_block_jumper_type. Groups common properties
 # All fields here are optional, but highly encouraged.
 [terminal_strip_jumper_type.<str>.catalog]
@@ -1270,13 +1340,87 @@ supplier = <str>
 # supplier part number
 supplier_part_number = <str>
 
-#TODO: add in new section for terminal block functional accessories
-# like fuse holders, component holders, etc
+
+
+# Terminal accessories are items that insert into a terminal block
+# like fuse holders, component holders, disconnect switches, etc
 [terminal_accessory_type]
 
-# Table of terminal block accessories in library
-# Terminal block accessories are things like end plates or spacers
-# that are incorporated into a terminal_strip linearly
+# Table of attributes for a specific terminal_accessory_type
+[terminal_accessory_type.<str>]
+
+# fuse holder, component holder, disconnect_blade, etc
+accessory_supertype = <str>
+
+# array of compatible terminal_type IDs
+compatible_terminal_type = [<str>]
+
+
+# SVGs should be layed out for a horizontal orientation when defined.
+# instances can be rotated when defined in project.
+visual_representation = <svg>
+
+color = <str>
+
+# optional
+# Dimension subtable for each terminal_accessory_type. Groups common properties
+[terminal_accessory_type.<str>.dimensions]
+
+# overall height of terminal accessory
+height = [<num>, <denom>]
+
+# unit that height is specified in
+height_unit = <str>
+
+# overall width of terminal accessory
+width = [<num>, <denom>]
+
+# unit that width is specified in
+width_unit = <str>
+
+# optional
+# overall depth of terminal accessory
+depth =  [<num>,<denom>]
+
+depth_unit = <str>
+
+# optional
+# diameter of terminal accessory
+diameter = [<num>, <denom>]
+
+# optional
+# unit that diameter is specified in
+diameter_unit = <str>
+
+# Catalog subtable for each terminal_accessory_type. Groups common properties
+# All fields here are optional, but highly encouraged.
+[terminal_accessory_type.<str>.catalog]
+
+# manufacturer name
+manufacturer = <str>
+
+# model description
+model = <str>
+
+# free text field for larger descriptions
+description = <str>
+
+# [internal] part number
+part_number = <str>
+
+# manufacturer part number
+manufactuer_part_number = <str>
+
+# supplier
+supplier = <str>
+
+# supplier part number
+supplier_part_number = <str>
+
+# Table of terminal strip accessories in library
+# Terminal strip accessories are things like end plates or spacers
+# that are incorporated into a terminal_strip linearly and
+# interface with terminals
 # This does not include things like DIN rail stops.
 [terminal_strip_accessory_type]
 
@@ -1290,6 +1434,30 @@ compatible_terminal_type = [<str>]
 # SVGs should be layed out for a horizontal orientation when defined.
 # instances can be rotated when defined in project.
 visual_representation = <svg>
+
+color = <str>
+
+# optional
+# Dimension subtable for each terminal_accessory_type. Groups common properties
+[terminal_strip_accessory_type.<str>.dimensions]
+
+# overall height of terminal accessory
+height = [<num>, <denom>]
+
+# unit that height is specified in
+height_unit = <str>
+
+# overall width of terminal accessory
+width = [<num>, <denom>]
+
+# unit that width is specified in
+width_unit = <str>
+
+# optional
+# overall depth of terminal accessory
+depth =  [<num>,<denom>]
+
+depth_unit = <str>
 
 
 # Catalog subtable for each terminal_strip_accessory_type. Groups common properties
