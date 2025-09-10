@@ -35,6 +35,10 @@ pub struct PathwayType {
     pub material: Option<String>,
     /// Primary color of pathway
     pub color: Option<Color>,
+    /// Material properties/rating. Not parsed.
+    ///
+    /// Voltage/Temperature/Flammability/etc.
+    pub rating: Option<String>,
     /// Dimensions of pathway
     pub dimensions: Option<Dimension>,
     /// appearance in schematics

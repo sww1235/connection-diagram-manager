@@ -65,13 +65,19 @@ pub struct CableLayer {
     pub layer_type: LayerType,
     /// `Material of CableLayer`
     pub material: Option<String>,
-    /// Voltage rating for insuation layer
-    pub electric_potential_rating: Option<ElectricPotential>,
-    electric_potential_rating_unit: Option<String>,
+    /// AC Voltage rating for insuation layer
+    pub ac_electric_potential_rating: Option<ElectricPotential>,
+    ac_electric_potential_rating_unit: Option<String>,
+    /// DC Voltage rating for insuation layer
+    pub dc_electric_potential_rating: Option<ElectricPotential>,
+    dc_electric_potential_rating_unit: Option<String>,
     /// Temperature rating for insulation layer
     pub temperature_rating: Option<TemperatureInterval>,
     temperature_rating_unit: Option<String>,
-    /// Thickness of cable layer
+    /// Other insulation properties such as
+    /// fire spread resistance, smoke generation, etc
+    pub rating: Option<String>,
+    /// Thickness of `CableLayer`
     pub thickness: Option<Length>,
     thickness_unit: Option<String>,
     /// color of `CableLayer`

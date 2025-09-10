@@ -399,6 +399,11 @@ supertype = <str>
 # component designator
 component_designator = <str>
 
+
+# optional
+# rating of equipment. Not parsed
+rating = <str>
+
 # optional
 # overall visual representation of equipment
 visual_representation = <svg>
@@ -539,6 +544,12 @@ material = <str>
 # primary color of pathway
 color = <str>
 
+
+# optional
+# material properties/rating. Not parsed.
+# voltage/temp/flamability/etc
+rating = <str>
+
 # optional
 # Dimension subtable for each pathway_type. Groups common properties
 [pathway_type.<str>.dimensions]
@@ -653,17 +664,26 @@ strand_cross_sect_area = [<num>, <denom>]
 
 strand_cross_sect_area_unit = <str>
 
-# voltage rating of insulation
-insulation_potential_rating =  [<num>,<denom>]
+# AC voltage rating of insulation
+ac_insulation_potential_rating =  [<num>,<denom>]
 
-# unit for insulation_potential
-insulation_potential_rating_unit = <str>
+# unit for AC insulation_potential
+ac_insulation_potential_rating_unit = <str>
+
+# DC voltage rating of insulation
+dc_insulation_potential_rating =  [<num>,<denom>]
+
+# unit for DC insulation_potential
+dc_insulation_potential_rating_unit = <str>
 
 # temperature rating of insulation.
 insulation_temperature_rating =  [<num>,<denom>]
 
 insulation_temperature_rating_unit = <str>
 
+# Other insulation properties such as
+# flamability or smoke generation
+insulation_rating: <str>
 
 insulation_color = <str>
 
@@ -759,15 +779,24 @@ layer_type = <str>
 
 material = <str>
 
-# electric potential rating for insulation layer
-electric_potential_rating =  [<num>,<denom>]
+# AC electric potential rating for insulation layer
+ac_electric_potential_rating =  [<num>,<denom>]
 
-electric_potential_unit = <str>
+ac_electric_potential_unit = <str>
+
+# DC electric potential rating for insulation layer
+dc_electric_potential_rating =  [<num>,<denom>]
+
+dc_electric_potential_unit = <str>
 
 # temp rating for insulation layer
 temperature_rating =  [<num>,<denom>]
 
 temperature_rating_unit = <str>
+
+# Other insulation properties such as
+# fire spread resistance, smoke generation, etc
+rating = <str>
 
 # layer thickness
 thickness = [<num>, <denom>]
@@ -975,7 +1004,7 @@ pin = <str>
 
 
 
-# Table (dictonary) of all available enclosure_types.
+# Table (dictionary) of all available enclosure_types.
 # An enclosure is a physical container or space like a
 # junction box, gutter or rack.
 [enclosure_type]
@@ -1001,6 +1030,9 @@ usable_depth_unit = <str>
 usable_height =  [<num>,<denom>]
 
 usable_height_unit = <str>
+
+# Other rating information for enclosure
+rating = <str>
 
 # optional
 # if not defined, a generic drawing will be used instead
@@ -1108,7 +1140,7 @@ accepts_accessories = <bool>
 fuse_terminal = <bool>
 
 # optional
-# fuse rating inside terminal block
+# fuse rating inside terminal block. Not parsed.
 # only use if fuse_terminal = true
 fuse_rating = <str>
 
@@ -1546,6 +1578,9 @@ rail_center_height_unit = <str>
 # does mounting rail have slots
 slots = <bool>
 
+# are slots rounded or rectangular
+rounded_slots = <bool>
+
 # linear distance between origin and center of first slot
 # will also be used for the distance between the last slot
 # and the end of the rail.
@@ -1581,7 +1616,7 @@ minimum_rail_length = [<num>,<denom>]
 
 minimum_rail_length_unit = <str>
 
-# will extend rail so there are no partial holes
+# extend rail so there are no partial holes
 no_partial_holes = <bool>
 
 # distance between top center_line and origin

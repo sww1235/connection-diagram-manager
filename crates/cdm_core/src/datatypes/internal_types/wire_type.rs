@@ -46,12 +46,18 @@ pub struct WireType {
     /// cross sectional area of individual strand.
     pub strand_cross_sect_area: Option<Area>,
     strand_cross_sect_area_unit: Option<String>,
-    /// Insulation voltage rating.
-    pub insulation_potential_rating: Option<ElectricPotential>,
-    insulation_potential_rating_unit: Option<String>,
+    /// AC Insulation voltage rating.
+    pub ac_insulation_potential_rating: Option<ElectricPotential>,
+    ac_insulation_potential_rating_unit: Option<String>,
+    /// DC Insulation voltage rating.
+    pub dc_insulation_potential_rating: Option<ElectricPotential>,
+    dc_insulation_potential_rating_unit: Option<String>,
     /// Insulation temperature rating.
     pub insulation_temperature_rating: Option<TemperatureInterval>,
-    insulation_temperature_rating_unit: String,
+    insulation_temperature_rating_unit: Option<String>,
+    /// Other insulation properties such as
+    /// Flamability or smoke generation
+    pub insulation_rating: Option<String>,
     /// Insulation Color
     pub insulation_color: Option<Color>,
     /// Secondary Insulation Color

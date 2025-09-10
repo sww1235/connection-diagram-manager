@@ -31,6 +31,8 @@ pub struct EquipmentType {
     pub supertype: Option<String>,
     /// Component Designator
     pub component_designator: Option<String>,
+    /// Rating of equipment. Not parsed
+    pub rating: Option<String>,
     /// Vector of schematic symbols that can represent this equipment.
     /// values must be the id of the symbol_type
     pub schematic_symbols: Option<Vec<String>>,
