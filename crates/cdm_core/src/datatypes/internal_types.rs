@@ -6,8 +6,12 @@ pub mod connector_type;
 pub mod enclosure_type;
 /// `equipment_type` represents a type of equipment
 pub mod equipment_type;
+/// `mounting_rail_type` represents a type of mounting rail such as DIN rail or unistrut
+pub mod mounting_rail_type;
 /// `pathway_type` represents a type of pathway for wires or cables
 pub mod pathway_type;
+/// `schematic_symbol_type` represents a type of schematic symbol
+pub mod schematic_symbol_type;
 /// `svg` represents a complete SVG image
 pub mod svg;
 /// `term_cable_type` represents a cable that has connectors assembled on to it

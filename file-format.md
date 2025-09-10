@@ -1499,13 +1499,17 @@ supplier_part_number = <str>
 
 visual_representation = <svg>
 
+# Short descriptive name.
+# Can contain spaces and special characters
+name = <str>
+
 # optional free-form description
 description = <str>
 
-# optional
 # if this is true, svg will be searched
 # for special tags that indicate where dashed link lines
 # will connect.
+# this is used for things like relays and contactors
 # supports_links = <bool>
 
 
