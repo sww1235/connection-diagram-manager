@@ -4,7 +4,6 @@ use std::path::PathBuf;
 use std::rc::Rc;
 
 use serde::{Deserialize, Serialize};
-use uom::si::rational64::{Area, ElectricPotential, Length, TemperatureInterval};
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::partial_empty::PartialEmpty;
@@ -12,6 +11,7 @@ use cdm_traits::partial_empty::PartialEmpty;
 use crate::datatypes::{
     color::Color,
     internal_types::wire_type::WireType,
+    unit_helper::{CrossSectionalArea, ElectricPotential, Length, TemperatureInterval},
     util_types::{Catalog, CrossSection, Dimension, LineStyle},
 };
 
@@ -26,7 +26,7 @@ pub struct CableType {
     /// SOOW, NM, USE, etc
     pub cable_type_code: Option<String>,
     /// Cable cross sectional area
-    pub cross_sect_area: Area,
+    pub cross_sect_area: CrossSectionalArea,
     cross_sect_area_unit: String,
     /// Cable cross section shape
     ///

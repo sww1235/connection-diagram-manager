@@ -69,6 +69,8 @@ pub struct ConnectorPin {
     pub visual_rep: Option<Svg>,
     /// gender of pin
     pub gender: Option<String>,
+    /// Rating information of pin, not parsed.
+    pub rating: Option<String>,
 }
 
 impl ConnectorType {

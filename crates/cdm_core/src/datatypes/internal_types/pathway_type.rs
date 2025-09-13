@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use uom::si::rational64::Area;
+use serde::{Deserialize, Serialize};
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::partial_empty::PartialEmpty;
@@ -8,6 +8,7 @@ use cdm_traits::partial_empty::PartialEmpty;
 use crate::datatypes::{
     color::Color,
     internal_types::svg::Svg,
+    unit_helper::CrossSectionalArea,
     util_types::{Catalog, Dimension, LineStyle},
 };
 
@@ -15,7 +16,7 @@ use crate::datatypes::{
 /// [`LocationType`](super::location_type::LocationType) to another.
 ///
 /// Examples of Pathways include, conduit, cable tray, free air
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct PathwayType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -30,7 +31,7 @@ pub struct PathwayType {
     /// mainly used for things like panduit or wireway mounted to panel directly
     pub visual_representation: Option<Svg>,
     /// Inner cross sectional area of pathway
-    pub cross_sect_area: Area,
+    pub cross_sect_area: CrossSectionalArea,
     /// Main material of pathway
     pub material: Option<String>,
     /// Primary color of pathway

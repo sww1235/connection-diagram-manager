@@ -4,7 +4,6 @@ use std::path::PathBuf;
 use std::rc::Rc;
 
 use serde::{Deserialize, Serialize};
-use uom::si::rational64::Length;
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::{connector, partial_empty::PartialEmpty};
@@ -12,6 +11,7 @@ use cdm_traits::{connector, partial_empty::PartialEmpty};
 use crate::datatypes::{
     color::Color,
     internal_types::{cable_type::CableType, connector_type::ConnectorType, wire_type::WireType},
+    unit_helper::Length,
     util_types::{Catalog, LineStyle},
 };
 

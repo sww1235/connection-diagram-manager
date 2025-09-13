@@ -287,30 +287,17 @@ connector_type_mate = [<str>]
 [connector_type.<str>.dimensions]
 
 # height of connector
-height = [<num>, <denom>]
-
-# unit that height is specified in
-height_unit = <str>
+height = {value = [<num>, <denom>], unit_string = <str>}
 
 # width of connector
-width = [<num>, <denom>]
-
-# unit that width is specified in
-width_unit = <str>
+width = {value = [<num>, <denom>], unit_string = <str>}
 
 # depth of connector
-depth = [<num>, <denom>]
-
-# unit that depth is specified in
-depth_unit = <str>
+depth = {value = [<num>, <denom>], unit_string = <str>}
 
 # optional
 # diameter of circular connectors
-diameter = [<num>, <denom>]
-
-# optional
-# unit that diameter is specified in
-diameter_unit = <str>
+diameter = {value = [<num>, <denom>], unit_string = <str>}
 
 # Catalog subtable for each connector-type. Groups common properties
 # All fields here are optional, but highly encouraged.
@@ -363,6 +350,10 @@ visual_rep = <str>
 # optional
 # pin specific gender
 gender = <str>
+
+# optional
+# pin specific rating information. Not parsed
+rating = <str>
 
 
 # Equipment type is not an abstract type of equipment
@@ -417,32 +408,18 @@ schematic_symbols = [<str>]
 [equipment_type.<str>.dimensions]
 
 # height of equipment
-height = [<num>, <denom>]
-
-# unit that height is specified in
-height_unit = <str>
+height = {value = [<num>, <denom>], unit_string = <str>}
 
 # width of equipment
-width = [<num>, <denom>]
-
-# unit that width is specified in
-width_unit = <str>
+width = {value = [<num>, <denom>], unit_string = <str>}
 
 # optional
 # depth of equipment
-depth = [<num>, <denom>]
-
-# optional
-# unit that depth is specified in
-depth_unit = <str>
+depth = {value = [<num>, <denom>], unit_string = <str>}
 
 # optional
 # diameter of equipment
-diameter = [<num>, <denom>]
-
-# optional
-# unit that diameter is specified in
-diameter_unit = <str>
+diameter = {value = [<num>, <denom>], unit_string = <str>}
 
 
 # Catalog subtable for each equipment_type. Groups common properties
@@ -533,10 +510,7 @@ visual_representation = <svg>
 
 # optional
 # Interior cross sectional area - used for conduit fill calculations
-cross_sect_area =  [<num>,<denom>]
-
-# optional
-cross_sect_area_unit = <str>
+cross_sect_area =  {value = [<num>,<denom>], unit_string = <str>}
 
 # primary material of pathway
 material = <str>
@@ -554,25 +528,19 @@ rating = <str>
 # Dimension subtable for each pathway_type. Groups common properties
 [pathway_type.<str>.dimensions]
 
-# height of pathway
-height = [<num>, <denom>]
+# height of equipment
+height = {value = [<num>, <denom>], unit_string = <str>}
 
-# unit that height is specified in
-height_unit = <str>
-
-# width of pathway
-width = [<num>, <denom>]
-
-# unit that width is specified in
-width_unit = <str>
+# width of equipment
+width = {value = [<num>, <denom>], unit_string = <str>}
 
 # optional
-# diameter of pathway
-diameter = [<num>, <denom>]
+# depth of equipment
+depth = {value = [<num>, <denom>], unit_string = <str>}
 
 # optional
-# unit that diameter is specified in
-diameter_unit = <str>
+# diameter of equipment
+diameter = {value = [<num>, <denom>], unit_string = <str>}
 
 # Catalog subtable for each pathway_type. Groups common properties
 # All fields here are optional, but highly encouraged.
@@ -608,9 +576,7 @@ color = <str>
 
 secondary_color = <str>
 
-line_thickness = [<num>,<denom>]
-
-line_thickness_unit = <str>
+line_thickness = {value = [<num>,<denom>], unit_string = <str>}
 
 # array of lengths/percentages of dashes and gaps
 # uses same specification as SVG stroke-dasharray field.
@@ -644,15 +610,13 @@ insulated = <bool>
 # PVC, Nylon, thermoplastic, etc
 insulation_material = <str>
 
-insulation_thickness =  [<num>,<denom>]
-
-insulation_thickness_unit = <str>
+insulation_thickness =  {value = [<num>,<denom>], unit_string = <str>}
 
 # the cross sectional area of the conductor
-conductor_cross_sect_area =  [<num>,<denom>]
+conductor_cross_sect_area =  {value = [<num>,<denom>], unit_string = <str>}
 
 # including insulation
-overall_cross_sect_area =  [<num>,<denom>]
+overall_cross_sect_area =  {value = [<num>,<denom>], unit_string = <str>}
 
 # If conductor is stranded
 stranded = <bool>
@@ -660,26 +624,16 @@ stranded = <bool>
 # number of strands if cable is stranded. overriden to 1 if wire is not stranded
 num_strands = <int>
 
-strand_cross_sect_area = [<num>, <denom>]
-
-strand_cross_sect_area_unit = <str>
+strand_cross_sect_area = {value = [<num>,<denom>], unit_string = <str>}
 
 # AC voltage rating of insulation
-ac_insulation_potential_rating =  [<num>,<denom>]
-
-# unit for AC insulation_potential
-ac_insulation_potential_rating_unit = <str>
+ac_insulation_potential_rating =  {value = [<num>,<denom>], unit_string = <str>}
 
 # DC voltage rating of insulation
-dc_insulation_potential_rating =  [<num>,<denom>]
-
-# unit for DC insulation_potential
-dc_insulation_potential_rating_unit = <str>
+dc_insulation_potential_rating =  {value = [<num>,<denom>], unit_string = <str>}
 
 # temperature rating of insulation.
-insulation_temperature_rating =  [<num>,<denom>]
-
-insulation_temperature_rating_unit = <str>
+insulation_temperature_rating =  {value = [<num>,<denom>], unit_string = <str>}
 
 # Other insulation properties such as
 # flamability or smoke generation
@@ -698,9 +652,7 @@ color = <str>
 
 secondary_color = <str>
 
-line_thickness = [<num>,<denom>]
-
-line_thickness_unit = <str>
+line_thickness = {value = [<num>,<denom>], unit_string = <str>}
 
 # array of lengths/percentages of dashes and gaps
 # uses same specification as SVG stroke-dasharray field.
@@ -755,9 +707,7 @@ supplier_part_number = <str>
 cable_type_code = <str>
 
 # Outer cross sectional area of cable
-cross_sect_area =  [<num>,<denom>]
-
-cross_sect_area_unit = <str>
+cross_sect_area =  {value = [<num>,<denom>], unit_string = <str>}
 
 # Oval, Circular, Siamese
 cross_section = <str>
@@ -780,28 +730,20 @@ layer_type = <str>
 material = <str>
 
 # AC electric potential rating for insulation layer
-ac_electric_potential_rating =  [<num>,<denom>]
-
-ac_electric_potential_unit = <str>
+ac_electric_potential_rating =  {value = [<num>,<denom>], unit_string = <str>}
 
 # DC electric potential rating for insulation layer
-dc_electric_potential_rating =  [<num>,<denom>]
-
-dc_electric_potential_unit = <str>
+dc_electric_potential_rating =  {value = [<num>,<denom>], unit_string = <str>}
 
 # temp rating for insulation layer
-temperature_rating =  [<num>,<denom>]
-
-temperature_rating_unit = <str>
+temperature_rating =  {value = [<num>,<denom>], unit_string = <str>}
 
 # Other insulation properties such as
 # fire spread resistance, smoke generation, etc
 rating = <str>
 
 # layer thickness
-thickness = [<num>, <denom>]
-
-thickness_unit = <str>
+thickness = {value = [<num>,<denom>], unit_string = <str>}
 
 # color of insulation or semiconductor
 color = <str>
@@ -831,9 +773,7 @@ color = <str>
 
 secondary_color = <str>
 
-line_thickness = [<num>,<denom>]
-
-line_thickness_unit = <str>
+line_thickness = {value = [<num>,<denom>], unit_string = <str>}
 
 # array of lengths/percentages of dashes and gaps
 # uses same specification as SVG stroke-dasharray field.
@@ -844,24 +784,13 @@ line_appearance = [<int>]
 [cable_type.<str>.dimensions]
 
 # height of cable
-height = [<num>, <denom>]
-
-# unit that height is specified in
-height_unit = <str>
+height = {value = [<num>,<denom>], unit_string = <str>}
 
 # width of cable
-width = [<num>, <denom>]
+width = {value = [<num>,<denom>], unit_string = <str>}
 
-# unit that width is specified in
-width_unit = <str>
-
-# optional
 # diameter of cable
-diameter = [<num>, <denom>]
-
-# optional
-# unit that diameter is specified in
-diameter_unit = <str>
+diameter = {value = [<num>,<denom>], unit_string = <str>}
 
 
 # Catalog subtable for each cable_type. Groups common properties
@@ -906,14 +835,10 @@ supplier_part_number = <str>
 # Most keys in a term_cable_type sub-table are optional
 [term_cable_type.<str>]
 
-nominal_length =  [<num>,<denom>]
-
-nominal_length_unit = <str>
+nominal_length =  {value = [<num>,<denom>], unit_string = <str>}
 
 # actual length of cable
-length =  [<num>,<denom>]
-
-length_unit = <str>
+length =  {value = [<num>,<denom>], unit_string = <str>}
 
 # all items here are optional
 # and will use defaults or outer insulation color if not specified
@@ -924,9 +849,7 @@ color = <str>
 
 secondary_color = <str>
 
-line_thickness = [<num>,<denom>]
-
-line_thickness_unit = <str>
+line_thickness = {value = [<num>,<denom>], unit_string = <str>}
 
 # array of lengths/percentages of dashes and gaps
 # uses same specification as SVG stroke-dasharray field.
@@ -1017,17 +940,17 @@ pin = <str>
 [enclosure_type.<str>]
 
 # usable internal width of enclosure
-usable_width =  [<num>,<denom>]
+usable_width =  {value = [<num>,<denom>], unit_string = <str>}
 
 useable_width_unit = <str>
 
 # usable internal depth of enclosure
-usable_depth =  [<num>,<denom>]
+usable_depth =  {value = [<num>,<denom>], unit_string = <str>}
 
 usable_depth_unit = <str>
 
 # usable internal height of enclosure
-usable_height =  [<num>,<denom>]
+usable_height =  {value = [<num>,<denom>], unit_string = <str>}
 
 usable_height_unit = <str>
 
@@ -1048,30 +971,18 @@ color = <str>
 [enclosure_type.<str>.dimensions]
 
 # overall height of enclosure
-height = [<num>, <denom>]
-
-# unit that height is specified in
-height_unit = <str>
+height = {value = [<num>,<denom>], unit_string = <str>}
 
 # overall width of enclosure
-width = [<num>, <denom>]
-
-# unit that width is specified in
-width_unit = <str>
+width = {value = [<num>,<denom>], unit_string = <str>}
 
 # optional
 # overall depth of enclosure
-depth =  [<num>,<denom>]
-
-depth_unit = <str>
+depth =  {value = [<num>,<denom>], unit_string = <str>}
 
 # optional
-# diameter of cable
-diameter = [<num>, <denom>]
-
-# optional
-# unit that diameter is specified in
-diameter_unit = <str>
+# diameter of enclosure
+diameter = {value = [<num>,<denom>], unit_string = <str>}
 
 
 # Catalog subtable for each enclosure_type. Groups common properties
@@ -1206,13 +1117,9 @@ entry_angle = <str>
 # can be lower than manufacturer recommended values
 maxiumum_wires = <int>
 
-maximum_wire_cross_section = [<num>,<denom>]
+maximum_wire_cross_section = {value = [<num>,<denom>], unit_string = <str>}
 
-maximum_wire_cross_section_unit = <str>
-
-minimum_wire_cross_section = [<num>,<denom>]
-
-minimum_wire_cross_section_unit = <str>
+minimum_wire_cross_section = {value = [<num>,<denom>], unit_string = <str>}
 
 # what types of wire/connectors are supported by terminal connection
 # current supported list is:
@@ -1242,30 +1149,18 @@ mount_connection = <bool>
 [terminal_type.<str>.dimensions]
 
 # overall height of terminal
-height = [<num>, <denom>]
-
-# unit that height is specified in
-height_unit = <str>
+height = {value = [<num>,<denom>], unit_string = <str>}
 
 # overall width of terminal
-width = [<num>, <denom>]
-
-# unit that width is specified in
-width_unit = <str>
+width = {value = [<num>,<denom>], unit_string = <str>}
 
 # optional
 # overall depth of terminal
-depth =  [<num>,<denom>]
-
-depth_unit = <str>
+depth =  {value = [<num>,<denom>], unit_string = <str>}
 
 # optional
 # diameter of terminal
-diameter = [<num>, <denom>]
-
-# optional
-# unit that diameter is specified in
-diameter_unit = <str>
+diameter = {value = [<num>,<denom>], unit_string = <str>}
 
 # Catalog subtable for each terminal_block_type. Groups common properties
 # All fields here are optional, but highly encouraged.
@@ -1323,30 +1218,19 @@ pin_compatible_terminal_types = [[<str>], [<str>]]
 [terminal_strip_jumper_type.<str>.dimensions]
 
 # overall height of terminal
-height = [<num>, <denom>]
-
-# unit that height is specified in
-height_unit = <str>
+height = {value = [<num>,<denom>], unit_string = <str>}
 
 # overall width of terminal
-width = [<num>, <denom>]
-
-# unit that width is specified in
-width_unit = <str>
+width = {value = [<num>,<denom>], unit_string = <str>}
 
 # optional
 # overall depth of terminal
-depth =  [<num>,<denom>]
-
-depth_unit = <str>
+depth =  {value = [<num>,<denom>], unit_string = <str>}
 
 # optional
 # diameter of terminal
-diameter = [<num>, <denom>]
+diameter = {value = [<num>,<denom>], unit_string = <str>}
 
-# optional
-# unit that diameter is specified in
-diameter_unit = <str>
 # Catalog subtable for each terminal_block_jumper_type. Groups common properties
 # All fields here are optional, but highly encouraged.
 [terminal_strip_jumper_type.<str>.catalog]
@@ -1399,30 +1283,18 @@ color = <str>
 [terminal_accessory_type.<str>.dimensions]
 
 # overall height of terminal accessory
-height = [<num>, <denom>]
-
-# unit that height is specified in
-height_unit = <str>
+height = [<num>, <denom>]{value = [<num>,<denom>], unit_string = <str>}
 
 # overall width of terminal accessory
-width = [<num>, <denom>]
-
-# unit that width is specified in
-width_unit = <str>
+width = {value = [<num>,<denom>], unit_string = <str>}
 
 # optional
 # overall depth of terminal accessory
-depth =  [<num>,<denom>]
-
-depth_unit = <str>
+depth =  {value = [<num>,<denom>], unit_string = <str>}
 
 # optional
 # diameter of terminal accessory
-diameter = [<num>, <denom>]
-
-# optional
-# unit that diameter is specified in
-diameter_unit = <str>
+diameter = {value = [<num>,<denom>], unit_string = <str>}
 
 # Catalog subtable for each terminal_accessory_type. Groups common properties
 # All fields here are optional, but highly encouraged.
@@ -1474,22 +1346,14 @@ color = <str>
 [terminal_strip_accessory_type.<str>.dimensions]
 
 # overall height of terminal accessory
-height = [<num>, <denom>]
-
-# unit that height is specified in
-height_unit = <str>
+height = {value = [<num>,<denom>], unit_string = <str>}<num>, <denom>]
 
 # overall width of terminal accessory
-width = [<num>, <denom>]
-
-# unit that width is specified in
-width_unit = <str>
+width = {value = [<num>,<denom>], unit_string = <str>}
 
 # optional
 # overall depth of terminal accessory
-depth =  [<num>,<denom>]
-
-depth_unit = <str>
+depth =  {value = [<num>,<denom>], unit_string = <str>}
 
 
 # Catalog subtable for each terminal_strip_accessory_type. Groups common properties
@@ -1565,15 +1429,11 @@ description = <str>
 # overall height of rail
 # rail center point will be at
 # rail_height / 2
-rail_height = [<num>,<denom>]
-
-rail_height_unit = <str>
+rail_height = {value = [<num>,<denom>], unit_string = <str>}
 
 # total height of center/recessed section of mounting rail
 # centered on total height
-rail_center_height = [<num>,<denom>]
-
-rail_center_height_unit = <str>
+rail_center_height = {value = [<num>,<denom>], unit_string = <str>}
 
 # does mounting rail have slots
 slots = <bool>
@@ -1584,56 +1444,38 @@ rounded_slots = <bool>
 # linear distance between origin and center of first slot
 # will also be used for the distance between the last slot
 # and the end of the rail.
-first_slot_center = [<num>,<denom>]
-
-first_slot_center_unit = <str>
+first_slot_center = {value = [<num>,<denom>], unit_string = <str>}
 
 # linear center to center distance between slots.
-slot_center_to_center = [<num>,<denom>]
-
-slot_center_to_center_unit = <str>
+slot_center_to_center = {value = [<num>,<denom>], unit_string = <str>}
 
 # slot length, includes length of rounded ends
-slot_length = [<num>,<denom>]
+slot_length = {value = [<num>,<denom>], unit_string = <str>}
 
-slot_length_unit = <str>
-
-slot_height = [<num>,<denom>]
-
-slot_height_unit = <str>
+slot_height = {value = [<num>,<denom>], unit_string = <str>}
 
 # the length of rail as specified by the manufacturer/supplier part number
 standard_rail_length = [<num>,<denom>]
-
-standard_rail_length_unit = <str>
 
 # User specified minimum length.
 # If not specified, will be set to 2x the first_slot_center distance
 # if instance length is set smaller than default minimum_rail_length
 # and no_partial_holes is false, then minimum_rail_length
 # will be ignored.
-minimum_rail_length = [<num>,<denom>]
-
-minimum_rail_length_unit = <str>
+minimum_rail_length = {value = [<num>,<denom>], unit_string = <str>}
 
 # extend rail so there are no partial holes
 no_partial_holes = <bool>
 
 # distance between top center_line and origin
-top_rail_center_height = [<num>,<denom>]
-
-top_rail_center_height_unit = <str>
+top_rail_center_height = {value = [<num>,<denom>], unit_string = <str>}
 
 # distance between bottom center_line and origin
-bottom_rail_center_height = [<num>,<denom>]
-
-bottom_rail_center_height_unit = <str>
+bottom_rail_center_height = {value = [<num>,<denom>], unit_string = <str>}
 
 # distance between origin and slot vertical center
 # positive above origin, negative below origin
-slot_vertical_center = [<num>,<denom>]
-
-slot_vertical_center_unit = <str>
+slot_vertical_center = {value = [<num>,<denom>], unit_string = <str>}
 
 # SVG files for start, end and middle of mounting rail
 # minimum rail length should be set to the length of the
@@ -1739,9 +1581,7 @@ description = <str>
 pathway = <str>
 
 # wire length
-length =  [<num>,<denom>]
-
-length_unit = <str>
+length =  {value = [<num>,<denom>], unit_string = <str>}
 
 # will be checked for 1 pin only
 # intended for things like ferrules, ring terminals, etc.
@@ -1783,9 +1623,7 @@ description = <str>
 # ID of pathway instance
 pathway = <str>
 
-length =  [<num>,<denom>]
-
-length_unit = <str>
+length =  {value = [<num>,<denom>], unit_string = <str>}
 
 [cables.<str>.iec_codes]
 location = <str>
@@ -1857,9 +1695,7 @@ identifier = <str>
 # optional description
 description = <str>
 
-length =  [<num>,<denom>]
-
-length_unit = <str>
+length =  {value = [<num>,<denom>], unit_string = <str>}
 
 [pathways.<str>.iec_codes]
 location = <str>
@@ -1939,18 +1775,14 @@ parent_sublocation = <str>
 mounting_rail_id = <str>
 
 # distance from left side of parent enclosure or location
-x =  [<num>,<denom>]
-
-x_unit = <str>
+x =  {value = [<num>,<denom>], unit_string = <str>}
 
 # distance from bottom of parent enclosure
-y =  [<num>,<denom>]
-
-y_unit = <str>
+y =  {value = [<num>,<denom>], unit_string = <str>}
 
 # distance along left side of location or rail
 # allows you to not have to specify another sub-location for every single rail mounted component
-distance = [<num>, <denom>]
+distance = {value = [<num>,<denom>], unit_string = <str>}
 
 distance_unit = <str>
 
@@ -2048,9 +1880,7 @@ user9 = <str>
 
 mounting_rail_type = <str>
 
-length = [<nom>, <denom>]
-
-length_unit = <str>
+length = {value = [<num>,<denom>], unit_string = <str>}
 
 # custom fields for user specified data. Not parsed
 [mounting_rails.<str>.user_fields]

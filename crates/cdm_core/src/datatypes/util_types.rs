@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
-use uom::si::rational64::Length;
 
-use crate::datatypes::color::Color;
+use crate::datatypes::{color::Color, unit_helper::Length};
 
 /// Cross section of wire or cable
 #[non_exhaustive]

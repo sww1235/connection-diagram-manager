@@ -1,10 +1,10 @@
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
-use uom::si::rational64::{Area, ElectricPotential, Length, TemperatureInterval};
 
 use crate::datatypes::{
     color::Color,
+    unit_helper::{CrossSectionalArea, ElectricPotential, Length, TemperatureInterval},
     util_types::{Catalog, LineStyle},
 };
 
@@ -32,29 +32,22 @@ pub struct WireType {
     pub insulation_material: Option<String>,
     /// Thickness of outer insulation
     pub insulation_thickness: Option<Length>,
-    insulation_thickness_unit: Option<String>,
     /// Conductor cross sectional area.
-    pub conductor_cross_sect_area: Area,
-    conductor_cross_sect_area_unit: String,
+    pub conductor_cross_sect_area: CrossSectionalArea,
     /// Overall wire cross sectional area, incluidng insulation.
-    pub overall_cross_sect_area: Option<Area>,
-    overall_cross_sect_area_unit: Option<String>,
+    pub overall_cross_sect_area: Option<CrossSectionalArea>,
     /// If conductor is stranded
     pub stranded: bool,
     /// How many strands is conductor made of
     pub num_strands: u64,
     /// cross sectional area of individual strand.
-    pub strand_cross_sect_area: Option<Area>,
-    strand_cross_sect_area_unit: Option<String>,
+    pub strand_cross_sect_area: Option<CrossSectionalArea>,
     /// AC Insulation voltage rating.
     pub ac_insulation_potential_rating: Option<ElectricPotential>,
-    ac_insulation_potential_rating_unit: Option<String>,
     /// DC Insulation voltage rating.
     pub dc_insulation_potential_rating: Option<ElectricPotential>,
-    dc_insulation_potential_rating_unit: Option<String>,
     /// Insulation temperature rating.
     pub insulation_temperature_rating: Option<TemperatureInterval>,
-    insulation_temperature_rating_unit: Option<String>,
     /// Other insulation properties such as
     /// Flamability or smoke generation
     pub insulation_rating: Option<String>,

@@ -2,11 +2,11 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
-use uom::si::rational64::Area;
 
 use crate::datatypes::{
     color::Color,
     internal_types::svg::Svg,
+    unit_helper::CrossSectionalArea,
     util_types::{Catalog, Dimension},
 };
 
@@ -103,11 +103,9 @@ pub struct Connection {
     /// can be lower than manufacturer recommended values
     pub maximum_wires: u64,
     /// Maximum Wire Cross Section that can be connected to this terminal connection
-    pub maximum_wire_cross_section: Area,
-    maximum_wire_cross_section_unit: String,
+    pub maximum_wire_cross_section: CrossSectionalArea,
     /// Minimum Wire Cross Section that can be connected to this terminal connection
-    pub minimum_wire_cross_section: Area,
-    minimum_wire_cross_section_unit: String,
+    pub minimum_wire_cross_section: CrossSectionalArea,
     /// Different Wire Type or connector Type accepted
     ///
     /// Note: This is not an actual wire/connector type but

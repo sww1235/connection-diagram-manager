@@ -1,14 +1,14 @@
 use std::cell::RefCell;
-use std::fmt;
 use std::path::PathBuf;
 use std::rc::Rc;
-
-use uom::si::{length::millimeter, rational64::Length};
 
 use cdm_macros::{Empty, Merge, PartialEmpty};
 use cdm_traits::{connector, partial_empty::PartialEmpty};
 
-use super::{connector_type::ConnectorType, pathway::Pathway, wire_type::WireType};
+use crate::datatypes::{
+    internal_types::{connector_type::ConnectorType, pathway::Pathway, wire_type::WireType},
+    unit_helper::Length,
+};
 
 /// `Wire` represents a particular instance of a `WireType`.
 /// It represents a physical item.
@@ -54,43 +54,5 @@ impl connector::Connector for Connector {
         // allowing unwrap as I want a panic here if this application
         // is used on a 128 bit architecture
         u64::try_from(self.connector_type.borrow().pins.len()).unwrap()
-    }
-}
-
-impl fmt::Display for Wire {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Wire Instance:")?;
-        if let Some(manufacturer) = self.wire_type.borrow().manufacturer.clone() {
-            writeln!(f, "Manufacturer: {manufacturer}")?;
-        }
-        //TODO: Decide how much data from Equiptype we want to display for instance
-        if let Some(model) = self.wire_type.borrow().model.clone() {
-            writeln!(f, "Model: {model}")?;
-        }
-        if let Some(part_number) = self.wire_type.borrow().part_number.clone() {
-            writeln!(f, "Part Number: {part_number}")?;
-        }
-        if let Some(manufacturer_part_number) =
-            self.wire_type.borrow().manufacturer_part_number.clone()
-        {
-            writeln!(f, "Manufacturer Part Number: {manufacturer_part_number}")?;
-        }
-        if let Some(supplier) = self.wire_type.borrow().supplier.clone() {
-            writeln!(f, "Supplier: {supplier}")?;
-        }
-        if let Some(supplier_part_number) = self.wire_type.borrow().supplier_part_number.clone() {
-            writeln!(f, "Supplier Part Number: {supplier_part_number}")?;
-        }
-        writeln!(f, "Length: {}", &self.length.get::<millimeter>())?;
-        if let Some(identifier) = &self.identifier {
-            writeln!(f, "Equipment Identifier: {identifier}")?;
-        }
-        if let Some(pathway) = &self.pathway {
-            writeln!(f, "Pathway: {}", pathway.borrow())?;
-        }
-        if let Some(description) = &self.description {
-            writeln!(f, "Description: {description}")?;
-        }
-        Ok(())
     }
 }

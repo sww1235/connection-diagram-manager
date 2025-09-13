@@ -1,11 +1,11 @@
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
-use uom::si::rational64::Length;
 
 use crate::datatypes::{
     color::Color,
     internal_types::svg::Svg,
+    unit_helper::Length,
     util_types::{Catalog, Dimension},
 };
 
@@ -27,13 +27,10 @@ pub struct EnclosureType {
     pub material: Option<String>,
     /// Usable Width
     pub usable_width: Length,
-    usable_width_unit: String,
     /// Usable Height
     pub usable_height: Length,
-    usable_height_unit: String,
     /// Usable Depth
     pub usable_depth: Option<Length>,
-    usable_depth_unit: Option<String>,
     /// Other rating information for enclosure
     pub rating: Option<String>,
     /// Visual representation of Enclosure
