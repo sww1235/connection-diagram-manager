@@ -31,10 +31,18 @@ pub mod enclosure;
 /// `equipment` represents an instance of an `EquipmentType`. This is a physical item
 /// you hold in your hand.
 pub mod equipment;
+/// `mounting_rail` represents an instance of a `MountingRailType`
+pub mod mounting_rail;
 /// `pathway` represents an instance of a `PathwayType`
 pub mod pathway;
+/// `physical_location` represents a physical location in the world
+pub mod physical_location;
+/// `schematic_symbol` represents an instance of `SchematicSymbolType`
+pub mod schematic_symbol;
 /// `term_cable` represents an instance of a `TermCableType`
 pub mod term_cable;
+/// `terminal_strip` contains the main terminal_strip type and accessory types
+pub mod terminal_strip;
 /// `wire` represents an instance of a `WireType`
 pub mod wire;
 
