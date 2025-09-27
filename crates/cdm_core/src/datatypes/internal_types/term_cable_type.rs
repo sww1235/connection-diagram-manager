@@ -1,22 +1,15 @@
-use std::cell::RefCell;
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::rc::Rc;
 
 use serde::{Deserialize, Serialize};
 
-use cdm_macros::{Empty, Merge, PartialEmpty};
-use cdm_traits::{connector, partial_empty::PartialEmpty};
-
 use crate::datatypes::{
-    color::Color,
-    internal_types::{cable_type::CableType, connector_type::ConnectorType, wire_type::WireType},
     unit_helper::Length,
     util_types::{Catalog, LineStyle},
 };
 
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct TermCableType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -43,21 +36,14 @@ pub struct TermCableType {
 #[expect(clippy::exhaustive_enums)]
 pub enum WireCable {
     /// `CableType`
-    CableType(Rc<RefCell<CableType>>),
+    CableType(String),
     /// `WireType`
-    WireType(Rc<RefCell<WireType>>),
-}
-
-// have to implement default for this for some weird reason
-impl Default for WireCable {
-    fn default() -> Self {
-        WireCable::WireType(Rc::new(RefCell::new(WireType::new())))
-    }
+    WireType(String),
 }
 
 /// `TermCableConnectorTermination` represents the connections between a pin of an individual
 /// `TermCableConnector` and the individual core of the cable.
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Termination {
     /// `Core` represents which individual wire inside a cable this pin is connected to
     pub core: String,
@@ -66,19 +52,12 @@ pub struct Termination {
 }
 
 /// `TermCableConnector` represents a connector on one end of a `TermCable`
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Connector {
     /// `connector_type` represents the connector type that is on the end of a `TermCable`
-    pub connector_type: Rc<RefCell<ConnectorType>>,
+    pub connector_type: String,
     /// `terminations` represents the pin/core mapping for this connector
     pub terminations: Vec<Termination>,
-}
-impl TermCableType {
-    /// Creates an empty instance of `TermCableType`
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
-    }
 }
 
 impl connector::Connector for Connector {

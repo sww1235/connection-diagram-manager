@@ -1,69 +1,30 @@
-use std::cell::RefCell;
-use std::fmt;
 use std::path::PathBuf;
-use std::rc::Rc;
 
-use uom::si::{length::millimeter, rational64::Length};
+use serde::{Deserialize, Serialize};
 
-use cdm_macros::{Empty, Merge, PartialEmpty};
-use cdm_traits::partial_empty::PartialEmpty;
-
-use super::pathway_type::PathwayType;
+use crate::datatypes::{
+    internal_types::physical_location::PhysicalLocation,
+    unit_helper::Length,
+    util_types::{IECCodes, UserFields},
+};
 
 /// `Pathway` represents a physical instance of a pathway
-#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Pathway {
-    /// Internal `id` of pathway instance
-    pub id: String,
     /// Type of pathway
-    pub path_type: Rc<RefCell<PathwayType>>,
+    pub path_type: String,
     /// structured identifier of pathway
     pub identifier: Option<String>,
     /// Optional description
     pub description: Option<String>,
     /// length
     pub length: Length,
+    /// physical location of Pathway
+    pub physical_location: Option<PhysicalLocation>,
+    /// Fields for use with IEC project coding
+    pub iec_codes: Option<IECCodes>,
+    /// User defined fields
+    pub user_fields: Option<UserFields>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
-}
-impl Pathway {
-    /// Creates an empty instance of `Pathway`
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
-    }
-}
-
-impl fmt::Display for Pathway {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Path Instance:")?;
-        if let Some(manufacturer) = &self.path_type.borrow().manufacturer {
-            writeln!(f, "Manufacturer: {manufacturer}")?;
-        }
-        //TODO: Decide how much data from Equiptype we want to display for instance
-        if let Some(model) = &self.path_type.borrow().model {
-            writeln!(f, "Model: {model}")?;
-        }
-        if let Some(part_number) = &self.path_type.borrow().part_number {
-            writeln!(f, "Part Number: {part_number}")?;
-        }
-        if let Some(manufacturer_part_number) = &self.path_type.borrow().manufacturer_part_number {
-            writeln!(f, "Manufacturer Part Number: {manufacturer_part_number}")?;
-        }
-        if let Some(supplier) = &self.path_type.borrow().supplier {
-            writeln!(f, "Supplier: {supplier}")?;
-        }
-        if let Some(supplier_part_number) = &self.path_type.borrow().supplier_part_number {
-            writeln!(f, "Supplier Part Number: {supplier_part_number}")?;
-        }
-        if let Some(identifier) = &self.identifier {
-            writeln!(f, "Equipment Identifier: {identifier}")?;
-        }
-        writeln!(f, "Length: {}", &self.length.get::<millimeter>())?;
-
-        if let Some(description) = &self.description {
-            writeln!(f, "Description: {description}")?;
-        }
-        Ok(())
-    }
 }

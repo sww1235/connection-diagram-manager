@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::datatypes::{internal_types::svg::Svg, unit_helper::Length, util_types::Catalog};
 
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct MountingRailType {
     /// Catalog information
     pub catalog: Option<Catalog>,

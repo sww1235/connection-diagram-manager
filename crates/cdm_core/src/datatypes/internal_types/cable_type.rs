@@ -1,23 +1,17 @@
-use std::cell::RefCell;
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::rc::Rc;
 
 use serde::{Deserialize, Serialize};
 
-use cdm_macros::{Empty, Merge, PartialEmpty};
-use cdm_traits::partial_empty::PartialEmpty;
-
 use crate::datatypes::{
     color::Color,
-    internal_types::wire_type::WireType,
     unit_helper::{CrossSectionalArea, ElectricPotential, Length, TemperatureInterval},
     util_types::{Catalog, CrossSection, Dimension, LineStyle},
 };
 
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has one
 /// core, then it is a wire, not a cable.
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct CableType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -51,13 +45,13 @@ pub struct CableType {
 #[expect(clippy::exhaustive_enums)]
 pub enum CableCore {
     /// `WireType`
-    WireType(Rc<RefCell<WireType>>),
+    WireType(String),
     /// `CableType`
-    CableType(Rc<RefCell<CableType>>),
+    CableType(String),
 }
 
 /// `CableLayer` represents an insulation or shield layer of the entire cable
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct CableLayer {
     /// layer number, counted from inside to outside of cable, 1 indexed
     pub layer_number: u64,
@@ -85,11 +79,10 @@ pub struct CableLayer {
 }
 
 /// `LayerType` represents different functions of a `CableLayer` `layer_type`
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum LayerType {
     /// `Insulation` is a normal insulation layer of a cable
-    #[default]
     Insulation,
     /// `Semiconductor` is a semiconducting layer in high voltage cables
     Semiconductor,
@@ -104,12 +97,4 @@ pub enum LayerType {
     Armor,
     /// `Jacket` is the outer-most insulation of a cable.
     Jacket,
-}
-
-impl CableType {
-    /// Creates an empty instance of `CableType`
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
-    }
 }

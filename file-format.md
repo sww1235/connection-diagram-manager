@@ -942,17 +942,11 @@ pin = <str>
 # usable internal width of enclosure
 usable_width =  {value = [<num>,<denom>], unit_string = <str>}
 
-useable_width_unit = <str>
-
 # usable internal depth of enclosure
 usable_depth =  {value = [<num>,<denom>], unit_string = <str>}
 
-usable_depth_unit = <str>
-
 # usable internal height of enclosure
 usable_height =  {value = [<num>,<denom>], unit_string = <str>}
-
-usable_height_unit = <str>
 
 # Other rating information for enclosure
 rating = <str>
@@ -1536,11 +1530,31 @@ identifier = <str>
 # must be in list of mounting types defined on equipment type
 mounting_type = <str>
 
+# optional
 # ID of enclosure instance
 enclosure = <str>
 
+# optional
+# enclosure must also be defined
+# ID of mount point (within an enclosure)
+mount_point = <str>
+
 # optional description
 description = <str>
+
+# Physical Location Information
+[equipment.<str>.physical_location]
+
+street_address = <str>
+city = <str>
+state = <str>
+zip_code = <str>
+latitude = [<num>, <denom>]
+longitude = [<num>, <denom>]
+structured_location_id = <str>
+planet = <str>
+building = <str>
+
 
 [equipment.<str>.iec_codes]
 location = <str>
@@ -1589,6 +1603,19 @@ end1_connector_type = <str>
 
 end2_connector_type = <str>
 
+# Physical Location Information
+[wires.<str>.physical_location]
+
+street_address = <str>
+city = <str>
+state = <str>
+zip_code = <str>
+latitude = [<num>, <denom>]
+longitude = [<num>, <denom>]
+structured_location_id = <str>
+planet = <str>
+building = <str>
+
 [wires.<str>.iec_codes]
 location = <str>
 installation = <str>
@@ -1625,9 +1652,21 @@ pathway = <str>
 
 length =  {value = [<num>,<denom>], unit_string = <str>}
 
+# Physical Location Information
+[cables.<str>.physical_location]
+
+street_address = <str>
+city = <str>
+state = <str>
+zip_code = <str>
+latitude = [<num>, <denom>]
+longitude = [<num>, <denom>]
+structured_location_id = <str>
+planet = <str>
+building = <str>
+
 [cables.<str>.iec_codes]
 location = <str>
-
 installation = <str>
 
 # custom fields for user specified data. Not parsed
@@ -1661,6 +1700,19 @@ description = <str>
 
 # ID of pathway instance
 pathway = <str>
+
+# Physical Location Information
+[term_cables.<str>.physical_location]
+
+street_address = <str>
+city = <str>
+state = <str>
+zip_code = <str>
+latitude = [<num>, <denom>]
+longitude = [<num>, <denom>]
+structured_location_id = <str>
+planet = <str>
+building = <str>
 
 [term_cables.<str>.iec_codes]
 location = <str>
@@ -1697,6 +1749,19 @@ description = <str>
 
 length =  {value = [<num>,<denom>], unit_string = <str>}
 
+# Physical Location Information
+[pathways.<str>.physical_location]
+
+street_address = <str>
+city = <str>
+state = <str>
+zip_code = <str>
+latitude = [<num>, <denom>]
+longitude = [<num>, <denom>]
+structured_location_id = <str>
+planet = <str>
+building = <str>
+
 [pathways.<str>.iec_codes]
 location = <str>
 installation = <str>
@@ -1731,8 +1796,18 @@ identifier = <str>
 # optional description
 description = <str>
 
-# street address, coordinates, description
-phyiscal_location = <str>
+# Physical Location Information
+[enclosures.<str>.physical_location]
+
+street_address = <str>
+city = <str>
+state = <str>
+zip_code = <str>
+latitude = [<num>, <denom>]
+longitude = [<num>, <denom>]
+structured_location_id = <str>
+planet = <str>
+building = <str>
 
 [enclosures.<str>.iec_codes]
 location = <str>
@@ -1751,7 +1826,7 @@ user7 = <str>
 user8 = <str>
 user9 = <str>
 
-# array of tables of sublocations/mounting locations within the enclosure
+# dictionary of tables of sublocations/mounting locations within the enclosure
 # used to represent DIN rail, or just specific coordinate locations in a specific location
 
 # examples of subenclosures would be coordinate pairs on a backplane,
@@ -1759,16 +1834,7 @@ user9 = <str>
 # individual keystone slots on a panel
 # rack units / sub rack units within a rack
 # TODO: flesh this out more
-[[enclosures.<str>.location]]
-
-# optional id tag for sub-location
-# if this sub-location has children,
-# then this must be defined.
-id = <str>
-
-# optional parent sub-location
-# if not defined, will be child of enclosure
-parent_sublocation = <str>
+[enclosures.<str>.mount_points.<str>]
 
 # optional mounting rail id
 # this ID must be defined in the project.
@@ -1784,7 +1850,7 @@ y =  {value = [<num>,<denom>], unit_string = <str>}
 # allows you to not have to specify another sub-location for every single rail mounted component
 distance = {value = [<num>,<denom>], unit_string = <str>}
 
-distance_unit = <str>
+
 
 # table of all terminal strips defined in the project
 # all terminal blocks are part of a terminal strip
@@ -1797,9 +1863,41 @@ distance_unit = <str>
 # structured name/tag strip ID / terminal strip name
 identifier = <str>
 
-# ID of sub-location instance defined in project
-# where this terminal strip is located
-location_id = <str>
+# containing enclosure id
+enclosure = <str>
+
+# mounting rail id
+mounting_rail = <str>
+
+# Physical Location Information
+[terminal_strips.<str>.physical_location]
+
+street_address = <str>
+city = <str>
+state = <str>
+zip_code = <str>
+latitude = [<num>, <denom>]
+longitude = [<num>, <denom>]
+structured_location_id = <str>
+planet = <str>
+building = <str>
+
+[terminal_strips.<str>.iec_codes]
+location = <str>
+installation = <str>
+
+# custom fields for user specified data. Not parsed
+[terminal_strips.<str>.user_fields]
+user0 = <str>
+user1 = <str>
+user2 = <str>
+user3 = <str>
+user4 = <str>
+user5 = <str>
+user6 = <str>
+user7 = <str>
+user8 = <str>
+user9 = <str>
 
 # array of tables defining individual terminal blocks
 # in terminal_strip.
@@ -1822,9 +1920,10 @@ label = <str>
 accessories = [<str>]
 
 
+# TODO: this should probably be an embedded table
 # defining either terminal or terminal_strip_accessory type
 # must be defined under the defintion of the terminal_block array it applies to
-# second <str> can either be `term` or `accy`
+# second <str> can either be `Terminal` or `Accessory`
 [terminal_strips.<str>.terminals.<str>]
 
 # ID of terminal_block_type or terminal_strip_accessory_type
@@ -1853,22 +1952,6 @@ label = <str>
 # the terminal layer designation, allowing for multi-layer jumpers
 jumper_connections = [<str>]
 
-[terminal_strips.<str>.iec_codes]
-location = <str>
-installation = <str>
-
-# custom fields for user specified data. Not parsed
-[terminal_strips.<str>.user_fields]
-user0 = <str>
-user1 = <str>
-user2 = <str>
-user3 = <str>
-user4 = <str>
-user5 = <str>
-user6 = <str>
-user7 = <str>
-user8 = <str>
-user9 = <str>
 
 
 
@@ -1881,6 +1964,23 @@ user9 = <str>
 mounting_rail_type = <str>
 
 length = {value = [<num>,<denom>], unit_string = <str>}
+
+[mounting_rails.<str>.iec_codes]
+location = <str>
+installation = <str>
+
+# Physical Location Information
+[mounting_rails.<str>.physical_location]
+
+street_address = <str>
+city = <str>
+state = <str>
+zip_code = <str>
+latitude = [<num>, <denom>]
+longitude = [<num>, <denom>]
+structured_location_id = <str>
+planet = <str>
+building = <str>
 
 # custom fields for user specified data. Not parsed
 [mounting_rails.<str>.user_fields]
@@ -1909,6 +2009,38 @@ user9 = <str>
 end1 = <str>
 
 end2 = <str>
+
+
+# This dictionary contains schematic symbols that represent equipment and components
+# in the project
+[schematic_symbols]
+
+# Table of attributes for a specific instance of a symbol
+[schematic_symbols.<str>]
+
+symbol_type = <str>
+
+symbol_color = <str>
+
+# What this symbol represents.
+# The type field must be filled in with Equipment, Terminal, or Connector
+# and the value field must be filled in with an ID of a matching project component
+represented_object = {type = <str>, value = <str>}
+
+# custom fields for user specified data. Not parsed
+[schematic_symbols.<str>.user_fields]
+user0 = <str>
+user1 = <str>
+user2 = <str>
+user3 = <str>
+user4 = <str>
+user5 = <str>
+user6 = <str>
+user7 = <str>
+user8 = <str>
+user9 = <str>
+
+
 
 TODO: schematic symbols, drawings
 

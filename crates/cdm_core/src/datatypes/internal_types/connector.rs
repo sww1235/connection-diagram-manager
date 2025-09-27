@@ -1,17 +1,14 @@
-use std::cell::RefCell;
-use std::rc::Rc;
+use serde::{Deserialize, Serialize};
 
 use cdm_traits::connector;
 
-use super::connector_type::ConnectorType;
-
 /// `Connector` is an instance of a [`ConnectorType`](super::connector_type::ConnectorType)
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Connector {
     /// `id` of connector
     pub id: String,
     /// The type of this connector instance
-    pub connector_type: Rc<RefCell<ConnectorType>>,
+    pub connector_type: String,
 }
 
 impl connector::Connector for Connector {

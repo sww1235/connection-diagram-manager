@@ -9,15 +9,12 @@ use crate::datatypes::{
     util_types::{Catalog, Dimension},
 };
 
-use cdm_macros::{Empty, Merge, PartialEmpty};
-use cdm_traits::partial_empty::PartialEmpty;
-
 //TODO: create physical location stuff
 /// `EnclosureType` represents a type/model of location.
 ///
 /// Examples of `EnclosureType` include junction boxes, racks, panels, etc.
 /// It does not include places these are located.
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct EnclosureType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -39,12 +36,4 @@ pub struct EnclosureType {
     pub color: Option<Color>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
-}
-
-impl EnclosureType {
-    /// Creates an empty instance of `EnclosureType`
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
-    }
 }

@@ -18,7 +18,7 @@ use crate::datatypes::{
 /// Terminal definitions include both DIN rail mounted terminals, WAGO lever nuts, and Wire nuts
 /// Ferrules, ring/space/fork terminals, etc should be defined as connectors since they associate
 /// with wires
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct TerminalType {
     /// Catalog information
     pub catalog: Option<Catalog>,

@@ -2,9 +2,6 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use cdm_macros::{Empty, Merge, PartialEmpty};
-use cdm_traits::partial_empty::PartialEmpty;
-
 use crate::datatypes::{
     color::Color,
     internal_types::svg::Svg,
@@ -16,7 +13,7 @@ use crate::datatypes::{
 /// [`LocationType`](super::location_type::LocationType) to another.
 ///
 /// Examples of Pathways include, conduit, cable tray, free air
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct PathwayType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -46,11 +43,4 @@ pub struct PathwayType {
     pub line_style: Option<LineStyle>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
-}
-impl PathwayType {
-    /// Creates an empty instance of `PathwayType`
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
-    }
 }

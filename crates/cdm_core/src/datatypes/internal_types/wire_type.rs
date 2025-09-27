@@ -8,16 +8,13 @@ use crate::datatypes::{
     util_types::{Catalog, LineStyle},
 };
 
-use cdm_macros::{Empty, Merge, PartialEmpty};
-use cdm_traits::partial_empty::PartialEmpty;
-
 /// `WireType` represents a particular type of wire
 ///
 /// Not all fields have to be populated, and some are
 /// mainly provided for logical reasons rather than
 /// functional (model/part number/manufacturer part number
 /// may all be equivalent in some cases)
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct WireType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -59,12 +56,4 @@ pub struct WireType {
     pub line_style: Option<LineStyle>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
-}
-
-impl WireType {
-    /// Creates an empty instance of `WireType`
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
-    }
 }

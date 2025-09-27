@@ -9,15 +9,12 @@ use crate::datatypes::{
     util_types::{Catalog, Dimension},
 };
 
-use cdm_macros::{Empty, Merge, PartialEmpty};
-use cdm_traits::partial_empty::PartialEmpty;
-
 //TODO: Make some of these fields enums
 /// `ConnectorType` represents a particular type of connector.
 ///
 /// Connector can represent more than just a metal or plastic blob on the end of a cable, it can
 /// represent a screw terminal on a piece of equipment or a hole for wire to be entered in.
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct ConnectorType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -55,7 +52,7 @@ pub struct ConnectorType {
 
 //TODO: store pin cross sectional area or something equivalent, also store pin type
 /// Represents an individual pin in a `ConnectorType`
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct ConnectorPin {
     /// Pin Designation
     pub designation: String,
@@ -71,12 +68,4 @@ pub struct ConnectorPin {
     pub gender: Option<String>,
     /// Rating information of pin, not parsed.
     pub rating: Option<String>,
-}
-
-impl ConnectorType {
-    /// Creates an empty instance of `ConnectorType`
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
-    }
 }

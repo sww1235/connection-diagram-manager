@@ -1,120 +1,52 @@
-use std::cell::RefCell;
 use std::collections::HashMap;
-use std::fmt;
 use std::path::PathBuf;
-use std::rc::Rc;
 
-use uom::si::{length::millimeter, rational64::Length};
+use serde::{Deserialize, Serialize};
 
-use cdm_macros::{Empty, Merge, PartialEmpty};
-use cdm_traits::partial_empty::PartialEmpty;
-
-use super::location_type::LocationType;
+use crate::datatypes::{
+    internal_types::physical_location::PhysicalLocation,
+    unit_helper::Length,
+    util_types::{IECCodes, UserFields},
+};
 
 /// `Location` represents a physical instance of a locationType
 /// TODO: add page/sheet number for pdf generation and printing
-#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
-pub struct Location {
-    /// Internal `id` of location instance
-    pub id: String,
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+pub struct Enclosure {
     /// Type of location
-    pub location_type: Rc<RefCell<LocationType>>,
+    pub enclosure_type: String,
     /// structured identifier of location
     pub identifier: Option<String>,
     /// Optional description
     pub description: Option<String>,
-    /// Physical Location
-    pub physical_location: Option<String>,
-    /// `SubLocation` - Actual locations of associated equipment within location
-    /// Hashmap enforces unique keys
-    pub sub_locations: HashMap<String, SubLocation>,
+    /// physical location of Pathway
+    pub physical_location: Option<PhysicalLocation>,
+    /// Fields for use with IEC project coding
+    pub iec_codes: Option<IECCodes>,
+    /// User defined fields
+    pub user_fields: Option<UserFields>,
+    /// `mount_point` - Actual locations of associated equipment within location
+    pub mount_points: HashMap<String, MountPoint>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
 }
-impl Location {
-    /// Creates an empty instance of `Location`
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
-    }
-}
-/// `SubLocation` represents a particular physical x/y/z within a `Location`
+/// `MountPoint` represents a particular physical x/y/z within an `Enclosure`
 ///
-/// Examples of `SubLocations` include
+/// Examples of `MountPoint`s include
 /// - coordinate pairs on a backplane
 /// - Individual DIN rails on a backplane, and then distance along DIN rail //TODO fix this
 /// - Individual keystone slots on a panel
 /// - Rack units/Sub rack units within a panel
 
-// TODO: Finish this. Should equipment be assigned to a sublocation vs a location, or both, or
-// neither? Should sublocations be the same thing as a location?
-#[derive(Debug, Clone, Default, PartialEq)]
-#[expect(clippy::module_name_repetitions)]
-pub struct SubLocation {
+//TODO: add mounting rails?
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+pub struct MountPoint {
+    /// Optional mounting rail
+    pub mounting_rail: Option<String>,
     /// Distance from left side of parent location
     pub x: Length,
     /// Distance from bottom of parent location
     pub y: Length,
-    /// Distance from back of parent location
-    pub z: Length,
-}
-
-impl SubLocation {
-    /// Crates an empty instance of `SubLocation`
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
-    }
-}
-
-impl fmt::Display for Location {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Location Instance:")?;
-        writeln!(f, "Internal ID: {}", &self.id)?;
-        if let Some(manufacturer) = &self.location_type.borrow().manufacturer {
-            writeln!(f, "Manufacturer: {manufacturer}")?;
-        }
-        //TODO: Decide how much data from Equiptype we want to display for instance
-        if let Some(model) = &self.location_type.borrow().model {
-            writeln!(f, "Model: {model}")?;
-        }
-        if let Some(part_number) = &self.location_type.borrow().part_number {
-            writeln!(f, "Part Number: {part_number}")?;
-        }
-        if let Some(manufacturer_part_number) =
-            &self.location_type.borrow().manufacturer_part_number
-        {
-            writeln!(f, "Manufacturer Part Number: {manufacturer_part_number}")?;
-        }
-        if let Some(supplier) = &self.location_type.borrow().supplier {
-            writeln!(f, "Supplier: {supplier}")?;
-        }
-        if let Some(supplier_part_number) = &self.location_type.borrow().supplier_part_number {
-            writeln!(f, "Supplier Part Number: {supplier_part_number}")?;
-        }
-        if let Some(identifier) = &self.identifier {
-            writeln!(f, "Location Identifier: {identifier}")?;
-        }
-        if let Some(physical_location) = &self.physical_location {
-            writeln!(f, "Physical Location of location: {physical_location}")?;
-        }
-        if let Some(description) = &self.description {
-            writeln!(f, "Description: {description}")?;
-        }
-        Ok(())
-    }
-}
-
-impl fmt::Display for SubLocation {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(
-            f,
-            "x: {}, y: {}, z: {}",
-            self.x.get::<millimeter>(),
-            self.y.get::<millimeter>(),
-            self.z.get::<millimeter>()
-        )?;
-
-        Ok(())
-    }
+    /// Distance from left side of location
+    pub distance: Length,
 }

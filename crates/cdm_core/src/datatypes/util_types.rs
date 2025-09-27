@@ -56,11 +56,32 @@ pub struct Dimension {
 /// Style information for linear items
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct LineStyle {
-    color: Option<Color>,
-    secondary_color: Option<Color>,
-    line_thickness: Option<Length>,
-    line_thickness_unit: Option<String>,
+    pub color: Option<Color>,
+    pub secondary_color: Option<Color>,
+    pub line_thickness: Option<Length>,
+    pub line_thickness_unit: Option<String>,
     /// array of lengths/percentages of dashes and gaps
     /// uses same specification as SVG stroke-dasharray field.
-    line_appearance: Option<Vec<u64>>,
+    pub line_appearance: Option<Vec<u64>>,
+}
+/// Custom fields for user specified data. Not parsed
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+pub struct UserFields {
+    pub user0: Option<String>,
+    pub user1: Option<String>,
+    pub user2: Option<String>,
+    pub user3: Option<String>,
+    pub user4: Option<String>,
+    pub user5: Option<String>,
+    pub user6: Option<String>,
+    pub user7: Option<String>,
+    pub user8: Option<String>,
+    pub user9: Option<String>,
+}
+
+/// Fields to support IEC coding of assets
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+pub struct IECCodes {
+    pub location: Option<String>,
+    pub installation: Option<String>,
 }

@@ -1,12 +1,7 @@
-use std::cell::RefCell;
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::rc::Rc;
 
 use serde::{Deserialize, Serialize};
-
-use cdm_macros::{Empty, Merge, PartialEmpty};
-use cdm_traits::partial_empty::PartialEmpty;
 
 use crate::datatypes::{
     internal_types::{connector_type::ConnectorType, svg::Svg},
@@ -17,7 +12,7 @@ use crate::datatypes::{
 /// `EquipmentType` represents a type of equipment
 ///
 /// Anything from a rackmount piece of gear to an outlet or terminal block
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct EquipmentType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -54,7 +49,7 @@ pub struct EquipmentType {
 /// sphere, etc.
 /// SVGs should be layed out for a horizontal orientation when defined.
 /// instances can be rotated when defined in project.
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct EquipFace {
     /// visual representation of equipment face, without connectors
     pub visual_representation: Option<Svg>,
@@ -63,7 +58,7 @@ pub struct EquipFace {
 }
 
 /// `FaceConnector` represents
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct FaceConnector {
     //TODO: refcounted?
     /// Connector Type
@@ -74,12 +69,6 @@ pub struct FaceConnector {
 }
 
 impl EquipmentType {
-    /// Creates an empty instance of `EquipmentType`
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
-    }
-
     /// Returns representative svg representation of `EquipmentType`
     #[must_use]
     pub fn visual_rep(&self) -> Svg {

@@ -7,7 +7,7 @@ use crate::datatypes::internal_types::svg::Svg;
 /// `SchematicSymbolType` represents a schematic symbol type
 /// used in schematics to represent components
 /// in schematic diagrams.
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct SchematicSymbolType {
     /// Short name for display. Can contain spaces/special characters
     pub name: String,

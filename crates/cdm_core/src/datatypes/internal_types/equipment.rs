@@ -1,84 +1,36 @@
-use std::cell::RefCell;
-use std::fmt;
 use std::path::PathBuf;
-use std::rc::Rc;
 
-use super::{
-    equipment_type::EquipmentType,
-    location::{Location, SubLocation},
+use serde::{Deserialize, Serialize};
+
+use crate::datatypes::{
+    internal_types::physical_location::PhysicalLocation,
+    util_types::{IECCodes, UserFields},
 };
-
-use cdm_macros::{Empty, Merge, PartialEmpty};
-use cdm_traits::partial_empty::PartialEmpty;
 
 /// `Equipment` represents a particular instance of an `EquipmentType`.
 /// This is the physical unit you would hold in your hand
-#[derive(Debug, Default, PartialEq, Clone, Merge, PartialEmpty, Empty)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Equipment {
-    /// Internal `id` of equipment instance
-    pub id: String,
     /// The type of equipment of the instance
-    pub equip_type: Rc<RefCell<EquipmentType>>,
+    pub equip_type: String,
     /// The structured name of the equipment
     pub identifier: Option<String>,
     /// The particular mounting type of this instance
     /// must be in list of mounting types defined in `equip_type.mounting_type`.
     /// Validated on import
-    pub mount_type: Option<String>,
-    /// The contained location
-    pub location: Rc<RefCell<Location>>,
-    /// The sublocation within the location
-    pub sub_location: SubLocation,
+    pub mounting_type: Option<String>,
+    /// The containing `Enclosure`
+    pub enclosure: Option<String>,
+    /// The `MountPoint` within the `Enclosure`
+    pub mount_point: Option<String>,
+    /// The physical location of this piece of equipment
+    pub physical_location: Option<PhysicalLocation>,
+    /// fields for IEC coding
+    pub iec_codes: Option<IECCodes>,
     /// Description
     pub description: Option<String>,
+    /// Optional user Fields
+    pub user_fields: Option<UserFields>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
-}
-
-impl Equipment {
-    /// Creates an empty instance of `Equipment`
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
-    }
-    // generates equipment instance specific connectors
-    //pub fn connectors() ->
-    //
-    // connector validation
-}
-
-impl fmt::Display for Equipment {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Equipment Instance:")?;
-        if let Some(manufacturer) = &self.equip_type.borrow().manufacturer {
-            writeln!(f, "Manufacturer: {manufacturer}")?;
-        }
-        //TODO: Decide how much data from Equiptype we want to display for instance
-        if let Some(model) = &self.equip_type.borrow().model {
-            writeln!(f, "Model: {model}")?;
-        }
-        if let Some(part_number) = &self.equip_type.borrow().part_number {
-            writeln!(f, "Part Number: {part_number}")?;
-        }
-        if let Some(manufacturer_part_number) = &self.equip_type.borrow().manufacturer_part_number {
-            writeln!(f, "Manufacturer Part Number: {manufacturer_part_number}")?;
-        }
-        if let Some(supplier) = &self.equip_type.borrow().supplier {
-            writeln!(f, "Supplier: {supplier}")?;
-        }
-        if let Some(supplier_part_number) = &self.equip_type.borrow().supplier_part_number {
-            writeln!(f, "Supplier Part Number: {supplier_part_number}")?;
-        }
-        if let Some(identifier) = &self.identifier {
-            writeln!(f, "Equipment Identifier: {identifier}")?;
-        }
-        if let Some(mount_type) = &self.mount_type {
-            writeln!(f, "MountType: {mount_type}")?;
-        }
-        writeln!(f, "Location: {}", &self.location.borrow())?;
-        if let Some(description) = &self.description {
-            writeln!(f, "Description: {description}")?;
-        }
-        Ok(())
-    }
 }
