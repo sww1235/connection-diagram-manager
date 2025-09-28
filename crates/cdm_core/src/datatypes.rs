@@ -1,7 +1,5 @@
 /// `color` is used to define common colors, as well as allow custom colors to be defined
 pub mod color;
-/// `file_types` contains all representations of data found in src and lib files found on disc.
-pub mod file_types;
 ///`internal_types` contains all representations of data used internally in the program.
 pub mod internal_types;
 /// `project` contains the types that define a project.
