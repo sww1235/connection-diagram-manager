@@ -182,15 +182,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cdm_macros"
-version = "0.0.1"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "cdm_traits"
 version = "0.0.1"
 
@@ -300,7 +291,6 @@ dependencies = [
 name = "connection_diagram_manager"
 version = "0.0.1"
 dependencies = [
- "cdm_macros",
  "cdm_traits",
  "clap",
  "fltk",

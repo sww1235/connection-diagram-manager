@@ -6,7 +6,7 @@ use num_rational::Rational64;
 
 use pdf_helper::{paper::PaperSize, scale::ScalingFactor, Margins, PDFDocument, PDFPage};
 
-use crate::datatypes::internal_types::{location::Location, Library, Project};
+use crate::datatypes::internal_types::{Library, Project};
 
 //TODO: add page templates with proper borders and titleblocks
 //TODO: instead of page templates, make a configurable page border/titleblock

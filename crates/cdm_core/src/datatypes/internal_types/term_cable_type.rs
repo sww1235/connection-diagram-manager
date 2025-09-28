@@ -8,6 +8,8 @@ use crate::datatypes::{
     util_types::{Catalog, LineStyle},
 };
 
+use cdm_traits::connector;
+
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct TermCableType {
