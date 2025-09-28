@@ -37,6 +37,7 @@ pub struct Catalog {
 
 /// Common Dimension information for Library Types
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(clippy::partial_pub_fields)]
 pub struct Dimension {
     /// height of connector
     pub height: Length,

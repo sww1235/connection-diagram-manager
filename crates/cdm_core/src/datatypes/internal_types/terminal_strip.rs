@@ -59,7 +59,7 @@ pub enum TermAccy {
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Jumper {
     /// Type of jumper
-    jumper_type: String,
+    pub jumper_type: String,
     /// structured identifier of jumper
     pub identifier: Option<String>,
     /// Optional descriptive label

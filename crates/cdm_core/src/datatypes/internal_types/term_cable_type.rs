@@ -17,10 +17,8 @@ pub struct TermCableType {
     pub wire_cable: WireCable,
     /// Nominal Length of Terminated Cable
     pub nominal_length: Option<Length>,
-    nominal_length_unit: Option<String>,
     /// Actual Length of Terminated Cable
     pub actual_length: Option<Length>,
-    actual_length_unit: Option<String>,
     /// appearance in schematics
     pub line_style: Option<LineStyle>,
     /// One end of Terminated Cable.

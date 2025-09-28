@@ -21,7 +21,6 @@ pub struct CableType {
     pub cable_type_code: Option<String>,
     /// Cable cross sectional area
     pub cross_sect_area: CrossSectionalArea,
-    cross_sect_area_unit: String,
     /// Cable cross section shape
     ///
     /// Oval, circular, siamese
@@ -61,19 +60,15 @@ pub struct CableLayer {
     pub material: Option<String>,
     /// AC Voltage rating for insuation layer
     pub ac_electric_potential_rating: Option<ElectricPotential>,
-    ac_electric_potential_rating_unit: Option<String>,
     /// DC Voltage rating for insuation layer
     pub dc_electric_potential_rating: Option<ElectricPotential>,
-    dc_electric_potential_rating_unit: Option<String>,
     /// Temperature rating for insulation layer
     pub temperature_rating: Option<TemperatureInterval>,
-    temperature_rating_unit: Option<String>,
     /// Other insulation properties such as
     /// fire spread resistance, smoke generation, etc
     pub rating: Option<String>,
     /// Thickness of `CableLayer`
     pub thickness: Option<Length>,
-    thickness_unit: Option<String>,
     /// color of `CableLayer`
     pub color: Option<Color>,
 }
