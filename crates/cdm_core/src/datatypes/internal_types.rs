@@ -12,8 +12,6 @@ pub mod mounting_rail_type;
 pub mod pathway_type;
 /// `schematic_symbol_type` represents a type of schematic symbol
 pub mod schematic_symbol_type;
-/// `svg` represents a complete SVG image
-pub mod svg;
 /// `term_cable_type` represents a cable that has connectors assembled on to it
 pub mod term_cable_type;
 /// `terminal_type` represents a type of terminal
@@ -64,9 +62,12 @@ use uom::si::{
 };
 
 use super::file_types::DataFile;
-use super::util_types::CrossSection;
-use cable_type::{CableCore, LayerType};
-use svg::Svg;
+
+use crate::datatypes::{
+    internal_types::cable_type::{CableCore, LayerType},
+    svg::Svg,
+    util_types::CrossSection,
+};
 
 use cdm_traits::{merge::ComparedStruct, merge::Merge, partial_empty::PartialEmpty};
 

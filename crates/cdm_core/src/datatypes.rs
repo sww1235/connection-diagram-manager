@@ -6,6 +6,8 @@ pub mod file_types;
 pub mod internal_types;
 /// `project` contains the types that define a project.
 pub mod project;
+/// `svg` represents a complete SVG image
+pub mod svg;
 /// `unit_helper` contains wrapper types around UOM units, to allow tracking what unit was defined
 /// in the data file easier.
 ///

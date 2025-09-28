@@ -4,7 +4,8 @@ use std::path::PathBuf;
 use serde::{Deserialize, Serialize};
 
 use crate::datatypes::{
-    internal_types::{connector_type::ConnectorType, svg::Svg},
+    internal_types::connector_type::ConnectorType,
+    svg::Svg,
     util_types::{Catalog, Dimension},
 };
 

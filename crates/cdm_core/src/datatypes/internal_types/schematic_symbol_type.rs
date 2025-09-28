@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::internal_types::svg::Svg;
+use crate::datatypes::svg::Svg;
 
 /// `SchematicSymbolType` represents a schematic symbol type
 /// used in schematics to represent components

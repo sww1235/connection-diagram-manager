@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::datatypes::{
     color::Color,
-    internal_types::svg::Svg,
+    svg::Svg,
     unit_helper::CrossSectionalArea,
     util_types::{Catalog, Dimension, LineStyle},
 };

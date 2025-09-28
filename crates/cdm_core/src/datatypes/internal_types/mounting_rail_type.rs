@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{internal_types::svg::Svg, unit_helper::Length, util_types::Catalog};
+use crate::datatypes::{svg::Svg, unit_helper::Length, util_types::Catalog};
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct MountingRailType {
