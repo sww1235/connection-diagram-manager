@@ -47,6 +47,48 @@ See [the TOML documentation](https://toml.io/en/v1.0.0) for more details.
 Per the TOML spec, root tables do not need to be defined if not needed. They
 are defined in the examples below for clarity.
 
+**NOTE:** Any number that is not specifically an integer, is implemented
+internally as a
+[Rational64](https://docs.rs/num-rational/latest/num_rational/type.Rational64.html)
+to work around precision issues with floats. You must specify both a numerator
+and denominator in the array or you will get an error. As an example, if you
+wanted to represent the number 1/3, a float of 0.3333̅33̅. isn't exact. With
+Rational types, you can specify it as exactly 1/3 and be satisfied. Floating
+point numbers are still used, especially to produce decimal output from
+Rational types but all the math internally is done with Rational types and just
+the output step is converted.
+
+All images are specified as SVG, so drawings can scale easily.
+
+Where a color `<str>` is specified, you can choose from the following options,
+or specify a custom RGB color using hexadecimal #RRGGBB syntax (not finalized yet).
+
+If anyone has official color standards/values for these, along with the
+acompanying RGB values, please submit a pull request.
+
+#### Color Value List.
+
+| Color Name | Abbreviation | RGB Color Code | Color Standard |
+| ---------- | ------------ | -------------- | -------------- |
+| Red        | RED          | #FF0000        |                |
+| Orange     | ORN          | #FF5100        |                |
+| Yellow     | YEL          | #FFFF00        |                |
+| Green      | GRN          | #00FF00        |                |
+| Blue       | BLU          | #0000FF        |                |
+| Purple     | PUR          | #6700FF        |                |
+| Violet     | VIO          | #EE82EE        |                |
+| Pink       | PNK          | #FFE4E1        |                |
+| Rose       | RSE          | #FFE4E1        |                |
+| Brown      | BRN          | #8B4513        |                |
+| Black      | BLK          | #000000        |                |
+| White      | WHT          | #FFFFFF        |                |
+| Gray       | GRY          | #808080        |                |
+| Grey       | GRY          | #808080        |                |
+| Slate      | SLT          | #808080        |                |
+| Clear      | CLR          | #FFFFFF        |                |
+| Cyan       | CYN          | #00FFFF        |                |
+| Aqua       | AQA          | #00FFFF        |                |
+
 ### Application Configuration File
 
 This file must be named `cdm_config.toml` and be in the following list of
@@ -188,52 +230,30 @@ description = <str>
 
 
 
-### Library File
+### Library Files
 
-Library files must contain at least one of the base tables as shown in the file
-reference below.
+Library files contain reference data for the types of entities listed
+below. The library files contain common properties of the entities, such as
+model, part number, size information, etc.
 
-**NOTE:** Any number that is not specifically an integer, is implemented
-internally as a
-[Rational64](https://docs.rs/num-rational/latest/num_rational/type.Rational64.html)
-to work around precision issues with floats. You must specify both a numerator
-and denominator in the array or you will get an error. As an example, if you
-wanted to represent the number 1/3, a float of 0.3333̅33̅. isn't exact. With
-Rational types, you can specify it as exactly 1/3 and be satisfied. Floating
-point numbers are still used, especially to produce decimal output from
-Rational types but all the math internally is done with Rational types and just
-the output step is converted.
+All entities must have a library defintion before they can be used in a `Project`.
 
-All images are specified as SVG, so drawings can scale easily.
+Library files must contain at least one of the base tables as shown in this
+document. A summary of base tables is listed below:
 
-Where a color `<str>` is specified, you can choose from the following options,
-or specify a custom RGB color using hexadecimal #RRGGBB syntax (not finalized yet).
-
-If anyone has official color standards/values for these, along with the
-acompanying RGB values, please submit a pull request.
-
-#### Color Value List.
-
-| Color Name | Abbreviation | RGB Color Code | Color Standard |
-| ---------- | ------------ | -------------- | -------------- |
-| Red        | RED          | #FF0000        |                |
-| Orange     | ORN          | #FF5100        |                |
-| Yellow     | YEL          | #FFFF00        |                |
-| Green      | GRN          | #00FF00        |                |
-| Blue       | BLU          | #0000FF        |                |
-| Purple     | PUR          | #6700FF        |                |
-| Violet     | VIO          | #EE82EE        |                |
-| Pink       | PNK          | #FFE4E1        |                |
-| Rose       | RSE          | #FFE4E1        |                |
-| Brown      | BRN          | #8B4513        |                |
-| Black      | BLK          | #000000        |                |
-| White      | WHT          | #FFFFFF        |                |
-| Gray       | GRY          | #808080        |                |
-| Grey       | GRY          | #808080        |                |
-| Slate      | SLT          | #808080        |                |
-| Clear      | CLR          | #FFFFFF        |                |
-| Cyan       | CYN          | #00FFFF        |                |
-| Aqua       | AQA          | #00FFFF        |                |
+- Cable Type
+- Connector Type
+- Enclosure Type
+- Equipment Type
+- Mounting Rail Type
+- Pathway Type
+- Schematic Symbol Type
+- Term Cable Type
+- Terminal Type
+- Terminal Strip Jumper Type
+- Terminal Accessory Type
+- Terminal Strip Accessory Type
+- Wire Type
 
 ```toml
 # table (dictionary) of all available connector types
@@ -1513,6 +1533,22 @@ supplier_part_number = <str>
 ```
 
 ### Project Definitions
+
+Project files contain definitions for each unique entity, part or component in the project and how they are connected together and located.
+
+Projects consist of the following entities:
+
+- Cable
+- Connections
+- Connector
+- Enclosure
+- Equipment
+- Mounting Rail
+- Pathway
+- Schematic Symbol
+- Term Cable
+- Terminal Strip
+- Wire
 
 ```toml
 # dictionary of equipment defined in project

@@ -78,48 +78,59 @@ use cdm_traits::{merge::ComparedStruct, merge::Merge, partial_empty::PartialEmpt
 /// `Library` represents all library data used in program
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct Library {
-    /// contains all wire types read in from file, and/or added in via program logic
-    pub wire_types: HashMap<String, wire_type::WireType>,
     /// contains all cable types read in from file, and/or added in via program logic
     pub cable_types: HashMap<String, cable_type::CableType>,
-    /// contains all terminated cable types read in from file, and/or added in via program logic
-    pub term_cable_types: HashMap<String, term_cable_type::TermCableType>,
-    /// contains all location types read in from file, and/or added in via program logic
-    pub location_types: HashMap<String, location_type::LocationType>,
     /// contains all connector types read in from file, and/or added in via program logic
     pub connector_types: HashMap<String, connector_type::ConnectorType>,
+    /// contains all enclosure types read in from file, and/or added in via program logic
+    pub enclosure_types: HashMap<String, enclosure_type::EnclosureType>,
     /// contains all equipment types read in from file, and/or added in via program logic
     pub equipment_types: HashMap<String, equipment_type::EquipmentType>,
-    /// contains all pathway types read in from file
+    /// contains all mounting rail types read in from file, and/or added in via program logic
+    pub mounting_rail_types: HashMap<String, mounting_rail_type::MountingRailType>,
+    /// contains all pathway types read in from file, and/or added in via program logic
     pub pathway_types: HashMap<String, pathway_type::PathwayType>,
+    /// contains all terminated cable types read in from file, and/or added in via program logic
+    pub term_cable_types: HashMap<String, term_cable_type::TermCableType>,
+    /// contains all terminal types read in from file, and/or added in via program logic
+    pub terminal_types: HashMap<String, terminal_type::TerminalType>,
+    /// contains all terminal strip jumper types read in from file, and/or added in via program logic
+    pub terminal_strip_jumper_types: HashMap<String, terminal_type::TerminalStripJumperType>,
+    /// contains all terminal accessory types read in from file, and/or added in via program logic
+    pub terminal_accessory_types: HashMap<String, terminal_type::TerminalAccessoryType>,
+    /// contains all terminal strip accessory types read in from file, and/or added in via program logic
+    pub terminal_strip_accessory_types: HashMap<String, terminal_type::TerminalStripAccessoryType>,
+    /// contains all wire types read in from file, and/or added in via program logic
+    pub wire_types: HashMap<String, wire_type::WireType>,
 }
 
 /// `Project` represents all project specific data used in program
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct Project {
-    /// `equipment` contains all equipment instances read in from files, and/or added in via program logic
-    pub equipment: HashMap<String, equipment::Equipment>,
-    /// `wires` contains all `Wire` instances read in from files, and/or
-    /// added in via program logic
-    pub wires: HashMap<String, wire::Wire>,
-    /// `cables` contains all `Cable` instances read in from files, and/or
-    /// added in via program logic
+    /// contains all cables read in from files, and/or added in via program logic
     pub cables: HashMap<String, cable::Cable>,
-    /// `term_cables` contains all `TermCable` instances read in from files, and/or
-    /// added in via program logic
-    pub term_cables: HashMap<String, term_cable::TermCable>,
-    /// `pathways`contains all pathway instances read in from files and/or added in via program
-    /// logic
-    pub pathways: HashMap<String, pathway::Pathway>,
-    /// `locations` contains all location instances read in from files and/or added in via program
-    /// logic
-    pub locations: HashMap<String, location::Location>,
     /// `connections` contains all connections between different equipment/cables/wires
     pub connections: Vec<connection::Connection>,
+    /// contains all connectors read in from files, and/or added in via program logic
+    pub connectors: HashMap<String, connector::Connector>,
+    /// contains all enclosures read in from files, and/or added in via program logic
+    pub enclosures: HashMap<String, enclosure::Enclosure>,
+    /// contains all equipment read in from files, and/or added in via program logic
+    pub equipment: HashMap<String, equipment::Equipment>,
+    /// contains all mounting rails read in from files, and/or added in via program logic
+    pub mounting_rails: HashMap<String, mounting_rail::MountingRail>,
+    /// contains all pathways read in from files and/or added in via program logic
+    pub pathways: HashMap<String, pathway::Pathway>,
+    /// contains all schematic symbols read in from files and/or added in via program logic
+    pub schematic_symbols: HashMap<String, schematic_symbol::SchematicSymbol>,
+    /// contains all term cables read in from files, and/or added in via program logic
+    pub term_cables: HashMap<String, term_cable::TermCable>,
+    /// contains all terminal strips read in from files and/or added in via program logic
+    pub terminal_strips: HashMap<String, terminal_strip::TerminalStrip>,
+    /// `wires` contains all wires read in from files, and/or added in via program logic
+    pub wires: HashMap<String, wire::Wire>,
 }
 
-//TODO: need to add datafile reference to each internal_type struct so each appropriate datafile
-//can be updated with new serialized data
 impl Library {
     ///Initializes an empty `Library`
     #[must_use]
