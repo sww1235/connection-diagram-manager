@@ -3,9 +3,8 @@ use std::path::PathBuf;
 use serde::{Deserialize, Serialize};
 
 use crate::datatypes::{
-    internal_types::physical_location::PhysicalLocation,
     unit_helper::Length,
-    util_types::{IECCodes, UserFields},
+    util_types::{IECCodes, PhysicalLocation, UserFields},
 };
 
 /// `Cable` represents a particular instance of a `CableType`

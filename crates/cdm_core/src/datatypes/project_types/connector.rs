@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use cdm_traits::connector;
+use crate::traits::connector;
 
 /// `Connector` is an instance of a [`ConnectorType`](super::connector_type::ConnectorType)
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]

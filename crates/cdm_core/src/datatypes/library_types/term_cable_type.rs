@@ -3,12 +3,15 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{
-    unit_helper::Length,
-    util_types::{Catalog, LineStyle},
+use crate::{
+    datatypes::{
+        library_types::Library,
+        unit_helper::Length,
+        util_types::{Catalog, LineStyle},
+    },
+    error::Error,
+    traits::connector,
 };
-
-use cdm_traits::connector;
 
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
@@ -61,10 +64,14 @@ pub struct Connector {
 }
 
 impl connector::Connector for Connector {
-    fn pin_count(&self) -> u64 {
+    fn pin_count(&self, library: &Library) -> u64 {
+        let connector_type = library
+            .connector_types
+            .get(&self.connector_type)
+            .ok_or(Error::LibraryValueNotFound(self.connector_type.clone()))?;
         #[expect(clippy::unwrap_used)]
         // allowing unwrap as I want a panic here if this application
         // is used on a 128 bit architecture
-        u64::try_from(self.connector_type.borrow().pins.len()).unwrap()
+        u64::try_from(self.connector_type.pins.len()).unwrap()
     }
 }

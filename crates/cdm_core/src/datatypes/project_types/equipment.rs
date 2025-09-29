@@ -2,10 +2,7 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{
-    internal_types::physical_location::PhysicalLocation,
-    util_types::{IECCodes, UserFields},
-};
+use crate::datatypes::util_types::{IECCodes, PhysicalLocation, UserFields};
 
 /// `Equipment` represents a particular instance of an `EquipmentType`.
 /// This is the physical unit you would hold in your hand

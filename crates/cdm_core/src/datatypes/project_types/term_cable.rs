@@ -2,10 +2,13 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{
-    project_types::Project,
-    unit_helper::Length,
-    util_types::{IECCodes, PhysicalLocation, UserFields},
+use crate::{
+    datatypes::{
+        library_types::Library,
+        unit_helper::Length,
+        util_types::{IECCodes, PhysicalLocation, UserFields},
+    },
+    error::Error,
 };
 
 /// `TermCable` represents a particular instance of a `TermCableType`.
@@ -32,12 +35,15 @@ pub struct TermCable {
 impl TermCable {
     /// length of `TermCableType`
     #[must_use]
-    pub fn len(&self, project: &Project) -> Length {
-        self.term_cable_type.borrow().actual_length.unwrap_or(
-            self.term_cable_type
-                .borrow()
-                .nominal_length
-                .unwrap_or_default(),
-        )
+    pub fn len(&self, library: &Library) -> Result<Length, Error> {
+        let term_cable_type = library
+            .term_cable_types
+            .get(&self.term_cable_type)
+            .ok_or(Error::LibraryValueNotFound(self.term_cable_type.clone()))?;
+
+        Ok(term_cable_type
+            .actual_length
+            .clone()
+            .unwrap_or(term_cable_type.nominal_length.clone().unwrap_or_default()))
     }
 }

@@ -2,10 +2,7 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{
-    internal_types::physical_location::PhysicalLocation,
-    util_types::{IECCodes, UserFields},
-};
+use crate::datatypes::util_types::{IECCodes, PhysicalLocation, UserFields};
 
 /// `TerminalStrip` represents an individual terminal strip in a project.
 ///
