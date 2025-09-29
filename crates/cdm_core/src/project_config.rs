@@ -1,7 +1,8 @@
 use std::path::PathBuf;
 
+/// Per Project configuration options
 #[derive(Debug, Default, Clone)]
-pub struct Project {
+pub struct ProjectConfiguration {
     /// Name of Project used for display and drawings
     pub project_name: String,
     /// If default libraries included with the application should

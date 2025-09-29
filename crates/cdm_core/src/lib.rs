@@ -11,9 +11,8 @@ pub mod config;
 /// It also contains functions for parsing data files
 /// and the main `Data` type
 pub mod datatypes;
-
 /// `pdf_generation` contains the functions used to generate a PDF
 /// of `Projects`
 pub mod pdf_generation;
-
-pub use cdm_macros;
+/// `project_config` contains definitions for the project specific configuration options
+pub mod project_config;

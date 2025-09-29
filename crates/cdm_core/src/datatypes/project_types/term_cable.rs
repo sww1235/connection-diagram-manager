@@ -3,9 +3,9 @@ use std::path::PathBuf;
 use serde::{Deserialize, Serialize};
 
 use crate::datatypes::{
-    internal_types::physical_location::PhysicalLocation,
+    project_types::Project,
     unit_helper::Length,
-    util_types::{IECCodes, UserFields},
+    util_types::{IECCodes, PhysicalLocation, UserFields},
 };
 
 /// `TermCable` represents a particular instance of a `TermCableType`.
@@ -32,7 +32,7 @@ pub struct TermCable {
 impl TermCable {
     /// length of `TermCableType`
     #[must_use]
-    pub fn len(&self) -> Length {
+    pub fn len(&self, project: &Project) -> Length {
         self.term_cable_type.borrow().actual_length.unwrap_or(
             self.term_cable_type
                 .borrow()
