@@ -26,8 +26,6 @@ use cdm_core::{
     },
 };
 
-use cdm_traits::merge::ComparedStruct;
-
 fn main() {
     //TODO: add config file parsing via figment
     //parse command line flags

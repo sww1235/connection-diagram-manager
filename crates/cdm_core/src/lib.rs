@@ -11,6 +11,8 @@ pub mod config;
 /// It also contains functions for parsing data files
 /// and the main `Data` type
 pub mod datatypes;
+/// contains error types for application
+pub mod error;
 /// `pdf_generation` contains the functions used to generate a PDF
 /// of `Projects`
 pub mod pdf_generation;

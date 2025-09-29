@@ -21,7 +21,6 @@ thiserror.workspace = true
 uom.workspace = true
 num-rational.workspace = true
 num-traits.workspace = true
-#dimensioned.workspace = true
 
 [lib]
 name = "paragraph_breaker"

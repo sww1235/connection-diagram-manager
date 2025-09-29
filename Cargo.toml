@@ -20,8 +20,6 @@ simple_logger = "~5"
 thiserror = "~2"
 usvg = "~0"
 lopdf = "~0"
-cdm_macros = {path = "crates/cdm_macros/", version = "~0"}
-cdm_traits = {path = "crates/cdm_traits/", version = "~0"}
 paragraph_breaker = {path = "crates/paragraph_breaker/", version = "~0"}
 pdf_helper = {path = "crates/pdf_helper/", version = "~0"}
 num-rational = { version = "~0.4", features = ["std", "serde", "num-bigint"] }
