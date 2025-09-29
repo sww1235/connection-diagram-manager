@@ -10,7 +10,7 @@ use crate::{
         util_types::{Catalog, LineStyle},
     },
     error::Error,
-    traits::connector,
+    traits,
 };
 
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
@@ -63,8 +63,8 @@ pub struct Connector {
     pub terminations: Vec<Termination>,
 }
 
-impl connector::Connector for Connector {
-    fn pin_count(&self, library: &Library) -> u64 {
+impl traits::Connector for Connector {
+    fn pin_count(&self, library: &Library) -> Result<u64, Error> {
         let connector_type = library
             .connector_types
             .get(&self.connector_type)
@@ -72,6 +72,6 @@ impl connector::Connector for Connector {
         #[expect(clippy::unwrap_used)]
         // allowing unwrap as I want a panic here if this application
         // is used on a 128 bit architecture
-        u64::try_from(self.connector_type.pins.len()).unwrap()
+        Ok(u64::try_from(connector_type.pins.len()).unwrap())
     }
 }
