@@ -1,5 +1,6 @@
 use std::fmt;
 
+//TODO: switch to using num_rational trait for this
 /// `ScalingFactor` is used to represent scaling when laying out PDF documents.
 /// It is a ratio or quotient represented as a:b or a/b.
 ///

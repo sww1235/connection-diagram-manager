@@ -9,7 +9,7 @@ use crate::datatypes::util_types::{IECCodes, PhysicalLocation, UserFields};
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Equipment {
     /// The type of equipment of the instance
-    pub equip_type: String,
+    pub equipment_type: String,
     /// The structured name of the equipment
     pub identifier: Option<String>,
     /// The particular mounting type of this instance
