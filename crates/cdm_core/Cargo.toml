@@ -32,6 +32,7 @@ pdf_helper.workspace = true
 paragraph_breaker.workspace = true
 
 [features]
+default = ["cli"]
 cli = ["clap"]
 gui = ["clap", "fltk", "fltk-theme"]
 
