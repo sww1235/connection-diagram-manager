@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 /// `Config` represents configuration options for the various cdm binary programs
 #[derive(Serialize, Deserialize, Debug)]
+#[expect(clippy::struct_excessive_bools)]
 pub struct ApplicationConfig {
     /// `default_library_locations` contains paths to search for TOML library files to read into the main
     /// [`Library`](crate::datatypes::internal_types::Library)
@@ -25,7 +26,7 @@ pub struct ApplicationConfig {
     pub default_electrical_potential_unit: String,
     /// Default Temperature Interval Unit for Display
     pub default_temperature_interval_unit: String,
-    /// use AWG instead of default_cross_sectional_area for Display
+    /// use AWG instead of `default_cross_sectional_area_unit` for Display
     pub use_awg: bool,
     /// If set, will set any default display units to USA customary units
     /// unless specifically set with other settings

@@ -18,5 +18,5 @@ pub mod error;
 pub mod pdf_generation;
 /// `project_config` contains definitions for the project specific configuration options
 pub mod project_config;
-/// Traits used in cdm_core
+/// Traits used in `cdm_core`
 pub mod traits;
