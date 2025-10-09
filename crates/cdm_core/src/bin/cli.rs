@@ -9,8 +9,10 @@
 //TODO: change datafile parsing to parse individual files, and keep track of which files, which
 //values came from.
 
-use std::io;
-use std::path::PathBuf;
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
 
 use clap::Parser;
 
@@ -19,11 +21,8 @@ use log::{debug, error, info, LevelFilter};
 use simple_logger::SimpleLogger;
 
 use cdm_core::{
-    config::Config,
-    datatypes::{
-        file_types,
-        internal_types::{Library, Project},
-    },
+    config::ApplicationConfig,
+    datatypes::{library_types::Library, project_types::Project},
 };
 
 fn main() {
@@ -58,90 +57,91 @@ fn main() {
     assert! {cli.project_directory.is_dir(),
     "Project directory specified: {} is not a directory", cli.project_directory.display()}
 
-    let config = match Config::parse_config(cli.project_directory.as_path()) {
-        Ok(config) => config,
-        Err(e) => {
-            panic! {"Failure to parse config yaml file. Error: {e}"}
+    let home_dir = std::env::home_dir();
+    let root = Path::new("/");
+    let app_config_filename = Path::new("cdm_config.toml");
+    let mut app_config_paths = Vec::new();
+    let mut app_config_string = None;
+    if let Some(home_dir) = home_dir {
+        app_config_paths.push(
+            home_dir
+                .join(".config")
+                .join("ConnectionDiagramManager")
+                .join(app_config_filename),
+        );
+        app_config_paths.push(
+            home_dir
+                .join("Library")
+                .join("Preferences")
+                .join("ConnectionDiagramManager")
+                .join(app_config_filename),
+        );
+    }
+    app_config_paths.push(
+        root.join("etc")
+            .join("ConnectionDiagramManager")
+            .join(app_config_filename),
+    );
+    app_config_paths.push(
+        root.join("usr")
+            .join("local")
+            .join("etc")
+            .join("ConnectionDiagramManager")
+            .join(app_config_filename),
+    );
+    for path in app_config_paths {
+        match fs::read_to_string(&path) {
+            Ok(data) => {
+                info!("found application configuration file at {path:?}");
+                app_config_string = Some(data);
+                break;
+            }
+            Err(err) => {
+                debug!("tried searching for application configuration file at {path:?}, but didn't find it. See {err} for details");
+            }
+        }
+    }
+
+    let config: ApplicationConfig = {
+        if let Some(app_config_string) = app_config_string {
+            match toml::from_str(&app_config_string) {
+                Ok(c) => c,
+                Err(e) => {
+                    panic! {"Failure to parse config yaml file. Error: {e}"}
+                }
+            }
+        } else {
+            ApplicationConfig::default()
         }
     };
 
     debug! {"{:#?}", config}
 
     // will be vector of DataFiles
-    let data_files = match file_types::parse_project_dir(cli.project_directory) {
-        Ok(datastore) => datastore,
-        Err(e) => {
-            //TODO: better handle errors here
-            error! {"Failure to read in project directory. Error: {e}"}
-            return;
-        }
-    };
+    //let data_files = match file_types::parse_project_dir(cli.project_directory) {
+    //    Ok(datastore) => datastore,
+    //    Err(e) => {
+    //        //TODO: better handle errors here
+    //        error! {"Failure to read in project directory. Error: {e}"}
+    //        return;
+    //    }
+    //};
 
-    let mut library = Library::new();
-    let mut project = Project::new();
-    //TODO: handle errors here better
-    library
-        .from_datafiles(data_files.clone(), merge_prompt_fn)
-        .unwrap();
+    //let mut library = Library::new();
+    //let mut project = Project::new();
+    ////TODO: handle errors here better
+    //library
+    //    .from_datafiles(data_files.clone(), merge_prompt_fn)
+    //    .unwrap();
 
-    project
-        .from_datafiles(data_files, &library, merge_prompt_fn)
-        .unwrap();
+    //project
+    //    .from_datafiles(data_files, &library, merge_prompt_fn)
+    //    .unwrap();
 
-    debug! {"{library:?}"};
-    debug! {"{project:?}"};
+    //debug! {"{library:?}"};
+    //debug! {"{project:?}"};
 
     if cli.export_pdf {}
-}
-fn merge_prompt_fn(input: ComparedStruct) -> ComparedStruct {
-    let mut output = input;
-    info!("prompt_function");
-    println!("Now merging struct: {}", output.struct_name);
-
-    // partial_empty checked in merge_prompt()
-    for field in &mut output.fields {
-        if field.equality {
-            continue;
-        }
-        println!("Self String: {}", field.self_string);
-        println!("Other String: {}", field.other_string);
-
-        //TODO: fix this prompt text
-        let prompt_text = "Do you want to replace the contents of self with other? (y/n)";
-        if prompt_input_yes_no(prompt_text, false) {
-            // use other
-            field.use_other = true;
-        }
-    }
-
-    output
-}
-
-fn prompt_input_yes_no(prompt_text: &str, default: bool) -> bool {
-    let mut num_chars: Option<usize> = None;
-    let mut output = default;
-
-    while num_chars.is_none() {
-        let mut prompt_input = String::new();
-        println!("{prompt_text}");
-        let n = io::stdin().read_line(&mut prompt_input).unwrap();
-        match prompt_input.trim() {
-            "N" | "n" => {
-                num_chars = Some(n);
-                output = false;
-            }
-            "Y" | "y" => {
-                num_chars = Some(n);
-                output = true;
-            }
-            // wrong answer
-            _ => {
-                println!("Answer y or n");
-            }
-        }
-        println!("{num_chars:?}");
-    }
-    output
 }
 
 /// `Cli` holds the defintions for command line arguments used in this binary
