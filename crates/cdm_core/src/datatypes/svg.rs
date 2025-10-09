@@ -1,5 +1,10 @@
-use serde::{Deserialize, Serialize};
-use usvg::Tree;
+use std::fmt;
+
+use serde::{
+    de::{self, Deserialize, Deserializer, Visitor},
+    ser::{Serialize, Serializer},
+};
+use usvg::{Options as ParseOptions, Tree, WriteOptions};
 
 //TODO: implement svg validation rules here
 //
@@ -8,12 +13,82 @@ use usvg::Tree;
 //TODO: provide a method of specifying the units of the SVG file
 
 /// Svg represents a full SVG image
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Svg(pub Tree);
+#[derive(Debug, Clone)]
+pub struct Svg(Tree);
 
-fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> 
-where S: Serializer
-{
-    serializer.serialize_string(*self.value
+impl Svg {
+    #[must_use]
+    /// Standard `[usvg::WriteOptions]` used when writing SVGs to strings
+    pub fn write_options() -> WriteOptions {
+        WriteOptions::default()
+    }
+    #[must_use]
+    /// Standard `[usvg::Options]` used when parsing SVG strings
+    pub fn parse_options() -> ParseOptions<'static> {
+        ParseOptions::default()
+    }
 }
 
+impl Serialize for Svg {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let write_options = WriteOptions::default();
+        serializer.serialize_str(self.0.to_string(&write_options).as_str())
+    }
+}
+
+impl<'de> Deserialize<'de> for Svg {
+    fn deserialize<D>(deserializer: D) -> Result<Svg, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_str(SvgVisitor)
+    }
+}
+
+/// Visitor struct for Deserializer trait
+struct SvgVisitor;
+
+impl<'de> Visitor<'de> for SvgVisitor {
+    type Value = Svg;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("a SVG in string format")
+    }
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: de::Error,
+    {
+        let options = ParseOptions::default();
+        let tree = match Tree::from_str(value, &options) {
+            Ok(tree) => tree,
+            Err(err) => return Err(E::custom(format!("SVG parsing error {err}"))),
+        };
+
+        Ok(Svg(tree))
+    }
+}
+
+impl Default for Svg {
+    fn default() -> Self {
+        let default_svg_string = r#"
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="120">
+</svg>
+        "#;
+
+        let options = ParseOptions::default();
+        // allowing unwrap here because a known SVG string should never fail to parse
+        #[expect(clippy::unwrap_used)]
+        Svg(Tree::from_str(default_svg_string, &options).unwrap())
+    }
+}
+
+//TODO: Decide if it makes sense to keep this or not.
+impl PartialEq for Svg {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.to_string(&Self::write_options()) == other.0.to_string(&Self::write_options())
+    }
+}
