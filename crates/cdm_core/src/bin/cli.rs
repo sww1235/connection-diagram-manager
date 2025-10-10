@@ -14,16 +14,16 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use clap::Parser;
-
-use log::{debug, info, LevelFilter};
-
-use simple_logger::SimpleLogger;
-
 use cdm_core::{
     config::ApplicationConfig,
-    datatypes::{library_types::Library, project_types::Project},
+    datatypes::{
+        library_types::Library,
+        project_types::{self, Project},
+    },
 };
+use clap::Parser;
+use log::{LevelFilter, debug, info};
+use simple_logger::SimpleLogger;
 
 fn main() {
     //TODO: add config file parsing via figment
@@ -77,11 +77,7 @@ fn main() {
                 .join(app_config_filename),
         );
     }
-    app_config_paths.push(
-        root.join("etc")
-            .join("ConnectionDiagramManager")
-            .join(app_config_filename),
-    );
+    app_config_paths.push(root.join("etc").join("ConnectionDiagramManager").join(app_config_filename));
     app_config_paths.push(
         root.join("usr")
             .join("local")
@@ -97,7 +93,10 @@ fn main() {
                 break;
             }
             Err(err) => {
-                debug!("tried searching for application configuration file at {}, but didn't find it. See {err} for details", path.display());
+                debug!(
+                    "tried searching for application configuration file at {}, but didn't find it. See {err} for details",
+                    path.display()
+                );
             }
         }
     }
@@ -159,7 +158,8 @@ struct Cli {
     /// Postgres DSN (optional)
     #[arg(short, long)]
     post_gres_dsn: Option<String>,
-    /// Only shows log messages with <Error> level. Use twice to completely eliminate output. Takes precidence over verbose
+    /// Only shows log messages with <Error> level. Use twice to completely eliminate output. Takes
+    /// precidence over verbose
     #[arg(short, long, action = clap::ArgAction::Count)]
     quiet: u8,
     /// Do not use default libraries included with program

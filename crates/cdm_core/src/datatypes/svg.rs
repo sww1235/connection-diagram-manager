@@ -31,9 +31,7 @@ impl Svg {
 
 impl Serialize for Svg {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
+    where S: Serializer {
         let write_options = WriteOptions::default();
         serializer.serialize_str(self.0.to_string(&write_options).as_str())
     }
@@ -41,9 +39,7 @@ impl Serialize for Svg {
 
 impl<'de> Deserialize<'de> for Svg {
     fn deserialize<D>(deserializer: D) -> Result<Svg, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
+    where D: Deserializer<'de> {
         deserializer.deserialize_str(SvgVisitor)
     }
 }
@@ -58,9 +54,7 @@ impl Visitor<'_> for SvgVisitor {
         formatter.write_str("a SVG in string format")
     }
     fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
-    where
-        E: de::Error,
-    {
+    where E: de::Error {
         let options = ParseOptions::default();
         let tree = match Tree::from_str(value, &options) {
             Ok(tree) => tree,

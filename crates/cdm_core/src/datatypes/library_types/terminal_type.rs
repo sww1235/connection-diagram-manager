@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -225,8 +224,8 @@ pub struct TerminalAccessoryType {
 /// `TerminalStripAccessoryType` represents Terminal strip accessories
 ///
 /// Terminal strip accessories are things like end plates or spacers that are incorporated into a
-/// `terminal_strip` linearly and interface with terminals This does not include things like DIN rail
-/// stops.
+/// `terminal_strip` linearly and interface with terminals This does not include things like DIN
+/// rail stops.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct TerminalStripAccessoryType {
     /// Catalog information

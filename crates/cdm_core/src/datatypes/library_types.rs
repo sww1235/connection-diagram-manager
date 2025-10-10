@@ -43,11 +43,13 @@ pub struct Library {
     pub term_cable_types: HashMap<String, term_cable_type::TermCableType>,
     /// contains all terminal types read in from file, and/or added in via program logic
     pub terminal_types: HashMap<String, terminal_type::TerminalType>,
-    /// contains all terminal strip jumper types read in from file, and/or added in via program logic
+    /// contains all terminal strip jumper types read in from file, and/or added in via program
+    /// logic
     pub terminal_strip_jumper_types: HashMap<String, terminal_type::TerminalStripJumperType>,
     /// contains all terminal accessory types read in from file, and/or added in via program logic
     pub terminal_accessory_types: HashMap<String, terminal_type::TerminalAccessoryType>,
-    /// contains all terminal strip accessory types read in from file, and/or added in via program logic
+    /// contains all terminal strip accessory types read in from file, and/or added in via program
+    /// logic
     pub terminal_strip_accessory_types: HashMap<String, terminal_type::TerminalStripAccessoryType>,
     /// contains all wire types read in from file, and/or added in via program logic
     pub wire_types: HashMap<String, wire_type::WireType>,

@@ -7,6 +7,13 @@
 
 use std::path::PathBuf;
 
+use cdm_core::{
+    config::Config,
+    datatypes::{
+        file_types,
+        internal_types::{Library, Project},
+    },
+};
 // These are used in the testing logic
 //use std::cell::RefCell;
 //use std::collections::HashMap;
@@ -22,18 +29,8 @@ use std::path::PathBuf;
 
 // These are used in the main program logic
 use clap::Parser;
-
-use log::{debug, error, LevelFilter};
-
+use log::{LevelFilter, debug, error};
 use simple_logger::SimpleLogger;
-
-use cdm_core::{
-    config::Config,
-    datatypes::{
-        file_types,
-        internal_types::{Library, Project},
-    },
-};
 
 //https://stackoverflow.com/questions/66799905/how-to-make-some-structs-fields-mandatory-to-fill-and-others-optional-in-rust
 fn main() {
@@ -334,7 +331,8 @@ struct Cli {
     /// PostGres DSN (optional)
     #[arg(short, long)]
     post_gres_dsn: Option<String>,
-    /// Only shows log messages with <Error> level. Use twice to completely eliminate output. Takes precidence over verbose
+    /// Only shows log messages with <Error> level. Use twice to completely eliminate output. Takes
+    /// precidence over verbose
     #[arg(short, long, action = clap::ArgAction::Count)]
     quiet: u8,
     /// Do not use default libraries included with program

@@ -1,12 +1,11 @@
 //https://github.com/jaroslov/knuth-plass-thoughts/blob/master/plass.md
 
+use log::trace;
 use num_rational::Rational64;
 use uom::{
     num::Zero,
     si::{length::point_printers, rational64::Length},
 };
-
-use log::trace;
 
 #[derive(Debug, Default)]
 /// `ParagraphWord` represents one word in a paragraph
@@ -75,8 +74,7 @@ pub fn to_lines(
     //https://stackoverflow.com/a/68387730/3342767
     let em_width = Length::new::<point_printers>(Rational64::from_integer(font_size.into()));
 
-    let space_width = Rational64::from_integer(space_buffer.glyph_positions()[0].x_advance.into())
-        * em_width
+    let space_width = Rational64::from_integer(space_buffer.glyph_positions()[0].x_advance.into()) * em_width
         / Rational64::from_integer(units_per_em.into());
 
     let mut words = text_to_words(text)?;
@@ -120,8 +118,8 @@ fn line_break_internal(
     let last = words[current_word_index].last.unwrap_or(0);
     // current line length is length of first word.
     for glyph in &glyph_positions[first..last] {
-        line_length += Rational64::from_integer(glyph.x_advance.into()) * em_width
-            / Rational64::from_integer(units_per_em.into());
+        line_length +=
+            Rational64::from_integer(glyph.x_advance.into()) * em_width / Rational64::from_integer(units_per_em.into());
     }
     // the best score is current line length, squared
     let mut best_score = ideal_width - line_length;
@@ -138,8 +136,8 @@ fn line_break_internal(
         let first = words[next_word_index].first.unwrap_or(0);
         let last = words[next_word_index].last.unwrap_or(0);
         for glyph in &glyph_positions[first..last] {
-            word_width += Rational64::from_integer(glyph.x_advance.into()) * em_width
-                / Rational64::from_integer(units_per_em.into());
+            word_width +=
+                Rational64::from_integer(glyph.x_advance.into()) * em_width / Rational64::from_integer(units_per_em.into());
         }
         // if the new word will make the line too long, stop
         if (line_length + word_width) >= max_width {
@@ -196,24 +194,12 @@ fn text_to_words(text: &str) -> Result<Vec<ParagraphWord>, Error> {
 
     while index < text.len() {
         // find next (first) non whitespace char index in string
-        while index < text.len()
-            && text
-                .chars()
-                .nth(index)
-                .ok_or(Error::CharacterNotFound)?
-                .is_whitespace()
-        {
+        while index < text.len() && text.chars().nth(index).ok_or(Error::CharacterNotFound)?.is_whitespace() {
             index += 1;
         }
         let start = index;
         // find ending index of word
-        while index < text.len()
-            && !text
-                .chars()
-                .nth(index)
-                .ok_or(Error::CharacterNotFound)?
-                .is_whitespace()
-        {
+        while index < text.len() && !text.chars().nth(index).ok_or(Error::CharacterNotFound)?.is_whitespace() {
             index += 1;
         }
         if start < index {
@@ -265,8 +251,7 @@ fn to_lines_internal(words: &[ParagraphWord], text: &str) -> Vec<String> {
                     line += " ";
                 }
                 //TODO: add in check with glyph_info to see if it doesn't like breaking there.
-                line += &text[words[internal_index].first.unwrap_or(0)
-                    ..words[internal_index].last.unwrap_or(0)];
+                line += &text[words[internal_index].first.unwrap_or(0)..words[internal_index].last.unwrap_or(0)];
             }
             output.push(line);
             index = words[index].next.unwrap_or(0);
@@ -300,8 +285,8 @@ fn greedy_break(
         let first = words[internal_index].first.unwrap_or(0);
         let last = words[internal_index].last.unwrap_or(0);
         for glyph in &glyph_positions[first..last] {
-            word_width += Rational64::from_integer(glyph.x_advance.into()) * em_width
-                / Rational64::from_integer(units_per_em.into());
+            word_width +=
+                Rational64::from_integer(glyph.x_advance.into()) * em_width / Rational64::from_integer(units_per_em.into());
         }
         if (line_length + word_width + space_width) >= ideal_width {
             words[line_next].next = Some(internal_index - 1);

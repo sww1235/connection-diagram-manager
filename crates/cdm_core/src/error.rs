@@ -1,7 +1,6 @@
-use thiserror::Error;
-
 use paragraph_breaker::Error as ParagraphError;
 use pdf_helper::Error as PDFError;
+use thiserror::Error;
 use usvg::Error as USVGError;
 
 //TODO: flesh this out more
@@ -15,8 +14,8 @@ pub enum Error {
     /// This error is used when a lookup is made in the project and the ID is not found
     #[error("The ID {0} not found in project")]
     ProjectValueNotFound(String),
-    /// This error is used when optional data is missing from library data when required for a certain operation in
-    /// the program.
+    /// This error is used when optional data is missing from library data when required for a
+    /// certain operation in the program.
     #[error("The Library entry with ID: {id} requires the following data to peform the operation requested: {data_missing}")]
     LibraryDataMissing {
         /// The ID of the the `Library` entry
@@ -24,8 +23,8 @@ pub enum Error {
         /// What data was missing from the `Library` entry
         data_missing: String,
     },
-    /// This error is used when optional data is missing from project data when required for a certain operation in
-    /// the program.
+    /// This error is used when optional data is missing from project data when required for a
+    /// certain operation in the program.
     #[error("The Project entry with ID: {id} requires the following data to peform the operation requested: {data_missing}")]
     ProjectDataMissing {
         /// The ID of the the `Project` entry

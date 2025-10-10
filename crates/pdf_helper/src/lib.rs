@@ -5,14 +5,21 @@ pub mod paper;
 /// `scale` is a ratio for scaling objects during PDF rendering
 pub mod scale;
 
-use std::path::{Path, PathBuf};
-use std::str;
+use std::{
+    path::{Path, PathBuf},
+    str,
+};
 
 use log::warn;
-use lopdf::content::{Content, Operation};
-use lopdf::dictionary;
-use lopdf::{Document, Object, Stream};
+use lopdf::{
+    Document,
+    Object,
+    Stream,
+    content::{Content, Operation},
+    dictionary,
+};
 use num_rational::Rational64;
+use paragraph_breaker::Error as ParagraphError;
 use thiserror::Error;
 use uom::{
     num::{ToPrimitive, Zero},
@@ -22,8 +29,6 @@ use uom::{
     },
 };
 use usvg::Error as USVGError;
-
-use paragraph_breaker::Error as ParagraphError;
 
 /// `PDFDocument` is a helper type to properly generate PDFs
 /// It allows for easier tracking of default page size, available fonts
@@ -113,11 +118,11 @@ impl PDFPage {
     ///
     /// * `text`: the text that will be added to the pdf page
     /// * `font`: a `PDFFont` object representing a font defined for use in a PDF document
-    /// * `font_size`: Font size specified in points. This is used internally as a multiple
-    ///   of the standard PDF user space unit size 1/72 inch
+    /// * `font_size`: Font size specified in points. This is used internally as a multiple of the
+    ///   standard PDF user space unit size 1/72 inch
     /// * `line_spacing`: text line spacing in multiples of line height
-    /// * `text width`: An optional parameter that defines the width of the text element. If
-    ///   `None`, the width of the page minus the margins is used.
+    /// * `text width`: An optional parameter that defines the width of the text element. If `None`,
+    ///   the width of the page minus the margins is used.
     /// * `x_pos`: horizontal starting position of text insertion, with 0 on left side of page
     ///   inside the margin
     /// * `y_pos`: vertical starting position of text insertion, with 0 on the bottom side of page,
@@ -141,25 +146,14 @@ impl PDFPage {
         text_render_mode: &PDFTextRenderMode,
     ) -> Result<(), Error> {
         use paragraph_breaker::to_lines;
-        let (lines, glyphs) = to_lines(
-            &text,
-            &font.font_face,
-            font_size,
-            text_width,
-            text_direction,
-            text_language,
-        )?;
+        let (lines, glyphs) = to_lines(&text, &font.font_face, font_size, text_width, text_direction, text_language)?;
 
         let num_lines = lines.len();
 
         // then check to see if text starts inside page boundaries.
         let current_page_size = self.page_size.size();
 
-        if x_pos > current_page_size.0
-            || x_pos < Length::zero()
-            || y_pos > current_page_size.1
-            || y_pos < Length::zero()
-        {
+        if x_pos > current_page_size.0 || x_pos < Length::zero() || y_pos > current_page_size.1 || y_pos < Length::zero() {
             return Err(Error::Other(format!(
                 concat!(
                     "Position of text X: {}, Y: {}, ",
@@ -197,10 +191,8 @@ impl PDFPage {
         // An enum that represents the basic object types in PDF documents.
         //
         // font_id_str is the font reference string in the resources dictionary
-        self.operations.push(Operation::new(
-            "Tf",
-            vec![font.font_id_str.clone().into(), font_size.into()],
-        ));
+        self.operations
+            .push(Operation::new("Tf", vec![font.font_id_str.clone().into(), font_size.into()]));
         // Td adjusts the translation components of the text matrix. When used for the first
         // time after BT, it sets the initial text position on the page.
         // Note: PDF documents have Y=0 at the bottom. Thus 600 to print text near the top.
@@ -216,9 +208,7 @@ impl PDFPage {
                     } else {
                         x.get::<point_printers>()
                             .to_f64()
-                            .ok_or(Error::Other(
-                                "Converting from Rational64 to f64 failed".to_string(),
-                            ))?
+                            .ok_or(Error::Other("Converting from Rational64 to f64 failed".to_string()))?
                             .into()
                     }
                 },
@@ -228,9 +218,7 @@ impl PDFPage {
                     } else {
                         y.get::<point_printers>()
                             .to_f64()
-                            .ok_or(Error::Other(
-                                "Converting from Rational64 to f64 failed".to_string(),
-                            ))?
+                            .ok_or(Error::Other("Converting from Rational64 to f64 failed".to_string()))?
                             .into()
                     }
                 },
@@ -243,26 +231,21 @@ impl PDFPage {
 
         if num_lines == 1 {
             // Tj prints a string literal to the page.
-            self.operations
-                .push(Operation::new("Tj", vec![Object::string_literal(text)]));
+            self.operations.push(Operation::new("Tj", vec![Object::string_literal(text)]));
         } else {
             // set leading / line gap
             self.operations
                 .push(Operation::new("TL", vec![font.font_face.line_gap().into()]));
             // push first line
-            self.operations.push(Operation::new(
-                "Tj",
-                vec![Object::string_literal(lines[1].as_str())],
-            ));
+            self.operations
+                .push(Operation::new("Tj", vec![Object::string_literal(lines[1].as_str())]));
             // push remaining lines
             for line in &lines[2..] {
                 // `'` operation moves to next line using value specified by TL for spacing
                 // and shows a line of text
                 // TODO: add line spacing here
-                self.operations.push(Operation::new(
-                    "'",
-                    vec![Object::string_literal(line.as_str())],
-                ));
+                self.operations
+                    .push(Operation::new("'", vec![Object::string_literal(line.as_str())]));
             }
         }
         // restore/pop old graphics state
@@ -283,11 +266,11 @@ impl PDFPage {
     /// * `page_index`: The zero indexed page number that the text should be inserted into.
     /// * `text`: the text that will be added to the pdf page
     /// * `font`: a `PDFFont` object representing a font defined for use in a PDF document
-    /// * `font_size`: Font size specified in points. This is used internally as a multiple
-    ///   of the standard PDF user space unit size 1/72 inch
+    /// * `font_size`: Font size specified in points. This is used internally as a multiple of the
+    ///   standard PDF user space unit size 1/72 inch
     /// * `line_spacing`: text line spacing in multiples of line height
-    /// * `text width`: An optional parameter that defines the width of the text element. If
-    ///   `None`, the width of the page minus the margins is used.
+    /// * `text width`: An optional parameter that defines the width of the text element. If `None`,
+    ///   the width of the page minus the margins is used.
     /// * `x_pos`: horizontal starting position of text insertion, with 0 on left side of page
     /// * `y_pos`: vertical starting position of text insertion, with 0 on the bottom side of page
     ///
@@ -335,8 +318,8 @@ fn loop_nodes(
 }
 
 /// `convert_path` convets an SVG path element into a vector of PDF operations
-/// `scale` parameter - optional - specifies the scale of the rendered objects relative to their full size,
-/// represented as `a`:`b`.
+/// `scale` parameter - optional - specifies the scale of the rendered objects relative to their
+/// full size, represented as `a`:`b`.
 /// For example, 1:2 would double the size of the object on the page, relative to its actual size,
 /// and 2:1 would half the size of the object. This is equal scaling in both X and Y direction.
 fn convert_path(
@@ -366,12 +349,12 @@ fn convert_path(
                 last_point = scaled_p;
                 // begin a new path (subpath in pdf language) by moving the current point to
                 // coordinates (x,y)
-                let x = Rational64::approximate_float(scaled_p.x).ok_or(Error::Other(
-                    "Converting from Rational64 to f64 failed".to_string(),
-                ))? * x_pos;
-                let y = Rational64::approximate_float(scaled_p.y).ok_or(Error::Other(
-                    "Converting from Rational64 to f64 failed".to_string(),
-                ))? * y_pos;
+                let x = Rational64::approximate_float(scaled_p.x)
+                    .ok_or(Error::Other("Converting from Rational64 to f64 failed".to_string()))?
+                    * x_pos;
+                let y = Rational64::approximate_float(scaled_p.y)
+                    .ok_or(Error::Other("Converting from Rational64 to f64 failed".to_string()))?
+                    * y_pos;
                 new_operations.push(Operation::new(
                     "m",
                     vec![
@@ -381,9 +364,7 @@ fn convert_path(
                             } else {
                                 x.get::<point_printers>()
                                     .to_f64()
-                                    .ok_or(Error::Other(
-                                        "Converting from Rational64 to f64 failed".to_string(),
-                                    ))?
+                                    .ok_or(Error::Other("Converting from Rational64 to f64 failed".to_string()))?
                                     .into()
                             }
                         },
@@ -393,9 +374,7 @@ fn convert_path(
                             } else {
                                 y.get::<point_printers>()
                                     .to_f64()
-                                    .ok_or(Error::Other(
-                                        "Converting from Rational64 to f64 failed".to_string(),
-                                    ))?
+                                    .ok_or(Error::Other("Converting from Rational64 to f64 failed".to_string()))?
                                     .into()
                             }
                         },
@@ -408,10 +387,7 @@ fn convert_path(
                 scaled_p.y *= int_scale;
                 last_point = scaled_p;
                 // append a straight line segment from current point to the point (x,y).
-                new_operations.push(Operation::new(
-                    "l",
-                    vec![scaled_p.x.into(), scaled_p.y.into()],
-                ));
+                new_operations.push(Operation::new("l", vec![scaled_p.x.into(), scaled_p.y.into()]));
             }
             // https://web.archive.org/web/20240625010856/https://www.reddit.com/r/AskComputerScience/comments/x0rrd2/does_applying_a_transformation_to_the_control/?rdt=60310
             // Scaling control points is ok, because the control points define the curve
@@ -508,9 +484,7 @@ fn convert_image(
     match &image.kind() {
         ImageKind::JPEG(_) | ImageKind::PNG(_) | ImageKind::GIF(_) | ImageKind::WEBP(_) => {
             // only vector graphic elements allowed
-            Err(Error::Other(
-                "svg should not contain images or image tags".to_string(),
-            ))
+            Err(Error::Other("svg should not contain images or image tags".to_string()))
         }
         ImageKind::SVG(tree) => loop_nodes(tree.root(), x_pos, y_pos, scale),
     }
@@ -529,10 +503,7 @@ impl<'a> PDFDocument<'a> {
     /// # Errors
     ///
     /// Will error if loading configuration fonts fails
-    pub fn new(
-        default_page_size: paper::PaperSize,
-        font_paths: Vec<PathBuf>,
-    ) -> Result<Self, Error> {
+    pub fn new(default_page_size: paper::PaperSize, font_paths: Vec<PathBuf>) -> Result<Self, Error> {
         let mut output = Self {
             default_page_size,
             available_fonts: Vec::new(),
@@ -559,11 +530,7 @@ impl<'a> PDFDocument<'a> {
     /// # Errors
     ///
     /// Will produce errors if reading font data fails, or if a font fails to parse
-    pub fn load_ttf_font(
-        &mut self,
-        font_file: PathBuf,
-        font_index: Option<u32>,
-    ) -> Result<(), Error> {
+    pub fn load_ttf_font(&mut self, font_file: PathBuf, font_index: Option<u32>) -> Result<(), Error> {
         use rustybuzz::Face;
 
         let font_data = std::fs::read(font_file)?;
@@ -571,8 +538,8 @@ impl<'a> PDFDocument<'a> {
         //TODO: maybe error out if font_file is a collection
         let face_index = font_index.unwrap_or(0);
 
-        let font_face = Face::from_slice(font_data_owned, face_index)
-            .ok_or(Error::FontLoading("font failed to parse".to_string()))?;
+        let font_face =
+            Face::from_slice(font_data_owned, face_index).ok_or(Error::FontLoading("font failed to parse".to_string()))?;
 
         // 0 indexed, 4 is the table row that contains the full name of the font
         // https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6name.html
@@ -607,9 +574,7 @@ impl<'a> PDFDocument<'a> {
     /// Will error if fonts are not specified in config file, or if a font fails to load.
     pub fn load_cfg_fonts(&mut self, font_paths: Vec<PathBuf>) -> Result<(), Error> {
         if font_paths.is_empty() {
-            return Err(Error::FontLoading(
-                "No Fonts specified in configuration file".to_string(),
-            ));
+            return Err(Error::FontLoading("No Fonts specified in configuration file".to_string()));
         }
         for path in font_paths {
             // load default font_index
@@ -621,12 +586,7 @@ impl<'a> PDFDocument<'a> {
     /// `insert_page` inserts an empty `PDFPage` into self.pages vector
     /// at the specified page index which is zero indexed.
     /// This is a wrapper around vec.insert() so it follows the same rules.
-    pub fn insert_page(
-        &mut self,
-        page_index: usize,
-        page_size: Option<paper::PaperSize>,
-        margins: Margins,
-    ) {
+    pub fn insert_page(&mut self, page_index: usize, page_size: Option<paper::PaperSize>, margins: Margins) {
         self.pages.insert(
             page_index,
             PDFPage {
@@ -664,12 +624,7 @@ impl<'a> PDFDocument<'a> {
     ///
     /// Saving the file can error with [`std::io`] errors
     #[expect(clippy::too_many_lines)]
-    pub fn write(
-        &mut self,
-        out_path: &Path,
-        file_name: &Path,
-        compress: bool,
-    ) -> Result<(), Error> {
+    pub fn write(&mut self, out_path: &Path, file_name: &Path, compress: bool) -> Result<(), Error> {
         let pdf_version = "1.7";
         let mut doc = Document::with_version(pdf_version);
 

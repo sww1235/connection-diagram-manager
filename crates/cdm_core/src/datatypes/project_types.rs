@@ -23,7 +23,7 @@ pub mod wire;
 /// `connection` represents a connection between two different elements
 pub mod connection;
 
-use std::collections::HashMap;
+use std::{collections::HashMap, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 

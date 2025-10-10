@@ -4,8 +4,7 @@
 //
 // References: <https://stackoverflow.com/a/2157012/3342767>
 
-use std::cell::RefCell;
-use std::rc::Rc;
+use std::{cell::RefCell, rc::Rc};
 
 /// `Graph` is a node-centric representation of a graph
 ///
@@ -68,11 +67,7 @@ impl Graph {
     }
 
     /// Recursive inner function in depth first search algorithm
-    fn depth_first_search_inner(
-        &self,
-        node: Rc<RefCell<Node>>,
-        visited_list: &mut Vec<Rc<RefCell<Node>>>,
-    ) {
+    fn depth_first_search_inner(&self, node: Rc<RefCell<Node>>, visited_list: &mut Vec<Rc<RefCell<Node>>>) {
         visited_list.push(Rc::clone(&node));
         for edge in &node.borrow().edges {
             if !visited_list.contains(&edge.destination) {
@@ -95,13 +90,7 @@ impl Node {
     }
 
     /// add an edge to a node
-    pub fn add_edge(
-        &mut self,
-        node: Rc<RefCell<Node>>,
-        id: &str,
-        directed: bool,
-        weight: Option<u64>,
-    ) {
+    pub fn add_edge(&mut self, node: Rc<RefCell<Node>>, id: &str, directed: bool, weight: Option<u64>) {
         self.edges.push(Edge {
             id: id.to_string(),
             destination: node,

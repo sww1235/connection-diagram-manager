@@ -2,13 +2,12 @@ use std::path::PathBuf;
 
 use log::{trace, warn};
 use num_rational::Rational64;
-
-use pdf_helper::{paper::PaperSize, scale::ScalingFactor, Margins, PDFDocument, PDFPage};
+use pdf_helper::{Margins, PDFDocument, PDFPage, paper::PaperSize, scale::ScalingFactor};
 
 use crate::{
     datatypes::{
         library_types::Library,
-        project_types::{enclosure::Enclosure, Project},
+        project_types::{Project, enclosure::Enclosure},
     },
     error::{Error, PDFGenerationError},
 };
@@ -38,9 +37,8 @@ pub fn pdf_all_the_things(project: &Project, library: &Library, page_size: Paper
 /// * `page_size` - the target page size of the PDF file
 /// * `margins` - the margin sizes of the PDF page
 /// * `scale` - optional - specifies the scale of the rendered objects relative to their full size,
-///   represented as a:b.
-///   For example, 1:2 would double the size of the object on the page, relative to its actual size,
-///   and 2:1 would half the size of the object
+///   represented as a:b. For example, 1:2 would double the size of the object on the page, relative
+///   to its actual size, and 2:1 would half the size of the object
 ///
 /// # Errors
 ///
@@ -68,9 +66,9 @@ pub fn pdf_one_enclosure(
 /// * `library` - the `Library` that contains reference data for this project
 /// * `enclosure` - the `Enclosure` that will be rendered as a PDF
 /// * `scale` - optional - specifies the scale of the rendered objects relative to their full size,
-///   represented as `a`:`b`.
-///   For example, 1:2 would double the size of the object on the page, relative to its actual size,
-///   and 2:1 would half the size of the object. This is equal scaling in both X and Y direction.
+///   represented as `a`:`b`. For example, 1:2 would double the size of the object on the page,
+///   relative to its actual size, and 2:1 would half the size of the object. This is equal scaling
+///   in both X and Y direction.
 ///
 /// # Errors
 ///
@@ -90,51 +88,39 @@ pub fn render_enclosure(
     // layout all equipment in location
 
     if project.equipment.is_empty() {
-        return Err(
-            PDFGenerationError::PDFCreationError("no equipment in location".to_string()).into(),
-        );
+        return Err(PDFGenerationError::PDFCreationError("no equipment in location".to_string()).into());
     }
     let page_width = pdf_page.page_size.size().0;
     let page_height = pdf_page.page_size.size().1;
     #[expect(clippy::expect_used)]
-    let enclosure_id = project.enclosures.iter().find_map(|(key, val)| (val == enclosure).then_some(key)).expect("Enclosure ID not found in hashmap when searching by value. Something went seriously wrong.");
+    let enclosure_id = project
+        .enclosures
+        .iter()
+        .find_map(|(key, val)| (val == enclosure).then_some(key))
+        .expect("Enclosure ID not found in hashmap when searching by value. Something went seriously wrong.");
     let (enclosure_type_id, enclosure_type) = library
         .enclosure_types
         .get_key_value(&enclosure.enclosure_type)
-        .ok_or(Error::LibraryValueNotFound(
-            enclosure.enclosure_type.clone(),
-        ))?;
-    let enclosure_type_dimensions =
-        enclosure_type
-            .dimensions
-            .clone()
-            .ok_or(Error::LibraryDataMissing {
-                id: enclosure_type_id.clone(),
-                data_missing: "dimensions".to_owned(),
-            })?;
+        .ok_or(Error::LibraryValueNotFound(enclosure.enclosure_type.clone()))?;
+    let enclosure_type_dimensions = enclosure_type.dimensions.clone().ok_or(Error::LibraryDataMissing {
+        id: enclosure_type_id.clone(),
+        data_missing: "dimensions".to_owned(),
+    })?;
     // check if location will fit within page at 1:1 scale
     #[expect(clippy::arithmetic_side_effects)]
     let enclosure_default_scale_fit = {
-        enclosure_type_dimensions.width.value
-            < (page_width - pdf_page.margins.left - pdf_page.margins.right)
-            && enclosure_type_dimensions.height.value
-                < (page_height - pdf_page.margins.top - pdf_page.margins.bottom)
+        enclosure_type_dimensions.width.value < (page_width - pdf_page.margins.left - pdf_page.margins.right)
+            && enclosure_type_dimensions.height.value < (page_height - pdf_page.margins.top - pdf_page.margins.bottom)
     };
 
     // check if location will fit on page at specified scale
     #[expect(clippy::arithmetic_side_effects)]
     let enclosure_scale_fit = {
         (enclosure_type_dimensions.width.value
-            * Rational64::new(
-                scale.unwrap_or_default().a.into(),
-                scale.unwrap_or_default().b.into(),
-            ))
+            * Rational64::new(scale.unwrap_or_default().a.into(), scale.unwrap_or_default().b.into()))
             < (page_width - pdf_page.margins.left - pdf_page.margins.right)
             && (enclosure_type_dimensions.height.value
-                * Rational64::new(
-                    scale.unwrap_or_default().a.into(),
-                    scale.unwrap_or_default().b.into(),
-                ))
+                * Rational64::new(scale.unwrap_or_default().a.into(), scale.unwrap_or_default().b.into()))
                 < (page_height - pdf_page.margins.top - pdf_page.margins.bottom)
     };
 
@@ -143,10 +129,7 @@ pub fn render_enclosure(
             warn!("location fits within page at 1:1 scale. Scale does not need to be specified");
         }
     } else if enclosure_scale_fit {
-        trace!(
-            "location fits within page at {} scale",
-            scale.unwrap_or_default()
-        );
+        trace!("location fits within page at {} scale", scale.unwrap_or_default());
     } else {
         return Err(PDFGenerationError::LayoutError(format!(
             "Enclosure {} did not fit on Page Size {} at scale: {}",
@@ -167,9 +150,7 @@ pub fn render_enclosure(
             let (equipment_type_id, equipment_type) = library
                 .equipment_types
                 .get_key_value(&equipment.equipment_type)
-                .ok_or(Error::LibraryValueNotFound(
-                    equipment.equipment_type.clone(),
-                ))?;
+                .ok_or(Error::LibraryValueNotFound(equipment.equipment_type.clone()))?;
             //TODO: fix this
             //let svg_text = equipment_type.visual_rep();
             //let x = equipment.mount_point.x;

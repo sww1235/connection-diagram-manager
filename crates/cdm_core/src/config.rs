@@ -6,8 +6,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug)]
 #[expect(clippy::struct_excessive_bools)]
 pub struct ApplicationConfig {
-    /// `default_library_locations` contains paths to search for TOML library files to read into the main
-    /// [`Library`](crate::datatypes::internal_types::Library)
+    /// `default_library_locations` contains paths to search for TOML library files to read into the
+    /// main [`Library`](crate::datatypes::internal_types::Library)
     /// If a path is a directory, all TOML files found within the directory and its sub-directories
     /// will be parsed as library files
     /// Hidden paths will be ignored

@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -77,16 +76,8 @@ impl EquipmentType {
     #[must_use]
     pub fn visual_rep(&self) -> Svg {
         match &self.faces {
-            Some(faces) => faces["Front"]
-                .visual_representation
-                .clone()
-                .unwrap_or_default()
-                .clone(),
-            None => self
-                .visual_representation
-                .clone()
-                .unwrap_or_default()
-                .clone(),
+            Some(faces) => faces["Front"].visual_representation.clone().unwrap_or_default().clone(),
+            None => self.visual_representation.clone().unwrap_or_default().clone(),
         }
     }
 }

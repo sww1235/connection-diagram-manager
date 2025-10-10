@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -9,8 +8,8 @@ use crate::datatypes::{
     util_types::{Catalog, CrossSection, Dimension, LineStyle},
 };
 
-/// `CableType` represents a type of cable that consists of multiple cores. If something only has one
-/// core, then it is a wire, not a cable.
+/// `CableType` represents a type of cable that consists of multiple cores. If something only has
+/// one core, then it is a wire, not a cable.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct CableType {
     /// Catalog information
