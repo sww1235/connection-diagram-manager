@@ -30,7 +30,7 @@ pub struct EquipmentType {
     /// Rating of equipment. Not parsed
     pub rating: Option<String>,
     /// Vector of schematic symbols that can represent this equipment.
-    /// values must be the id of the symbol_type
+    /// values must be the id of the `symbol_type`
     pub schematic_symbols: Option<Vec<String>>,
     /// visual representation of the equipment
     // TODO: figure out what angle to standardize on, or
@@ -64,8 +64,11 @@ pub struct FaceConnector {
     //TODO: refcounted?
     /// Connector Type
     connector_type: ConnectorType,
+    /// Signal direction
     direction: Option<String>,
+    /// location of connector from left of visual representation
     x: u64,
+    /// location of connector from bottom of visual representation
     y: u64,
 }
 

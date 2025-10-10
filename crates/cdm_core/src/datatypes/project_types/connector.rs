@@ -12,6 +12,7 @@ pub struct Connector {
 }
 
 impl traits::Connector for Connector {
+    #[expect(clippy::unwrap_in_result)]
     fn pin_count(&self, library: &Library) -> Result<u64, Error> {
         let connector_type = library
             .connector_types

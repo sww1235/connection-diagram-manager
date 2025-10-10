@@ -15,7 +15,7 @@ pub mod pathway;
 pub mod schematic_symbol;
 /// `term_cable` represents an instance of a `TermCableType`
 pub mod term_cable;
-/// `terminal_strip` contains the main terminal_strip type and accessory types
+/// `terminal_strip` contains the main `terminal_strip` type and accessory types
 pub mod terminal_strip;
 /// `wire` represents an instance of a `WireType`
 pub mod wire;

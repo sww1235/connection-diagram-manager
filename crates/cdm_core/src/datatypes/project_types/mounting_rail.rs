@@ -10,9 +10,11 @@ use crate::datatypes::{
 /// `MountingRail` represents an individual mounting rail in a project
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 pub struct MountingRail {
+    /// ID of type of mounting rail
     pub mounting_rail_type: String,
+    /// Length of mounting rail
     pub length: Length,
-    /// physical location of MountingRail
+    /// physical location of `MountingRail`
     pub physical_location: Option<PhysicalLocation>,
     /// Fields for use with IEC project coding
     pub iec_codes: Option<IECCodes>,

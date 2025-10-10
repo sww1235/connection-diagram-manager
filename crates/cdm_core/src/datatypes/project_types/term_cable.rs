@@ -23,7 +23,7 @@ pub struct TermCable {
     pub description: Option<String>,
     /// Pathway containing instance
     pub pathway: Option<String>,
-    /// physical location of TermCable
+    /// physical location of `TermCable`
     pub physical_location: Option<PhysicalLocation>,
     /// Fields for use with IEC project coding
     pub iec_codes: Option<IECCodes>,
@@ -34,7 +34,10 @@ pub struct TermCable {
 }
 impl TermCable {
     /// length of `TermCableType`
-    #[must_use]
+    ///
+    /// # Errors
+    ///
+    /// Will error if `term_cable_type` id not found in provided library
     pub fn len(&self, library: &Library) -> Result<Length, Error> {
         let term_cable_type = library
             .term_cable_types

@@ -19,6 +19,7 @@ use crate::datatypes::{
 /// Ferrules, ring/space/fork terminals, etc should be defined as connectors since they associate
 /// with wires
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(clippy::struct_excessive_bools)]
 pub struct TerminalType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -63,7 +64,7 @@ pub struct TerminalType {
     pub integrated_disconnect_present: Option<String>,
     /// Visual representation of `TerminalType`
     pub visual_representation: Option<Svg>,
-    /// HashMap defining terminal layers
+    /// `HashMap` defining terminal layers
     /// at least 1 layer is required for a terminal
     pub layers: HashMap<String, Layer>,
     /// Which terminal connections are connected
@@ -89,15 +90,17 @@ pub struct Connection {
     /// Connection Type of connection
     ///
     /// Possible Values:
-    /// - ScrewTerminal
-    /// - Bolt
-    /// - PlugIn
-    /// - PushIn
-    /// - QuickConnect
-    /// - Spade
-    /// - SpringCage
-    /// - LeverLock
+    /// - `ScrewTerminal`
+    /// - `Bolt`
+    /// - `PlugIn`
+    /// - `PushIn`
+    /// - `PushInX`
+    /// - `FastConnect`
+    /// - `Spade`
+    /// - `SpringCage`
+    /// - `LeverLock`
     pub connection_type: ConnectionType,
+    /// Connector entry angle
     pub entry_angle: Option<String>,
     /// maximum number of wires allowed to be connected to this terminal connection
     /// can be lower than manufacturer recommended values
@@ -112,30 +115,58 @@ pub struct Connection {
     /// just a comparison string.
     ///
     /// Possible Values:
-    /// - Solid
-    /// - Stranded
-    /// - StrandedFerrule
-    /// - Spade
+    /// - `Solid`
+    /// - `Stranded`
+    /// - `FineStranded`
+    /// - `StrandedFerrule`
+    /// - `Spade`
     pub wire_types_accepted: Vec<AcceptedWireType>,
 }
 
+/// `ConnectionType` represents different types of connections that can be on a terminal
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[non_exhaustive]
 pub enum ConnectionType {
+    /// `ScrewTerminal` uses a threaded screw to clamp the conductor
     ScrewTerminal,
+    /// `Bolt` connections use a bolt to attach a lug to the terminal
     Bolt,
+    /// `PlugIn` connections use a separable connector to connect wires to the terminal. The
+    /// separable connector will have another type of `ConnectionType`
     PlugIn,
+    /// `PushIn` connections use a constant force spring to clamp the conductor. They do not require
+    /// the use of tools to insert the wire. They will have a button that can be pressed with a
+    /// small screw driver to remove the terminal.
+    ///
+    /// The wire entry is on the top of the terminal
     PushIn,
-    QuickConnect,
+    /// `PushInX` connections are identical in function to `PushIn` connections but the wire entry
+    /// is on the side of the terminal
+    PushInX,
+    /// `FastConnect` connections use a lever mechanism to clamp the connector
+    FastConnect,
+    /// `Spade` connections accept spade terminals crimped onto the wires
     Spade,
+    /// `SpringCage` connections use a spring to maintain the connection to the wire. They require
+    /// a screwdriver to insert and remove the wire
     SpringCage,
+    /// `LeverLock` connections use a over center lever mechanism to clamp the wires.
     LeverLock,
 }
 
+/// `AcceptedWireType` shows which types of wires terminals can accept
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[non_exhaustive]
 pub enum AcceptedWireType {
+    /// Solid core wire. One strand
     Solid,
+    /// Stranded wire
     Stranded,
+    /// Finely stranded wire
+    FineStranded,
+    /// Stranded wire with a crimped ferrule
     StrandedFerrule,
+    /// wire with a crimped spade terminal
     Spade,
 }
 
@@ -166,8 +197,8 @@ pub struct TerminalStripJumperType {
     pub color: Option<Color>,
     /// Visual representation of `TerminalStripJumperType`
     pub visual_representation: Option<Svg>,
-    /// per pin compatible terminal_block_types
-    /// specify an array of terminal_block_types per pin
+    /// per pin compatible `terminal_block_type`s
+    /// specify an array of `terminal_block_type`s per pin
     pub pin_compatible_terminal_types: Option<Vec<Vec<String>>>,
 }
 
@@ -194,7 +225,7 @@ pub struct TerminalAccessoryType {
 /// `TerminalStripAccessoryType` represents Terminal strip accessories
 ///
 /// Terminal strip accessories are things like end plates or spacers that are incorporated into a
-/// terminal_strip linearly and interface with terminals This does not include things like DIN rail
+/// `terminal_strip` linearly and interface with terminals This does not include things like DIN rail
 /// stops.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct TerminalStripAccessoryType {

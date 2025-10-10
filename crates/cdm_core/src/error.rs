@@ -6,6 +6,8 @@ use usvg::Error as USVGError;
 
 //TODO: flesh this out more
 #[derive(Error, Debug)]
+#[non_exhaustive]
+/// `Error` is the list of errors and error types that can occur in the `cdm_core` library
 pub enum Error {
     /// This error is used when a lookup is made in the library and the ID is not found
     #[error("The ID {0} not found in library")]
@@ -16,11 +18,21 @@ pub enum Error {
     /// This error is used when optional data is missing from library data when required for a certain operation in
     /// the program.
     #[error("The Library entry with ID: {id} requires the following data to peform the operation requested: {data_missing}")]
-    LibraryDataMissing { id: String, data_missing: String },
+    LibraryDataMissing {
+        /// The ID of the the `Library` entry
+        id: String,
+        /// What data was missing from the `Library` entry
+        data_missing: String,
+    },
     /// This error is used when optional data is missing from project data when required for a certain operation in
     /// the program.
-    #[error("The Library entry with ID: {id} requires the following data to peform the operation requested: {data_missing}")]
-    ProjectDataMissing { id: String, data_missing: String },
+    #[error("The Project entry with ID: {id} requires the following data to peform the operation requested: {data_missing}")]
+    ProjectDataMissing {
+        /// The ID of the the `Project` entry
+        id: String,
+        /// What data was missing from the `Project` entry
+        data_missing: String,
+    },
     /// Errors relating to linebreaking
     #[error(transparent)]
     ParagraphBreaking(#[from] ParagraphError),

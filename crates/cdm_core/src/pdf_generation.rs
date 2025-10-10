@@ -76,6 +76,10 @@ pub fn pdf_one_enclosure(
 ///
 /// will Error if the location doesn't fit on page at specified scale or if there is no equipment
 /// at the specified location.
+///
+/// # Panics
+///
+/// Will panic if key is not found for value in enclosures hashmap.
 pub fn render_enclosure(
     project: &Project,
     library: &Library,
@@ -92,7 +96,8 @@ pub fn render_enclosure(
     }
     let page_width = pdf_page.page_size.size().0;
     let page_height = pdf_page.page_size.size().1;
-    let enclosure_id = project.enclosures.iter().find_map(|(key, val)| if val == enclosure { Some(key) } else { None }).expect("Enclosure ID not found in hashmap when searching by value. Something went seriously wrong.");
+    #[expect(clippy::expect_used)]
+    let enclosure_id = project.enclosures.iter().find_map(|(key, val)| (val == enclosure).then_some(key)).expect("Enclosure ID not found in hashmap when searching by value. Something went seriously wrong.");
     let (enclosure_type_id, enclosure_type) = library
         .enclosure_types
         .get_key_value(&enclosure.enclosure_type)

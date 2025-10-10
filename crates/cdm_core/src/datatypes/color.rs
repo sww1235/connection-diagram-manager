@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 
+/// `Color` is a standardized list of colors supported in the application
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(missing_docs, clippy::exhaustive_enums)]
 pub enum Color {
     Red,
     Orange,
@@ -21,14 +23,20 @@ pub enum Color {
     Clear,
     Cyan,
     Aqua,
+    /// Used for custom colors. Only the `hex_code` is required
     RGB {
+        /// 6 character HEX code. RRGGBB
         hex_code: String,
+        /// 3 character abbreviation for the custom color
         abbreviation: String,
+        /// name / color code for a color standard that this custom color represents.
         color_standard: Option<String>,
     },
 }
 
 impl Color {
+    /// Returns a 3 character abbreviation for each color
+    #[must_use]
     pub fn abbreviation(&self) -> String {
         match &self {
             Self::Red => "RED".to_string(),
@@ -51,6 +59,8 @@ impl Color {
             Self::RGB { abbreviation, .. } => abbreviation.clone(),
         }
     }
+    /// Returns a 6 character hex code (RRGGBB) for each color
+    #[must_use]
     pub fn hex_code(&self) -> String {
         match &self {
             Self::Red => "FF0000".to_string(),

@@ -16,7 +16,7 @@ use std::{
 
 use clap::Parser;
 
-use log::{debug, error, info, LevelFilter};
+use log::{debug, info, LevelFilter};
 
 use simple_logger::SimpleLogger;
 
@@ -92,12 +92,12 @@ fn main() {
     for path in app_config_paths {
         match fs::read_to_string(&path) {
             Ok(data) => {
-                info!("found application configuration file at {path:?}");
+                info!("found application configuration file at {}", path.display());
                 app_config_string = Some(data);
                 break;
             }
             Err(err) => {
-                debug!("tried searching for application configuration file at {path:?}, but didn't find it. See {err} for details");
+                debug!("tried searching for application configuration file at {}, but didn't find it. See {err} for details", path.display());
             }
         }
     }
@@ -115,7 +115,7 @@ fn main() {
         }
     };
 
-    debug! {"{:#?}", config}
+    debug! {"{config:#?}"}
 
     // will be vector of DataFiles
     //let data_files = match file_types::parse_project_dir(cli.project_directory) {

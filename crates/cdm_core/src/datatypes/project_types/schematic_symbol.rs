@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::datatypes::{color::Color, util_types::UserFields};
 
-/// `SchematicSymbol` represents an instance of a SchematicSymbolType
+/// `SchematicSymbol` represents an instance of a `SchematicSymbolType`
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct SchematicSymbol {
     /// type of schematic symbol
@@ -19,9 +19,14 @@ pub struct SchematicSymbol {
     pub contained_datafile_path: PathBuf,
 }
 
+/// What type of Object does this symbol represent
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[non_exhaustive]
 pub enum SymbolType {
+    /// This `SymbolType` represents an `Equipment`
     Equipment(String),
+    /// This `SymbolType` represents a `Terminal`
     Terminal(String),
+    /// This `SymbolType` represents a `Connector`
     Connector(String),
 }

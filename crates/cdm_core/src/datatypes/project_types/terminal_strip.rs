@@ -17,7 +17,7 @@ pub struct TerminalStrip {
     pub enclosure: Option<String>,
     /// mounting rail
     pub mounting_rail: Option<String>,
-    /// physical location of TerminalStrip
+    /// physical location of `TerminalStrip`
     pub physical_location: Option<PhysicalLocation>,
     /// Fields for use with IEC project coding
     pub iec_codes: Option<IECCodes>,
@@ -46,13 +46,16 @@ pub struct Terminal {
     pub accessories: Option<Vec<String>>,
 }
 
-/// Enum allowing storage of either TerminalType or TerminalStripAccessoryType in Terminal
+/// Enum allowing storage of either `TerminalType` or `TerminalStripAccessoryType` in `Terminal`
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[non_exhaustive]
+#[expect(missing_docs)]
 pub enum TermAccy {
     Terminal(String),
     Accessory(String),
 }
 
+/// `Jumper` represents a jumper instance within a terminal strip
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Jumper {
     /// Type of jumper

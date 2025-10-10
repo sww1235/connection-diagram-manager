@@ -36,7 +36,7 @@ pub struct ConnectorType {
     pub color: Option<Color>,
     /// component designator
     pub component_designator: Option<String>,
-    /// Vector of schematic symbols that can represent this connector_type
+    /// Vector of schematic symbols that can represent this `connector_type`
     pub schematic_symbol: Option<Vec<String>>,
     /// Optional list of other connector types this one can mate with
     pub connector_type_mate: Option<Vec<String>>,

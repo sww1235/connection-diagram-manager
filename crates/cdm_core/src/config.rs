@@ -14,7 +14,7 @@ pub struct ApplicationConfig {
     pub default_library_locations: Vec<PathBuf>,
     /// Enable postgres database features
     pub enable_post_gres: bool,
-    /// PostGres DSN
+    /// `PostGres` DSN
     pub post_gres_dsn: String,
     /// Default Area unit for Display
     pub default_area_unit: String,

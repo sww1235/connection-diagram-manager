@@ -58,6 +58,7 @@ impl Graph {
         self.nodes.push(node);
     }
 
+    /// Depth first search of graph
     pub fn depth_first_search(&self) {
         // the entries in visited_list are the indexes of nodes in self.nodes
         let mut visited_list = Vec::new();

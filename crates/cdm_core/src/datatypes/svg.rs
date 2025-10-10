@@ -51,7 +51,7 @@ impl<'de> Deserialize<'de> for Svg {
 /// Visitor struct for Deserializer trait
 struct SvgVisitor;
 
-impl<'de> Visitor<'de> for SvgVisitor {
+impl Visitor<'_> for SvgVisitor {
     type Value = Svg;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
