@@ -11,6 +11,7 @@
 
 use std::{
     fs,
+    io::{self, ErrorKind},
     path::{Path, PathBuf},
 };
 
@@ -20,13 +21,67 @@ use cdm_core::{
         library_types::Library,
         project_types::{self, Project},
     },
+    directory_navigator,
 };
 use clap::Parser;
+use figment::{
+    Figment,
+    providers::{Format, Serialized, Toml},
+};
 use log::{LevelFilter, debug, info};
+use serde::{Deserialize, Serialize};
 use simple_logger::SimpleLogger;
 
-fn main() {
-    //TODO: add config file parsing via figment
+//TODO: change some of the panics in main to printed error messages with a returned error code.
+fn main() -> anyhow::Result<()> {
+    // parse command line flags and config files
+
+    // check for config file in various locations first
+
+    // {NAME_SCREAMING_SNAKE_CASE}_CONFIG envitonment variable
+    // ~/.config/{name}/config.toml
+    // /etc/{name}/config.toml
+    // /usr/local/etc/{name}/config.toml
+    // ~/Library/Preferences/{name}/config.toml
+
+    // Doesn't work on windows
+    // Figment will silently ignore missing files
+    // Once the fix in the below issue is released, re-evaluate
+    // https://github.com/SergioBenitez/Figment/issues/110
+
+    let home_dir = std::env::home_dir().ok_or(io::Error::new(ErrorKind::NotFound, "Home Directory not found"))?;
+    let root = Path::new("/");
+    let app_config_filename = "cdm_config.toml";
+    let app_config: ApplicationConfig = Figment::new()
+        .merge(Serialized::defaults(ApplicationConfig::default()))
+        .merge(Toml::file(
+            home_dir
+                .join(".config")
+                .join("ConnectionDiagramManager")
+                .join(app_config_filename),
+        ))
+        .merge(Toml::file(
+            home_dir
+                .join("Library")
+                .join("Preferences")
+                .join("ConnectionDiagramManager")
+                .join(app_config_filename),
+        ))
+        .merge(Toml::file(
+            root.join("etc").join("ConnectionDiagramManager").join(app_config_filename),
+        ))
+        .merge(Toml::file(
+            root.join("usr")
+                .join("local")
+                .join("etc")
+                .join("ConnectionDiagramManager")
+                .join(app_config_filename),
+        ))
+        .merge(Toml::file(app_config_filename))
+        .merge(Serialized::globals(Cli::parse()))
+        .extract()?;
+
+    debug!("{app_config:#?}");
     //parse command line flags
     let cli = Cli::parse();
     // initialize logging
@@ -51,80 +106,34 @@ fn main() {
 
     // check if project_directory was specified and even exists
 
-    assert! { cli.project_directory.exists(),
-    "Project directory specified: {} does not exist", cli.project_directory.display()}
-
-    assert! {cli.project_directory.is_dir(),
-    "Project directory specified: {} is not a directory", cli.project_directory.display()}
-
-    let home_dir = std::env::home_dir();
-    let root = Path::new("/");
-    let app_config_filename = Path::new("cdm_config.toml");
-    let mut app_config_paths = Vec::new();
-    let mut app_config_string = None;
-    if let Some(home_dir) = home_dir {
-        app_config_paths.push(
-            home_dir
-                .join(".config")
-                .join("ConnectionDiagramManager")
-                .join(app_config_filename),
-        );
-        app_config_paths.push(
-            home_dir
-                .join("Library")
-                .join("Preferences")
-                .join("ConnectionDiagramManager")
-                .join(app_config_filename),
-        );
-    }
-    app_config_paths.push(root.join("etc").join("ConnectionDiagramManager").join(app_config_filename));
-    app_config_paths.push(
-        root.join("usr")
-            .join("local")
-            .join("etc")
-            .join("ConnectionDiagramManager")
-            .join(app_config_filename),
-    );
-    for path in app_config_paths {
-        match fs::read_to_string(&path) {
-            Ok(data) => {
-                info!("found application configuration file at {}", path.display());
-                app_config_string = Some(data);
-                break;
-            }
-            Err(err) => {
-                debug!(
-                    "tried searching for application configuration file at {}, but didn't find it. See {err} for details",
-                    path.display()
-                );
-            }
-        }
+    if !cli.project_directory.exists() {
+        return Err(io::Error::new(
+            ErrorKind::NotFound,
+            format!(
+                "Project directory specified: {} does not exist",
+                cli.project_directory.display()
+            ),
+        )
+        .into());
     }
 
-    let config: ApplicationConfig = {
-        if let Some(app_config_string) = app_config_string {
-            match toml::from_str(&app_config_string) {
-                Ok(c) => c,
-                Err(e) => {
-                    panic! {"Failure to parse config yaml file. Error: {e}"}
-                }
-            }
-        } else {
-            ApplicationConfig::default()
-        }
-    };
+    if !cli.project_directory.is_dir() {
+        return Err(io::Error::new(
+            ErrorKind::NotADirectory,
+            format!(
+                "Project directory specified: {} is not a directory",
+                cli.project_directory.display()
+            ),
+        )
+        .into());
+    }
 
-    debug! {"{config:#?}"}
+    let project_config_str = fs::read_to_string(cli.project_directory.join("cdm_project.toml"))?;
+    let project_config: project_types::Config = toml::from_str(&project_config_str)?;
+    debug!("{project_config:#?}");
 
-    // will be vector of DataFiles
-    //let data_files = match file_types::parse_project_dir(cli.project_directory) {
-    //    Ok(datastore) => datastore,
-    //    Err(e) => {
-    //        //TODO: better handle errors here
-    //        error! {"Failure to read in project directory. Error: {e}"}
-    //        return;
-    //    }
-    //};
+    let library_files = directory_navigator::files_in_dir(cli.project_directory.join("lib"), Some(".toml"), false)?;
+    let project_files = directory_navigator::files_in_dir(cli.project_directory.join("src"), Some(".toml"), false)?;
 
     //let mut library = Library::new();
     //let mut project = Project::new();
@@ -141,10 +150,11 @@ fn main() {
     //debug! {"{project:?}"};
 
     if cli.export_pdf {}
+    Ok(())
 }
 
 /// `Cli` holds the defintions for command line arguments used in this binary
-#[derive(Parser)]
+#[derive(Parser, Debug, Serialize)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
     /// Directory that project lives in
@@ -157,6 +167,7 @@ struct Cli {
     enable_post_gres: bool,
     /// Postgres DSN (optional)
     #[arg(short, long)]
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     post_gres_dsn: Option<String>,
     /// Only shows log messages with <Error> level. Use twice to completely eliminate output. Takes
     /// precidence over verbose

@@ -8,7 +8,7 @@ in the root directory of the project. All other orginizational structure is up
 to the end user.
 
 - Project Directory (root) - user specified name
-	- `cdm_proj.toml`
+	- `cdm_project.toml`
 	- src - directory
 		- project-file.toml
 	- lib - directory - contains library files for project
@@ -192,7 +192,7 @@ tee, wire connection,
 # Required
 project_name = <str>
 
-# optional
+# Required
 load_default_libraries = <bool>
 
 # optional

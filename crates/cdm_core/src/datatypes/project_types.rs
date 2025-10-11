@@ -54,6 +54,45 @@ pub struct Project {
     pub wires: HashMap<String, wire::Wire>,
 }
 
+/// Config contains project specific configuration information
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub struct Config {
+    /// Name of project
+    pub project_name: String,
+    /// If default libraries included with the application should be loaded into project
+    pub load_default_libraries: bool,
+    /// Paths to load libraries from.
+    ///
+    /// If a path listed is a directory, all `.toml` files within it or subdirectories will be
+    /// included as library files. Paths can be either relative or absolute
+    ///
+    /// Hidden files/directories are ignored.
+    pub library_paths: Option<Vec<PathBuf>>,
+    /// Specific paths to load project source files from
+    ///
+    /// If this is not defined, all TOML files in the directory that the cfg file is in, and
+    /// sub-directories will be parsed as project files.
+    ///
+    ///
+    /// If a path listed is a directory, all `.toml` files within it or sub-directories will be
+    /// treated as project files. Paths can be either relative or absolute
+    ///
+    /// If this is not defined, then all other TOML files found within the root directory or
+    /// subidirectories of the project will be parsed as project files.
+    ///
+    /// Hidden files/directories are ignored
+    pub source_paths: Option<Vec<PathBuf>>,
+    //TODO: switch this to an enum
+    /// Code reference used for wire ampacity checks and conduit fill, etc.
+    /// These are complicated enough that they are currently defined in code
+    /// rather than a configuration file.
+    pub electrical_code_standard: Option<String>,
+    /// IEC project code
+    pub project_code: Option<String>,
+    /// Optional description of project
+    pub description: Option<String>,
+}
+
 #[cfg(test)]
 mod tests {
 

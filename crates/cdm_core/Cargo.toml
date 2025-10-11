@@ -30,6 +30,8 @@ num-rational.workspace = true
 usvg.workspace = true
 pdf_helper.workspace = true
 paragraph_breaker.workspace = true
+figment.workspace = true
+anyhow.workspace = true
 
 [features]
 default = ["cli"]
