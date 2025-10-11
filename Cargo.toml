@@ -11,15 +11,15 @@ license = "MIT OR Apache-2.0"
 
 [workspace.dependencies]
 uom = { version = "~0.37", default-features = false, features = ["autoconvert", "std", "rational64", "rational32", "bigrational", "try-from", "serde", "si"] }
-log = "~0"
-rustybuzz = "~0"
+log = { version = "~0" }
+rustybuzz = { version = "~0" }
 serde = { version = "~1", features = ["derive"] }
 toml = { version = "~0" }
 figment = { version = "~0.10", features = ["toml"] }
-simple_logger = "~5"
-thiserror = "~2"
-usvg = "~0"
-lopdf = "~0"
+simple_logger = { version = "~5" }
+thiserror = { version = "~2" }
+usvg = { version = "~0" }
+lopdf = { version = "~0" }
 paragraph_breaker = {path = "crates/paragraph_breaker/", version = "~0"}
 pdf_helper = {path = "crates/pdf_helper/", version = "~0"}
 num-rational = { version = "~0.4", features = ["std", "serde", "num-bigint"] }
