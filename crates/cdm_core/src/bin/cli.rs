@@ -128,15 +128,22 @@ fn main() -> anyhow::Result<()> {
         .into());
     }
 
-    let project_config_str = fs::read_to_string(cli.project_directory.join("cdm_project.toml"))?;
-    let project_config: project_types::Config = toml::from_str(&project_config_str)?;
+    let project_config_contents = fs::read_to_string(cli.project_directory.join("cdm_project.toml"))?;
+    let project_config: project_types::Config = toml::from_str(&project_config_contents)?;
     debug!("{project_config:#?}");
 
     let library_files = directory_navigator::files_in_dir(cli.project_directory.join("lib"), Some(".toml"), false)?;
     let project_files = directory_navigator::files_in_dir(cli.project_directory.join("src"), Some(".toml"), false)?;
 
-    //let mut library = Library::new();
-    //let mut project = Project::new();
+    let mut library_data = Library::default();
+    let mut project_data = Project::default();
+    //TODO: include default libraries. use include_str! macro
+    for file in library_files {
+        let library_file_contents = fs::read_to_string(&file)?;
+        let library_file: Library = toml::from_str(&library_file_contents)?;
+        library_data.merge(library_file, &file.display().to_string(), &file.display().to_string())?;
+    }
+
     ////TODO: handle errors here better
     //library
     //    .from_datafiles(data_files.clone(), merge_prompt_fn)
