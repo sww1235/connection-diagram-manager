@@ -32,6 +32,10 @@ pub enum Error {
         /// What data was missing from the `Project` entry
         data_missing: String,
     },
+    /// This error is used when duplicate keys are found in `Project` or `Library` structs during
+    /// import
+    #[error("Duplicate key {key} found in {file1} and {other_file}")]
+    DuplicateKey { key: String, file1: String, other_file: String },
     /// Errors relating to linebreaking
     #[error(transparent)]
     ParagraphBreaking(#[from] ParagraphError),

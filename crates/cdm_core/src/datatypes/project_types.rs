@@ -27,8 +27,10 @@ use std::{collections::HashMap, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
+use crate::{error::Error, util_functions};
+
 /// `Project` represents all project specific data used in program
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct Project {
     /// contains all cables read in from files, and/or added in via program logic
     pub cables: HashMap<String, cable::Cable>,
@@ -52,6 +54,29 @@ pub struct Project {
     pub terminal_strips: HashMap<String, terminal_strip::TerminalStrip>,
     /// `wires` contains all wires read in from files, and/or added in via program logic
     pub wires: HashMap<String, wire::Wire>,
+}
+
+impl Project {
+    /// Merges two instances of `Project`, validating that there are no key conflicts between the
+    /// two instances
+    ///
+    /// # Errors
+    ///
+    /// Will error if there are duplicate keys found in `other` map
+    pub fn merge(&mut self, other: Project, file1: &str, file2: &str) -> Result<(), Error> {
+        util_functions::merge_hashmaps(&mut self.cables, other.cables, file1, file2)?;
+        self.connections.extend(other.connections);
+        util_functions::merge_hashmaps(&mut self.connectors, other.connectors, file1, file2)?;
+        util_functions::merge_hashmaps(&mut self.enclosures, other.enclosures, file1, file2)?;
+        util_functions::merge_hashmaps(&mut self.equipment, other.equipment, file1, file2)?;
+        util_functions::merge_hashmaps(&mut self.mounting_rails, other.mounting_rails, file1, file2)?;
+        util_functions::merge_hashmaps(&mut self.pathways, other.pathways, file1, file2)?;
+        util_functions::merge_hashmaps(&mut self.schematic_symbols, other.schematic_symbols, file1, file2)?;
+        util_functions::merge_hashmaps(&mut self.term_cables, other.term_cables, file1, file2)?;
+        util_functions::merge_hashmaps(&mut self.terminal_strips, other.terminal_strips, file1, file2)?;
+        util_functions::merge_hashmaps(&mut self.wires, other.wires, file1, file2)?;
+        Ok(())
+    }
 }
 
 /// Config contains project specific configuration information

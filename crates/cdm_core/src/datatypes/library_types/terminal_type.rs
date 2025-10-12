@@ -2,11 +2,14 @@ use std::{collections::HashMap, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{
-    color::Color,
-    svg::Svg,
-    unit_helper::CrossSectionalArea,
-    util_types::{Catalog, Dimension},
+use crate::{
+    datatypes::{
+        color::Color,
+        svg::Svg,
+        unit_helper::CrossSectionalArea,
+        util_types::{Catalog, Dimension},
+    },
+    traits::FromFile,
 };
 
 //TODO:
@@ -70,6 +73,11 @@ pub struct TerminalType {
     pub internal_connections: Vec<InternalConnection>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
+}
+impl FromFile for TerminalType {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }
 
 /// `Layer` represents one layer of a terminal
@@ -199,6 +207,13 @@ pub struct TerminalStripJumperType {
     /// per pin compatible `terminal_block_type`s
     /// specify an array of `terminal_block_type`s per pin
     pub pin_compatible_terminal_types: Option<Vec<Vec<String>>>,
+    /// datafile the struct instance was read in from
+    pub contained_datafile_path: PathBuf,
+}
+impl FromFile for TerminalStripJumperType {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }
 
 /// `TerminalAccessoryType` represents Terminal accessories are items that insert into a terminal
@@ -219,6 +234,13 @@ pub struct TerminalAccessoryType {
     pub visual_representation: Option<Svg>,
     /// color of accessory
     pub color: Option<Color>,
+    /// datafile the struct instance was read in from
+    pub contained_datafile_path: PathBuf,
+}
+impl FromFile for TerminalAccessoryType {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }
 
 /// `TerminalStripAccessoryType` represents Terminal strip accessories
@@ -242,4 +264,11 @@ pub struct TerminalStripAccessoryType {
     pub visual_representation: Option<Svg>,
     /// color of accessory
     pub color: Option<Color>,
+    /// datafile the struct instance was read in from
+    pub contained_datafile_path: PathBuf,
+}
+impl FromFile for TerminalStripAccessoryType {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }

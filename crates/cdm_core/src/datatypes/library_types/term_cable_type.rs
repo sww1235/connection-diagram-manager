@@ -9,7 +9,7 @@ use crate::{
         util_types::{Catalog, LineStyle},
     },
     error::Error,
-    traits,
+    traits::{Connector as ConnectorT, FromFile},
 };
 
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
@@ -31,6 +31,11 @@ pub struct TermCableType {
     pub end2: HashMap<String, Connector>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
+}
+impl FromFile for TermCableType {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }
 
 /// `WireCable` allows either a `WireType` or `CableType` to be the root of a `TermCableType`
@@ -62,7 +67,7 @@ pub struct Connector {
     pub terminations: Vec<Termination>,
 }
 
-impl traits::Connector for Connector {
+impl ConnectorT for Connector {
     #[expect(clippy::unwrap_in_result)]
     fn pin_count(&self, library: &Library) -> Result<u64, Error> {
         let connector_type = library

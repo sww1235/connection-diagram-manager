@@ -2,7 +2,10 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{svg::Svg, unit_helper::Length, util_types::Catalog};
+use crate::{
+    datatypes::{svg::Svg, unit_helper::Length, util_types::Catalog},
+    traits::FromFile,
+};
 
 /// `MountingRailType` represent types or profiles of mounting rail
 ///
@@ -68,4 +71,9 @@ pub struct MountingRailType {
     pub end_image: Option<Svg>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
+}
+impl FromFile for MountingRailType {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }

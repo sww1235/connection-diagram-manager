@@ -22,3 +22,5 @@ pub mod pdf_generation;
 pub mod project_config;
 /// Traits used in `cdm_core`
 pub mod traits;
+/// utility functions that don't have a good home elsewhere
+pub(crate) mod util_functions;

@@ -2,10 +2,13 @@ use std::{collections::HashMap, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{
-    library_types::connector_type::ConnectorType,
-    svg::Svg,
-    util_types::{Catalog, Dimension},
+use crate::{
+    datatypes::{
+        library_types::connector_type::ConnectorType,
+        svg::Svg,
+        util_types::{Catalog, Dimension},
+    },
+    traits::FromFile,
 };
 
 //TODO: Make some of these fields enums
@@ -40,6 +43,11 @@ pub struct EquipmentType {
     pub faces: Option<HashMap<String, EquipFace>>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
+}
+impl FromFile for EquipmentType {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }
 
 // TODO: use custom SVG tags to store locations of connectors instead of x/y coordinates

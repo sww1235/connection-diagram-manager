@@ -2,10 +2,13 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{
-    color::Color,
-    unit_helper::{CrossSectionalArea, ElectricPotential, Length, TemperatureInterval},
-    util_types::{Catalog, LineStyle},
+use crate::{
+    datatypes::{
+        color::Color,
+        unit_helper::{CrossSectionalArea, ElectricPotential, Length, TemperatureInterval},
+        util_types::{Catalog, LineStyle},
+    },
+    traits::FromFile,
 };
 
 /// `WireType` represents a particular type of wire
@@ -56,4 +59,9 @@ pub struct WireType {
     pub line_style: Option<LineStyle>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
+}
+impl FromFile for WireType {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }

@@ -2,11 +2,14 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{
-    color::Color,
-    svg::Svg,
-    unit_helper::Length,
-    util_types::{Catalog, Dimension},
+use crate::{
+    datatypes::{
+        color::Color,
+        svg::Svg,
+        unit_helper::Length,
+        util_types::{Catalog, Dimension},
+    },
+    traits::FromFile,
 };
 
 //TODO: create physical location stuff
@@ -36,4 +39,10 @@ pub struct EnclosureType {
     pub color: Option<Color>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
+}
+
+impl FromFile for EnclosureType {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }

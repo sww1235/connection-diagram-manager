@@ -2,10 +2,13 @@ use std::{collections::HashMap, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{
-    color::Color,
-    unit_helper::{CrossSectionalArea, ElectricPotential, Length, TemperatureInterval},
-    util_types::{Catalog, CrossSection, Dimension, LineStyle},
+use crate::{
+    datatypes::{
+        color::Color,
+        unit_helper::{CrossSectionalArea, ElectricPotential, Length, TemperatureInterval},
+        util_types::{Catalog, CrossSection, Dimension, LineStyle},
+    },
+    traits::FromFile,
 };
 
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has
@@ -34,6 +37,12 @@ pub struct CableType {
     pub insul_layers: Vec<CableLayer>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
+}
+
+impl FromFile for CableType {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }
 
 //https://stackoverflow.com/questions/67594909/multiple-possible-types-for-a-serializable-structs-field

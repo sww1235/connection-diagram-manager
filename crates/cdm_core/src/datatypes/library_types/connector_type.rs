@@ -2,10 +2,13 @@ use std::{collections::HashMap, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{
-    color::Color,
-    svg::Svg,
-    util_types::{Catalog, Dimension},
+use crate::{
+    datatypes::{
+        color::Color,
+        svg::Svg,
+        util_types::{Catalog, Dimension},
+    },
+    traits::FromFile,
 };
 
 //TODO: Make some of these fields enums
@@ -47,6 +50,11 @@ pub struct ConnectorType {
     pub visual_representation: Option<Svg>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
+}
+impl FromFile for ConnectorType {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }
 
 //TODO: store pin cross sectional area or something equivalent, also store pin type

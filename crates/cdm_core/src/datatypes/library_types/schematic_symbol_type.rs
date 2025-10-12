@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::svg::Svg;
+use crate::{datatypes::svg::Svg, traits::FromFile};
 
 /// `SchematicSymbolType` represents a schematic symbol type
 /// used in schematics to represent components
@@ -20,4 +20,9 @@ pub struct SchematicSymbolType {
     pub supports_links: bool,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
+}
+impl FromFile for SchematicSymbolType {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }

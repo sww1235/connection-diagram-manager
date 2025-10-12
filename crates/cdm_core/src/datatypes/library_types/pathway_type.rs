@@ -2,11 +2,14 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{
-    color::Color,
-    svg::Svg,
-    unit_helper::CrossSectionalArea,
-    util_types::{Catalog, Dimension, LineStyle},
+use crate::{
+    datatypes::{
+        color::Color,
+        svg::Svg,
+        unit_helper::CrossSectionalArea,
+        util_types::{Catalog, Dimension, LineStyle},
+    },
+    traits::FromFile,
 };
 
 /// `PathwayType` represents a route for wires and cables to take from one
@@ -43,4 +46,9 @@ pub struct PathwayType {
     pub line_style: Option<LineStyle>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
+}
+impl FromFile for PathwayType {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }
