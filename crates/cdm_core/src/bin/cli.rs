@@ -99,10 +99,9 @@ fn main() -> anyhow::Result<()> {
         1 => logger.with_level(LevelFilter::Error),
         _ => logger.with_level(LevelFilter::Off),
     };
-    #[expect(clippy::unwrap_used)]
     //TODO: investigate to see if it is worth trying to handle these
     //errors manually
-    logger.with_colors(true).init().unwrap();
+    logger.with_colors(true).init()?;
 
     // check if project_directory was specified and even exists
 

@@ -20,7 +20,6 @@ struct ParagraphWord {
     score: Option<Length>,
 }
 
-#[expect(clippy::too_many_arguments)]
 #[expect(clippy::arithmetic_side_effects)]
 /// A simplified implementation of the Knuth-Plass algorithm, as found
 /// [here](https://github.com/jaroslov/knuth-plass-thoughts/blob/master/plass.cpp)
@@ -219,7 +218,6 @@ fn text_to_words(text: &str) -> Result<Vec<ParagraphWord>, Error> {
     });
     Ok(words)
 }
-#[expect(clippy::similar_names)]
 #[expect(clippy::arithmetic_side_effects)]
 /// `toLines` takes in a vector of `ParagraphWord`s and converts them to a vector of strings
 /// of the correct lengths.
@@ -260,7 +258,6 @@ fn to_lines_internal(words: &[ParagraphWord], text: &str) -> Vec<String> {
     output
 }
 
-#[expect(clippy::too_many_arguments)]
 #[expect(clippy::arithmetic_side_effects)]
 /// `greedy_break`
 fn greedy_break(
