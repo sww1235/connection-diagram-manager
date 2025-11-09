@@ -2,9 +2,12 @@ use std::{collections::HashMap, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{
-    unit_helper::Length,
-    util_types::{IECCodes, PhysicalLocation, UserFields},
+use crate::{
+    datatypes::{
+        unit_helper::Length,
+        util_types::{IECCodes, PhysicalLocation, UserFields},
+    },
+    traits::FromFile,
 };
 
 /// `Location` represents a physical instance of a locationType
@@ -47,4 +50,10 @@ pub struct MountPoint {
     pub y: Length,
     /// Distance from left side of location
     pub distance: Length,
+}
+
+impl FromFile for Enclosure {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }

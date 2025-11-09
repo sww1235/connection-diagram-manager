@@ -2,9 +2,12 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{
-    unit_helper::Length,
-    util_types::{IECCodes, PhysicalLocation, UserFields},
+use crate::{
+    datatypes::{
+        unit_helper::Length,
+        util_types::{IECCodes, PhysicalLocation, UserFields},
+    },
+    traits::FromFile,
 };
 
 /// `MountingRail` represents an individual mounting rail in a project
@@ -22,4 +25,10 @@ pub struct MountingRail {
     pub user_fields: Option<UserFields>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
+}
+
+impl FromFile for MountingRail {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }

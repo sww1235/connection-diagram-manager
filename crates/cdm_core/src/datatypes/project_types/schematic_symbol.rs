@@ -2,7 +2,10 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{color::Color, util_types::UserFields};
+use crate::{
+    datatypes::{color::Color, util_types::UserFields},
+    traits::FromFile,
+};
 
 /// `SchematicSymbol` represents an instance of a `SchematicSymbolType`
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
@@ -29,4 +32,9 @@ pub enum SymbolType {
     Terminal(String),
     /// This `SymbolType` represents a `Connector`
     Connector(String),
+}
+impl FromFile for SchematicSymbol {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }

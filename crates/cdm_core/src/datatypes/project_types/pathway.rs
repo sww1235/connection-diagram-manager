@@ -2,9 +2,12 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{
-    unit_helper::Length,
-    util_types::{IECCodes, PhysicalLocation, UserFields},
+use crate::{
+    datatypes::{
+        unit_helper::Length,
+        util_types::{IECCodes, PhysicalLocation, UserFields},
+    },
+    traits::FromFile,
 };
 
 /// `Pathway` represents a physical instance of a pathway
@@ -26,4 +29,10 @@ pub struct Pathway {
     pub user_fields: Option<UserFields>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
+}
+
+impl FromFile for Pathway {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }

@@ -9,6 +9,7 @@ use crate::{
         util_types::{IECCodes, PhysicalLocation, UserFields},
     },
     error::Error,
+    traits::FromFile,
 };
 
 /// `TermCable` represents a particular instance of a `TermCableType`.
@@ -48,5 +49,10 @@ impl TermCable {
             .actual_length
             .clone()
             .unwrap_or(term_cable_type.nominal_length.clone().unwrap_or_default()))
+    }
+}
+impl FromFile for TermCable {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
     }
 }

@@ -64,34 +64,31 @@ impl Library {
     /// # Errors
     ///
     /// Will error if there are duplicate keys found in `other` map
-    pub fn merge(&mut self, other: Library, file1: &str, file2: &str) -> Result<(), Error> {
-        util_functions::merge_hashmaps(&mut self.cable_types, other.cable_types, file1, file2)?;
-        util_functions::merge_hashmaps(&mut self.connector_types, other.connector_types, file1, file2)?;
-        util_functions::merge_hashmaps(&mut self.enclosure_types, other.enclosure_types, file1, file2)?;
-        util_functions::merge_hashmaps(&mut self.equipment_types, other.equipment_types, file1, file2)?;
-        util_functions::merge_hashmaps(&mut self.mounting_rail_types, other.mounting_rail_types, file1, file2)?;
-        util_functions::merge_hashmaps(&mut self.pathway_types, other.pathway_types, file1, file2)?;
-        util_functions::merge_hashmaps(&mut self.term_cable_types, other.term_cable_types, file1, file2)?;
-        util_functions::merge_hashmaps(&mut self.terminal_types, other.terminal_types, file1, file2)?;
+    pub fn merge(&mut self, test_map: Library, test_file: &str) -> Result<(), Error> {
+        util_functions::merge_hashmaps(&mut self.cable_types, test_map.cable_types, test_file)?;
+        util_functions::merge_hashmaps(&mut self.connector_types, test_map.connector_types, test_file)?;
+        util_functions::merge_hashmaps(&mut self.enclosure_types, test_map.enclosure_types, test_file)?;
+        util_functions::merge_hashmaps(&mut self.equipment_types, test_map.equipment_types, test_file)?;
+        util_functions::merge_hashmaps(&mut self.mounting_rail_types, test_map.mounting_rail_types, test_file)?;
+        util_functions::merge_hashmaps(&mut self.pathway_types, test_map.pathway_types, test_file)?;
+        util_functions::merge_hashmaps(&mut self.term_cable_types, test_map.term_cable_types, test_file)?;
+        util_functions::merge_hashmaps(&mut self.terminal_types, test_map.terminal_types, test_file)?;
         util_functions::merge_hashmaps(
             &mut self.terminal_strip_jumper_types,
-            other.terminal_strip_jumper_types,
-            file1,
-            file2,
+            test_map.terminal_strip_jumper_types,
+            test_file,
         )?;
         util_functions::merge_hashmaps(
             &mut self.terminal_accessory_types,
-            other.terminal_accessory_types,
-            file1,
-            file2,
+            test_map.terminal_accessory_types,
+            test_file,
         )?;
         util_functions::merge_hashmaps(
             &mut self.terminal_strip_accessory_types,
-            other.terminal_strip_accessory_types,
-            file1,
-            file2,
+            test_map.terminal_strip_accessory_types,
+            test_file,
         )?;
-        util_functions::merge_hashmaps(&mut self.wire_types, other.wire_types, file1, file2)?;
+        util_functions::merge_hashmaps(&mut self.wire_types, test_map.wire_types, test_file)?;
         Ok(())
     }
 }

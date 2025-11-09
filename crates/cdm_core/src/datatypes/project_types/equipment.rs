@@ -2,7 +2,10 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::util_types::{IECCodes, PhysicalLocation, UserFields};
+use crate::{
+    datatypes::util_types::{IECCodes, PhysicalLocation, UserFields},
+    traits::FromFile,
+};
 
 /// `Equipment` represents a particular instance of an `EquipmentType`.
 /// This is the physical unit you would hold in your hand
@@ -30,4 +33,10 @@ pub struct Equipment {
     pub user_fields: Option<UserFields>,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
+}
+
+impl FromFile for Equipment {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }

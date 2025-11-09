@@ -141,7 +141,7 @@ fn main() -> anyhow::Result<()> {
     for file in library_files {
         let library_file_contents = fs::read_to_string(&file)?;
         let library_file: Library = toml::from_str(&library_file_contents)?;
-        library_data.merge(library_file, &file.display().to_string(), &file.display().to_string())?;
+        library_data.merge(library_file, &file.display().to_string())?;
     }
 
     ////TODO: handle errors here better

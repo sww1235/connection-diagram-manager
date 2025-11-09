@@ -34,8 +34,15 @@ pub enum Error {
     },
     /// This error is used when duplicate keys are found in `Project` or `Library` structs during
     /// import
-    #[error("Duplicate key {key} found in {file1} and {other_file}")]
-    DuplicateKey { key: String, file1: String, other_file: String },
+    #[error("Duplicate key {key} found in {origin_file} and {test_file}")]
+    DuplicateKey {
+        /// key of tested hashmap
+        key: String,
+        /// filepath of file first imported which is being compared against
+        origin_file: String,
+        /// filepath of file being checked for duplicates
+        test_file: String,
+    },
     /// Errors relating to linebreaking
     #[error(transparent)]
     ParagraphBreaking(#[from] ParagraphError),

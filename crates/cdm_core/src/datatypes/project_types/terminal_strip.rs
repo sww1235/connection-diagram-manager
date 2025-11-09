@@ -2,7 +2,10 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::util_types::{IECCodes, PhysicalLocation, UserFields};
+use crate::{
+    datatypes::util_types::{IECCodes, PhysicalLocation, UserFields},
+    traits::FromFile,
+};
 
 /// `TerminalStrip` represents an individual terminal strip in a project.
 ///
@@ -66,4 +69,10 @@ pub struct Jumper {
     pub label: Option<String>,
     /// Array of `terminal_number`s that this jumper makes connections to
     pub jumper_connections: Vec<u64>,
+}
+
+impl FromFile for TerminalStrip {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }

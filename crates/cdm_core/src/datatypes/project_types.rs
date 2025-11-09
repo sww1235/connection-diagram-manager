@@ -36,6 +36,7 @@ pub struct Project {
     pub cables: HashMap<String, cable::Cable>,
     /// `connections` contains all connections between different equipment/cables/wires
     pub connections: Vec<connection::Connection>,
+    //TODO: are connectors going to be read in separately?
     /// contains all connectors read in from files, and/or added in via program logic
     pub connectors: HashMap<String, connector::Connector>,
     /// contains all enclosures read in from files, and/or added in via program logic
@@ -63,18 +64,19 @@ impl Project {
     /// # Errors
     ///
     /// Will error if there are duplicate keys found in `other` map
-    pub fn merge(&mut self, other: Project, file1: &str, file2: &str) -> Result<(), Error> {
-        util_functions::merge_hashmaps(&mut self.cables, other.cables, file1, file2)?;
-        self.connections.extend(other.connections);
-        util_functions::merge_hashmaps(&mut self.connectors, other.connectors, file1, file2)?;
-        util_functions::merge_hashmaps(&mut self.enclosures, other.enclosures, file1, file2)?;
-        util_functions::merge_hashmaps(&mut self.equipment, other.equipment, file1, file2)?;
-        util_functions::merge_hashmaps(&mut self.mounting_rails, other.mounting_rails, file1, file2)?;
-        util_functions::merge_hashmaps(&mut self.pathways, other.pathways, file1, file2)?;
-        util_functions::merge_hashmaps(&mut self.schematic_symbols, other.schematic_symbols, file1, file2)?;
-        util_functions::merge_hashmaps(&mut self.term_cables, other.term_cables, file1, file2)?;
-        util_functions::merge_hashmaps(&mut self.terminal_strips, other.terminal_strips, file1, file2)?;
-        util_functions::merge_hashmaps(&mut self.wires, other.wires, file1, file2)?;
+    pub fn merge(&mut self, test_map: Project, test_file: &str) -> Result<(), Error> {
+        util_functions::merge_hashmaps(&mut self.cables, test_map.cables, test_file)?;
+        self.connections.extend(test_map.connections);
+        //TODO: are connectors going to be read in separately?
+        //util_functions::merge_hashmaps(&mut self.connectors, test_map.connectors, test_file)?;
+        util_functions::merge_hashmaps(&mut self.enclosures, test_map.enclosures, test_file)?;
+        util_functions::merge_hashmaps(&mut self.equipment, test_map.equipment, test_file)?;
+        util_functions::merge_hashmaps(&mut self.mounting_rails, test_map.mounting_rails, test_file)?;
+        util_functions::merge_hashmaps(&mut self.pathways, test_map.pathways, test_file)?;
+        util_functions::merge_hashmaps(&mut self.schematic_symbols, test_map.schematic_symbols, test_file)?;
+        util_functions::merge_hashmaps(&mut self.term_cables, test_map.term_cables, test_file)?;
+        util_functions::merge_hashmaps(&mut self.terminal_strips, test_map.terminal_strips, test_file)?;
+        util_functions::merge_hashmaps(&mut self.wires, test_map.wires, test_file)?;
         Ok(())
     }
 }

@@ -2,9 +2,12 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::datatypes::{
-    unit_helper::Length,
-    util_types::{IECCodes, PhysicalLocation, UserFields},
+use crate::{
+    datatypes::{
+        unit_helper::Length,
+        util_types::{IECCodes, PhysicalLocation, UserFields},
+    },
+    traits::FromFile,
 };
 
 /// `Wire` represents a particular instance of a `WireType`.
@@ -33,4 +36,10 @@ pub struct Wire {
     pub end2_connector_type: String,
     /// datafile the struct instance was read in from
     pub contained_datafile_path: PathBuf,
+}
+
+impl FromFile for Wire {
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
 }
