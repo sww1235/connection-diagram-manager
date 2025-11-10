@@ -142,18 +142,14 @@ fn main() -> anyhow::Result<()> {
         let library_file: Library = toml::from_str(&library_file_contents)?;
         library_data.merge(library_file, &file.display().to_string())?;
     }
+    for file in project_files {
+        let project_file_contents = fs::read_to_string(&file)?;
+        let project_file: Project = toml::from_str(&project_file_contents)?;
+        project_data.merge(project_file, &file.display().to_string())?;
+    }
 
-    ////TODO: handle errors here better
-    //library
-    //    .from_datafiles(data_files.clone(), merge_prompt_fn)
-    //    .unwrap();
-
-    //project
-    //    .from_datafiles(data_files, &library, merge_prompt_fn)
-    //    .unwrap();
-
-    //debug! {"{library:?}"};
-    //debug! {"{project:?}"};
+    debug! {"{library_data:?}"};
+    debug! {"{project_data:?}"};
 
     if cli.export_pdf {}
     Ok(())
