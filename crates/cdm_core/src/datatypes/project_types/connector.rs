@@ -17,7 +17,10 @@ impl traits::Connector for Connector {
         let connector_type = library
             .connector_types
             .get(&self.connector_type)
-            .ok_or(Error::LibraryValueNotFound(self.connector_type.clone()))?;
+            .ok_or(Error::LibraryValueNotFound {
+                id: self.connector_type.clone(),
+                library_type: "Connector Type".to_string(),
+            })?;
 
         #[expect(clippy::unwrap_used)]
         // allowing unwrap as I want a panic here if this application

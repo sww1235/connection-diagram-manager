@@ -41,15 +41,28 @@ pub struct Enclosure {
 
 //TODO: add mounting rails?
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-pub struct MountPoint {
-    /// Optional mounting rail
-    pub mounting_rail: Option<String>,
-    /// Distance from left side of parent location
-    pub x: Length,
-    /// Distance from bottom of parent location
-    pub y: Length,
-    /// Distance from left side of location
-    pub distance: Length,
+#[non_exhaustive]
+pub enum MountPoint {
+    /// Coordinate pair represents a x,y coordinate pair on a backplane or enclosure
+    CoordinatePair {
+        /// Distance from left side of parent location
+        x: Length,
+        /// Distance from bottom of parent location
+        y: Length,
+    },
+    /// `MountingRail` represents both an instance of a mounting rail within an enclosure, and the
+    /// location of the equipment mounted on it.
+    MountingRail {
+        /// Distance from left side of parent location to left end of Mounting Rail
+        x: Length,
+        /// Distance from bottom of parent location to horizontal center of Mounting Rail
+        y: Length,
+        /// mounting rail
+        mounting_rail: String,
+        /// Distance from left side of location
+        distance: Length,
+    },
+    //TODO: slot panel and rack panel
 }
 
 impl FromFile for Enclosure {

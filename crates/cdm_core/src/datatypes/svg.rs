@@ -8,8 +8,6 @@ use usvg::{Options as ParseOptions, Tree, WriteOptions};
 
 //TODO: implement svg validation rules here
 //
-//TODO: switch to using usvg/romxmltree instead of just a string
-//
 //TODO: provide a method of specifying the units of the SVG file
 
 /// Svg represents a full SVG image
@@ -26,6 +24,11 @@ impl Svg {
     /// Standard `[usvg::Options]` used when parsing SVG strings
     pub fn parse_options() -> ParseOptions<'static> {
         ParseOptions::default()
+    }
+    #[must_use]
+    /// Gets the underlying `[usvg::Tree]` in `Svg`
+    pub fn get_tree(self) -> Tree {
+        self.0
     }
 }
 

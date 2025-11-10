@@ -9,26 +9,50 @@ use usvg::Error as USVGError;
 /// `Error` is the list of errors and error types that can occur in the `cdm_core` library
 pub enum Error {
     /// This error is used when a lookup is made in the library and the ID is not found
-    #[error("The ID {0} not found in library")]
-    LibraryValueNotFound(String),
+    #[error("The ID {id} of type {library_type} not found in library")]
+    LibraryValueNotFound {
+        /// The ID of the the `Library` entry
+        id: String,
+        //TODO: switch to using a derived enum for library_type
+        /// The type of the `Library` entry
+        library_type: String,
+    },
     /// This error is used when a lookup is made in the project and the ID is not found
-    #[error("The ID {0} not found in project")]
-    ProjectValueNotFound(String),
+    #[error("The ID {id} of type {project_type} not found in project")]
+    ProjectValueNotFound {
+        /// The ID of the the `Library` entry
+        id: String,
+        //TODO: switch to using a derived enum for project_type
+        /// The type of the `Project` entry
+        project_type: String,
+    },
     /// This error is used when optional data is missing from library data when required for a
     /// certain operation in the program.
-    #[error("The Library entry with ID: {id} requires the following data to peform the operation requested: {data_missing}")]
+    #[error(
+        "The Library entry of type {library_type} with ID {id} requires the following data to peform the operation requested: \
+         {data_missing}"
+    )]
     LibraryDataMissing {
         /// The ID of the the `Library` entry
         id: String,
+        //TODO: switch to using a derived enum for library_type
+        /// The type of the `Library` entry
+        library_type: String,
         /// What data was missing from the `Library` entry
         data_missing: String,
     },
     /// This error is used when optional data is missing from project data when required for a
     /// certain operation in the program.
-    #[error("The Project entry with ID: {id} requires the following data to peform the operation requested: {data_missing}")]
+    #[error(
+        "The Project entry of type {project_type} with ID {id} requires the following data to peform the operation requested: \
+         {data_missing}"
+    )]
     ProjectDataMissing {
         /// The ID of the the `Project` entry
         id: String,
+        //TODO: switch to using a derived enum for project_type
+        /// The type of the `Project` entry
+        project_type: String,
         /// What data was missing from the `Project` entry
         data_missing: String,
     },

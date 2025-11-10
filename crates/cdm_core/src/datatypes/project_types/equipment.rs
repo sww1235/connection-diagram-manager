@@ -21,7 +21,7 @@ pub struct Equipment {
     pub mounting_type: Option<String>,
     /// The containing `Enclosure`
     pub enclosure: Option<String>,
-    /// The `MountPoint` within the `Enclosure`
+    /// The ID of the `MountPoint` within the `Enclosure`
     pub mount_point: Option<String>,
     /// The physical location of this piece of equipment
     pub physical_location: Option<PhysicalLocation>,

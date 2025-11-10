@@ -4,9 +4,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
+        svg::Svg,
         unit_helper::Length,
         util_types::{IECCodes, PhysicalLocation, UserFields},
     },
+    error::Error,
     traits::FromFile,
 };
 
@@ -30,5 +32,14 @@ pub struct MountingRail {
 impl FromFile for MountingRail {
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
+    }
+}
+
+impl MountingRail {
+    /// Output a generated SVG either based on the parameters in `MountingRail` and `MountingRailType`
+    /// or the `start_image`, `middle_image` and `end_image` parameters
+    pub fn vis_rep(&self) -> Result<Svg, Error> {
+        let mut output = Svg::default();
+        Ok(output)
     }
 }

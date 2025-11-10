@@ -43,7 +43,10 @@ impl TermCable {
         let term_cable_type = library
             .term_cable_types
             .get(&self.term_cable_type)
-            .ok_or(Error::LibraryValueNotFound(self.term_cable_type.clone()))?;
+            .ok_or(Error::LibraryValueNotFound {
+                id: self.term_cable_type.clone(),
+                library_type: "Term Cable Type".to_string(),
+            })?;
 
         Ok(term_cable_type
             .actual_length

@@ -2,13 +2,9 @@
 /// physical paper sizes.
 pub mod paper;
 
-/// `scale` is a ratio for scaling objects during PDF rendering
-pub mod scale;
+//TODO: investigate other graphics libraries other than tiny_skia due to usage of f32 only
 
-use std::{
-    path::{Path, PathBuf},
-    str,
-};
+use std::path::{Path, PathBuf};
 
 use log::warn;
 use lopdf::{
@@ -28,7 +24,7 @@ use uom::{
         rational64::Length,
     },
 };
-use usvg::Error as USVGError;
+use usvg::{Error as USVGError, Tree};
 
 /// `PDFDocument` is a helper type to properly generate PDFs
 /// It allows for easier tracking of default page size, available fonts
@@ -208,7 +204,7 @@ impl PDFPage {
                     } else {
                         x.get::<point_printers>()
                             .to_f64()
-                            .ok_or(Error::Other("Converting from Rational64 to f64 failed".to_string()))?
+                            .ok_or(Error::Other("Converting from f32 to Rational64 failed".to_string()))?
                             .into()
                     }
                 },
@@ -218,7 +214,7 @@ impl PDFPage {
                     } else {
                         y.get::<point_printers>()
                             .to_f64()
-                            .ok_or(Error::Other("Converting from Rational64 to f64 failed".to_string()))?
+                            .ok_or(Error::Other("Converting from f32 to Rational64 failed".to_string()))?
                             .into()
                     }
                 },
@@ -263,46 +259,25 @@ impl PDFPage {
     ///
     /// # Arguments
     ///
-    /// * `page_index`: The zero indexed page number that the text should be inserted into.
-    /// * `text`: the text that will be added to the pdf page
-    /// * `font`: a `PDFFont` object representing a font defined for use in a PDF document
-    /// * `font_size`: Font size specified in points. This is used internally as a multiple of the
-    ///   standard PDF user space unit size 1/72 inch
-    /// * `line_spacing`: text line spacing in multiples of line height
-    /// * `text width`: An optional parameter that defines the width of the text element. If `None`,
-    ///   the width of the page minus the margins is used.
+    /// * `svg`: the SVG `Tree` that will be added to the page
     /// * `x_pos`: horizontal starting position of text insertion, with 0 on left side of page
     /// * `y_pos`: vertical starting position of text insertion, with 0 on the bottom side of page
+    /// * `scale`: amount the image will be scaled from its base size
     ///
     /// # Errors
     ///
     /// May error due to malformed SVGs or other errors
-    pub fn add_svg(
-        &mut self,
-        svg_string: &str,
-        x_pos: Length,
-        y_pos: Length,
-        scale: Option<scale::ScalingFactor>,
-    ) -> Result<(), Error> {
-        use usvg::Tree;
-        let parse_options = usvg::Options::default();
-        let tree = Tree::from_str(svg_string, &parse_options)?;
-        // TODO: either handle or forbid text nodes
-        if tree.has_text_nodes() {
+    pub fn add_svg(&mut self, svg: Tree, x_pos: Length, y_pos: Length, scale: Rational64) -> Result<(), Error> {
+        if svg.has_text_nodes() {
             return Err(Error::Other("Text Nodes in tree".to_string()));
         }
-        let new_operations = loop_nodes(tree.root(), x_pos, y_pos, scale)?;
+        let new_operations = loop_nodes(svg.root(), x_pos, y_pos, scale)?;
         self.operations.extend(new_operations);
         Ok(())
     }
 }
 /// `loop_nodes` loops over a SVG tree or subtree and outputs a vector of PDF operations
-fn loop_nodes(
-    parent: &usvg::Group,
-    x_pos: Length,
-    y_pos: Length,
-    scale: Option<scale::ScalingFactor>,
-) -> Result<Vec<Operation>, Error> {
+fn loop_nodes(parent: &usvg::Group, x_pos: Length, y_pos: Length, scale: Rational64) -> Result<Vec<Operation>, Error> {
     let mut group_operations = Vec::new();
     for node in parent.children() {
         //TODO: investigate subroots
@@ -322,20 +297,9 @@ fn loop_nodes(
 /// full size, represented as `a`:`b`.
 /// For example, 1:2 would double the size of the object on the page, relative to its actual size,
 /// and 2:1 would half the size of the object. This is equal scaling in both X and Y direction.
-fn convert_path(
-    path: &usvg::Path,
-    x_pos: Length,
-    y_pos: Length,
-    scale: Option<scale::ScalingFactor>,
-) -> Result<Vec<Operation>, Error> {
+fn convert_path(path: &usvg::Path, x_pos: Length, y_pos: Length, scale: Rational64) -> Result<Vec<Operation>, Error> {
     use usvg::tiny_skia_path::{PathSegment, Point};
     let mut new_operations = Vec::new();
-
-    let int_scale: f32 = if let Some(scale) = scale {
-        f32::from(scale.a / scale.b)
-    } else {
-        1.0
-    };
 
     //TODO: determine if we need to start with m operation by looking at the first point in
     //data.points()
@@ -344,16 +308,19 @@ fn convert_path(
         match segment {
             PathSegment::MoveTo(p) => {
                 let mut scaled_p = p;
-                scaled_p.x *= int_scale;
-                scaled_p.y *= int_scale;
+                scaled_p.scale(
+                    scale
+                        .to_f32()
+                        .ok_or(Error::Other("Converting from Rational64 to f32 failed".to_string()))?,
+                );
                 last_point = scaled_p;
                 // begin a new path (subpath in pdf language) by moving the current point to
-                // coordinates (x,y)
+                // coordinates (x,y) scaled by scale
                 let x = Rational64::approximate_float(scaled_p.x)
-                    .ok_or(Error::Other("Converting from Rational64 to f64 failed".to_string()))?
+                    .ok_or(Error::Other("Converting from f32 to Rational64 failed".to_string()))?
                     * x_pos;
                 let y = Rational64::approximate_float(scaled_p.y)
-                    .ok_or(Error::Other("Converting from Rational64 to f64 failed".to_string()))?
+                    .ok_or(Error::Other("Converting from f32 to Rational64 failed".to_string()))?
                     * y_pos;
                 new_operations.push(Operation::new(
                     "m",
@@ -364,7 +331,7 @@ fn convert_path(
                             } else {
                                 x.get::<point_printers>()
                                     .to_f64()
-                                    .ok_or(Error::Other("Converting from Rational64 to f64 failed".to_string()))?
+                                    .ok_or(Error::Other("Converting from f32 to Rational64 failed".to_string()))?
                                     .into()
                             }
                         },
@@ -374,7 +341,7 @@ fn convert_path(
                             } else {
                                 y.get::<point_printers>()
                                     .to_f64()
-                                    .ok_or(Error::Other("Converting from Rational64 to f64 failed".to_string()))?
+                                    .ok_or(Error::Other("Converting from f32 to Rational64 failed".to_string()))?
                                     .into()
                             }
                         },
@@ -383,8 +350,11 @@ fn convert_path(
             }
             PathSegment::LineTo(p) => {
                 let mut scaled_p = p;
-                scaled_p.x *= int_scale;
-                scaled_p.y *= int_scale;
+                scaled_p.scale(
+                    scale
+                        .to_f32()
+                        .ok_or(Error::Other("Converting from Rational64 to f32 failed".to_string()))?,
+                );
                 last_point = scaled_p;
                 // append a straight line segment from current point to the point (x,y).
                 new_operations.push(Operation::new("l", vec![scaled_p.x.into(), scaled_p.y.into()]));
@@ -394,11 +364,17 @@ fn convert_path(
             // p0 is control point, p1 is end point
             PathSegment::QuadTo(p0, p1) => {
                 let mut scaled_p0 = p0;
-                scaled_p0.x *= int_scale;
-                scaled_p0.y *= int_scale;
+                scaled_p0.scale(
+                    scale
+                        .to_f32()
+                        .ok_or(Error::Other("Converting from Rational64 to f32 failed".to_string()))?,
+                );
                 let mut scaled_p1 = p1;
-                scaled_p1.x *= int_scale;
-                scaled_p1.y *= int_scale;
+                scaled_p1.scale(
+                    scale
+                        .to_f32()
+                        .ok_or(Error::Other("Converting from Rational64 to f32 failed".to_string()))?,
+                );
                 // create psuedo control points for cubic from quadratic.
                 // Formuala from https://stackoverflow.com/a/3162732/3342767
 
@@ -436,14 +412,23 @@ fn convert_path(
             // p0 is begining control point, p1 is end control point, p2 is end point
             PathSegment::CubicTo(p0, p1, p2) => {
                 let mut scaled_p0 = p0;
-                scaled_p0.x *= int_scale;
-                scaled_p0.y *= int_scale;
+                scaled_p0.scale(
+                    scale
+                        .to_f32()
+                        .ok_or(Error::Other("Converting from Rational64 to f32 failed".to_string()))?,
+                );
                 let mut scaled_p1 = p1;
-                scaled_p1.x *= int_scale;
-                scaled_p1.y *= int_scale;
+                scaled_p1.scale(
+                    scale
+                        .to_f32()
+                        .ok_or(Error::Other("Converting from Rational64 to f32 failed".to_string()))?,
+                );
                 let mut scaled_p2 = p2;
-                scaled_p2.x *= int_scale;
-                scaled_p2.y *= int_scale;
+                scaled_p2.scale(
+                    scale
+                        .to_f32()
+                        .ok_or(Error::Other("Converting from Rational64 to f32 failed".to_string()))?,
+                );
                 last_point = scaled_p2;
                 // append a cubic bezier curve to current path.
                 // Last 2 points are end point,
@@ -474,12 +459,7 @@ fn convert_path(
 /// `convert_image` converts an embedded image in an SVG into a vector of PDF operations.
 ///
 /// Currently ignores all embedded images other than SVGs.
-fn convert_image(
-    image: &usvg::Image,
-    x_pos: Length,
-    y_pos: Length,
-    scale: Option<scale::ScalingFactor>,
-) -> Result<Vec<Operation>, Error> {
+fn convert_image(image: &usvg::Image, x_pos: Length, y_pos: Length, scale: Rational64) -> Result<Vec<Operation>, Error> {
     use usvg::ImageKind;
     match &image.kind() {
         ImageKind::JPEG(_) | ImageKind::PNG(_) | ImageKind::GIF(_) | ImageKind::WEBP(_) => {
@@ -784,13 +764,13 @@ impl<'a> PDFDocument<'a> {
                     page.page_size.size().0.get::<point_printers>()
                             .to_f64()
                             .ok_or(Error::Other(
-                                "Converting from Rational64 to f64 failed".to_string(),
+                                "Converting from f32 to Rational64 failed".to_string(),
                             ))?
                             .into(),
                     page.page_size.size().1.get::<point_printers>()
                             .to_f64()
                             .ok_or(Error::Other(
-                                "Converting from Rational64 to f64 failed".to_string(),
+                                "Converting from f32 to Rational64 failed".to_string(),
                             ))?
                             .into(),
                 ],
@@ -826,14 +806,14 @@ impl<'a> PDFDocument<'a> {
                 self.default_page_size.size().0.get::<point_printers>()
                             .to_f64()
                             .ok_or(Error::Other(
-                                "Converting from Rational64 to f64 failed".to_string(),
+                                "Converting from f32 to Rational64 failed".to_string(),
                             ))?
                             .into(),
 
                 self.default_page_size.size().1.get::<point_printers>()
                             .to_f64()
                             .ok_or(Error::Other(
-                                "Converting from Rational64 to f64 failed".to_string(),
+                                "Converting from f32 to Rational64 failed".to_string(),
                             ))?
                             .into(),
 

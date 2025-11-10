@@ -20,3 +20,4 @@ pub trait FromFile {
     /// `datafile` returns the datafile path which this instance was read in from
     fn datafile(&self) -> PathBuf;
 }
+//TODO: add trait for vis_rep

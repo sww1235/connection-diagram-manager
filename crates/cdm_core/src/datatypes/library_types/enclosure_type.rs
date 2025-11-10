@@ -22,7 +22,7 @@ pub struct EnclosureType {
     /// Catalog information
     pub catalog: Option<Catalog>,
     /// Dimensional information of enclosure
-    pub dimensions: Option<Dimension>,
+    pub dimensions: Dimension,
     /// Main material of Enclosure Type
     pub material: Option<String>,
     /// Usable Width

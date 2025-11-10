@@ -1865,12 +1865,14 @@ user9 = <str>
 # dictionary of tables of sublocations/mounting locations within the enclosure
 # used to represent DIN rail, or just specific coordinate locations in a specific location
 
-# examples of subenclosures would be coordinate pairs on a backplane,
+# TODO: finish this
+# Individual mount_points are defined as an enum with the following options:
+# - CoordinatePair => Represents a coordinate pair on the backplane
+# - MountingRail => Represents a mounting rail installed on a backplane
 # individual DIN rails on a backplane, and then the distance along the DIN rail
 # individual keystone slots on a panel
 # rack units / sub rack units within a rack
-# TODO: flesh this out more
-[enclosures.<str>.mount_points.<str>]
+[enclosures.<str>.mount_points.CoordinatePair.<str>]
 
 # optional mounting rail id
 # this ID must be defined in the project.
