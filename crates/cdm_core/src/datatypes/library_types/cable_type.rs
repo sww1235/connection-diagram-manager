@@ -1,4 +1,7 @@
-use std::{collections::HashMap, path::PathBuf};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 
 use serde::{Deserialize, Serialize};
 
@@ -14,6 +17,7 @@ use crate::{
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has
 /// one core, then it is a wire, not a cable.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(clippy::partial_pub_fields)]
 pub struct CableType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -34,14 +38,18 @@ pub struct CableType {
     /// map of cores in cable
     pub cores: HashMap<String, CableCore>,
     /// vector of exterior insulation/shielding layers
-    pub insul_layers: Vec<CableLayer>,
+    pub layers: Vec<CableLayer>,
     /// datafile the struct instance was read in from
-    pub contained_datafile_path: PathBuf,
+    #[serde(skip)]
+    pub(super) contained_datafile_path: PathBuf,
 }
 
 impl FromFile for CableType {
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
+    }
+    fn set_datafile(&mut self, datafile_path: &Path) {
+        self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
 

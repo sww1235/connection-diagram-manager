@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -18,6 +18,7 @@ use crate::{
 /// functional (model/part number/manufacturer part number
 /// may all be equivalent in some cases)
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(clippy::partial_pub_fields)]
 pub struct WireType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -58,10 +59,14 @@ pub struct WireType {
     /// appearance in schematics
     pub line_style: Option<LineStyle>,
     /// datafile the struct instance was read in from
-    pub contained_datafile_path: PathBuf,
+    #[serde(skip)]
+    pub(super) contained_datafile_path: PathBuf,
 }
 impl FromFile for WireType {
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
+    }
+    fn set_datafile(&mut self, datafile_path: &Path) {
+        self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }

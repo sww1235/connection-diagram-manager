@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -14,6 +14,7 @@ use crate::{
 
 /// `MountingRail` represents an individual mounting rail in a project
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(clippy::partial_pub_fields)]
 pub struct MountingRail {
     /// ID of type of mounting rail
     pub mounting_rail_type: String,
@@ -26,12 +27,16 @@ pub struct MountingRail {
     /// User defined fields
     pub user_fields: Option<UserFields>,
     /// datafile the struct instance was read in from
-    pub contained_datafile_path: PathBuf,
+    #[serde(skip)]
+    pub(super) contained_datafile_path: PathBuf,
 }
 
 impl FromFile for MountingRail {
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
+    }
+    fn set_datafile(&mut self, datafile_path: &Path) {
+        self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
 

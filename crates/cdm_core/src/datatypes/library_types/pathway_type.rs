@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -17,6 +17,7 @@ use crate::{
 ///
 /// Examples of Pathways include, conduit, cable tray, free air
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(clippy::partial_pub_fields)]
 pub struct PathwayType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -45,10 +46,14 @@ pub struct PathwayType {
     /// appearance in schematics
     pub line_style: Option<LineStyle>,
     /// datafile the struct instance was read in from
-    pub contained_datafile_path: PathBuf,
+    #[serde(skip)]
+    pub(super) contained_datafile_path: PathBuf,
 }
 impl FromFile for PathwayType {
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
+    }
+    fn set_datafile(&mut self, datafile_path: &Path) {
+        self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }

@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -13,6 +13,7 @@ use crate::{
 /// `Cable` represents a particular instance of a `CableType`
 /// It represents a physical item.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(clippy::partial_pub_fields)]
 pub struct Cable {
     /// The `CableType` key of this instance
     pub cable_type: String,
@@ -31,11 +32,15 @@ pub struct Cable {
     /// User defined fields
     pub user_fields: Option<UserFields>,
     /// datafile the struct instance was read in from
-    pub contained_datafile_path: PathBuf,
+    #[serde(skip)]
+    pub(super) contained_datafile_path: PathBuf,
 }
 
 impl FromFile for Cable {
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
+    }
+    fn set_datafile(&mut self, datafile_path: &Path) {
+        self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }

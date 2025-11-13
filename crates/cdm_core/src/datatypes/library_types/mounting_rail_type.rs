@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -15,6 +15,7 @@ use crate::{
 /// `MountingRailType`s are defined in a horizontal orientation for consistency. Any of the
 /// provided SVG files must be defined to accomodate this.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(clippy::partial_pub_fields)]
 pub struct MountingRailType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -70,10 +71,14 @@ pub struct MountingRailType {
     #[expect(missing_docs)]
     pub end_image: Option<Svg>,
     /// datafile the struct instance was read in from
-    pub contained_datafile_path: PathBuf,
+    #[serde(skip)]
+    pub(super) contained_datafile_path: PathBuf,
 }
 impl FromFile for MountingRailType {
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
+    }
+    fn set_datafile(&mut self, datafile_path: &Path) {
+        self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }

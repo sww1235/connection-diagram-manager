@@ -1,4 +1,7 @@
-use std::{collections::HashMap, path::PathBuf};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 
 use serde::{Deserialize, Serialize};
 
@@ -13,6 +16,7 @@ use crate::{
 /// `Location` represents a physical instance of a locationType
 /// TODO: add page/sheet number for pdf generation and printing
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(clippy::partial_pub_fields)]
 pub struct Enclosure {
     /// Type of location
     pub enclosure_type: String,
@@ -29,7 +33,8 @@ pub struct Enclosure {
     /// `mount_point` - Actual locations of associated equipment within location
     pub mount_points: HashMap<String, MountPoint>,
     /// datafile the struct instance was read in from
-    pub contained_datafile_path: PathBuf,
+    #[serde(skip)]
+    pub(super) contained_datafile_path: PathBuf,
 }
 /// `MountPoint` represents a particular physical x/y/z within an `Enclosure`
 ///
@@ -68,5 +73,8 @@ pub enum MountPoint {
 impl FromFile for Enclosure {
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
+    }
+    fn set_datafile(&mut self, datafile_path: &Path) {
+        self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }

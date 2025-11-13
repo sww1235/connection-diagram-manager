@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -11,6 +11,7 @@ use crate::{
 ///
 /// A `TerminalStrip` is a collection or group of 1 or more terminal blocks
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(clippy::partial_pub_fields)]
 pub struct TerminalStrip {
     /// structured identifier of terminal strip
     pub identifier: Option<String>,
@@ -31,7 +32,8 @@ pub struct TerminalStrip {
     /// Jumpers in terminal strip
     pub jumpers: Vec<Jumper>,
     /// datafile the struct instance was read in from
-    pub contained_datafile_path: PathBuf,
+    #[serde(skip)]
+    pub(super) contained_datafile_path: PathBuf,
 }
 
 /// `Terminal` represents one element of a terminal strip, be it terminal block or
@@ -74,5 +76,8 @@ pub struct Jumper {
 impl FromFile for TerminalStrip {
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
+    }
+    fn set_datafile(&mut self, datafile_path: &Path) {
+        self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }

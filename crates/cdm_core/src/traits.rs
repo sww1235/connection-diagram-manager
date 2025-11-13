@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use crate::{datatypes::library_types::Library, error::Error};
 
@@ -14,10 +14,13 @@ pub trait Connector {
     //TODO: add more methods here
 }
 
-/// `FromFile` indicates a data type was read in from a file, and contains the name of the file it
-/// was read in from.
+/// `FromFile` indicates a data type was read in from a file and can be read in from a file, and
+/// contains the name of the file it was read in from.
 pub trait FromFile {
     /// `datafile` returns the datafile path which this instance was read in from
     fn datafile(&self) -> PathBuf;
+
+    /// `set_file` sets the datafile path in the struct
+    fn set_datafile(&mut self, datafile_path: &Path);
 }
 //TODO: add trait for vis_rep

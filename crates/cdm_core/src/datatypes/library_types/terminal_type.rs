@@ -1,4 +1,7 @@
-use std::{collections::HashMap, path::PathBuf};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 
 use serde::{Deserialize, Serialize};
 
@@ -21,7 +24,7 @@ use crate::{
 /// Ferrules, ring/space/fork terminals, etc should be defined as connectors since they associate
 /// with wires
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::struct_excessive_bools)]
+#[expect(clippy::struct_excessive_bools, clippy::partial_pub_fields)]
 pub struct TerminalType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -72,11 +75,15 @@ pub struct TerminalType {
     /// Which terminal connections are connected
     pub internal_connections: Vec<InternalConnection>,
     /// datafile the struct instance was read in from
-    pub contained_datafile_path: PathBuf,
+    #[serde(skip)]
+    pub(super) contained_datafile_path: PathBuf,
 }
 impl FromFile for TerminalType {
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
+    }
+    fn set_datafile(&mut self, datafile_path: &Path) {
+        self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
 
@@ -191,6 +198,7 @@ pub struct InternalConnection {
 /// `TerminalStripJumperType` represents a manufactured jumper
 /// that jumps between multiple terminals in a `TerminalStrip`
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(clippy::partial_pub_fields)]
 pub struct TerminalStripJumperType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -208,17 +216,22 @@ pub struct TerminalStripJumperType {
     /// specify an array of `terminal_block_type`s per pin
     pub pin_compatible_terminal_types: Option<Vec<Vec<String>>>,
     /// datafile the struct instance was read in from
-    pub contained_datafile_path: PathBuf,
+    #[serde(skip)]
+    pub(super) contained_datafile_path: PathBuf,
 }
 impl FromFile for TerminalStripJumperType {
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
+    }
+    fn set_datafile(&mut self, datafile_path: &Path) {
+        self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
 
 /// `TerminalAccessoryType` represents Terminal accessories are items that insert into a terminal
 /// like fuse holders, component holders, disconnect switches, etc
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(clippy::partial_pub_fields)]
 pub struct TerminalAccessoryType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -235,11 +248,15 @@ pub struct TerminalAccessoryType {
     /// color of accessory
     pub color: Option<Color>,
     /// datafile the struct instance was read in from
-    pub contained_datafile_path: PathBuf,
+    #[serde(skip)]
+    pub(super) contained_datafile_path: PathBuf,
 }
 impl FromFile for TerminalAccessoryType {
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
+    }
+    fn set_datafile(&mut self, datafile_path: &Path) {
+        self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
 
@@ -249,6 +266,7 @@ impl FromFile for TerminalAccessoryType {
 /// `terminal_strip` linearly and interface with terminals This does not include things like DIN
 /// rail stops.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(clippy::partial_pub_fields)]
 pub struct TerminalStripAccessoryType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -265,10 +283,14 @@ pub struct TerminalStripAccessoryType {
     /// color of accessory
     pub color: Option<Color>,
     /// datafile the struct instance was read in from
-    pub contained_datafile_path: PathBuf,
+    #[serde(skip)]
+    pub(super) contained_datafile_path: PathBuf,
 }
 impl FromFile for TerminalStripAccessoryType {
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
+    }
+    fn set_datafile(&mut self, datafile_path: &Path) {
+        self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }

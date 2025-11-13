@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -9,6 +9,7 @@ use crate::{
 
 /// `SchematicSymbol` represents an instance of a `SchematicSymbolType`
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(clippy::partial_pub_fields)]
 pub struct SchematicSymbol {
     /// type of schematic symbol
     pub symbol_type: String,
@@ -19,7 +20,8 @@ pub struct SchematicSymbol {
     /// User defined fields
     pub user_fields: Option<UserFields>,
     /// datafile the struct instance was read in from
-    pub contained_datafile_path: PathBuf,
+    #[serde(skip)]
+    pub(super) contained_datafile_path: PathBuf,
 }
 
 /// What type of Object does this symbol represent
@@ -36,5 +38,8 @@ pub enum SymbolType {
 impl FromFile for SchematicSymbol {
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
+    }
+    fn set_datafile(&mut self, datafile_path: &Path) {
+        self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
