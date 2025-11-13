@@ -137,7 +137,10 @@ pub fn render_enclosure(
     // loop through all mounting_points in Enclosure and render them if they are mounting rails
     let mut mounting_rails_rendered = Vec::new();
     for (mount_id, mount_point) in &enclosure.mount_points {
-        if let MountPoint::MountingRail { x, y, mounting_rail, .. } = mount_point && !mounting_rails_rendered.contains(mount_id) {
+        if let MountPoint::MountingRail { x, y, mounting_rail, .. } = mount_point
+            // only want to render each rail once
+            && !mounting_rails_rendered.contains(mount_id)
+        {
             pdf_page.add_svg(
                 project
                     .mounting_rails
@@ -146,12 +149,13 @@ pub fn render_enclosure(
                         id: mounting_rail.clone(),
                         project_type: "MountingRail".to_string(),
                     })?
-                    .vis_rep()?
+                    .vis_rep(library)?
                     .get_tree(),
                 x.value,
                 y.value,
                 scale,
             )?;
+            // only want to render each rail once
             mounting_rails_rendered.push(mount_id.clone());
         }
     }
@@ -196,9 +200,6 @@ pub fn render_enclosure(
                         y.value + distance.value,
                         scale,
                     )?;
-                }
-                _ => {
-                    unimplemented!()
                 }
             }
             equipment_ids_in_location.push(equipment_id.clone());

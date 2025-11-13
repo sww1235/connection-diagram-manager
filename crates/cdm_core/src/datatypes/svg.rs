@@ -30,6 +30,11 @@ impl Svg {
     pub fn get_tree(self) -> Tree {
         self.0
     }
+    #[must_use]
+    /// Create a `Svg` from a `[usvg::Tree]`
+    pub fn from_tree(tree: Tree) -> Self {
+        Self(tree)
+    }
 }
 
 impl Serialize for Svg {
