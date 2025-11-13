@@ -23,7 +23,10 @@ pub mod wire;
 /// `connection` represents a connection between two different elements
 pub mod connection;
 
-use std::{collections::HashMap, path::PathBuf};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 
 use serde::{Deserialize, Serialize};
 
@@ -31,6 +34,7 @@ use crate::{error::Error, traits::FromFile, util_functions};
 
 /// `Project` represents all project specific data used in program
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Project {
     /// contains all cables read in from files, and/or added in via program logic
     pub cables: HashMap<String, cable::Cable>,

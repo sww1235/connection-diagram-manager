@@ -25,6 +25,7 @@ pdf_helper = {path = "crates/pdf_helper/", version = "~0"}
 num-rational = { version = "~0.4", features = ["std", "serde", "num-bigint"] }
 num-traits = { version = "~0.2" }
 anyhow = { version = "~1" }
+pretty_assertions = { version = "~1.4"}
 
 
 #https://stackoverflow.com/a/74545562/3342767

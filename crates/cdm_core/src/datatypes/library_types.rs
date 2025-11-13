@@ -20,7 +20,7 @@ pub mod terminal_type;
 /// `wire_type` represents an individual wire with optional insulation
 pub mod wire_type;
 
-use std::collections::HashMap;
+use std::{collections::HashMap, path::Path};
 
 use serde::{Deserialize, Serialize};
 
@@ -28,6 +28,7 @@ use crate::{error::Error, traits::FromFile, util_functions};
 
 /// `Library` represents all library data used in program
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Library {
     /// contains all cable types read in from file, and/or added in via program logic
     pub cable_types: HashMap<String, cable_type::CableType>,
@@ -179,6 +180,23 @@ impl Library {
 
 #[cfg(test)]
 mod tests {
+    use std::{collections::HashMap, fs, path::PathBuf};
+
+    use num_rational::Rational64;
+    use pretty_assertions::assert_eq;
+    use uom::si::area::{Area, square_inch};
+
+    use crate::{
+        datatypes::{
+            library_types::{
+                Library,
+                cable_type::{CableCore, CableLayer, CableType, LayerType},
+            },
+            unit_helper::CrossSectionalArea,
+            util_types::CrossSection,
+        },
+        traits::FromFile,
+    };
 
     // TODO:  testing ideas (for both project and library):
     // - test import of datafile containing each individual object
@@ -195,5 +213,79 @@ mod tests {
     // correct order
     // - same with project types, except with both library and project assets
     #[test]
-    fn read_datafile_library() {}
+    fn read_datafile_library_basic() {}
+
+    // TODO: For cables:
+    // - minimal realistic (soow14_3)
+    // - minimal with multiple layers
+    // - minimal with 1 layer and 1 core
+    // - full with multiple cores and multiple layers
+    // - Vary the cross section
+    #[test]
+    fn read_datafile_library_cable_minimal_realistic() {
+        let soow14_3 = CableType {
+            cross_sect_area: CrossSectionalArea {
+                original_unit: "square inch".to_string(),
+                value: Area::new::<square_inch>(Rational64::new(14389229, 64008858)),
+            },
+            cross_section: CrossSection::Circular,
+            layers: {
+                let mut layers = Vec::new();
+                layers.push(CableLayer {
+                    layer_number: 1,
+                    layer_type: LayerType::Jacket,
+                    material: None,
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    rating: None,
+                    thickness: None,
+                    color: None,
+                });
+                layers
+            },
+            cores: {
+                let mut cores = HashMap::new();
+                cores.insert("green".to_string(), CableCore::WireType("soow14_green_inner".to_string()));
+                cores.insert("white".to_string(), CableCore::WireType("soow14_white_inner".to_string()));
+                cores.insert("black".to_string(), CableCore::WireType("soow14_black_inner".to_string()));
+                cores
+            },
+            cable_type_code: None,
+            catalog: None,
+            dimensions: None,
+            line_style: None,
+            contained_datafile_path: PathBuf::from("../../resources/test/library_tests/cable_type_test_minimal.toml")
+                .canonicalize()
+                .unwrap(),
+        };
+        let test_library = Library {
+            cable_types: {
+                let mut cable_types = HashMap::new();
+                cable_types.insert("soow14_3".to_string(), soow14_3);
+                cable_types
+            },
+            connector_types: HashMap::new(),
+            enclosure_types: HashMap::new(),
+            equipment_types: HashMap::new(),
+            mounting_rail_types: HashMap::new(),
+            pathway_types: HashMap::new(),
+            schematic_symbol_types: HashMap::new(),
+            term_cable_types: HashMap::new(),
+            terminal_types: HashMap::new(),
+            terminal_strip_jumper_types: HashMap::new(),
+            terminal_accessory_types: HashMap::new(),
+            terminal_strip_accessory_types: HashMap::new(),
+            wire_types: HashMap::new(),
+        };
+        let library_filepath = PathBuf::from("../../resources/test/library_tests/cable_type_test_minimal.toml")
+            .canonicalize()
+            .unwrap();
+        let library_file_contents = fs::read_to_string(&library_filepath).unwrap();
+        let mut library_file: Library = toml::from_str(&library_file_contents).unwrap();
+        library_file.add_datafile_paths(&library_filepath);
+        println!("{:?}", test_library.cable_types["soow14_3"].cross_sect_area);
+        println!("{:?}", library_file.cable_types["soow14_3"].cross_sect_area);
+        assert_eq!(test_library, library_file)
+    }
 }
