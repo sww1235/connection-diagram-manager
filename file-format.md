@@ -2039,14 +2039,17 @@ user9 = <str>
 # This is because there are no human generated identifiers. Individual connections are tracked internally.
 
 # <str> for both end1 and end2 are dot joined ids of the specific objects
-# prefixed with codes indicating what object type it is.
 # for example to connect a wire within a cable to a connection on a terminal block
 # TODO finish this example
 [[connections]]
 
 end1 = <str>
 
+end1_type = <str>
+
 end2 = <str>
+
+end2_type = <str>
 
 
 # This dictionary contains schematic symbols that represent equipment and components
