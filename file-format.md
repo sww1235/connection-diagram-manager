@@ -714,14 +714,14 @@ supplier_part_number = <str>
 # wire insulation color is defined on individual wire instance
 
 # Cable_types can be composed of cable_types.
-[cable_type]
+[cable_types]
 
 # Table (dictionary) representing one cable type
 # The `<str>` is the cable type identifier. This is a `key` in TOML and
 # must comply with the TOML spec.
 
 # Most keys in a cable_type sub-table are optional
-[cable_type.<str>]
+[cable_types.<str>]
 
 # SOOW, FC, FCC, TC, MC, AC, MC, UF, PLTC, MV, etc
 cable_type_code = <str>
@@ -736,10 +736,7 @@ cross_section = <str>
 # define a new array instance for each layer
 # Includes insulation, semiconductor, shields, screens,
 # concentric neutrals, jackets, mechanical armor
-[[cable_type.<str>.layer]]
-
-# table of attributes for an individual layer
-[cable_type.<str>.layer.<str>]
+[[cable_types.<str>.layers]]
 
 # counted from inside to outside of cable
 layer_number = <int>
@@ -771,23 +768,19 @@ color = <str>
 
 # dictionary of wire or cable cores inside cable.
 # strength members are treated as a wire
-[cable_type.<str>.cores]
+[cable_types.<str>.cores]
 
 # second <str> is identifier of individual core. Must be unique per cable_type
-[cable_type.<str>.cores.<str>]
-
-
-# third <str> should either be `wire` or `cable` to
-# indicate the core is a wire or a cable
-[cable_type.<str>.cores.<str>.<str>]
+[cable_types.<str>.cores.<str>]
 
 # identifier of wire/cable type that core is
-contained_type = <str>
+# <contained_type> can be either WireType or CableType
+<contained_type> = <str>
 
 # all items here are optional
 # and will use defaults or cable outer jacket/insulation color if not specified
 # schematic appearance of linear items
-[cable_type.<str>.line_style]
+[cable_types.<str>.line_style]
 
 color = <str>
 
@@ -801,7 +794,7 @@ line_appearance = [<int>]
 
 # optional
 # Dimension subtable for each cable_type. Groups common properties
-[cable_type.<str>.dimensions]
+[cable_types.<str>.dimensions]
 
 # height of cable
 height = {value = [<num>,<denom>], original_unit = <str>}
@@ -815,7 +808,7 @@ diameter = {value = [<num>,<denom>], original_unit = <str>}
 
 # Catalog subtable for each cable_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[cable_type.<str>.catalog]
+[cable_types.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
@@ -1538,17 +1531,17 @@ Project files contain definitions for each unique entity, part or component in t
 
 Projects consist of the following entities:
 
-- Cable
+- Cables
 - Connections
-- Connector
-- Enclosure
+- Connectors
+- Enclosures
 - Equipment
-- Mounting Rail
-- Pathway
-- Schematic Symbol
-- Term Cable
-- Terminal Strip
-- Wire
+- Mounting Rails
+- Pathways
+- Schematic Symbols
+- Term Cables
+- Terminal Strips
+- Wires
 
 ```toml
 # dictionary of equipment defined in project

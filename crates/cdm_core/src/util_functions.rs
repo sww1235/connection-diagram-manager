@@ -17,6 +17,10 @@ pub fn merge_hashmaps<V>(
 where
     V: FromFile,
 {
+    // don't need to do any work if test map is empty
+    if test_map.is_empty() {
+        return Ok(());
+    }
     for (key, value) in test_map {
         if let Entry::Vacant(e) = origin_map.entry(key.clone()) {
             e.insert(value);
