@@ -24,7 +24,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{error::Error, util_functions};
+use crate::{error::Error, traits::FromFile, util_functions};
 
 /// `Library` represents all library data used in program
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
@@ -92,6 +92,88 @@ impl Library {
         )?;
         util_functions::merge_hashmaps(&mut self.wire_types, test_map.wire_types, test_file)?;
         Ok(())
+    }
+
+    /// Inserts datafile path into all structs in the called library
+    pub fn add_datafile_paths(&mut self, datafile_path: &Path) {
+        // Cable Types
+        if !self.cable_types.is_empty() {
+            for cable_type in self.cable_types.values_mut() {
+                cable_type.set_datafile(datafile_path);
+            }
+        }
+        // Connector Types
+        if !self.connector_types.is_empty() {
+            for connector_type in self.connector_types.values_mut() {
+                connector_type.set_datafile(datafile_path);
+            }
+        }
+        // Enclosure Types
+        if !self.enclosure_types.is_empty() {
+            for enclosure_type in self.enclosure_types.values_mut() {
+                enclosure_type.set_datafile(datafile_path);
+            }
+        }
+        // Equipment Types
+        if !self.equipment_types.is_empty() {
+            for equipment_type in self.equipment_types.values_mut() {
+                equipment_type.set_datafile(datafile_path);
+            }
+        }
+        // Mounting Rail Types
+        if !self.mounting_rail_types.is_empty() {
+            for mounting_rail_type in self.mounting_rail_types.values_mut() {
+                mounting_rail_type.set_datafile(datafile_path);
+            }
+        }
+        // Pathway Types
+        if !self.pathway_types.is_empty() {
+            for pathway_type in self.pathway_types.values_mut() {
+                pathway_type.set_datafile(datafile_path);
+            }
+        }
+        // Schematic Symbol Types
+        if !self.schematic_symbol_types.is_empty() {
+            for schematic_symbol_type in self.schematic_symbol_types.values_mut() {
+                schematic_symbol_type.set_datafile(datafile_path);
+            }
+        }
+        // Term Cable Types
+        if !self.term_cable_types.is_empty() {
+            for term_cable_type in self.term_cable_types.values_mut() {
+                term_cable_type.set_datafile(datafile_path);
+            }
+        }
+        // Terminal Types
+        if !self.terminal_types.is_empty() {
+            for terminal_type in self.terminal_types.values_mut() {
+                terminal_type.set_datafile(datafile_path);
+            }
+        }
+        // Terminal Strip Jumper Types
+        if !self.terminal_strip_jumper_types.is_empty() {
+            for terminal_strip_jumper_type in self.terminal_strip_jumper_types.values_mut() {
+                terminal_strip_jumper_type.set_datafile(datafile_path);
+            }
+        }
+        // Terminal Accessory Types
+        if !self.terminal_accessory_types.is_empty() {
+            for terminal_accessory_type in self.terminal_accessory_types.values_mut() {
+                terminal_accessory_type.set_datafile(datafile_path);
+            }
+        }
+        // Terminal Strip Accessory Types
+        if !self.terminal_strip_accessory_types.is_empty() {
+            for terminal_strip_accessory_type in self.terminal_strip_accessory_types.values_mut() {
+                terminal_strip_accessory_type.set_datafile(datafile_path);
+            }
+        }
+        // Wire Types
+        if !self.wire_types.is_empty() {
+            for wire_type in self.wire_types.values_mut() {
+                wire_type.set_datafile(datafile_path);
+            }
+        }
     }
 }
 

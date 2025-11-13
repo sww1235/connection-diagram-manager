@@ -27,7 +27,7 @@ use std::{collections::HashMap, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{error::Error, util_functions};
+use crate::{error::Error, traits::FromFile, util_functions};
 
 /// `Project` represents all project specific data used in program
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
@@ -78,6 +78,76 @@ impl Project {
         util_functions::merge_hashmaps(&mut self.terminal_strips, test_map.terminal_strips, test_file)?;
         util_functions::merge_hashmaps(&mut self.wires, test_map.wires, test_file)?;
         Ok(())
+    }
+    /// Inserts datafile path into all structs in the called project
+    pub fn add_datafile_paths(&mut self, datafile_path: &Path) {
+        // Cables
+        if !self.cables.is_empty() {
+            for cable in self.cables.values_mut() {
+                cable.set_datafile(datafile_path);
+            }
+        }
+        //TODO: finish this
+        // Connections
+        //if !self.connections.is_empty() {
+        //    for connection in self.connections.values_mut() {
+        //        connection.set_datafile(datafile_path);
+        //    }
+        //}
+        // Connectors
+        //if !self.connectors.is_empty() {
+        //    for connector in self.connectors.values_mut() {
+        //        connector.set_datafile(datafile_path);
+        //    }
+        //}
+        // Enclosures
+        if !self.enclosures.is_empty() {
+            for enclosure in self.enclosures.values_mut() {
+                enclosure.set_datafile(datafile_path);
+            }
+        }
+        // Equipment
+        if !self.equipment.is_empty() {
+            for equipment in self.equipment.values_mut() {
+                equipment.set_datafile(datafile_path);
+            }
+        }
+        // Mounting Rails
+        if !self.mounting_rails.is_empty() {
+            for mounting_rail in self.mounting_rails.values_mut() {
+                mounting_rail.set_datafile(datafile_path);
+            }
+        }
+        // Pathways
+        if !self.pathways.is_empty() {
+            for pathway in self.pathways.values_mut() {
+                pathway.set_datafile(datafile_path);
+            }
+        }
+        // Schematic Symbols
+        if !self.schematic_symbols.is_empty() {
+            for schematic_symbol in self.schematic_symbols.values_mut() {
+                schematic_symbol.set_datafile(datafile_path);
+            }
+        }
+        // Term Cables
+        if !self.term_cables.is_empty() {
+            for term_cable in self.term_cables.values_mut() {
+                term_cable.set_datafile(datafile_path);
+            }
+        }
+        // Terminal Strips
+        if !self.terminal_strips.is_empty() {
+            for terminal_strip in self.terminal_strips.values_mut() {
+                terminal_strip.set_datafile(datafile_path);
+            }
+        }
+        // Wires
+        if !self.wires.is_empty() {
+            for wire in self.wires.values_mut() {
+                wire.set_datafile(datafile_path);
+            }
+        }
     }
 }
 
