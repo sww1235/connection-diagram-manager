@@ -41,6 +41,8 @@ pub struct Library {
     pub mounting_rail_types: HashMap<String, mounting_rail_type::MountingRailType>,
     /// contains all pathway types read in from file, and/or added in via program logic
     pub pathway_types: HashMap<String, pathway_type::PathwayType>,
+    /// contains all schematic symbol types read in from file and/or added in via program logic
+    pub schematic_symbol_types: HashMap<String, schematic_symbol_type::SchematicSymbolType>,
     /// contains all terminated cable types read in from file, and/or added in via program logic
     pub term_cable_types: HashMap<String, term_cable_type::TermCableType>,
     /// contains all terminal types read in from file, and/or added in via program logic
