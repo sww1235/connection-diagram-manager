@@ -221,6 +221,8 @@ mod tests {
     // - minimal with 1 layer and 1 core
     // - full with multiple cores and multiple layers
     // - Vary the cross section
+    // - incorrect unit string
+    // - try with a few different unit strings
     #[test]
     fn read_datafile_library_cable_minimal_realistic() {
         let soow14_3 = CableType {

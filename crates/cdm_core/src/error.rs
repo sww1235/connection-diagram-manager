@@ -82,6 +82,9 @@ pub enum Error {
     /// Errors resulting from PDF generation
     #[error(transparent)]
     PDFGenerationError(#[from] PDFGenerationError),
+    /// Errors resulting from parsing unit name strings during Deserialize
+    #[error(transparent)]
+    UnitParsingError(#[from] UnitParsingError),
 }
 
 /// `PDFGenerationError` is the list of errors that can occur in `pdf_generation`
@@ -94,4 +97,13 @@ pub enum PDFGenerationError {
     #[error("PDF Creation Error: {0}")]
     /// Error resulting durin PDF Creation
     PDFCreationError(String),
+}
+
+/// `UnitParsingError` is the list of errors that can occur during Deserialization of units
+#[derive(Debug, Error)]
+#[non_exhaustive]
+pub enum UnitParsingError {
+    #[error("Unknown unit string {0}")]
+    /// Error resulting from an unknown unit string
+    UnknownUnit(String),
 }
