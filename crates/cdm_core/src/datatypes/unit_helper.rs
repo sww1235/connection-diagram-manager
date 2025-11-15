@@ -27,6 +27,7 @@ pub struct CrossSectionalArea {
 
 /// Struct representing `Electric Potential` values
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[serde(try_from = "IntermediateUnit")]
 pub struct ElectricPotential {
     /// contained uom Unit
     pub value: rational64::ElectricPotential,
@@ -36,6 +37,7 @@ pub struct ElectricPotential {
 
 /// Struct representing `Length` values
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[serde(try_from = "IntermediateUnit")]
 pub struct Length {
     /// contained uom Unit
     pub value: rational64::Length,
@@ -45,6 +47,7 @@ pub struct Length {
 
 /// Struct representing `TemperatureInterval` values
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[serde(try_from = "IntermediateUnit")]
 pub struct TemperatureInterval {
     /// contained uom Unit
     pub value: rational64::TemperatureInterval,
@@ -58,9 +61,10 @@ pub struct TemperatureInterval {
 
 /// Intermediate unit
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::missing_docs_in_private_items)]
 struct IntermediateUnit {
+    /// raw value read in from file
     value: Rational64,
+    /// original unit string in datafile
     original_unit: String,
 }
 //TODO: change output format to have fixed width output so the units and abbreviations line up
@@ -750,6 +754,408 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
                 value: rational64::Area::new::<square_yard>(item.value),
                 original_unit: item.original_unit,
             }),
+            x => Err(UnitParsingError::UnknownUnit(x.to_string())),
+        }
+    }
+}
+
+impl TryFrom<IntermediateUnit> for ElectricPotential {
+    type Error = UnitParsingError;
+    fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
+        match item.original_unit.as_str() {
+            "YV" | "yottavolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<yottavolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "ZV" | "zettavolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<zettavolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "EV" | "exavolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<exavolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "PV" | "petavolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<petavolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "TV" | "teravolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<teravolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "GV" | "gigavolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<gigavolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "MV" | "megavolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<megavolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "kV" | "kilovolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<kilovolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "hV" | "hectovolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<hectovolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "daV" | "decavolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<decavolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "V" | "volt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<volt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "dV" | "decivolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<decivolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "cV" | "centivolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<centivolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "mV" | "millivolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<millivolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "µV" | "microvolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<microvolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "nV" | "nanovolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<nanovolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "pV" | "picovolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<picovolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "fV" | "femtovolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<femtovolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "aV" | "attovolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<attovolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "zV" | "zeptovolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<zeptovolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "yV" | "yoctovolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<yoctovolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "abV" | "abvolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<abvolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "statV" | "statvolt" => Ok(Self {
+                value: rational64::ElectricPotential::new::<statvolt>(item.value),
+                original_unit: item.original_unit,
+            }),
+
+            x => Err(UnitParsingError::UnknownUnit(x.to_string())),
+        }
+    }
+}
+
+impl TryFrom<IntermediateUnit> for Length {
+    type Error = UnitParsingError;
+    #[expect(clippy::too_many_lines)]
+    fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
+        match item.original_unit.as_str() {
+            "Ym" | "yottameter" => Ok(Self {
+                value: rational64::Length::new::<yottameter>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "Zm" | "zettameter" => Ok(Self {
+                value: rational64::Length::new::<zettameter>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "Em" | "exameter" => Ok(Self {
+                value: rational64::Length::new::<exameter>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "Pm" | "petameter" => Ok(Self {
+                value: rational64::Length::new::<petameter>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "Tm" | "terameter" => Ok(Self {
+                value: rational64::Length::new::<terameter>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "Gm" | "gigameter" => Ok(Self {
+                value: rational64::Length::new::<gigameter>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "Mm" | "megameter" => Ok(Self {
+                value: rational64::Length::new::<megameter>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "km" | "kilometer" => Ok(Self {
+                value: rational64::Length::new::<kilometer>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "hm" | "hectometer" => Ok(Self {
+                value: rational64::Length::new::<hectometer>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "dam" | "decameter" => Ok(Self {
+                value: rational64::Length::new::<decameter>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "m" | "meter" => Ok(Self {
+                value: rational64::Length::new::<meter>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "dm" | "decimeter" => Ok(Self {
+                value: rational64::Length::new::<decimeter>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "cm" | "centimeter" => Ok(Self {
+                value: rational64::Length::new::<centimeter>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "mm" | "millimeter" => Ok(Self {
+                value: rational64::Length::new::<millimeter>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "µm" | "micrometer" => Ok(Self {
+                value: rational64::Length::new::<micrometer>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "nm" | "nanometer" => Ok(Self {
+                value: rational64::Length::new::<nanometer>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "pm" | "picometer" => Ok(Self {
+                value: rational64::Length::new::<picometer>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "fm" | "femtometer" => Ok(Self {
+                value: rational64::Length::new::<femtometer>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "am" | "attometer" => Ok(Self {
+                value: rational64::Length::new::<attometer>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "zm" | "zeptometer" => Ok(Self {
+                value: rational64::Length::new::<zeptometer>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "ym" | "yoctometer" => Ok(Self {
+                value: rational64::Length::new::<yoctometer>(item.value),
+                original_unit: item.original_unit,
+            }),
+
+            "Å" | "ångström" => Ok(Self {
+                value: rational64::Length::new::<angstrom>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "a₀" | "bohr radius" => Ok(Self {
+                value: rational64::Length::new::<bohr_radius>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "a.u. of length" | "atomic unit of length" => Ok(Self {
+                value: rational64::Length::new::<atomic_unit_of_length>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "ua" | "astronomical unit" => Ok(Self {
+                value: rational64::Length::new::<astronomical_unit>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "ch" | "chain" => Ok(Self {
+                value: rational64::Length::new::<chain>(item.value),
+                original_unit: item.original_unit,
+            }),
+            // abbreviation and singular unit name are the same currently
+            "fathom" => Ok(Self {
+                value: rational64::Length::new::<fathom>(item.value),
+                original_unit: item.original_unit,
+            }),
+            // abbreviation and singular unit name are the same currently
+            "fermi" => Ok(Self {
+                value: rational64::Length::new::<fermi>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "ft" | "foot" => Ok(Self {
+                value: rational64::Length::new::<foot>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "ft (U.S. survey)" | "foot (U.S. survey)" => Ok(Self {
+                value: rational64::Length::new::<foot_survey>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "in" | "inch" => Ok(Self {
+                value: rational64::Length::new::<inch>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "l. y." | "light year" => Ok(Self {
+                value: rational64::Length::new::<light_year>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "μin" | "microinch" => Ok(Self {
+                value: rational64::Length::new::<microinch>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "μ" | "micron" => Ok(Self {
+                value: rational64::Length::new::<micron>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "0.001 in" | "mil" => Ok(Self {
+                value: rational64::Length::new::<mil>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "mi" | "mile" => Ok(Self {
+                value: rational64::Length::new::<mile>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "mi (U.S. survey)" | "mile (U.S. survey)" => Ok(Self {
+                value: rational64::Length::new::<mile_survey>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "M" | "nautical mile" => Ok(Self {
+                value: rational64::Length::new::<nautical_mile>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "pc" | "parsec" => Ok(Self {
+                value: rational64::Length::new::<parsec>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "1/6 in (computer)" | "pica (computer)" => Ok(Self {
+                value: rational64::Length::new::<pica_computer>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "1/6 in" | "pica (printer's)" => Ok(Self {
+                value: rational64::Length::new::<pica_printers>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "1/72 in (computer)" | "point (computer)" => Ok(Self {
+                value: rational64::Length::new::<point_computer>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "1/72 in" | "point (printer's)" => Ok(Self {
+                value: rational64::Length::new::<point_printers>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "rd" | "rod" => Ok(Self {
+                value: rational64::Length::new::<rod>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "yd" | "yard" => Ok(Self {
+                value: rational64::Length::new::<yard>(item.value),
+                original_unit: item.original_unit,
+            }),
+
+            x => Err(UnitParsingError::UnknownUnit(x.to_string())),
+        }
+    }
+}
+
+impl TryFrom<IntermediateUnit> for TemperatureInterval {
+    type Error = UnitParsingError;
+    fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
+        match item.original_unit.as_str() {
+            "YK" | "yottakelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<yottakelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "ZK" | "zettakelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<zettakelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "EK" | "exakelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<exakelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "PK" | "petakelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<petakelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "TK" | "terakelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<terakelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "GK" | "gigakelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<gigakelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "MK" | "megakelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<megakelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "kK" | "kilokelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<kilokelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "hK" | "hectokelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<hectokelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "daK" | "decakelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<decakelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "K" | "kelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<kelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "dK" | "decikelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<decikelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "cK" | "centikelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<centikelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "mK" | "millikelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<millikelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "µK" | "microkelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<microkelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "nK" | "nanokelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<nanokelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "pK" | "picokelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<picokelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "fK" | "femtokelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<femtokelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "aK" | "attokelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<attokelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "zK" | "zeptokelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<zeptokelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "yK" | "yoctokelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<yoctokelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "°C" | "degree Celsius" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<degree_celsius>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "°F" | "degree Fahrenheit" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<degree_fahrenheit>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "°R" | "degree Rankine" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<degree_rankine>(item.value),
+                original_unit: item.original_unit,
+            }),
+
             x => Err(UnitParsingError::UnknownUnit(x.to_string())),
         }
     }
