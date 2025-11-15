@@ -1,22 +1,16 @@
 [cable_types]
 
-# This is a test cable and might have weirdnesses. Do not use as a library reference
+# This is a test cable and has weirdnesses. Do not use as a library reference
 # only defining required values
-[cable_types.soow14_3]
+[cable_types.soow14_1]
 cross_sect_area = {value = [14389229, 64008858], original_unit="square inch"}
 cross_section = "Circular"
 
-[cable_types.soow14_3.cores]
+[cable_types.soow14_1.cores]
 
-[cable_types.soow14_3.cores.green]
-WireType="soow14_green_inner"
+[cable_types.soow14_1.cores.flamingo]
+WireType="soow14_flamingo_inner"
 
-[cable_types.soow14_3.cores.white]
-WireType="soow14_white_inner"
-
-[cable_types.soow14_3.cores.black]
-WireType="soow14_black_inner"
-
-[[cable_types.soow14_3.layers]]
+[[cable_types.soow14_1.layers]]
 layer_number=1
 layer_type="Jacket"

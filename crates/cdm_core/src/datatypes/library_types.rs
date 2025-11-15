@@ -257,7 +257,7 @@ mod tests {
             catalog: None,
             dimensions: None,
             line_style: None,
-            contained_datafile_path: PathBuf::from("../../resources/test/library_tests/cable_type_test_minimal.toml")
+            contained_datafile_path: PathBuf::from("../../resources/test/library_tests/cable_type_test_minimal_realistic.toml")
                 .canonicalize()
                 .unwrap(),
         };
@@ -280,14 +280,75 @@ mod tests {
             terminal_strip_accessory_types: HashMap::new(),
             wire_types: HashMap::new(),
         };
+        let library_filepath = PathBuf::from("../../resources/test/library_tests/cable_type_test_minimal_realistic.toml")
+            .canonicalize()
+            .unwrap();
+        let library_file_contents = fs::read_to_string(&library_filepath).unwrap();
+        let mut library_file: Library = toml::from_str(&library_file_contents).unwrap();
+        library_file.add_datafile_paths(&library_filepath);
+        assert_eq!(test_library, library_file)
+    }
+    #[test]
+    fn read_datafile_library_cable_minimal() {
+        let soow14_1 = CableType {
+            cross_sect_area: CrossSectionalArea {
+                original_unit: "square inch".to_string(),
+                value: Area::new::<square_inch>(Rational64::new(14389229, 64008858)),
+            },
+            cross_section: CrossSection::Circular,
+            layers: {
+                let mut layers = Vec::new();
+                layers.push(CableLayer {
+                    layer_number: 1,
+                    layer_type: LayerType::Jacket,
+                    material: None,
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    rating: None,
+                    thickness: None,
+                    color: None,
+                });
+                layers
+            },
+            cores: {
+                let mut cores = HashMap::new();
+                cores.insert("flamingo".to_string(), CableCore::WireType("soow14_flamingo_inner".to_string()));
+                cores
+            },
+            cable_type_code: None,
+            catalog: None,
+            dimensions: None,
+            line_style: None,
+            contained_datafile_path: PathBuf::from("../../resources/test/library_tests/cable_type_test_minimal.toml")
+                .canonicalize()
+                .unwrap(),
+        };
+        let test_library = Library {
+            cable_types: {
+                let mut cable_types = HashMap::new();
+                cable_types.insert("soow14_1".to_string(), soow14_1);
+                cable_types
+            },
+            connector_types: HashMap::new(),
+            enclosure_types: HashMap::new(),
+            equipment_types: HashMap::new(),
+            mounting_rail_types: HashMap::new(),
+            pathway_types: HashMap::new(),
+            schematic_symbol_types: HashMap::new(),
+            term_cable_types: HashMap::new(),
+            terminal_types: HashMap::new(),
+            terminal_strip_jumper_types: HashMap::new(),
+            terminal_accessory_types: HashMap::new(),
+            terminal_strip_accessory_types: HashMap::new(),
+            wire_types: HashMap::new(),
+        };
         let library_filepath = PathBuf::from("../../resources/test/library_tests/cable_type_test_minimal.toml")
             .canonicalize()
             .unwrap();
         let library_file_contents = fs::read_to_string(&library_filepath).unwrap();
         let mut library_file: Library = toml::from_str(&library_file_contents).unwrap();
         library_file.add_datafile_paths(&library_filepath);
-        println!("{:?}", test_library.cable_types["soow14_3"].cross_sect_area);
-        println!("{:?}", library_file.cable_types["soow14_3"].cross_sect_area);
         assert_eq!(test_library, library_file)
     }
 }
