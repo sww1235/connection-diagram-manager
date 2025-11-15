@@ -15,15 +15,17 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use anyhow::bail;
 use cdm_core::{
     config::ApplicationConfig,
     datatypes::{
         library_types::Library,
         project_types::{self, Project},
+        unit_helper::{Area, CrossSectionalArea, ElectricPotential, Length, TemperatureInterval},
     },
     directory_navigator,
 };
-use clap::Parser;
+use clap::{Parser, ValueEnum};
 use figment::{
     Figment,
     providers::{Format, Serialized, Toml},
@@ -33,6 +35,7 @@ use serde::{Deserialize, Serialize};
 use simple_logger::SimpleLogger;
 
 //TODO: change some of the panics in main to printed error messages with a returned error code.
+#[expect(clippy::too_many_lines)]
 fn main() -> anyhow::Result<()> {
     // parse command line flags and config files
 
@@ -103,55 +106,97 @@ fn main() -> anyhow::Result<()> {
     //errors manually
     logger.with_colors(true).init()?;
 
+    match cli.print_units {
+        Some(PrintUnitCmdOption::All) => {
+            println!("{:^43}", "Area Units");
+            println!("{}", Area::output_units());
+            println!("{:^43}", "Cross Sectional Area Units");
+            println!("{}", CrossSectionalArea::output_units());
+            println!("{:^43}", "Electric Potential Units");
+            println!("{}", ElectricPotential::output_units());
+            println!("{:^43}", "Length Units");
+            println!("{}", Length::output_units());
+            println!("{:^43}", "Temperature Units");
+            println!("{}", TemperatureInterval::output_units());
+            return Ok(());
+        }
+        Some(PrintUnitCmdOption::Area) => {
+            println!("{:^43}", "Area Units");
+            println!("{}", Area::output_units());
+            return Ok(());
+        }
+        Some(PrintUnitCmdOption::CrossSectionalArea) => {
+            println!("{:^43}", "Cross Sectional Area Units");
+            println!("{}", CrossSectionalArea::output_units());
+            return Ok(());
+        }
+        Some(PrintUnitCmdOption::ElectricPotential) => {
+            println!("{:^43}", "Electric Potential Units");
+            println!("{}", ElectricPotential::output_units());
+            return Ok(());
+        }
+        Some(PrintUnitCmdOption::Length) => {
+            println!("{:^43}", "Length Units");
+            println!("{}", Length::output_units());
+            return Ok(());
+        }
+        Some(PrintUnitCmdOption::TemperatureInterval) => {
+            println!("{:^43}", "Temperature Units");
+            println!("{}", TemperatureInterval::output_units());
+            return Ok(());
+        }
+        None => {}
+    }
+
     // check if project_directory was specified and even exists
+    if let Some(project_directory) = cli.project_directory {
+        if !project_directory.exists() {
+            return Err(io::Error::new(
+                ErrorKind::NotFound,
+                format!("Project directory specified: {} does not exist", project_directory.display()),
+            )
+            .into());
+        }
 
-    if !cli.project_directory.exists() {
-        return Err(io::Error::new(
-            ErrorKind::NotFound,
-            format!(
-                "Project directory specified: {} does not exist",
-                cli.project_directory.display()
-            ),
-        )
-        .into());
+        if !project_directory.is_dir() {
+            return Err(io::Error::new(
+                ErrorKind::NotADirectory,
+                format!(
+                    "Project directory specified: {} is not a directory",
+                    project_directory.display()
+                ),
+            )
+            .into());
+        }
+
+        let project_config_contents = fs::read_to_string(project_directory.join("cdm_project.toml"))?;
+        let project_config: project_types::Config = toml::from_str(&project_config_contents)?;
+        debug!("{project_config:#?}");
+
+        let library_files = directory_navigator::files_in_dir(project_directory.join("lib"), Some(".toml"), false)?;
+        let project_files = directory_navigator::files_in_dir(project_directory.join("src"), Some(".toml"), false)?;
+
+        let mut library_data = Library::default();
+        let mut project_data = Project::default();
+        //TODO: include default libraries. use include_str! macro
+        for file in library_files {
+            let library_file_contents = fs::read_to_string(&file)?;
+            let library_file: Library = toml::from_str(&library_file_contents)?;
+            library_data.merge(library_file, &file.display().to_string())?;
+        }
+        for file in project_files {
+            let project_file_contents = fs::read_to_string(&file)?;
+            let project_file: Project = toml::from_str(&project_file_contents)?;
+            project_data.merge(project_file, &file.display().to_string())?;
+        }
+
+        debug! {"{library_data:?}"};
+        debug! {"{project_data:?}"};
+
+        if cli.export_pdf {}
+    } else {
+        bail! {"Project Directory not specified when it should have been. This should be impossible if Clap's logic is working correctly"};
     }
-
-    if !cli.project_directory.is_dir() {
-        return Err(io::Error::new(
-            ErrorKind::NotADirectory,
-            format!(
-                "Project directory specified: {} is not a directory",
-                cli.project_directory.display()
-            ),
-        )
-        .into());
-    }
-
-    let project_config_contents = fs::read_to_string(cli.project_directory.join("cdm_project.toml"))?;
-    let project_config: project_types::Config = toml::from_str(&project_config_contents)?;
-    debug!("{project_config:#?}");
-
-    let library_files = directory_navigator::files_in_dir(cli.project_directory.join("lib"), Some(".toml"), false)?;
-    let project_files = directory_navigator::files_in_dir(cli.project_directory.join("src"), Some(".toml"), false)?;
-
-    let mut library_data = Library::default();
-    let mut project_data = Project::default();
-    //TODO: include default libraries. use include_str! macro
-    for file in library_files {
-        let library_file_contents = fs::read_to_string(&file)?;
-        let library_file: Library = toml::from_str(&library_file_contents)?;
-        library_data.merge(library_file, &file.display().to_string())?;
-    }
-    for file in project_files {
-        let project_file_contents = fs::read_to_string(&file)?;
-        let project_file: Project = toml::from_str(&project_file_contents)?;
-        project_data.merge(project_file, &file.display().to_string())?;
-    }
-
-    debug! {"{library_data:?}"};
-    debug! {"{project_data:?}"};
-
-    if cli.export_pdf {}
     Ok(())
 }
 
@@ -160,7 +205,8 @@ fn main() -> anyhow::Result<()> {
 #[command(author, version, about, long_about = None)]
 struct Cli {
     /// Directory that project lives in
-    project_directory: PathBuf,
+    #[arg(long, required = true)]
+    project_directory: Option<PathBuf>,
     /// Increase verbosity of program by adding more v
     #[arg(short, long, action = clap::ArgAction::Count)]
     verbose: u8,
@@ -168,10 +214,10 @@ struct Cli {
     #[arg(long)]
     enable_post_gres: bool,
     /// Postgres DSN (optional)
-    #[arg(short, long)]
+    #[arg(long)]
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     post_gres_dsn: Option<String>,
-    /// Only shows log messages with <Error> level. Use twice to completely eliminate output. Takes
+    /// Only shows log messages with `Error` level. Use twice to completely eliminate output. Takes
     /// precidence over verbose
     #[arg(short, long, action = clap::ArgAction::Count)]
     quiet: u8,
@@ -181,4 +227,25 @@ struct Cli {
     /// Export complete PDF
     #[arg(short, long)]
     export_pdf: bool,
+    /// print units accepted in configuration files
+    #[arg(short, long, value_enum, exclusive = true)]
+    #[serde(skip_serializing_if = "::std::option::Option::is_none")]
+    print_units: Option<PrintUnitCmdOption>,
+}
+
+#[derive(Parser, Debug, Serialize, Clone, Copy, ValueEnum, Default)]
+enum PrintUnitCmdOption {
+    /// Print all unit options
+    #[default]
+    All,
+    /// Print `Area` unit options
+    Area,
+    /// Print `CrossSectionalArea` unit options
+    CrossSectionalArea,
+    /// Print `ElectricPotential` unit options
+    ElectricPotential,
+    /// Print `Length` unit options
+    Length,
+    /// Print `TemperatureInterval` unit options
+    TemperatureInterval,
 }

@@ -1,43 +1,7 @@
 use num_rational::Rational64;
-use serde::{
-    Deserialize,
-    Serialize,
-};
-use uom::si::{
-    area::{
-        acre,
-        are,
-        barn,
-        circular_mil,
-        hectare,
-        square_attometer,
-        square_centimeter,
-        square_decameter,
-        square_decimeter,
-        square_exameter,
-        square_femtometer,
-        square_foot,
-        square_gigameter,
-        square_hectometer,
-        square_inch,
-        square_kilometer,
-        square_megameter,
-        square_meter,
-        square_micrometer,
-        square_mile,
-        square_millimeter,
-        square_nanometer,
-        square_petameter,
-        square_picometer,
-        square_terameter,
-        square_yard,
-        square_yoctometer,
-        square_yottameter,
-        square_zeptometer,
-        square_zettameter,
-    },
-    rational64,
-};
+use serde::{Deserialize, Serialize};
+#[expect(clippy::wildcard_imports)]
+use uom::si::{Unit, area::*, electric_potential::*, length::*, rational64, temperature_interval::*};
 
 use crate::error::UnitParsingError;
 
@@ -98,6 +62,438 @@ pub struct TemperatureInterval {
 struct IntermediateUnit {
     value: Rational64,
     original_unit: String,
+}
+//TODO: change output format to have fixed width output so the units and abbreviations line up
+impl Area {
+    /// outputs all usable `Area` units allowed in configuration files in the form of `<unit name>:
+    /// <unit abbreviation>`
+    #[must_use]
+    #[expect(clippy::string_add, clippy::too_many_lines)]
+    pub fn output_units() -> String {
+        // need to do this hack AFAIK so the spacing is the same
+        let string1 = "Unit Name";
+        let string2 = "Abbreviation";
+        let dash_string = "-".repeat(21);
+        format!("{string1:^21}|{string2:^21}\n{dash_string}|{dash_string}\n")
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_yottameter::singular(),
+                square_yottameter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_zettameter::singular(),
+                square_zettameter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_exameter::singular(),
+                square_exameter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_petameter::singular(),
+                square_petameter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_terameter::singular(),
+                square_terameter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_gigameter::singular(),
+                square_gigameter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_megameter::singular(),
+                square_megameter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_kilometer::singular(),
+                square_kilometer::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_hectometer::singular(),
+                square_hectometer::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_decameter::singular(),
+                square_decameter::abbreviation()
+            )
+            .as_str()
+            + format!("{:^21}|{:^21}\n", square_meter::singular(), square_meter::abbreviation()).as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_decimeter::singular(),
+                square_decimeter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_centimeter::singular(),
+                square_centimeter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_millimeter::singular(),
+                square_millimeter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_micrometer::singular(),
+                square_micrometer::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_nanometer::singular(),
+                square_nanometer::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_picometer::singular(),
+                square_picometer::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_femtometer::singular(),
+                square_femtometer::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_attometer::singular(),
+                square_attometer::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_zeptometer::singular(),
+                square_zeptometer::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_yoctometer::singular(),
+                square_yoctometer::abbreviation()
+            )
+            .as_str()
+            + format!("{:^21}|{:^21}\n", acre::singular(), acre::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", are::singular(), are::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", barn::singular(), barn::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", circular_mil::singular(), circular_mil::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", hectare::singular(), hectare::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", square_foot::singular(), square_foot::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", square_inch::singular(), square_inch::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", square_mile::singular(), square_mile::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", square_yard::singular(), square_yard::abbreviation()).as_str()
+    }
+}
+
+impl CrossSectionalArea {
+    /// outputs all usable `CrossSectionalArea` units allowed in configuration files in the form of
+    /// `<unit name>: <unit abbreviation>`
+    #[must_use]
+    #[expect(clippy::string_add, clippy::too_many_lines)]
+    pub fn output_units() -> String {
+        let string1 = "Unit Name";
+        let string2 = "Abbreviation";
+        let dash_string = "-".repeat(21);
+        format!("{string1:^21}|{string2:^21}\n{dash_string}|{dash_string}\n")
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_yottameter::singular(),
+                square_yottameter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_zettameter::singular(),
+                square_zettameter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_exameter::singular(),
+                square_exameter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_petameter::singular(),
+                square_petameter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_terameter::singular(),
+                square_terameter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_gigameter::singular(),
+                square_gigameter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_megameter::singular(),
+                square_megameter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_kilometer::singular(),
+                square_kilometer::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_hectometer::singular(),
+                square_hectometer::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_decameter::singular(),
+                square_decameter::abbreviation()
+            )
+            .as_str()
+            + format!("{:^21}|{:^21}\n", square_meter::singular(), square_meter::abbreviation()).as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_decimeter::singular(),
+                square_decimeter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_centimeter::singular(),
+                square_centimeter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_millimeter::singular(),
+                square_millimeter::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_micrometer::singular(),
+                square_micrometer::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_nanometer::singular(),
+                square_nanometer::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_picometer::singular(),
+                square_picometer::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_femtometer::singular(),
+                square_femtometer::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_attometer::singular(),
+                square_attometer::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_zeptometer::singular(),
+                square_zeptometer::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                square_yoctometer::singular(),
+                square_yoctometer::abbreviation()
+            )
+            .as_str()
+            + format!("{:^21}|{:^21}\n", acre::singular(), acre::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", are::singular(), are::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", barn::singular(), barn::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", circular_mil::singular(), circular_mil::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", hectare::singular(), hectare::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", square_foot::singular(), square_foot::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", square_inch::singular(), square_inch::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", square_mile::singular(), square_mile::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", square_yard::singular(), square_yard::abbreviation()).as_str()
+    }
+}
+
+impl ElectricPotential {
+    /// outputs all usable `ElectricPotential` units allowed in configuration files in the form of
+    /// `<unit name>: <unit abbreviation>`
+    #[must_use]
+    #[expect(clippy::string_add)]
+    pub fn output_units() -> String {
+        let string1 = "Unit Name";
+        let string2 = "Abbreviation";
+        let dash_string = "-".repeat(21);
+        format!("{string1:^21}|{string2:^21}\n{dash_string}|{dash_string}\n")
+            + format!("{:^21}|{:^21}\n", yottavolt::singular(), yottavolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", zettavolt::singular(), zettavolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", exavolt::singular(), exavolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", petavolt::singular(), petavolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", teravolt::singular(), teravolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", gigavolt::singular(), gigavolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", megavolt::singular(), megavolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", kilovolt::singular(), kilovolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", hectovolt::singular(), hectovolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", decavolt::singular(), decavolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", volt::singular(), volt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", decivolt::singular(), decivolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", centivolt::singular(), centivolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", millivolt::singular(), millivolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", microvolt::singular(), microvolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", nanovolt::singular(), nanovolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", picovolt::singular(), picovolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", femtovolt::singular(), femtovolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", attovolt::singular(), attovolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", zeptovolt::singular(), zeptovolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", yoctovolt::singular(), yoctovolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", abvolt::singular(), abvolt::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", statvolt::singular(), statvolt::abbreviation()).as_str()
+    }
+}
+
+impl Length {
+    /// outputs all usable `Length` units allowed in configuration files in the form of `<unit
+    /// name>: <unit abbreviation>`
+    #[must_use]
+    #[expect(clippy::string_add)]
+    pub fn output_units() -> String {
+        let string1 = "Unit Name";
+        let string2 = "Abbreviation";
+        let dash_string = "-".repeat(21);
+        format!("{string1:^21}|{string2:^21}\n{dash_string}|{dash_string}\n")
+            + format!("{:^21}|{:^21}\n", yottameter::singular(), yottameter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", zettameter::singular(), zettameter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", exameter::singular(), exameter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", petameter::singular(), petameter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", terameter::singular(), terameter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", gigameter::singular(), gigameter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", megameter::singular(), megameter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", kilometer::singular(), kilometer::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", hectometer::singular(), hectometer::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", decameter::singular(), decameter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", meter::singular(), meter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", decimeter::singular(), decimeter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", centimeter::singular(), centimeter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", millimeter::singular(), millimeter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", micrometer::singular(), micrometer::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", nanometer::singular(), nanometer::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", picometer::singular(), picometer::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", femtometer::singular(), femtometer::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", attometer::singular(), attometer::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", zeptometer::singular(), zeptometer::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", yoctometer::singular(), yoctometer::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", angstrom::singular(), angstrom::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", bohr_radius::singular(), bohr_radius::abbreviation()).as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                atomic_unit_of_length::singular(),
+                atomic_unit_of_length::abbreviation()
+            )
+            .as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                astronomical_unit::singular(),
+                astronomical_unit::abbreviation()
+            )
+            .as_str()
+            + format!("{:^21}|{:^21}\n", chain::singular(), chain::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", fathom::singular(), fathom::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", foot::singular(), foot::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", foot_survey::singular(), foot_survey::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", inch::singular(), inch::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", light_year::singular(), light_year::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", microinch::singular(), microinch::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", micron::singular(), micron::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", mil::singular(), mil::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", mile::singular(), mile::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", mile_survey::singular(), mile_survey::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", nautical_mile::singular(), nautical_mile::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", parsec::singular(), parsec::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", pica_computer::singular(), pica_computer::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", pica_printers::singular(), pica_printers::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", point_computer::singular(), point_computer::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", point_printers::singular(), point_printers::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", rod::singular(), rod::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", yard::singular(), yard::abbreviation()).as_str()
+    }
+}
+
+impl TemperatureInterval {
+    /// outputs all usable `TemperatureInterval` units allowed in configuration files in the form of
+    /// `<unit name>: <unit abbreviation>`
+    #[must_use]
+    #[expect(clippy::string_add)]
+    pub fn output_units() -> String {
+        let string1 = "Unit Name";
+        let string2 = "Abbreviation";
+        let dash_string = "-".repeat(21);
+        format!("{string1:^21}|{string2:^21}\n{dash_string}|{dash_string}\n")
+            + format!("{:^21}|{:^21}\n", yottakelvin::singular(), yottakelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", zettakelvin::singular(), zettakelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", exakelvin::singular(), exakelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", petakelvin::singular(), petakelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", terakelvin::singular(), terakelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", gigakelvin::singular(), gigakelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", megakelvin::singular(), megakelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", kilokelvin::singular(), kilokelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", hectokelvin::singular(), hectokelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", decakelvin::singular(), decakelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", kelvin::singular(), kelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", decikelvin::singular(), decikelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", centikelvin::singular(), centikelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", millikelvin::singular(), millikelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", microkelvin::singular(), microkelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", nanokelvin::singular(), nanokelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", picokelvin::singular(), picokelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", femtokelvin::singular(), femtokelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", attokelvin::singular(), attokelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", zeptokelvin::singular(), zeptokelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", yoctokelvin::singular(), yoctokelvin::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", degree_celsius::singular(), degree_celsius::abbreviation()).as_str()
+            + format!(
+                "{:^21}|{:^21}\n",
+                degree_fahrenheit::singular(),
+                degree_fahrenheit::abbreviation()
+            )
+            .as_str()
+            + format!("{:^21}|{:^21}\n", degree_rankine::singular(), degree_rankine::abbreviation()).as_str()
+    }
 }
 
 impl TryFrom<IntermediateUnit> for Area {
