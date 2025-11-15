@@ -500,6 +500,7 @@ impl TemperatureInterval {
     }
 }
 
+//TODO: return a different error if the unit is of the wrong type rather than just unknown unit
 impl TryFrom<IntermediateUnit> for Area {
     type Error = UnitParsingError;
     #[expect(clippy::too_many_lines)]

@@ -65,6 +65,8 @@ pub enum CableCore {
     CableType(String),
 }
 
+//TODO: either need to validate that layer number is unique within a cable, or remove and rely on
+//ordering within TOML file. Need to test
 /// `CableLayer` represents an insulation or shield layer of the entire cable
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct CableLayer {

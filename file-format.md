@@ -712,6 +712,9 @@ supplier_part_number = <str>
 # with optional insulation and semiconducting layers, and optional shields
 # if a product has a shield or additional layers, it must be defined as a cable
 # wire insulation color is defined on individual wire instance
+# 
+# In theory, all wires could be defined as cables, with one layer of insulation
+# TODO: explore this idea further
 
 # Cable_types can be composed of cable_types.
 [cable_types]
