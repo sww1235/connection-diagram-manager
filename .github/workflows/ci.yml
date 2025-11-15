@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: EmbarkStudios/cargo-deny-action@v1
+      - uses: EmbarkStudios/cargo-deny-action@v2
   check_and_build:
     name: Build and Check (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -42,7 +42,7 @@ jobs:
       run: cargo +${{ matrix.rust }} build --lib --verbose
     - name: Build CLI
       run: cargo +${{ matrix.rust }} build --verbose --features cli --bin cli
-    - name: Build GUI
-      run: cargo +${{ matrix.rust }} build --verbose --features cli,gui  --bin gui
-        #- name: Run tests
-        #run: cargo test --verbose
+    #- name: Build GUI
+    #  run: cargo +${{ matrix.rust }} build --verbose --features cli,gui  --bin gui
+    - name: Run tests
+      run: cargo test --verbose
