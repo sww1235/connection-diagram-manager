@@ -241,20 +241,21 @@ All entities must have a library defintion before they can be used in a `Project
 Library files must contain at least one of the base tables as shown in this
 document. A summary of base tables is listed below:
 
-- Cable Type
-- Connector Type
-- Enclosure Type
-- Equipment Type
-- Mounting Rail Type
-- Pathway Type
-- Schematic Symbol Type
-- Term Cable Type
-- Terminal Type
-- Terminal Strip Jumper Type
-- Terminal Accessory Type
-- Terminal Strip Accessory Type
-- Wire Type
+- [Cable Types](#cable-types)
+- [Connector Types](#connector-types)
+- [Enclosure Types](#enclosure-types)
+- [Equipment Types](#equipment-types)
+- [Mounting Rail Types](#mounting-rail-types)
+- [Pathway Types](#pathway-types)
+- [Schematic Symbol Types](#schematic-symbol-types)
+- [Term Cable Types](#term-cable-types)
+- [Terminal Types](#terminal-types)
+- [Terminal Strip Jumper Types](#terminal-strip-jumper-types)
+- [Terminal Accessory Types](#terminal-accessory-types)
+- [Terminal Strip Accessory Types](#terminal-strip-accessory-types)
+- [Wire Types](#wire-types)
 
+#### Connector Type
 ```toml
 # table (dictionary) of all available connector types
 [connector_type]
@@ -374,8 +375,10 @@ gender = <str>
 # optional
 # pin specific rating information. Not parsed
 rating = <str>
+```
 
-
+#### Equipment Types
+```toml
 # Equipment type is not an abstract type of equipment
 # (like PLC, relay, circuit breaker, etc), but a manufacturer product.
 # This is a major difference between this and other similar software.
@@ -498,10 +501,11 @@ x = <integer>
 
 # location of connector from bottom left of visrep of face up
 y = <integer>
+```
 
 
-
-
+#### Pathway Types
+```toml
 # Table (dictonary) of all available pathway types.
 # This is used for things like conduit, panduit and cable tray,
 # but also includes things like J-hooks, or free-air cables.
@@ -601,11 +605,11 @@ line_thickness = {value = [<num>,<denom>], original_unit = <str>}
 # array of lengths/percentages of dashes and gaps
 # uses same specification as SVG stroke-dasharray field.
 line_appearance = [<int>]
+```
 
 
-
-
-
+#### Wire Types
+```toml
 # Table (dictonary) of all available wire types.
 # A wire is defined as a material (not necessarily conductive) with optional insulation.
 # if a product has a shield or additional layers, it must be defined as a cable
@@ -703,16 +707,16 @@ supplier = <str>
 
 # supplier part number
 supplier_part_number = <str>
+```
 
-
-
-
+#### Cable Types
+```toml
 # Table (dictonary) of all available cable types.
 # A cable is defined as one or more wires mechanically attached together,
 # with optional insulation and semiconducting layers, and optional shields
 # if a product has a shield or additional layers, it must be defined as a cable
 # wire insulation color is defined on individual wire instance
-# 
+#
 # In theory, all wires could be defined as cables, with one layer of insulation
 # TODO: explore this idea further
 
@@ -833,8 +837,10 @@ supplier = <str>
 
 # supplier part number
 supplier_part_number = <str>
+```
 
-
+#### Term Cable Types
+```toml
 # Table (dictonary) of all available term_cable_types.
 # A term_cable or Pre-terminated cable is an assembly of
 # a cable_type or wire_type, and connectors. It may be manufactured or custom-assembled
@@ -937,12 +943,10 @@ connector_type = <str>
 
 core = <str>
 pin = <str>
+```
 
-
-
-
-
-
+#### Enclosure Types
+```toml
 # Table (dictionary) of all available enclosure_types.
 # An enclosure is a physical container or space like a
 # junction box, gutter or rack.
@@ -994,7 +998,6 @@ depth =  {value = [<num>,<denom>], original_unit = <str>}
 # diameter of enclosure
 diameter = {value = [<num>,<denom>], original_unit = <str>}
 
-
 # Catalog subtable for each enclosure_type. Groups common properties
 # All fields here are optional, but highly encouraged.
 [enclosure_type.<str>.catalog]
@@ -1019,8 +1022,10 @@ supplier = <str>
 
 # supplier part number
 supplier_part_number = <str>
+```
 
-
+#### Terminal Types
+```toml
 # Table (dictionary) of all available terminal types.
 # Terminals are separated out into their own category
 # due to some special case things with them, including
@@ -1196,8 +1201,10 @@ supplier = <str>
 
 # supplier part number
 supplier_part_number = <str>
+```
 
-
+#### Terminal Block Jumper Types
+```toml
 # Table of terminal block jumpers in library
 [terminal_strip_jumper_type]
 
@@ -1265,9 +1272,10 @@ supplier = <str>
 
 # supplier part number
 supplier_part_number = <str>
+```
 
-
-
+#### Terminal Accessory Types
+```toml
 # Terminal accessories are items that insert into a terminal block
 # like fuse holders, component holders, disconnect switches, etc
 [terminal_accessory_type]
@@ -1330,7 +1338,10 @@ supplier = <str>
 
 # supplier part number
 supplier_part_number = <str>
+```
 
+#### Terminal Strip Accessories
+```toml
 # Table of terminal strip accessories in library
 # Terminal strip accessories are things like end plates or spacers
 # that are incorporated into a terminal_strip linearly and
@@ -1390,9 +1401,10 @@ supplier = <str>
 
 # supplier part number
 supplier_part_number = <str>
+```
 
-
-
+#### Schematic Symbol Types
+```toml
 # table of schematic symbol types
 # These usually represent multiple different models/manufacturers of equipment
 # but can be used to represent just 1 equipment type if desired
@@ -1417,10 +1429,10 @@ description = <str>
 # will connect.
 # this is used for things like relays and contactors
 # supports_links = <bool>
+```
 
-
-
-
+#### Mounting Rail Types
+```toml
 # table of mounting rail types
 # mounting rails are defined and generated parametrically
 # to make usage easier.
@@ -1534,18 +1546,19 @@ Project files contain definitions for each unique entity, part or component in t
 
 Projects consist of the following entities:
 
-- Cables
-- Connections
-- Connectors
-- Enclosures
-- Equipment
-- Mounting Rails
-- Pathways
-- Schematic Symbols
-- Term Cables
-- Terminal Strips
-- Wires
+- [Cables](#cables)
+- [Connections](#connections)
+- [Connectors](#connectors)
+- [Enclosures](#enclosures)
+- [Equipment](#equipment)
+- [Mounting Rails](#mounting-rails)
+- [Pathways](#pathways)
+- [Schematic Symbols](#schematic-symbols)
+- [Term Cables](#term-cables)
+- [Terminal Strips](#terminal-strips)
+- [Wires](#wires)
 
+#### Equipment
 ```toml
 # dictionary of equipment defined in project
 [equipment]
@@ -1604,8 +1617,10 @@ user6 = <str>
 user7 = <str>
 user8 = <str>
 user9 = <str>
+```
 
-
+#### Wires
+```toml
 # dictionary of wires defined in project
 # wires can only have two ends
 # Wires within cables are assigned IDs automatically and are not listed here
@@ -1664,7 +1679,10 @@ user6 = <str>
 user7 = <str>
 user8 = <str>
 user9 = <str>
+```
 
+#### Cables
+```toml
 # table of all cables within project
 [cables]
 
@@ -1713,8 +1731,10 @@ user6 = <str>
 user7 = <str>
 user8 = <str>
 user9 = <str>
+```
 
-
+#### Term Cables
+```toml
 # table of all term_cables in project
 [term_cables]
 
@@ -1762,8 +1782,10 @@ user6 = <str>
 user7 = <str>
 user8 = <str>
 user9 = <str>
+```
 
-
+#### Pathways
+```toml
 # Table of all pathways defined in project
 [pathways]
 
@@ -1810,10 +1832,10 @@ user6 = <str>
 user7 = <str>
 user8 = <str>
 user9 = <str>
+```
 
-
-
-
+#### Enclosures
+```toml
 # table of all enclosure instances defined in project
 [enclosures]
 
@@ -1883,9 +1905,10 @@ y =  {value = [<num>,<denom>], original_unit = <str>}
 # distance along left side of location or rail
 # allows you to not have to specify another sub-location for every single rail mounted component
 distance = {value = [<num>,<denom>], original_unit = <str>}
+```
 
-
-
+#### Terminal Strips
+```toml
 # table of all terminal strips defined in the project
 # all terminal blocks are part of a terminal strip
 # a terminal strip is a collection of one or more terminal blocks
@@ -1985,10 +2008,10 @@ label = <str>
 # can optionally have the terminal layer indicated with a dot and
 # the terminal layer designation, allowing for multi-layer jumpers
 jumper_connections = [<str>]
+```
 
-
-
-
+#### Mounting Rails
+```toml
 # list of mounting rails in project
 [mounting_rails]
 
@@ -2028,8 +2051,10 @@ user6 = <str>
 user7 = <str>
 user8 = <str>
 user9 = <str>
+```
 
-
+#### Connections
+```toml
 # Connections between two objects, commonly either wires/cables/term_cables and a terminal/connector on equipment
 # This is the only root level item in the project definition that is an array rather than a table with sub-tables
 # This is because there are no human generated identifiers. Individual connections are tracked internally.
@@ -2076,11 +2101,7 @@ user6 = <str>
 user7 = <str>
 user8 = <str>
 user9 = <str>
-
-
-
-TODO: schematic symbols, drawings
-
 ```
 
+TODO: schematic symbols, drawings
 
