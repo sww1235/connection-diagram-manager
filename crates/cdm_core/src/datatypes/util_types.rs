@@ -12,9 +12,9 @@ pub enum CrossSection {
     /// A wire or cable with a circular cross section
     #[default]
     Circular,
-    /// A cable consisting of 2 or more wires/cables bonded to each other not inside the same
-    /// external jacket.
-    Siamese,
+    /// A cable consisting of 2 wires/cables bonded to each other in a figure 8 layout inside the
+    /// same external jacket.
+    Figure8,
 }
 
 /// Common Catalog information for Library Types

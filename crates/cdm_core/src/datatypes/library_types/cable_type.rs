@@ -66,6 +66,8 @@ pub enum CableCore {
 }
 
 //TODO: add a way to link 2 cores as a pair within a cable, and specify twisted + parameters
+//
+//TODO: add validation to check that Figure8 cable cross sections only have 2 cores
 
 //TODO: either need to validate that layer number is unique within a cable, or remove and rely on
 //ordering within TOML file. Need to test

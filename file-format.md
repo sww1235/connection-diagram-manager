@@ -282,7 +282,10 @@ cable_type_code = <str>
 # Outer cross sectional area of cable
 cross_sect_area =  {value = [<num>,<denom>], original_unit = <str>}
 
-# Oval, Circular, Siamese
+# Oval, Circular, Figure8
+#
+# If cross section is Figure8, then only 2 cable_cores must be defined.
+# any more than 2 will be reported as an error during validation
 cross_section = <str>
 
 # array of tables of outer layers of cable
