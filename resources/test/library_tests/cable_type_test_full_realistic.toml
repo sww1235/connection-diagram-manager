@@ -29,18 +29,18 @@ rating = "UL Listed"
 thickness = {value = [203, 100], original_unit = "mm"}
 color = "Black"
 
-[cable_type.soow14_3.line_style]
+[cable_types.soow14_3.line_style]
 color = "Black"
 secondary_color = "Red"
 line_thickness = {value = [20, 1], original_unit = "point (computer)"}
 line_appearance = [4, 1]
 
-[cable_type.soow14_3.dimensions]
+[cable_types.soow14_3.dimensions]
 height = {value = [13,25], original_unit = "inch"}
 width = {value = [13,25], original_unit = "inch"}
 diameter = {value = [13,25], original_unit = "inch"}
 
-[cable_type.soow14_3.catalog]
+[cable_types.soow14_3.catalog]
 manufacturer = "Priority Wire & Cable"
 model = "14 AWG SOOW 600V Portable Power Cord 3 Conductor"
 description = "14 AWG SOOW cable 3 Conductor"

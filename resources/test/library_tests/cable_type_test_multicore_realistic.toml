@@ -27,17 +27,17 @@ temperature_rating = {value = [75,1], original_unit = "degree Celsius"}
 rating = "UL Listed, Plenum, Flamarrest®"
 color = "Yellow"
 
-[cable_type.belden_638AFJ.line_style]
+[cable_types.belden_638AFJ.line_style]
 color = "Yellow"
 line_thickness = {value = [20, 1], original_unit = "point (computer)"}
 line_appearance = [4, 2]
 
-[cable_type.belden_638AFJ.dimensions]
+[cable_types.belden_638AFJ.dimensions]
 height = {value = [74,5], original_unit = "mm"}
 width = {value = [74,5], original_unit = "mm"}
 diameter = {value = [74,5], original_unit = "mm"}
 
-[cable_type.belden_638AFJ.catalog]
+[cable_types.belden_638AFJ.catalog]
 manufacturer = "Belden"
 model = "638AFJ"
 description = "Access Control, 16c (#18-3pr, #16-4c, #18-6c), Shielded, Outer Jacket, CMP"
@@ -73,7 +73,7 @@ layer_type = "Jacket"
 material = "Polyvinyl Chloride"
 rating = "Flamarrest®"
 color = "Orange"
-[cable_type.belden_638AFJ_card_reader_3_pair_inner.dimensions]
+[cable_types.belden_638AFJ_card_reader_3_pair_inner.dimensions]
 height = {value = [183,25], original_unit = "mm"}
 width = {value = [183,25], original_unit = "mm"}
 diameter = {value = [183,25], original_unit = "mm"}
@@ -97,7 +97,7 @@ material = "Polyvinyl Chloride"
 rating = "Flamarrest®"
 color = "White"
 
-[cable_type.belden_638AFJ_door_contact_inner.dimensions]
+[cable_types.belden_638AFJ_door_contact_inner.dimensions]
 height = {value = [427,100], original_unit = "mm"}
 width = {value = [427,100], original_unit = "mm"}
 diameter = {value = [427,100], original_unit = "mm"}
@@ -126,7 +126,7 @@ rating = "Flamarrest®"
 color = "Blue"
 
 
-[cable_type.belden_638AFJ_rex_inner.dimensions]
+[cable_types.belden_638AFJ_rex_inner.dimensions]
 height = {value = [5,1], original_unit = "mm"}
 width = {value = [5,1], original_unit = "mm"}
 diameter = {value = [5,1], original_unit = "mm"}
@@ -156,7 +156,7 @@ rating = "Flamarrest®"
 color = "Grey"
 
 
-[cable_type.belden_638AFJ_lock_power_inner.dimensions]
+[cable_types.belden_638AFJ_lock_power_inner.dimensions]
 height = {value = [569,100], original_unit = "mm"}
 width = {value = [569,100], original_unit = "mm"}
 diameter = {value = [569,100], original_unit = "mm"}

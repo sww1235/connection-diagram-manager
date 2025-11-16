@@ -648,7 +648,7 @@ mod tests {
                         value: rational64::TemperatureInterval::new::<degree_celsius>(Rational64::new(75, 1)),
                     }),
                     thickness: None,
-                    rating: Some("UL Listed, Plenum".to_string()),
+                    rating: Some("UL Listed, Plenum, Flamarrest®".to_string()),
                     color: Some(Color::Yellow),
                 });
                 layers
@@ -747,27 +747,27 @@ mod tests {
                 let mut cores = BTreeMap::new();
                 cores.insert(
                     "black".to_string(),
-                    CableCore::CableType("belden_638AFJ_18AWG_black_inner".to_string()),
+                    CableCore::WireType("belden_638AFJ_18AWG_black_inner".to_string()),
                 );
                 cores.insert(
                     "red".to_string(),
-                    CableCore::CableType("belden_638AFJ_18AWG_red_inner".to_string()),
+                    CableCore::WireType("belden_638AFJ_18AWG_red_inner".to_string()),
                 );
                 cores.insert(
                     "white".to_string(),
-                    CableCore::CableType("belden_638AFJ_18AWG_white_inner".to_string()),
+                    CableCore::WireType("belden_638AFJ_18AWG_white_inner".to_string()),
                 );
                 cores.insert(
                     "green".to_string(),
-                    CableCore::CableType("belden_638AFJ_18AWG_green_inner".to_string()),
+                    CableCore::WireType("belden_638AFJ_18AWG_green_inner".to_string()),
                 );
                 cores.insert(
                     "brown".to_string(),
-                    CableCore::CableType("belden_638AFJ_18AWG_brown_inner".to_string()),
+                    CableCore::WireType("belden_638AFJ_18AWG_brown_inner".to_string()),
                 );
                 cores.insert(
                     "orange".to_string(),
-                    CableCore::CableType("belden_638AFJ_18AWG_orange_inner".to_string()),
+                    CableCore::WireType("belden_638AFJ_18AWG_orange_inner".to_string()),
                 );
                 cores
             },
@@ -827,11 +827,11 @@ mod tests {
                 let mut cores = BTreeMap::new();
                 cores.insert(
                     "black".to_string(),
-                    CableCore::CableType("belden_638AFJ_18AWG_black_inner".to_string()),
+                    CableCore::WireType("belden_638AFJ_18AWG_black_inner".to_string()),
                 );
                 cores.insert(
                     "red".to_string(),
-                    CableCore::CableType("belden_638AFJ_18AWG_red_inner".to_string()),
+                    CableCore::WireType("belden_638AFJ_18AWG_red_inner".to_string()),
                 );
                 cores
             },
@@ -892,19 +892,19 @@ mod tests {
                 let mut cores = BTreeMap::new();
                 cores.insert(
                     "black".to_string(),
-                    CableCore::CableType("belden_638AFJ_18AWG_black_inner".to_string()),
+                    CableCore::WireType("belden_638AFJ_18AWG_black_inner".to_string()),
                 );
                 cores.insert(
                     "red".to_string(),
-                    CableCore::CableType("belden_638AFJ_18AWG_red_inner".to_string()),
+                    CableCore::WireType("belden_638AFJ_18AWG_red_inner".to_string()),
                 );
                 cores.insert(
                     "white".to_string(),
-                    CableCore::CableType("belden_638AFJ_18AWG_white_inner".to_string()),
+                    CableCore::WireType("belden_638AFJ_18AWG_white_inner".to_string()),
                 );
                 cores.insert(
                     "green".to_string(),
-                    CableCore::CableType("belden_638AFJ_18AWG_green_inner".to_string()),
+                    CableCore::WireType("belden_638AFJ_18AWG_green_inner".to_string()),
                 );
                 cores
             },
@@ -965,19 +965,19 @@ mod tests {
                 let mut cores = BTreeMap::new();
                 cores.insert(
                     "black".to_string(),
-                    CableCore::CableType("belden_638AFJ_16AWG_black_inner".to_string()),
+                    CableCore::WireType("belden_638AFJ_16AWG_black_inner".to_string()),
                 );
                 cores.insert(
                     "red".to_string(),
-                    CableCore::CableType("belden_638AFJ_16AWG_red_inner".to_string()),
+                    CableCore::WireType("belden_638AFJ_16AWG_red_inner".to_string()),
                 );
                 cores.insert(
                     "white".to_string(),
-                    CableCore::CableType("belden_638AFJ_16AWG_white_inner".to_string()),
+                    CableCore::WireType("belden_638AFJ_16AWG_white_inner".to_string()),
                 );
                 cores.insert(
                     "green".to_string(),
-                    CableCore::CableType("belden_638AFJ_16AWG_green_inner".to_string()),
+                    CableCore::WireType("belden_638AFJ_16AWG_green_inner".to_string()),
                 );
                 cores
             },
@@ -1167,13 +1167,13 @@ mod tests {
             insulation_material: Some("Polyvinyl Chloride".to_string()),
             conductor_cross_sect_area: CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
-                value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(327, 250)),
             },
             stranded: true,
-            num_strands: 7,
+            num_strands: 19,
             strand_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
-                value: rational64::Area::new::<square_millimeter>(Rational64::new(1281, 10000)),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(647, 10000)),
             }),
             insulation_rating: Some("Flamarrest®".to_string()),
             insulation_color: Some(Color::Black),
@@ -1194,13 +1194,13 @@ mod tests {
             insulation_material: Some("Polyvinyl Chloride".to_string()),
             conductor_cross_sect_area: CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
-                value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(327, 250)),
             },
             stranded: true,
-            num_strands: 7,
+            num_strands: 19,
             strand_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
-                value: rational64::Area::new::<square_millimeter>(Rational64::new(1281, 10000)),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(647, 10000)),
             }),
             insulation_rating: Some("Flamarrest®".to_string()),
             insulation_color: Some(Color::Red),
@@ -1221,13 +1221,13 @@ mod tests {
             insulation_material: Some("Polyvinyl Chloride".to_string()),
             conductor_cross_sect_area: CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
-                value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(327, 250)),
             },
             stranded: true,
-            num_strands: 7,
+            num_strands: 19,
             strand_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
-                value: rational64::Area::new::<square_millimeter>(Rational64::new(1281, 10000)),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(647, 10000)),
             }),
             insulation_rating: Some("Flamarrest®".to_string()),
             insulation_color: Some(Color::White),
@@ -1248,13 +1248,13 @@ mod tests {
             insulation_material: Some("Polyvinyl Chloride".to_string()),
             conductor_cross_sect_area: CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
-                value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(327, 250)),
             },
             stranded: true,
-            num_strands: 7,
+            num_strands: 19,
             strand_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
-                value: rational64::Area::new::<square_millimeter>(Rational64::new(1281, 10000)),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(647, 10000)),
             }),
             insulation_rating: Some("Flamarrest®".to_string()),
             insulation_color: Some(Color::Green),
