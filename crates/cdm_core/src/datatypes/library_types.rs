@@ -186,7 +186,8 @@ mod tests {
     use pretty_assertions::assert_eq;
     use uom::si::{
         area::{square_inch, square_millimeter},
-        length::{inch, millimeter},
+        electric_potential::volt,
+        length::{inch, millimeter, point_computer},
         rational64,
         temperature_interval::degree_celsius,
     };
@@ -197,9 +198,10 @@ mod tests {
             library_types::{
                 Library,
                 cable_type::{CableCore, CableLayer, CableType, LayerType},
+                wire_type::WireType,
             },
-            unit_helper::{CrossSectionalArea, Length, TemperatureInterval},
-            util_types::CrossSection,
+            unit_helper::{CrossSectionalArea, ElectricPotential, Length, TemperatureInterval},
+            util_types::{Catalog, CrossSection, Dimension, LineStyle},
         },
         traits::FromFile,
     };
@@ -231,8 +233,12 @@ mod tests {
     // [ ] try with a few different unit strings
     // [ ] multiple cables in one file
     // [ ] multiple cables in one file, with one cable containing cores of the other cables
+    // [ ] multiple cables in one library merged together
     // [ ] wires and cables in the same file
     #[test]
+    /// Test importing a realistic minimal example file
+    ///
+    /// No validation of string keys within library
     fn read_datafile_library_cable_minimal_realistic() {
         let soow14_3 = CableType {
             cross_sect_area: CrossSectionalArea {
@@ -298,6 +304,9 @@ mod tests {
         assert_eq!(test_library, library_file)
     }
     #[test]
+    /// Test importing a cable with only required values
+    ///
+    /// No validation of string keys within library
     fn read_datafile_library_cable_minimal() {
         let soow14_1 = CableType {
             cross_sect_area: CrossSectionalArea {
@@ -364,6 +373,9 @@ mod tests {
         assert_eq!(test_library, library_file)
     }
     #[test]
+    /// Test importing a cable with minimal values and multiple layers defined
+    ///
+    /// No validation of string keys within library
     fn read_datafile_library_cable_multi_layer() {
         let triax_rg11 = CableType {
             cross_sect_area: CrossSectionalArea {
@@ -478,6 +490,833 @@ mod tests {
             wire_types: HashMap::new(),
         };
         let library_filepath = PathBuf::from("../../resources/test/library_tests/cable_type_test_multi_layer.toml")
+            .canonicalize()
+            .unwrap();
+        let library_file_contents = fs::read_to_string(&library_filepath).unwrap();
+        let mut library_file: Library = toml::from_str(&library_file_contents).unwrap();
+        library_file.add_datafile_paths(&library_filepath);
+        assert_eq!(test_library, library_file)
+    }
+    #[test]
+    /// Test importing a cable with all values defined
+    ///
+    /// No validation of string keys within library
+    fn read_datafile_library_cable_full() {
+        let soow14_3 = CableType {
+            cross_sect_area: CrossSectionalArea {
+                original_unit: "square inch".to_string(),
+                value: rational64::Area::new::<square_inch>(Rational64::new(14389229, 64008858)),
+            },
+            cross_section: CrossSection::Circular,
+            cable_type_code: Some("SOOW".to_string()),
+            layers: {
+                let mut layers = Vec::new();
+                layers.push(CableLayer {
+                    layer_number: 1,
+                    layer_type: LayerType::Jacket,
+                    material: Some("Clorinated Polyethylene".to_string()),
+                    ac_electric_potential_rating: Some(ElectricPotential {
+                        original_unit: "volt".to_string(),
+                        value: rational64::ElectricPotential::new::<volt>(Rational64::new(600, 1)),
+                    }),
+                    dc_electric_potential_rating: Some(ElectricPotential {
+                        original_unit: "volt".to_string(),
+                        value: rational64::ElectricPotential::new::<volt>(Rational64::new(600, 1)),
+                    }),
+                    temperature_rating: Some(TemperatureInterval {
+                        original_unit: "degree Celsius".to_string(),
+                        value: rational64::TemperatureInterval::new::<degree_celsius>(Rational64::new(90, 1)),
+                    }),
+                    rating: Some("UL Listed".to_string()),
+                    thickness: Some(Length {
+                        original_unit: "mm".to_string(),
+                        value: rational64::Length::new::<millimeter>(Rational64::new(203, 100)),
+                    }),
+                    color: Some(Color::Black),
+                });
+                layers
+            },
+            cores: {
+                let mut cores = HashMap::new();
+                cores.insert("green".to_string(), CableCore::WireType("soow14_green_inner".to_string()));
+                cores.insert("white".to_string(), CableCore::WireType("soow14_white_inner".to_string()));
+                cores.insert("black".to_string(), CableCore::WireType("soow14_black_inner".to_string()));
+                cores
+            },
+            line_style: Some(LineStyle {
+                color: Some(Color::Black),
+                secondary_color: Some(Color::Red),
+                line_thickness: Some(Length {
+                    original_unit: "point (computer)".to_string(),
+                    value: rational64::Length::new::<point_computer>(Rational64::new(20, 1)),
+                }),
+                line_appearance: Some([4, 1].to_vec()),
+            }),
+            dimensions: Some(Dimension {
+                height: Length {
+                    original_unit: "inch".to_string(),
+                    value: rational64::Length::new::<inch>(Rational64::new(13, 25)),
+                },
+                width: Length {
+                    original_unit: "inch".to_string(),
+                    value: rational64::Length::new::<inch>(Rational64::new(13, 25)),
+                },
+                depth: None,
+                diameter: Some(Length {
+                    original_unit: "inch".to_string(),
+                    value: rational64::Length::new::<inch>(Rational64::new(13, 25)),
+                }),
+            }),
+            catalog: Some(Catalog {
+                manufacturer: Some("Priority Wire & Cable".to_string()),
+                model: Some("14 AWG SOOW 600V Portable Power Cord 3 Conductor".to_string()),
+                description: Some("14 AWG SOOW cable 3 Conductor".to_string()),
+                //totally made up
+                part_number: Some("00-500-3".to_string()),
+                manufacturer_part_number: Some("14-03SOOW".to_string()),
+                //not true
+                supplier: Some("Wire & Cable Your Way".to_string()),
+                supplier_part_number: Some("SOO14s3-FT".to_string()),
+            }),
+            contained_datafile_path: PathBuf::from("../../resources/test/library_tests/cable_type_test_full_realistic.toml")
+                .canonicalize()
+                .unwrap(),
+        };
+        let test_library = Library {
+            cable_types: {
+                let mut cable_types = HashMap::new();
+                cable_types.insert("soow14_3".to_string(), soow14_3);
+                cable_types
+            },
+            connector_types: HashMap::new(),
+            enclosure_types: HashMap::new(),
+            equipment_types: HashMap::new(),
+            mounting_rail_types: HashMap::new(),
+            pathway_types: HashMap::new(),
+            schematic_symbol_types: HashMap::new(),
+            term_cable_types: HashMap::new(),
+            terminal_types: HashMap::new(),
+            terminal_strip_jumper_types: HashMap::new(),
+            terminal_accessory_types: HashMap::new(),
+            terminal_strip_accessory_types: HashMap::new(),
+            wire_types: HashMap::new(),
+        };
+        let library_filepath = PathBuf::from("../../resources/test/library_tests/cable_type_test_full_realistic.toml")
+            .canonicalize()
+            .unwrap();
+        let library_file_contents = fs::read_to_string(&library_filepath).unwrap();
+        let mut library_file: Library = toml::from_str(&library_file_contents).unwrap();
+        library_file.add_datafile_paths(&library_filepath);
+        assert_eq!(test_library, library_file)
+    }
+    #[test]
+    //TODO: duplicate this and test with direct AWG
+    /// This tests the following:
+    /// - multiple cable definitions in one file
+    /// - multiple cable definitions in one file, with one cable referencing cores of the other
+    /// - wires and cables together in the same file
+    ///
+    /// this is a relatively realistic test, with a mix of filled in values, multiple items in
+    /// hashmaps, and validation of hashmap keys
+    fn read_datafile_library_cable_multi_cable_wire() {
+        let datafile_path = PathBuf::from("../../resources/test/library_tests/cable_type_test_multicore_realistic.toml")
+            .canonicalize()
+            .unwrap();
+        let belden_638AFJ = CableType {
+            cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(688, 1)),
+            },
+            cross_section: CrossSection::Circular,
+            layers: {
+                let mut layers = Vec::new();
+                layers.push(CableLayer {
+                    layer_number: 1,
+                    layer_type: LayerType::Jacket,
+                    material: Some("Polyvinyl Chloride".to_string()),
+                    ac_electric_potential_rating: Some(ElectricPotential {
+                        original_unit: "volt".to_string(),
+                        value: rational64::ElectricPotential::new::<volt>(Rational64::new(300, 1)),
+                    }),
+                    dc_electric_potential_rating: Some(ElectricPotential {
+                        original_unit: "volt".to_string(),
+                        value: rational64::ElectricPotential::new::<volt>(Rational64::new(300, 1)),
+                    }),
+                    temperature_rating: Some(TemperatureInterval {
+                        original_unit: "degree Celsius".to_string(),
+                        value: rational64::TemperatureInterval::new::<degree_celsius>(Rational64::new(75, 1)),
+                    }),
+                    thickness: None,
+                    rating: Some("UL Listed, Plenum".to_string()),
+                    color: Some(Color::Yellow),
+                });
+                layers
+            },
+            cores: {
+                let mut cores = HashMap::new();
+                cores.insert(
+                    "card_reader".to_string(),
+                    CableCore::CableType("belden_638AFJ_card_reader_3_pair_inner".to_string()),
+                );
+                cores.insert(
+                    "door_contact".to_string(),
+                    CableCore::CableType("belden_638AFJ_door_contact_inner".to_string()),
+                );
+                cores.insert("rex".to_string(), CableCore::CableType("belden_638AFJ_rex_inner".to_string()));
+                cores.insert(
+                    "lock_power".to_string(),
+                    CableCore::CableType("belden_638AFJ_lock_power_inner".to_string()),
+                );
+                cores
+            },
+            cable_type_code: None,
+            line_style: Some(LineStyle {
+                color: Some(Color::Yellow),
+                secondary_color: None,
+                line_thickness: Some(Length {
+                    original_unit: "point (computer)".to_string(),
+                    value: rational64::Length::new::<point_computer>(Rational64::new(20, 1)),
+                }),
+                line_appearance: Some([4, 2].to_vec()),
+            }),
+            dimensions: Some(Dimension {
+                height: Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(74, 5)),
+                },
+                width: Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(74, 5)),
+                },
+                depth: None,
+                diameter: Some(Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(74, 5)),
+                }),
+            }),
+            catalog: Some(Catalog {
+                manufacturer: Some("Belden".to_string()),
+                model: Some("638AFJ".to_string()),
+                description: Some("Access Control, 16c (#18-3pr, #16-4c, #18-6c), Shielded, Outer Jacket, CMP".to_string()),
+                //totally made up
+                part_number: Some("00-1500-16".to_string()),
+                manufacturer_part_number: Some("638AFJ".to_string()),
+                supplier: Some("Digikey".to_string()),
+                supplier_part_number: Some("BEL8706-1000-ND".to_string()),
+            }),
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let belden_638AFJ_card_reader_3_pair_inner = CableType {
+            cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(1683, 10)),
+            },
+            cross_section: CrossSection::Circular,
+            cable_type_code: None,
+            catalog: None,
+            line_style: None,
+            layers: {
+                let mut layers = Vec::new();
+                layers.push(CableLayer {
+                    layer_number: 1,
+                    layer_type: LayerType::Shield,
+                    material: Some("Bi-Laminate (Alum+Poly) Tape".to_string()),
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    thickness: None,
+                    rating: None,
+                    color: None,
+                });
+                layers.push(CableLayer {
+                    layer_number: 2,
+                    layer_type: LayerType::Jacket,
+                    material: Some("Polyvinyl Chloride".to_string()),
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    thickness: None,
+                    rating: Some("Flamarrest®".to_string()),
+                    color: Some(Color::Orange),
+                });
+                layers
+            },
+            cores: {
+                let mut cores = HashMap::new();
+                cores.insert(
+                    "black".to_string(),
+                    CableCore::CableType("belden_638AFJ_18AWG_black_inner".to_string()),
+                );
+                cores.insert(
+                    "red".to_string(),
+                    CableCore::CableType("belden_638AFJ_18AWG_red_inner".to_string()),
+                );
+                cores.insert(
+                    "white".to_string(),
+                    CableCore::CableType("belden_638AFJ_18AWG_white_inner".to_string()),
+                );
+                cores.insert(
+                    "green".to_string(),
+                    CableCore::CableType("belden_638AFJ_18AWG_green_inner".to_string()),
+                );
+                cores.insert(
+                    "brown".to_string(),
+                    CableCore::CableType("belden_638AFJ_18AWG_brown_inner".to_string()),
+                );
+                cores.insert(
+                    "orange".to_string(),
+                    CableCore::CableType("belden_638AFJ_18AWG_orange_inner".to_string()),
+                );
+                cores
+            },
+            dimensions: Some(Dimension {
+                height: Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(183, 25)),
+                },
+                width: Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(183, 25)),
+                },
+                depth: None,
+                diameter: Some(Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(183, 25)),
+                }),
+            }),
+            contained_datafile_path: datafile_path.clone(),
+        };
+        let belden_638AFJ_door_contact_inner = CableType {
+            cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(573, 10)),
+            },
+            cross_section: CrossSection::Circular,
+            cable_type_code: None,
+            catalog: None,
+            line_style: None,
+            layers: {
+                let mut layers = Vec::new();
+                layers.push(CableLayer {
+                    layer_number: 1,
+                    layer_type: LayerType::Shield,
+                    material: Some("Bi-Laminate (Alum+Poly) Tape".to_string()),
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    thickness: None,
+                    rating: None,
+                    color: None,
+                });
+                layers.push(CableLayer {
+                    layer_number: 2,
+                    layer_type: LayerType::Jacket,
+                    material: Some("Polyvinyl Chloride".to_string()),
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    thickness: None,
+                    rating: Some("Flamarrest®".to_string()),
+                    color: Some(Color::White),
+                });
+                layers
+            },
+            cores: {
+                let mut cores = HashMap::new();
+                cores.insert(
+                    "black".to_string(),
+                    CableCore::CableType("belden_638AFJ_18AWG_black_inner".to_string()),
+                );
+                cores.insert(
+                    "red".to_string(),
+                    CableCore::CableType("belden_638AFJ_18AWG_red_inner".to_string()),
+                );
+                cores
+            },
+            dimensions: Some(Dimension {
+                height: Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(427, 100)),
+                },
+                width: Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(427, 100)),
+                },
+                depth: None,
+                diameter: Some(Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(427, 100)),
+                }),
+            }),
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let belden_638AFJ_rex_inner = CableType {
+            cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(3927, 50)),
+            },
+            cross_section: CrossSection::Circular,
+            cable_type_code: None,
+            catalog: None,
+            line_style: None,
+            layers: {
+                let mut layers = Vec::new();
+                layers.push(CableLayer {
+                    layer_number: 1,
+                    layer_type: LayerType::Shield,
+                    material: Some("Bi-Laminate (Alum+Poly) Tape".to_string()),
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    thickness: None,
+                    rating: None,
+                    color: None,
+                });
+                layers.push(CableLayer {
+                    layer_number: 2,
+                    layer_type: LayerType::Jacket,
+                    material: Some("Polyvinyl Chloride".to_string()),
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    thickness: None,
+                    rating: Some("Flamarrest®".to_string()),
+                    color: Some(Color::Blue),
+                });
+                layers
+            },
+            cores: {
+                let mut cores = HashMap::new();
+                cores.insert(
+                    "black".to_string(),
+                    CableCore::CableType("belden_638AFJ_18AWG_black_inner".to_string()),
+                );
+                cores.insert(
+                    "red".to_string(),
+                    CableCore::CableType("belden_638AFJ_18AWG_red_inner".to_string()),
+                );
+                cores.insert(
+                    "white".to_string(),
+                    CableCore::CableType("belden_638AFJ_18AWG_white_inner".to_string()),
+                );
+                cores.insert(
+                    "green".to_string(),
+                    CableCore::CableType("belden_638AFJ_18AWG_green_inner".to_string()),
+                );
+                cores
+            },
+            dimensions: Some(Dimension {
+                height: Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(5, 1)),
+                },
+                width: Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(5, 1)),
+                },
+                depth: None,
+                diameter: Some(Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(5, 1)),
+                }),
+            }),
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let belden_638AFJ_lock_power_inner = CableType {
+            cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(1017, 10)),
+            },
+            cross_section: CrossSection::Circular,
+            cable_type_code: None,
+            catalog: None,
+            line_style: None,
+            layers: {
+                let mut layers = Vec::new();
+                layers.push(CableLayer {
+                    layer_number: 1,
+                    layer_type: LayerType::Shield,
+                    material: Some("Bi-Laminate (Alum+Poly) Tape".to_string()),
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    thickness: None,
+                    rating: None,
+                    color: None,
+                });
+                layers.push(CableLayer {
+                    layer_number: 2,
+                    layer_type: LayerType::Jacket,
+                    material: Some("Polyvinyl Chloride".to_string()),
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    thickness: None,
+                    rating: Some("Flamarrest®".to_string()),
+                    color: Some(Color::Grey),
+                });
+                layers
+            },
+            cores: {
+                let mut cores = HashMap::new();
+                cores.insert(
+                    "black".to_string(),
+                    CableCore::CableType("belden_638AFJ_16AWG_black_inner".to_string()),
+                );
+                cores.insert(
+                    "red".to_string(),
+                    CableCore::CableType("belden_638AFJ_16AWG_red_inner".to_string()),
+                );
+                cores.insert(
+                    "white".to_string(),
+                    CableCore::CableType("belden_638AFJ_16AWG_white_inner".to_string()),
+                );
+                cores.insert(
+                    "green".to_string(),
+                    CableCore::CableType("belden_638AFJ_16AWG_green_inner".to_string()),
+                );
+                cores
+            },
+            dimensions: Some(Dimension {
+                height: Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(569, 100)),
+                },
+                width: Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(569, 100)),
+                },
+                depth: None,
+                diameter: Some(Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(569, 100)),
+                }),
+            }),
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let belden_638AFJ_18AWG_black_inner = WireType {
+            material: "Copper".to_string(),
+            insulated: true,
+            insulation_material: Some("Polyvinyl Chloride".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
+            },
+            stranded: true,
+            num_strands: 7,
+            strand_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(1281, 10000)),
+            }),
+            insulation_rating: Some("Flamarrest®".to_string()),
+            insulation_color: Some(Color::Black),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: None,
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+        let belden_638AFJ_18AWG_red_inner = WireType {
+            material: "Copper".to_string(),
+            insulated: true,
+            insulation_material: Some("Polyvinyl Chloride".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
+            },
+            stranded: true,
+            num_strands: 7,
+            strand_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(1281, 10000)),
+            }),
+            insulation_rating: Some("Flamarrest®".to_string()),
+            insulation_color: Some(Color::Red),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: None,
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+        let belden_638AFJ_18AWG_white_inner = WireType {
+            material: "Copper".to_string(),
+            insulated: true,
+            insulation_material: Some("Polyvinyl Chloride".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
+            },
+            stranded: true,
+            num_strands: 7,
+            strand_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(1281, 10000)),
+            }),
+            insulation_rating: Some("Flamarrest®".to_string()),
+            insulation_color: Some(Color::White),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: None,
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+        let belden_638AFJ_18AWG_green_inner = WireType {
+            material: "Copper".to_string(),
+            insulated: true,
+            insulation_material: Some("Polyvinyl Chloride".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
+            },
+            stranded: true,
+            num_strands: 7,
+            strand_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(1281, 10000)),
+            }),
+            insulation_rating: Some("Flamarrest®".to_string()),
+            insulation_color: Some(Color::Green),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: None,
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+        let belden_638AFJ_18AWG_brown_inner = WireType {
+            material: "Copper".to_string(),
+            insulated: true,
+            insulation_material: Some("Polyvinyl Chloride".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
+            },
+            stranded: true,
+            num_strands: 7,
+            strand_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(1281, 10000)),
+            }),
+            insulation_rating: Some("Flamarrest®".to_string()),
+            insulation_color: Some(Color::Brown),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: None,
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+        let belden_638AFJ_18AWG_orange_inner = WireType {
+            material: "Copper".to_string(),
+            insulated: true,
+            insulation_material: Some("Polyvinyl Chloride".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
+            },
+            stranded: true,
+            num_strands: 7,
+            strand_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(1281, 10000)),
+            }),
+            insulation_rating: Some("Flamarrest®".to_string()),
+            insulation_color: Some(Color::Orange),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: None,
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+        let belden_638AFJ_16AWG_black_inner = WireType {
+            material: "Copper".to_string(),
+            insulated: true,
+            insulation_material: Some("Polyvinyl Chloride".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
+            },
+            stranded: true,
+            num_strands: 7,
+            strand_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(1281, 10000)),
+            }),
+            insulation_rating: Some("Flamarrest®".to_string()),
+            insulation_color: Some(Color::Black),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: None,
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+        let belden_638AFJ_16AWG_red_inner = WireType {
+            material: "Copper".to_string(),
+            insulated: true,
+            insulation_material: Some("Polyvinyl Chloride".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
+            },
+            stranded: true,
+            num_strands: 7,
+            strand_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(1281, 10000)),
+            }),
+            insulation_rating: Some("Flamarrest®".to_string()),
+            insulation_color: Some(Color::Red),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: None,
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+        let belden_638AFJ_16AWG_white_inner = WireType {
+            material: "Copper".to_string(),
+            insulated: true,
+            insulation_material: Some("Polyvinyl Chloride".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
+            },
+            stranded: true,
+            num_strands: 7,
+            strand_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(1281, 10000)),
+            }),
+            insulation_rating: Some("Flamarrest®".to_string()),
+            insulation_color: Some(Color::White),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: None,
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+        let belden_638AFJ_16AWG_green_inner = WireType {
+            material: "Copper".to_string(),
+            insulated: true,
+            insulation_material: Some("Polyvinyl Chloride".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
+            },
+            stranded: true,
+            num_strands: 7,
+            strand_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(1281, 10000)),
+            }),
+            insulation_rating: Some("Flamarrest®".to_string()),
+            insulation_color: Some(Color::Green),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: None,
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let test_library = Library {
+            cable_types: {
+                let mut cable_types = HashMap::new();
+                cable_types.insert("belden_638AFJ".to_string(), belden_638AFJ);
+                cable_types.insert(
+                    "belden_638AFJ_card_reader_3_pair_inner".to_string(),
+                    belden_638AFJ_card_reader_3_pair_inner,
+                );
+                cable_types.insert(
+                    "belden_638AFJ_door_contact_inner".to_string(),
+                    belden_638AFJ_door_contact_inner,
+                );
+                cable_types.insert("belden_638AFJ_rex_inner".to_string(), belden_638AFJ_rex_inner);
+                cable_types.insert("belden_638AFJ_lock_power_inner".to_string(), belden_638AFJ_lock_power_inner);
+                cable_types
+            },
+            connector_types: HashMap::new(),
+            enclosure_types: HashMap::new(),
+            equipment_types: HashMap::new(),
+            mounting_rail_types: HashMap::new(),
+            pathway_types: HashMap::new(),
+            schematic_symbol_types: HashMap::new(),
+            term_cable_types: HashMap::new(),
+            terminal_types: HashMap::new(),
+            terminal_strip_jumper_types: HashMap::new(),
+            terminal_accessory_types: HashMap::new(),
+            terminal_strip_accessory_types: HashMap::new(),
+            wire_types: {
+                let mut wire_types = HashMap::new();
+                wire_types.insert("belden_638AFJ_18AWG_black_inner".to_string(), belden_638AFJ_18AWG_black_inner);
+                wire_types.insert("belden_638AFJ_18AWG_red_inner".to_string(), belden_638AFJ_18AWG_red_inner);
+                wire_types.insert("belden_638AFJ_18AWG_white_inner".to_string(), belden_638AFJ_18AWG_white_inner);
+                wire_types.insert("belden_638AFJ_18AWG_green_inner".to_string(), belden_638AFJ_18AWG_green_inner);
+                wire_types.insert("belden_638AFJ_18AWG_brown_inner".to_string(), belden_638AFJ_18AWG_brown_inner);
+                wire_types.insert(
+                    "belden_638AFJ_18AWG_orange_inner".to_string(),
+                    belden_638AFJ_18AWG_orange_inner,
+                );
+
+                wire_types.insert("belden_638AFJ_16AWG_black_inner".to_string(), belden_638AFJ_16AWG_black_inner);
+                wire_types.insert("belden_638AFJ_16AWG_red_inner".to_string(), belden_638AFJ_16AWG_red_inner);
+                wire_types.insert("belden_638AFJ_16AWG_white_inner".to_string(), belden_638AFJ_16AWG_white_inner);
+                wire_types.insert("belden_638AFJ_16AWG_green_inner".to_string(), belden_638AFJ_16AWG_green_inner);
+
+                wire_types
+            },
+        };
+        let library_filepath = PathBuf::from("../../resources/test/library_tests/cable_type_test_multicore_realistic.toml")
             .canonicalize()
             .unwrap();
         let library_file_contents = fs::read_to_string(&library_filepath).unwrap();

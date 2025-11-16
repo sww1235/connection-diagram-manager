@@ -1,0 +1,266 @@
+[cable_types]
+
+# This is a test cable and might have weirdnesses. Do not use as a library reference
+# only defining required values
+[cable_types.belden_638AFJ]
+cross_sect_area = {value = [688, 1], original_unit="square millimeter"}
+cross_section = "Circular"
+
+[cable_types.belden_638AFJ.cores]
+
+[cable_types.belden_638AFJ.cores.card_reader]
+CableType="belden_638AFJ_card_reader_3_pair_inner"
+[cable_types.belden_638AFJ.cores.door_contact]
+CableType="belden_638AFJ_door_contact_inner"
+[cable_types.belden_638AFJ.cores.rex]
+CableType="belden_638AFJ_rex_inner"
+[cable_types.belden_638AFJ.cores.lock_power]
+CableType="belden_638AFJ_lock_power_inner"
+
+[[cable_types.belden_638AFJ.layers]]
+layer_number=1
+layer_type="Jacket"
+material = "Polyvinyl Chloride"
+ac_electric_potential_rating = {value = [300, 1], original_unit = "volt"}
+dc_electric_potential_rating = {value = [300, 1], original_unit = "volt"}
+temperature_rating = {value = [75,1], original_unit = "degree Celsius"}
+rating = "UL Listed, Plenum, Flamarrest®"
+color = "Yellow"
+
+[cable_type.belden_638AFJ.line_style]
+color = "Yellow"
+line_thickness = {value = [20, 1], original_unit = "point (computer)"}
+line_appearance = [4, 2]
+
+[cable_type.belden_638AFJ.dimensions]
+height = {value = [74,5], original_unit = "mm"}
+width = {value = [74,5], original_unit = "mm"}
+diameter = {value = [74,5], original_unit = "mm"}
+
+[cable_type.belden_638AFJ.catalog]
+manufacturer = "Belden"
+model = "638AFJ"
+description = "Access Control, 16c (#18-3pr, #16-4c, #18-6c), Shielded, Outer Jacket, CMP"
+# totally made up
+part_number = "00-1500-16"
+manufacturer_part_number = "638AFJ"
+supplier = "Digikey"
+supplier_part_number = "BEL8706-1000-ND"
+
+[cable_types.belden_638AFJ_card_reader_3_pair_inner]
+cross_sect_area = {value = [1683, 10], original_unit="square millimeter"}
+cross_section = "Circular"
+
+[cable_types.belden_638AFJ_card_reader_3_pair_inner.cores.black]
+WireType = "belden_638AFJ_18AWG_black_inner"
+[cable_types.belden_638AFJ_card_reader_3_pair_inner.cores.red]
+WireType = "belden_638AFJ_18AWG_red_inner"
+[cable_types.belden_638AFJ_card_reader_3_pair_inner.cores.white]
+WireType = "belden_638AFJ_18AWG_white_inner"
+[cable_types.belden_638AFJ_card_reader_3_pair_inner.cores.green]
+WireType = "belden_638AFJ_18AWG_green_inner"
+[cable_types.belden_638AFJ_card_reader_3_pair_inner.cores.brown]
+WireType = "belden_638AFJ_18AWG_brown_inner"
+[cable_types.belden_638AFJ_card_reader_3_pair_inner.cores.orange]
+WireType = "belden_638AFJ_18AWG_orange_inner"
+[[cable_types.belden_638AFJ_card_reader_3_pair_inner.layers]]
+layer_number = 1
+layer_type = "Shield"
+material = "Bi-Laminate (Alum+Poly) Tape"
+[[cable_types.belden_638AFJ_card_reader_3_pair_inner.layers]]
+layer_number = 2
+layer_type = "Jacket"
+material = "Polyvinyl Chloride"
+rating = "Flamarrest®"
+color = "Orange"
+[cable_type.belden_638AFJ_card_reader_3_pair_inner.dimensions]
+height = {value = [183,25], original_unit = "mm"}
+width = {value = [183,25], original_unit = "mm"}
+diameter = {value = [183,25], original_unit = "mm"}
+
+[cable_types.belden_638AFJ_door_contact_inner]
+cross_sect_area = {value = [573, 10], original_unit="square millimeter"}
+cross_section = "Circular"
+
+[cable_types.belden_638AFJ_door_contact_inner.cores.black]
+WireType = "belden_638AFJ_18AWG_black_inner"
+[cable_types.belden_638AFJ_door_contact_inner.cores.red]
+WireType = "belden_638AFJ_18AWG_red_inner"
+[[cable_types.belden_638AFJ_door_contact_inner.layers]]
+layer_number = 1
+layer_type = "Shield"
+material = "Bi-Laminate (Alum+Poly) Tape"
+[[cable_types.belden_638AFJ_door_contact_inner.layers]]
+layer_number = 2
+layer_type = "Jacket"
+material = "Polyvinyl Chloride"
+rating = "Flamarrest®"
+color = "White"
+
+[cable_type.belden_638AFJ_door_contact_inner.dimensions]
+height = {value = [427,100], original_unit = "mm"}
+width = {value = [427,100], original_unit = "mm"}
+diameter = {value = [427,100], original_unit = "mm"}
+
+[cable_types.belden_638AFJ_rex_inner]
+cross_sect_area = {value = [3927, 50], original_unit="square millimeter"}
+cross_section = "Circular"
+
+[cable_types.belden_638AFJ_rex_inner.cores.black]
+WireType = "belden_638AFJ_18AWG_black_inner"
+[cable_types.belden_638AFJ_rex_inner.cores.red]
+WireType = "belden_638AFJ_18AWG_red_inner"
+[cable_types.belden_638AFJ_rex_inner.cores.white]
+WireType = "belden_638AFJ_18AWG_white_inner"
+[cable_types.belden_638AFJ_rex_inner.cores.green]
+WireType = "belden_638AFJ_18AWG_green_inner"
+[[cable_types.belden_638AFJ_rex_inner.layers]]
+layer_number = 1
+layer_type = "Shield"
+material = "Bi-Laminate (Alum+Poly) Tape"
+[[cable_types.belden_638AFJ_rex_inner.layers]]
+layer_number = 2
+layer_type = "Jacket"
+material = "Polyvinyl Chloride"
+rating = "Flamarrest®"
+color = "Blue"
+
+
+[cable_type.belden_638AFJ_rex_inner.dimensions]
+height = {value = [5,1], original_unit = "mm"}
+width = {value = [5,1], original_unit = "mm"}
+diameter = {value = [5,1], original_unit = "mm"}
+
+
+[cable_types.belden_638AFJ_lock_power_inner]
+cross_sect_area = {value = [1017, 10], original_unit="square millimeter"}
+cross_section = "Circular"
+
+[cable_types.belden_638AFJ_lock_power_inner.cores.black]
+WireType = "belden_638AFJ_16AWG_black_inner"
+[cable_types.belden_638AFJ_lock_power_inner.cores.red]
+WireType = "belden_638AFJ_16AWG_red_inner"
+[cable_types.belden_638AFJ_lock_power_inner.cores.white]
+WireType = "belden_638AFJ_16AWG_white_inner"
+[cable_types.belden_638AFJ_lock_power_inner.cores.green]
+WireType = "belden_638AFJ_16AWG_green_inner"
+[[cable_types.belden_638AFJ_lock_power_inner.layers]]
+layer_number = 1
+layer_type = "Shield"
+material = "Bi-Laminate (Alum+Poly) Tape"
+[[cable_types.belden_638AFJ_lock_power_inner.layers]]
+layer_number = 2
+layer_type = "Jacket"
+material = "Polyvinyl Chloride"
+rating = "Flamarrest®"
+color = "Grey"
+
+
+[cable_type.belden_638AFJ_lock_power_inner.dimensions]
+height = {value = [569,100], original_unit = "mm"}
+width = {value = [569,100], original_unit = "mm"}
+diameter = {value = [569,100], original_unit = "mm"}
+
+[wire_types]
+
+[wire_types.belden_638AFJ_18AWG_black_inner]
+material = "Copper"
+insulated = true
+insulation_material = "Polyvinyl Chloride"
+conductor_cross_sect_area = {value = [8229, 10000], original_unit = "square millimeter"}
+stranded = true
+num_strands = 7
+strand_cross_sect_area = {value = [1281, 10000], original_unit = "square millimeter"}
+insulation_rating = "Flamarrest®"
+insulation_color = "Black"
+[wire_types.belden_638AFJ_18AWG_red_inner]
+material = "Copper"
+insulated = true
+insulation_material = "Polyvinyl Chloride"
+conductor_cross_sect_area = {value = [8229, 10000], original_unit = "square millimeter"}
+stranded = true
+num_strands = 7
+strand_cross_sect_area = {value = [1281, 10000], original_unit = "square millimeter"}
+insulation_rating = "Flamarrest®"
+insulation_color = "Red"
+[wire_types.belden_638AFJ_18AWG_white_inner]
+material = "Copper"
+insulated = true
+insulation_material = "Polyvinyl Chloride"
+conductor_cross_sect_area = {value = [8229, 10000], original_unit = "square millimeter"}
+stranded = true
+num_strands = 7
+strand_cross_sect_area = {value = [1281, 10000], original_unit = "square millimeter"}
+insulation_rating = "Flamarrest®"
+insulation_color = "White"
+[wire_types.belden_638AFJ_18AWG_green_inner]
+material = "Copper"
+insulated = true
+insulation_material = "Polyvinyl Chloride"
+conductor_cross_sect_area = {value = [8229, 10000], original_unit = "square millimeter"}
+stranded = true
+num_strands = 7
+strand_cross_sect_area = {value = [1281, 10000], original_unit = "square millimeter"}
+insulation_rating = "Flamarrest®"
+insulation_color = "Green"
+[wire_types.belden_638AFJ_18AWG_brown_inner]
+material = "Copper"
+insulated = true
+insulation_material = "Polyvinyl Chloride"
+conductor_cross_sect_area = {value = [8229, 10000], original_unit = "square millimeter"}
+stranded = true
+num_strands = 7
+strand_cross_sect_area = {value = [1281, 10000], original_unit = "square millimeter"}
+insulation_rating = "Flamarrest®"
+insulation_color = "Brown"
+[wire_types.belden_638AFJ_18AWG_orange_inner]
+material = "Copper"
+insulated = true
+insulation_material = "Polyvinyl Chloride"
+conductor_cross_sect_area = {value = [8229, 10000], original_unit = "square millimeter"}
+stranded = true
+num_strands = 7
+strand_cross_sect_area = {value = [1281, 10000], original_unit = "square millimeter"}
+insulation_rating = "Flamarrest®"
+insulation_color = "Orange"
+
+[wire_types.belden_638AFJ_16AWG_black_inner]
+material = "Copper"
+insulated = true
+insulation_material = "Polyvinyl Chloride"
+conductor_cross_sect_area = {value = [327, 250], original_unit = "square millimeter"}
+stranded = true
+num_strands = 19
+strand_cross_sect_area = {value = [647, 10000], original_unit = "square millimeter"}
+insulation_rating = "Flamarrest®"
+insulation_color = "Black"
+[wire_types.belden_638AFJ_16AWG_red_inner]
+material = "Copper"
+insulated = true
+insulation_material = "Polyvinyl Chloride"
+conductor_cross_sect_area = {value = [327, 250], original_unit = "square millimeter"}
+stranded = true
+num_strands = 19
+strand_cross_sect_area = {value = [647, 10000], original_unit = "square millimeter"}
+insulation_rating = "Flamarrest®"
+insulation_color = "Red"
+[wire_types.belden_638AFJ_16AWG_white_inner]
+material = "Copper"
+insulated = true
+insulation_material = "Polyvinyl Chloride"
+conductor_cross_sect_area = {value = [327, 250], original_unit = "square millimeter"}
+stranded = true
+num_strands = 19
+strand_cross_sect_area = {value = [647, 10000], original_unit = "square millimeter"}
+insulation_rating = "Flamarrest®"
+insulation_color = "White"
+[wire_types.belden_638AFJ_16AWG_green_inner]
+material = "Copper"
+insulated = true
+insulation_material = "Polyvinyl Chloride"
+conductor_cross_sect_area = {value = [327, 250], original_unit = "square millimeter"}
+stranded = true
+num_strands = 19
+strand_cross_sect_area = {value = [647, 10000], original_unit = "square millimeter"}
+insulation_rating = "Flamarrest®"
+insulation_color = "Green"

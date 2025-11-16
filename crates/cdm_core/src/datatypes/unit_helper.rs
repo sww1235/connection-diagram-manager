@@ -67,7 +67,6 @@ struct IntermediateUnit {
     /// original unit string in datafile
     original_unit: String,
 }
-//TODO: change output format to have fixed width output so the units and abbreviations line up
 impl Area {
     /// outputs all usable `Area` units allowed in configuration files in the form of `<unit name>:
     /// <unit abbreviation>`

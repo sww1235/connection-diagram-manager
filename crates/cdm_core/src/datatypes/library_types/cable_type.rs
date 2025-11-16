@@ -65,8 +65,12 @@ pub enum CableCore {
     CableType(String),
 }
 
+//TODO: add a way to link 2 cores as a pair within a cable, and specify twisted + parameters
+
 //TODO: either need to validate that layer number is unique within a cable, or remove and rely on
 //ordering within TOML file. Need to test
+//
+//TODO: add minimum temperature rating
 /// `CableLayer` represents an insulation or shield layer of the entire cable
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct CableLayer {
