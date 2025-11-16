@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     path::{Path, PathBuf},
 };
 
@@ -30,9 +30,9 @@ pub struct TermCableType {
     /// appearance in schematics
     pub line_style: Option<LineStyle>,
     /// One end of Terminated Cable.
-    pub end1: HashMap<String, Connector>,
+    pub end1: BTreeMap<String, Connector>,
     /// The other end of Terminated Cable
-    pub end2: HashMap<String, Connector>,
+    pub end2: BTreeMap<String, Connector>,
     /// datafile the struct instance was read in from
     #[serde(skip)]
     pub(super) contained_datafile_path: PathBuf,

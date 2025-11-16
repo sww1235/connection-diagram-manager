@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     path::{Path, PathBuf},
 };
 
@@ -69,9 +69,9 @@ pub struct TerminalType {
     pub integrated_disconnect_present: Option<String>,
     /// Visual representation of `TerminalType`
     pub visual_representation: Option<Svg>,
-    /// `HashMap` defining terminal layers
+    /// `BTreeMap` defining terminal layers
     /// at least 1 layer is required for a terminal
-    pub layers: HashMap<String, Layer>,
+    pub layers: BTreeMap<String, Layer>,
     /// Which terminal connections are connected
     pub internal_connections: Vec<InternalConnection>,
     /// datafile the struct instance was read in from

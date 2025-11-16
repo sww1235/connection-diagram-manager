@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     path::{Path, PathBuf},
 };
 
@@ -44,7 +44,7 @@ pub struct EquipmentType {
     // TODO: create associated method to return correct face here
     pub visual_representation: Option<Svg>,
     /// faces represents a visual representation of each face of a piece of equipment
-    pub faces: Option<HashMap<String, EquipFace>>,
+    pub faces: Option<BTreeMap<String, EquipFace>>,
     /// datafile the struct instance was read in from
     #[serde(skip)]
     pub(super) contained_datafile_path: PathBuf,
@@ -70,7 +70,7 @@ pub struct EquipFace {
     /// visual representation of equipment face, without connectors
     pub visual_representation: Option<Svg>,
     /// all connectors that are on this face of equipment
-    pub connectors: Option<HashMap<String, FaceConnector>>,
+    pub connectors: Option<BTreeMap<String, FaceConnector>>,
 }
 
 /// `FaceConnector` represents

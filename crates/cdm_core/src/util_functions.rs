@@ -1,17 +1,17 @@
-use std::collections::{HashMap, hash_map::Entry};
+use std::collections::{BTreeMap, btree_map::Entry};
 
 use crate::{error::Error, traits::FromFile};
 
-/// merge hashmaps merges two hashmaps while checking uniqueness of keys.
+/// merge btreemaps merges two btreemaps while checking uniqueness of keys.
 ///
-/// Specialized function for merging hashmaps with data read in from datafiles
+/// Specialized function for merging btreemaps with data read in from datafiles
 ///
 /// # Errors
 ///
 /// Will error if there are duplicate keys found in `test_map`
-pub fn merge_hashmaps<V>(
-    origin_map: &mut HashMap<String, V>,
-    test_map: HashMap<String, V>,
+pub fn merge_btreemaps<V>(
+    origin_map: &mut BTreeMap<String, V>,
+    test_map: BTreeMap<String, V>,
     test_file: &str,
 ) -> Result<(), Error>
 where

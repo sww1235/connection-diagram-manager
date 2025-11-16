@@ -20,7 +20,7 @@ pub mod terminal_type;
 /// `wire_type` represents an individual wire with optional insulation
 pub mod wire_type;
 
-use std::{collections::HashMap, path::Path};
+use std::{collections::BTreeMap, path::Path};
 
 use serde::{Deserialize, Serialize};
 
@@ -31,33 +31,33 @@ use crate::{error::Error, traits::FromFile, util_functions};
 #[serde(default)]
 pub struct Library {
     /// contains all cable types read in from file, and/or added in via program logic
-    pub cable_types: HashMap<String, cable_type::CableType>,
+    pub cable_types: BTreeMap<String, cable_type::CableType>,
     /// contains all connector types read in from file, and/or added in via program logic
-    pub connector_types: HashMap<String, connector_type::ConnectorType>,
+    pub connector_types: BTreeMap<String, connector_type::ConnectorType>,
     /// contains all enclosure types read in from file, and/or added in via program logic
-    pub enclosure_types: HashMap<String, enclosure_type::EnclosureType>,
+    pub enclosure_types: BTreeMap<String, enclosure_type::EnclosureType>,
     /// contains all equipment types read in from file, and/or added in via program logic
-    pub equipment_types: HashMap<String, equipment_type::EquipmentType>,
+    pub equipment_types: BTreeMap<String, equipment_type::EquipmentType>,
     /// contains all mounting rail types read in from file, and/or added in via program logic
-    pub mounting_rail_types: HashMap<String, mounting_rail_type::MountingRailType>,
+    pub mounting_rail_types: BTreeMap<String, mounting_rail_type::MountingRailType>,
     /// contains all pathway types read in from file, and/or added in via program logic
-    pub pathway_types: HashMap<String, pathway_type::PathwayType>,
+    pub pathway_types: BTreeMap<String, pathway_type::PathwayType>,
     /// contains all schematic symbol types read in from file and/or added in via program logic
-    pub schematic_symbol_types: HashMap<String, schematic_symbol_type::SchematicSymbolType>,
+    pub schematic_symbol_types: BTreeMap<String, schematic_symbol_type::SchematicSymbolType>,
     /// contains all terminated cable types read in from file, and/or added in via program logic
-    pub term_cable_types: HashMap<String, term_cable_type::TermCableType>,
+    pub term_cable_types: BTreeMap<String, term_cable_type::TermCableType>,
     /// contains all terminal types read in from file, and/or added in via program logic
-    pub terminal_types: HashMap<String, terminal_type::TerminalType>,
+    pub terminal_types: BTreeMap<String, terminal_type::TerminalType>,
     /// contains all terminal strip jumper types read in from file, and/or added in via program
     /// logic
-    pub terminal_strip_jumper_types: HashMap<String, terminal_type::TerminalStripJumperType>,
+    pub terminal_strip_jumper_types: BTreeMap<String, terminal_type::TerminalStripJumperType>,
     /// contains all terminal accessory types read in from file, and/or added in via program logic
-    pub terminal_accessory_types: HashMap<String, terminal_type::TerminalAccessoryType>,
+    pub terminal_accessory_types: BTreeMap<String, terminal_type::TerminalAccessoryType>,
     /// contains all terminal strip accessory types read in from file, and/or added in via program
     /// logic
-    pub terminal_strip_accessory_types: HashMap<String, terminal_type::TerminalStripAccessoryType>,
+    pub terminal_strip_accessory_types: BTreeMap<String, terminal_type::TerminalStripAccessoryType>,
     /// contains all wire types read in from file, and/or added in via program logic
-    pub wire_types: HashMap<String, wire_type::WireType>,
+    pub wire_types: BTreeMap<String, wire_type::WireType>,
 }
 
 impl Library {
@@ -68,30 +68,30 @@ impl Library {
     ///
     /// Will error if there are duplicate keys found in `other` map
     pub fn merge(&mut self, test_map: Library, test_file: &str) -> Result<(), Error> {
-        util_functions::merge_hashmaps(&mut self.cable_types, test_map.cable_types, test_file)?;
-        util_functions::merge_hashmaps(&mut self.connector_types, test_map.connector_types, test_file)?;
-        util_functions::merge_hashmaps(&mut self.enclosure_types, test_map.enclosure_types, test_file)?;
-        util_functions::merge_hashmaps(&mut self.equipment_types, test_map.equipment_types, test_file)?;
-        util_functions::merge_hashmaps(&mut self.mounting_rail_types, test_map.mounting_rail_types, test_file)?;
-        util_functions::merge_hashmaps(&mut self.pathway_types, test_map.pathway_types, test_file)?;
-        util_functions::merge_hashmaps(&mut self.term_cable_types, test_map.term_cable_types, test_file)?;
-        util_functions::merge_hashmaps(&mut self.terminal_types, test_map.terminal_types, test_file)?;
-        util_functions::merge_hashmaps(
+        util_functions::merge_btreemaps(&mut self.cable_types, test_map.cable_types, test_file)?;
+        util_functions::merge_btreemaps(&mut self.connector_types, test_map.connector_types, test_file)?;
+        util_functions::merge_btreemaps(&mut self.enclosure_types, test_map.enclosure_types, test_file)?;
+        util_functions::merge_btreemaps(&mut self.equipment_types, test_map.equipment_types, test_file)?;
+        util_functions::merge_btreemaps(&mut self.mounting_rail_types, test_map.mounting_rail_types, test_file)?;
+        util_functions::merge_btreemaps(&mut self.pathway_types, test_map.pathway_types, test_file)?;
+        util_functions::merge_btreemaps(&mut self.term_cable_types, test_map.term_cable_types, test_file)?;
+        util_functions::merge_btreemaps(&mut self.terminal_types, test_map.terminal_types, test_file)?;
+        util_functions::merge_btreemaps(
             &mut self.terminal_strip_jumper_types,
             test_map.terminal_strip_jumper_types,
             test_file,
         )?;
-        util_functions::merge_hashmaps(
+        util_functions::merge_btreemaps(
             &mut self.terminal_accessory_types,
             test_map.terminal_accessory_types,
             test_file,
         )?;
-        util_functions::merge_hashmaps(
+        util_functions::merge_btreemaps(
             &mut self.terminal_strip_accessory_types,
             test_map.terminal_strip_accessory_types,
             test_file,
         )?;
-        util_functions::merge_hashmaps(&mut self.wire_types, test_map.wire_types, test_file)?;
+        util_functions::merge_btreemaps(&mut self.wire_types, test_map.wire_types, test_file)?;
         Ok(())
     }
 
@@ -180,7 +180,7 @@ impl Library {
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::HashMap, fs, path::PathBuf};
+    use std::{collections::BTreeMap, fs, path::PathBuf};
 
     use num_rational::Rational64;
     use pretty_assertions::assert_eq;
@@ -262,7 +262,7 @@ mod tests {
                 layers
             },
             cores: {
-                let mut cores = HashMap::new();
+                let mut cores = BTreeMap::new();
                 cores.insert("green".to_string(), CableCore::WireType("soow14_green_inner".to_string()));
                 cores.insert("white".to_string(), CableCore::WireType("soow14_white_inner".to_string()));
                 cores.insert("black".to_string(), CableCore::WireType("soow14_black_inner".to_string()));
@@ -278,22 +278,22 @@ mod tests {
         };
         let test_library = Library {
             cable_types: {
-                let mut cable_types = HashMap::new();
+                let mut cable_types = BTreeMap::new();
                 cable_types.insert("soow14_3".to_string(), soow14_3);
                 cable_types
             },
-            connector_types: HashMap::new(),
-            enclosure_types: HashMap::new(),
-            equipment_types: HashMap::new(),
-            mounting_rail_types: HashMap::new(),
-            pathway_types: HashMap::new(),
-            schematic_symbol_types: HashMap::new(),
-            term_cable_types: HashMap::new(),
-            terminal_types: HashMap::new(),
-            terminal_strip_jumper_types: HashMap::new(),
-            terminal_accessory_types: HashMap::new(),
-            terminal_strip_accessory_types: HashMap::new(),
-            wire_types: HashMap::new(),
+            connector_types: BTreeMap::new(),
+            enclosure_types: BTreeMap::new(),
+            equipment_types: BTreeMap::new(),
+            mounting_rail_types: BTreeMap::new(),
+            pathway_types: BTreeMap::new(),
+            schematic_symbol_types: BTreeMap::new(),
+            term_cable_types: BTreeMap::new(),
+            terminal_types: BTreeMap::new(),
+            terminal_strip_jumper_types: BTreeMap::new(),
+            terminal_accessory_types: BTreeMap::new(),
+            terminal_strip_accessory_types: BTreeMap::new(),
+            wire_types: BTreeMap::new(),
         };
         let library_filepath = PathBuf::from("../../resources/test/library_tests/cable_type_test_minimal_realistic.toml")
             .canonicalize()
@@ -330,7 +330,7 @@ mod tests {
                 layers
             },
             cores: {
-                let mut cores = HashMap::new();
+                let mut cores = BTreeMap::new();
                 cores.insert(
                     "flamingo".to_string(),
                     CableCore::WireType("soow14_flamingo_inner".to_string()),
@@ -347,22 +347,22 @@ mod tests {
         };
         let test_library = Library {
             cable_types: {
-                let mut cable_types = HashMap::new();
+                let mut cable_types = BTreeMap::new();
                 cable_types.insert("soow14_1".to_string(), soow14_1);
                 cable_types
             },
-            connector_types: HashMap::new(),
-            enclosure_types: HashMap::new(),
-            equipment_types: HashMap::new(),
-            mounting_rail_types: HashMap::new(),
-            pathway_types: HashMap::new(),
-            schematic_symbol_types: HashMap::new(),
-            term_cable_types: HashMap::new(),
-            terminal_types: HashMap::new(),
-            terminal_strip_jumper_types: HashMap::new(),
-            terminal_accessory_types: HashMap::new(),
-            terminal_strip_accessory_types: HashMap::new(),
-            wire_types: HashMap::new(),
+            connector_types: BTreeMap::new(),
+            enclosure_types: BTreeMap::new(),
+            equipment_types: BTreeMap::new(),
+            mounting_rail_types: BTreeMap::new(),
+            pathway_types: BTreeMap::new(),
+            schematic_symbol_types: BTreeMap::new(),
+            term_cable_types: BTreeMap::new(),
+            terminal_types: BTreeMap::new(),
+            terminal_strip_jumper_types: BTreeMap::new(),
+            terminal_accessory_types: BTreeMap::new(),
+            terminal_strip_accessory_types: BTreeMap::new(),
+            wire_types: BTreeMap::new(),
         };
         let library_filepath = PathBuf::from("../../resources/test/library_tests/cable_type_test_minimal.toml")
             .canonicalize()
@@ -455,7 +455,7 @@ mod tests {
                 layers
             },
             cores: {
-                let mut cores = HashMap::new();
+                let mut cores = BTreeMap::new();
                 cores.insert(
                     "inner".to_string(),
                     CableCore::WireType("triax_15awg_copper_inner".to_string()),
@@ -472,22 +472,22 @@ mod tests {
         };
         let test_library = Library {
             cable_types: {
-                let mut cable_types = HashMap::new();
+                let mut cable_types = BTreeMap::new();
                 cable_types.insert("triax_rg11".to_string(), triax_rg11);
                 cable_types
             },
-            connector_types: HashMap::new(),
-            enclosure_types: HashMap::new(),
-            equipment_types: HashMap::new(),
-            mounting_rail_types: HashMap::new(),
-            pathway_types: HashMap::new(),
-            schematic_symbol_types: HashMap::new(),
-            term_cable_types: HashMap::new(),
-            terminal_types: HashMap::new(),
-            terminal_strip_jumper_types: HashMap::new(),
-            terminal_accessory_types: HashMap::new(),
-            terminal_strip_accessory_types: HashMap::new(),
-            wire_types: HashMap::new(),
+            connector_types: BTreeMap::new(),
+            enclosure_types: BTreeMap::new(),
+            equipment_types: BTreeMap::new(),
+            mounting_rail_types: BTreeMap::new(),
+            pathway_types: BTreeMap::new(),
+            schematic_symbol_types: BTreeMap::new(),
+            term_cable_types: BTreeMap::new(),
+            terminal_types: BTreeMap::new(),
+            terminal_strip_jumper_types: BTreeMap::new(),
+            terminal_accessory_types: BTreeMap::new(),
+            terminal_strip_accessory_types: BTreeMap::new(),
+            wire_types: BTreeMap::new(),
         };
         let library_filepath = PathBuf::from("../../resources/test/library_tests/cable_type_test_multi_layer.toml")
             .canonicalize()
@@ -537,7 +537,7 @@ mod tests {
                 layers
             },
             cores: {
-                let mut cores = HashMap::new();
+                let mut cores = BTreeMap::new();
                 cores.insert("green".to_string(), CableCore::WireType("soow14_green_inner".to_string()));
                 cores.insert("white".to_string(), CableCore::WireType("soow14_white_inner".to_string()));
                 cores.insert("black".to_string(), CableCore::WireType("soow14_black_inner".to_string()));
@@ -584,22 +584,22 @@ mod tests {
         };
         let test_library = Library {
             cable_types: {
-                let mut cable_types = HashMap::new();
+                let mut cable_types = BTreeMap::new();
                 cable_types.insert("soow14_3".to_string(), soow14_3);
                 cable_types
             },
-            connector_types: HashMap::new(),
-            enclosure_types: HashMap::new(),
-            equipment_types: HashMap::new(),
-            mounting_rail_types: HashMap::new(),
-            pathway_types: HashMap::new(),
-            schematic_symbol_types: HashMap::new(),
-            term_cable_types: HashMap::new(),
-            terminal_types: HashMap::new(),
-            terminal_strip_jumper_types: HashMap::new(),
-            terminal_accessory_types: HashMap::new(),
-            terminal_strip_accessory_types: HashMap::new(),
-            wire_types: HashMap::new(),
+            connector_types: BTreeMap::new(),
+            enclosure_types: BTreeMap::new(),
+            equipment_types: BTreeMap::new(),
+            mounting_rail_types: BTreeMap::new(),
+            pathway_types: BTreeMap::new(),
+            schematic_symbol_types: BTreeMap::new(),
+            term_cable_types: BTreeMap::new(),
+            terminal_types: BTreeMap::new(),
+            terminal_strip_jumper_types: BTreeMap::new(),
+            terminal_accessory_types: BTreeMap::new(),
+            terminal_strip_accessory_types: BTreeMap::new(),
+            wire_types: BTreeMap::new(),
         };
         let library_filepath = PathBuf::from("../../resources/test/library_tests/cable_type_test_full_realistic.toml")
             .canonicalize()
@@ -610,6 +610,7 @@ mod tests {
         assert_eq!(test_library, library_file)
     }
     #[test]
+    #[expect(non_snake_case)]
     //TODO: duplicate this and test with direct AWG
     /// This tests the following:
     /// - multiple cable definitions in one file
@@ -617,7 +618,7 @@ mod tests {
     /// - wires and cables together in the same file
     ///
     /// this is a relatively realistic test, with a mix of filled in values, multiple items in
-    /// hashmaps, and validation of hashmap keys
+    /// btreemaps, and validation of hashmap keys
     fn read_datafile_library_cable_multi_cable_wire() {
         let datafile_path = PathBuf::from("../../resources/test/library_tests/cable_type_test_multicore_realistic.toml")
             .canonicalize()
@@ -653,7 +654,7 @@ mod tests {
                 layers
             },
             cores: {
-                let mut cores = HashMap::new();
+                let mut cores = BTreeMap::new();
                 cores.insert(
                     "card_reader".to_string(),
                     CableCore::CableType("belden_638AFJ_card_reader_3_pair_inner".to_string()),
@@ -743,7 +744,7 @@ mod tests {
                 layers
             },
             cores: {
-                let mut cores = HashMap::new();
+                let mut cores = BTreeMap::new();
                 cores.insert(
                     "black".to_string(),
                     CableCore::CableType("belden_638AFJ_18AWG_black_inner".to_string()),
@@ -823,7 +824,7 @@ mod tests {
                 layers
             },
             cores: {
-                let mut cores = HashMap::new();
+                let mut cores = BTreeMap::new();
                 cores.insert(
                     "black".to_string(),
                     CableCore::CableType("belden_638AFJ_18AWG_black_inner".to_string()),
@@ -888,7 +889,7 @@ mod tests {
                 layers
             },
             cores: {
-                let mut cores = HashMap::new();
+                let mut cores = BTreeMap::new();
                 cores.insert(
                     "black".to_string(),
                     CableCore::CableType("belden_638AFJ_18AWG_black_inner".to_string()),
@@ -961,7 +962,7 @@ mod tests {
                 layers
             },
             cores: {
-                let mut cores = HashMap::new();
+                let mut cores = BTreeMap::new();
                 cores.insert(
                     "black".to_string(),
                     CableCore::CableType("belden_638AFJ_16AWG_black_inner".to_string()),
@@ -1271,7 +1272,7 @@ mod tests {
 
         let test_library = Library {
             cable_types: {
-                let mut cable_types = HashMap::new();
+                let mut cable_types = BTreeMap::new();
                 cable_types.insert("belden_638AFJ".to_string(), belden_638AFJ);
                 cable_types.insert(
                     "belden_638AFJ_card_reader_3_pair_inner".to_string(),
@@ -1285,19 +1286,19 @@ mod tests {
                 cable_types.insert("belden_638AFJ_lock_power_inner".to_string(), belden_638AFJ_lock_power_inner);
                 cable_types
             },
-            connector_types: HashMap::new(),
-            enclosure_types: HashMap::new(),
-            equipment_types: HashMap::new(),
-            mounting_rail_types: HashMap::new(),
-            pathway_types: HashMap::new(),
-            schematic_symbol_types: HashMap::new(),
-            term_cable_types: HashMap::new(),
-            terminal_types: HashMap::new(),
-            terminal_strip_jumper_types: HashMap::new(),
-            terminal_accessory_types: HashMap::new(),
-            terminal_strip_accessory_types: HashMap::new(),
+            connector_types: BTreeMap::new(),
+            enclosure_types: BTreeMap::new(),
+            equipment_types: BTreeMap::new(),
+            mounting_rail_types: BTreeMap::new(),
+            pathway_types: BTreeMap::new(),
+            schematic_symbol_types: BTreeMap::new(),
+            term_cable_types: BTreeMap::new(),
+            terminal_types: BTreeMap::new(),
+            terminal_strip_jumper_types: BTreeMap::new(),
+            terminal_accessory_types: BTreeMap::new(),
+            terminal_strip_accessory_types: BTreeMap::new(),
             wire_types: {
-                let mut wire_types = HashMap::new();
+                let mut wire_types = BTreeMap::new();
                 wire_types.insert("belden_638AFJ_18AWG_black_inner".to_string(), belden_638AFJ_18AWG_black_inner);
                 wire_types.insert("belden_638AFJ_18AWG_red_inner".to_string(), belden_638AFJ_18AWG_red_inner);
                 wire_types.insert("belden_638AFJ_18AWG_white_inner".to_string(), belden_638AFJ_18AWG_white_inner);

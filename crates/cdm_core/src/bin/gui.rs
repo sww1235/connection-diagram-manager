@@ -16,7 +16,7 @@ use cdm_core::{
 };
 // These are used in the testing logic
 //use std::cell::RefCell;
-//use std::collections::HashMap;
+//use std::collections::BTreeMap;
 //use std::rc::Rc;
 //
 //use cdm_core::datatypes::{
@@ -266,7 +266,7 @@ fn main() {
     //       width: 12.0,
     //       diameter: Some(12.0),
     //       cable_core: {
-    //           let mut cable_cores = HashMap::new();
+    //           let mut cable_cores = BTreeMap::new();
     //           cable_cores.insert(
     //               "SOOWINT12BK".to_string(),
     //               CableCore::WireType(SOOWINT12BK.clone()),

@@ -24,7 +24,7 @@ pub mod wire;
 pub mod connection;
 
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     path::{Path, PathBuf},
 };
 
@@ -37,28 +37,28 @@ use crate::{error::Error, traits::FromFile, util_functions};
 #[serde(default)]
 pub struct Project {
     /// contains all cables read in from files, and/or added in via program logic
-    pub cables: HashMap<String, cable::Cable>,
+    pub cables: BTreeMap<String, cable::Cable>,
     /// `connections` contains all connections between different equipment/cables/wires
     pub connections: Vec<connection::Connection>,
     //TODO: are connectors going to be read in separately?
     /// contains all connectors read in from files, and/or added in via program logic
-    pub connectors: HashMap<String, connector::Connector>,
+    pub connectors: BTreeMap<String, connector::Connector>,
     /// contains all enclosures read in from files, and/or added in via program logic
-    pub enclosures: HashMap<String, enclosure::Enclosure>,
+    pub enclosures: BTreeMap<String, enclosure::Enclosure>,
     /// contains all equipment read in from files, and/or added in via program logic
-    pub equipment: HashMap<String, equipment::Equipment>,
+    pub equipment: BTreeMap<String, equipment::Equipment>,
     /// contains all mounting rails read in from files, and/or added in via program logic
-    pub mounting_rails: HashMap<String, mounting_rail::MountingRail>,
+    pub mounting_rails: BTreeMap<String, mounting_rail::MountingRail>,
     /// contains all pathways read in from files and/or added in via program logic
-    pub pathways: HashMap<String, pathway::Pathway>,
+    pub pathways: BTreeMap<String, pathway::Pathway>,
     /// contains all schematic symbols read in from files and/or added in via program logic
-    pub schematic_symbols: HashMap<String, schematic_symbol::SchematicSymbol>,
+    pub schematic_symbols: BTreeMap<String, schematic_symbol::SchematicSymbol>,
     /// contains all term cables read in from files, and/or added in via program logic
-    pub term_cables: HashMap<String, term_cable::TermCable>,
+    pub term_cables: BTreeMap<String, term_cable::TermCable>,
     /// contains all terminal strips read in from files and/or added in via program logic
-    pub terminal_strips: HashMap<String, terminal_strip::TerminalStrip>,
+    pub terminal_strips: BTreeMap<String, terminal_strip::TerminalStrip>,
     /// `wires` contains all wires read in from files, and/or added in via program logic
-    pub wires: HashMap<String, wire::Wire>,
+    pub wires: BTreeMap<String, wire::Wire>,
 }
 
 impl Project {
@@ -69,18 +69,18 @@ impl Project {
     ///
     /// Will error if there are duplicate keys found in `other` map
     pub fn merge(&mut self, test_map: Project, test_file: &str) -> Result<(), Error> {
-        util_functions::merge_hashmaps(&mut self.cables, test_map.cables, test_file)?;
+        util_functions::merge_btreemaps(&mut self.cables, test_map.cables, test_file)?;
         self.connections.extend(test_map.connections);
         //TODO: are connectors going to be read in separately?
-        //util_functions::merge_hashmaps(&mut self.connectors, test_map.connectors, test_file)?;
-        util_functions::merge_hashmaps(&mut self.enclosures, test_map.enclosures, test_file)?;
-        util_functions::merge_hashmaps(&mut self.equipment, test_map.equipment, test_file)?;
-        util_functions::merge_hashmaps(&mut self.mounting_rails, test_map.mounting_rails, test_file)?;
-        util_functions::merge_hashmaps(&mut self.pathways, test_map.pathways, test_file)?;
-        util_functions::merge_hashmaps(&mut self.schematic_symbols, test_map.schematic_symbols, test_file)?;
-        util_functions::merge_hashmaps(&mut self.term_cables, test_map.term_cables, test_file)?;
-        util_functions::merge_hashmaps(&mut self.terminal_strips, test_map.terminal_strips, test_file)?;
-        util_functions::merge_hashmaps(&mut self.wires, test_map.wires, test_file)?;
+        //util_functions::merge_btreemaps(&mut self.connectors, test_map.connectors, test_file)?;
+        util_functions::merge_btreemaps(&mut self.enclosures, test_map.enclosures, test_file)?;
+        util_functions::merge_btreemaps(&mut self.equipment, test_map.equipment, test_file)?;
+        util_functions::merge_btreemaps(&mut self.mounting_rails, test_map.mounting_rails, test_file)?;
+        util_functions::merge_btreemaps(&mut self.pathways, test_map.pathways, test_file)?;
+        util_functions::merge_btreemaps(&mut self.schematic_symbols, test_map.schematic_symbols, test_file)?;
+        util_functions::merge_btreemaps(&mut self.term_cables, test_map.term_cables, test_file)?;
+        util_functions::merge_btreemaps(&mut self.terminal_strips, test_map.terminal_strips, test_file)?;
+        util_functions::merge_btreemaps(&mut self.wires, test_map.wires, test_file)?;
         Ok(())
     }
     /// Inserts datafile path into all structs in the called project

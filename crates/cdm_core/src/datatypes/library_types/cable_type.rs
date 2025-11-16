@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     path::{Path, PathBuf},
 };
 
@@ -36,7 +36,7 @@ pub struct CableType {
     /// appearance in schematics
     pub line_style: Option<LineStyle>,
     /// map of cores in cable
-    pub cores: HashMap<String, CableCore>,
+    pub cores: BTreeMap<String, CableCore>,
     /// vector of exterior insulation/shielding layers
     pub layers: Vec<CableLayer>,
     /// datafile the struct instance was read in from

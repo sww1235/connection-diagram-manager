@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     path::{Path, PathBuf},
 };
 
@@ -49,7 +49,7 @@ pub struct ConnectorType {
     /// pins inside connector.
     ///
     /// Pin index is not guaranteed to be the same. Use `ConnectorPin.id` for confirming equality.
-    pub pins: HashMap<String, ConnectorPin>,
+    pub pins: BTreeMap<String, ConnectorPin>,
     /// overall diagram of connector TODO: figure out what angle this should be
     pub visual_representation: Option<Svg>,
     /// datafile the struct instance was read in from

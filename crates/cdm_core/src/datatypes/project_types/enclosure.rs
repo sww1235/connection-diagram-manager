@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     path::{Path, PathBuf},
 };
 
@@ -31,7 +31,7 @@ pub struct Enclosure {
     /// User defined fields
     pub user_fields: Option<UserFields>,
     /// `mount_point` - Actual locations of associated equipment within location
-    pub mount_points: HashMap<String, MountPoint>,
+    pub mount_points: BTreeMap<String, MountPoint>,
     /// datafile the struct instance was read in from
     #[serde(skip)]
     pub(super) contained_datafile_path: PathBuf,
