@@ -258,14 +258,14 @@ document. A summary of base tables is listed below:
 #### Connector Type
 ```toml
 # table (dictionary) of all available connector types
-[connector_type]
+[connector_types]
 
 # table (dictionary) representing one connector type
 # The `<str>` is the connector type identifier. This is a `key` in TOML and
 # must comply with the TOML spec.
 
-# Most keys in a connector_type sub-table are optional
-[connector_type.<str>]
+# Most keys in a connector_types sub-table are optional
+[connector_types.<str>]
 
 # cable, pcb through hole, pcb surface mount, panel
 mount_type = <str>
@@ -305,7 +305,7 @@ visual_representation = <svg>
 connector_type_mate = [<str>]
 
 # Dimension subtable for each connector-type. Groups common properties
-[connector_type.<str>.dimensions]
+[connector_types.<str>.dimensions]
 
 # height of connector
 height = {value = [<num>, <denom>], original_unit = <str>}
@@ -322,7 +322,7 @@ diameter = {value = [<num>, <denom>], original_unit = <str>}
 
 # Catalog subtable for each connector-type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[connector_type.<str>.catalog]
+[connector_types.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
@@ -347,12 +347,12 @@ supplier_part_number = <str>
 
 # Pin Info subtables for each connector-type.
 # each entry in this array describes one pin
-[connector_type.<str>.pins]
+[connector_types.<str>.pins]
 
 # Table of attributes for a specific pin within
 # the connector.
 # <str> is the id of the pin within the connector
-[connector_type.<str>.pins.<str>]
+[connector_types.<str>.pins.<str>]
 
 designation = <str>
 
@@ -387,14 +387,14 @@ rating = <str>
 # one, once you decide on a specific part number.
 
 # dictionary of all available equipment types
-[equipment_type]
+[equipment_types]
 
 # table (dictionary) representing one equipment type
 # The `<str>` is the equipment type identifier. This is a `key` in TOML and
 # must comply with the TOML spec.
 
-# Most keys in a equipment_type sub-table are optional
-[equipment_type.<str>]
+# Most keys in a equipment_types sub-table are optional
+[equipment_types.<str>]
 
 # optional
 # (19" rack, 23" rack, 1/2 19" rack, DIN rail,
@@ -427,8 +427,8 @@ visual_representation = <svg>
 # values must be the sub-table name
 schematic_symbols = [<str>]
 
-# Dimension subtable for each equipment-type. Groups common properties
-[equipment_type.<str>.dimensions]
+# Dimension subtable for each equipment_type. Groups common properties
+[equipment_types.<str>.dimensions]
 
 # height of equipment
 height = {value = [<num>, <denom>], original_unit = <str>}
@@ -447,7 +447,7 @@ diameter = {value = [<num>, <denom>], original_unit = <str>}
 
 # Catalog subtable for each equipment_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[equipment_type.<str>.catalog]
+[equipment_types.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
@@ -473,10 +473,10 @@ supplier_part_number = <str>
 # dictionary of faces that can have connectors associated with them,
 # and an associated visual representation.
 # Faces can be used in place of symbols to display equipment.
-[equipment_type.<str>.faces]
+[equipment_types.<str>.faces]
 
 # table of attributes of each face
-[equipment_type.<str>.faces.<str>]
+[equipment_types.<str>.faces.<str>]
 # TODO: use custom SVG tags to store locations of connectors instead of x/y coordinates
 # SVGs should be layed out for a horizontal orientation when defined.
 # instances can be rotated when defined in project.
@@ -484,11 +484,11 @@ visual_representation = <svg>
 
 
 # dictionary of connectors on equipment.
-[equipment_type.<str>.faces.<str>.connectors]
+[equipment_types.<str>.faces.<str>.connectors]
 
 # table of attributes for each connector on a face of an equipment_type
 # last <str> identifier is a unique identifier for the connector on each face
-[equipment_type.<str>.faces.<str>.connectors.<str>]
+[equipment_types.<str>.faces.<str>.connectors.<str>]
 
 # id of connector type
 connector_type = <str>
@@ -509,14 +509,14 @@ y = <integer>
 # Table (dictonary) of all available pathway types.
 # This is used for things like conduit, panduit and cable tray,
 # but also includes things like J-hooks, or free-air cables.
-[pathway_type]
+[pathway_types]
 
 # table (dictionary) representing one pathway type
 # The `<str>` is the pathway type identifier. This is a `key` in TOML and
 # must comply with the TOML spec.
 
-# Most keys in a pathway_type sub-table are optional
-[pathway_type.<str>]
+# Most keys in a pathway_types sub-table are optional
+[pathway_types.<str>]
 
 # supertype of cable pathway (conduit, cable tray, etc)
 supertype = <str>
@@ -550,7 +550,7 @@ rating = <str>
 
 # optional
 # Dimension subtable for each pathway_type. Groups common properties
-[pathway_type.<str>.dimensions]
+[pathway_types.<str>.dimensions]
 
 # height of equipment
 height = {value = [<num>, <denom>], original_unit = <str>}
@@ -568,7 +568,7 @@ diameter = {value = [<num>, <denom>], original_unit = <str>}
 
 # Catalog subtable for each pathway_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[pathway_type.<str>.catalog]
+[pathway_types.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
@@ -594,7 +594,7 @@ supplier_part_number = <str>
 # all items here are optional
 # and will use defaults if not specified
 # schematic appearance of linear items
-[pathway_type.<str>.line_style]
+[pathway_types.<str>.line_style]
 
 color = <str>
 
@@ -614,14 +614,14 @@ line_appearance = [<int>]
 # A wire is defined as a material (not necessarily conductive) with optional insulation.
 # if a product has a shield or additional layers, it must be defined as a cable
 # insulation color is defined on individual wire instance
-[wire_type]
+[wire_types]
 
 # Table (dictionary) representing one wire type
 # The `<str>` is the wire type identifier. This is a `key` in TOML and
 # must comply with the TOML spec.
 
-# Most keys in a wire_type sub-table are optional
-[wire_type.<str>]
+# Most keys in a wire_types sub-table are optional
+[wire_types.<str>]
 
 # THWN, XHHN, etc
 wire_type_code = <str>
@@ -670,7 +670,7 @@ secondary_insulation_color = <str>
 # all items here are optional
 # and will use defaults or insulation color values if not specified
 # schematic appearance of linear items
-[wire_type.<str>.line_style]
+[wire_types.<str>.line_style]
 
 color = <str>
 
@@ -685,7 +685,7 @@ line_appearance = [<int>]
 
 # Catalog subtable for each wire_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[wire_type.<str>.catalog]
+[wire_types.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
@@ -848,14 +848,14 @@ supplier_part_number = <str>
 # assembled as part of the project.
 # term cables can only have two ends, but each end can have
 # a fan out or split with multiple connectors
-[term_cable_type]
+[term_cable_types]
 
 # Table (dictionary) representing one term_cable_type
 # The `<str>` is the cable type identifier. This is a `key` in TOML and
 # must comply with the TOML spec.
 
-# Most keys in a term_cable_type sub-table are optional
-[term_cable_type.<str>]
+# Most keys in a term_cable_types sub-table are optional
+[term_cable_types.<str>]
 
 nominal_length =  {value = [<num>,<denom>], original_unit = <str>}
 
@@ -865,7 +865,7 @@ length =  {value = [<num>,<denom>], original_unit = <str>}
 # all items here are optional
 # and will use defaults or outer insulation color if not specified
 # schematic appearance of linear items
-[term_cable_type.<str>.line_style]
+[term_cable_types.<str>.line_style]
 
 color = <str>
 
@@ -879,7 +879,7 @@ line_appearance = [<int>]
 
 # Catalog subtable for each cable_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[term_cable_type.<str>.catalog]
+[term_cable_types.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
@@ -905,41 +905,41 @@ supplier_part_number = <str>
 # The flexible portion of the term_cable.
 # The second <str> either needs to be wire_type or cable_type, to indicate if
 # the included core_id is for a wire_type or cable_type
-[term_cable_type.<str>.<str>]
+[term_cable_types.<str>.<str>]
 
 # either a wire_type id or a cable_type id based on what is defined above.
 core_id = <str>
 
 # table of connectors attached to one end of term_cable
-[term_cable_type.<str>.end1]
+[term_cable_types.<str>.end1]
 
 # table defining a specific connector on end 1
 # connector id is end <str>
-[term_cable_type.<str>.end1.<str>]
+[term_cable_types.<str>.end1.<str>]
 
 # ID of connector type
 connector_type = <str>
 
 # array of tables of core to connector pin mappings for each connector
 # specify one table for each pin-core mapping
-[[term_cable_type.<str>.end1.<str>.terminations]]
+[[term_cable_types.<str>.end1.<str>.terminations]]
 
 core = <str>
 pin = <str>
 
 # table of connectors attached to the other end of term_cable
-[term_cable_type.<str>.end2]
+[term_cable_types.<str>.end2]
 
 # table defining a specific connector on end 2
 # connector id is end <str>
-[term_cable_type.<str>.end2.<str>]
+[term_cable_types.<str>.end2.<str>]
 
 # ID of connector type
 connector_type = <str>
 
 # array of tables of core to connector pin mappings for each connector
 # specify one table for each pin-core mapping
-[[term_cable_type.<str>.end2.<str>.terminations]]
+[[term_cable_types.<str>.end2.<str>.terminations]]
 
 core = <str>
 pin = <str>
@@ -950,14 +950,14 @@ pin = <str>
 # Table (dictionary) of all available enclosure_types.
 # An enclosure is a physical container or space like a
 # junction box, gutter or rack.
-[enclosure_type]
+[enclosure_types]
 
 # Table (dictionary) representing one enclosure_type
 # The `<str>` is the cable type identifier. This is a `key` in TOML and
 # must comply with the TOML spec.
 
 # Most keys in a enclosure_type sub-table are optional
-[enclosure_type.<str>]
+[enclosure_types.<str>]
 
 # usable internal width of enclosure
 usable_width =  {value = [<num>,<denom>], original_unit = <str>}
@@ -982,7 +982,7 @@ color = <str>
 
 # optional
 # Dimension subtable for each enclosure_type. Groups common properties
-[enclosure_type.<str>.dimensions]
+[enclosure_types.<str>.dimensions]
 
 # overall height of enclosure
 height = {value = [<num>,<denom>], original_unit = <str>}
@@ -1000,7 +1000,7 @@ diameter = {value = [<num>,<denom>], original_unit = <str>}
 
 # Catalog subtable for each enclosure_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[enclosure_type.<str>.catalog]
+[enclosure_types.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
@@ -1034,11 +1034,11 @@ supplier_part_number = <str>
 # Wire nuts
 # Ferrules, ring/space/fork terminals, etc should be defined as connectors since
 # they associate with wires
-[terminal_type]
+[terminal_types]
 
 
 # Table (dictionary) of all attributes on one particular terminal type
-[terminal_type.<str>]
+[terminal_types.<str>]
 
 # optional
 color = <str>
@@ -1101,11 +1101,11 @@ integrated_disconnect_present = <bool>
 # dictionary defining terminal layers
 # at least one layer is required for a terminal
 # last <str> is unique layer identifier within terminal
-[terminal_type.<str>.layers.<str>]
+[terminal_types.<str>.layers.<str>]
 
 # array defining the number of connection points per terminal layer
 # define 1 instance of this table array per connection point per layer
-[[terminal_type.<str>.layers.<str>.connections]]
+[[terminal_types.<str>.layers.<str>.connections]]
 
 # connection designation
 # must be unique among connection points on a layer
@@ -1146,7 +1146,7 @@ wire_types_accepted = [<str>]
 
 # internal connections within terminal block
 # define one instance of this table array per set of connected terminals
-[[terminal_type.<str>.internal_connections]]
+[[terminal_types.<str>.internal_connections]]
 
 # array of terminal designations.
 # use layer_designation.connection_designation in each array value
@@ -1161,7 +1161,7 @@ mount_connection = <bool>
 
 # optional
 # Dimension subtable for each terminal_type. Groups common properties
-[terminal_type.<str>.dimensions]
+[terminal_types.<str>.dimensions]
 
 # overall height of terminal
 height = {value = [<num>,<denom>], original_unit = <str>}
@@ -1179,7 +1179,7 @@ diameter = {value = [<num>,<denom>], original_unit = <str>}
 
 # Catalog subtable for each terminal_block_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[terminal_type.<str>.catalog]
+[terminal_types.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
@@ -1206,10 +1206,10 @@ supplier_part_number = <str>
 #### Terminal Block Jumper Types
 ```toml
 # Table of terminal block jumpers in library
-[terminal_strip_jumper_type]
+[terminal_strip_jumper_types]
 
 # table of attributes for one jumper type
-[terminal_strip_jumper_type.<str>]
+[terminal_strip_jumper_types.<str>]
 
 # terminal block types compatible with
 # If a jumper is compatible with multiple sizes of terminal blocks
@@ -1232,7 +1232,7 @@ pin_compatible_terminal_types = [[<str>], [<str>]]
 
 # optional
 # Dimension subtable for each terminal_strip_jumper_type. Groups common properties
-[terminal_strip_jumper_type.<str>.dimensions]
+[terminal_strip_jumper_types.<str>.dimensions]
 
 # overall height of terminal
 height = {value = [<num>,<denom>], original_unit = <str>}
@@ -1250,7 +1250,7 @@ diameter = {value = [<num>,<denom>], original_unit = <str>}
 
 # Catalog subtable for each terminal_block_jumper_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[terminal_strip_jumper_type.<str>.catalog]
+[terminal_strip_jumper_types.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
@@ -1278,10 +1278,10 @@ supplier_part_number = <str>
 ```toml
 # Terminal accessories are items that insert into a terminal block
 # like fuse holders, component holders, disconnect switches, etc
-[terminal_accessory_type]
+[terminal_accessory_types]
 
 # Table of attributes for a specific terminal_accessory_type
-[terminal_accessory_type.<str>]
+[terminal_accessory_types.<str>]
 
 # fuse holder, component holder, disconnect_blade, etc
 accessory_supertype = <str>
@@ -1298,7 +1298,7 @@ color = <str>
 
 # optional
 # Dimension subtable for each terminal_accessory_type. Groups common properties
-[terminal_accessory_type.<str>.dimensions]
+[terminal_accessory_types.<str>.dimensions]
 
 # overall height of terminal accessory
 height = [<num>, <denom>]{value = [<num>,<denom>], original_unit = <str>}
@@ -1316,7 +1316,7 @@ diameter = {value = [<num>,<denom>], original_unit = <str>}
 
 # Catalog subtable for each terminal_accessory_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[terminal_accessory_type.<str>.catalog]
+[terminal_accessory_types.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
@@ -1347,11 +1347,11 @@ supplier_part_number = <str>
 # that are incorporated into a terminal_strip linearly and
 # interface with terminals
 # This does not include things like DIN rail stops.
-[terminal_strip_accessory_type]
+[terminal_strip_accessory_types]
 
 
 # table of attributes for one terminal_block_accessory_type
-[terminal_strip_accessory_type.<str>]
+[terminal_strip_accessory_types.<str>]
 
 # terminal types compatible with
 compatible_terminal_type = [<str>]
@@ -1364,7 +1364,7 @@ color = <str>
 
 # optional
 # Dimension subtable for each terminal_accessory_type. Groups common properties
-[terminal_strip_accessory_type.<str>.dimensions]
+[terminal_strip_accessory_types.<str>.dimensions]
 
 # overall height of terminal accessory
 height = {value = [<num>,<denom>], original_unit = <str>}<num>, <denom>]
@@ -1379,7 +1379,7 @@ depth =  {value = [<num>,<denom>], original_unit = <str>}
 
 # Catalog subtable for each terminal_strip_accessory_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[terminal_strip_accessory_type.<str>.catalog]
+[terminal_strip_accessory_types.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
@@ -1410,10 +1410,10 @@ supplier_part_number = <str>
 # but can be used to represent just 1 equipment type if desired
 # symbols should be layed out for a horizontal orientation when defined.
 # instances can be rotated.
-[schematic_symbol_type]
+[schematic_symbol_types]
 
 # table of attributes for a specific symbol
-[schematic_symbol_type.<str>]
+[schematic_symbol_types.<str>]
 
 visual_representation = <svg>
 
@@ -1442,11 +1442,11 @@ description = <str>
 # mounting rail types are defined as if they are being mounted horizontally
 # when placed in a project, they can be oriented in any orientation.
 # any SVG files need to be designed to accomodate this layout.
-[mounting_rail_type]
+[mounting_rail_types]
 
 # table of attributes for specific mounting rail type
 # origin is defined as center left of mounting rail
-[mounting_rail_type.<str>]
+[mounting_rail_types.<str>]
 
 # overall height of rail
 # rail center point will be at
@@ -1516,7 +1516,7 @@ end_image = <svg>
 
 # Catalog subtable for each mounting_rail_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[mounting_rail_type.<str>.catalog]
+[mounting_rail_types.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
