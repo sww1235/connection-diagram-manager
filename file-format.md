@@ -255,460 +255,6 @@ document. A summary of base tables is listed below:
 - [Terminal Strip Accessory Types](#terminal-strip-accessory-types)
 - [Wire Types](#wire-types)
 
-#### Connector Type
-```toml
-# table (dictionary) of all available connector types
-[connector_types]
-
-# table (dictionary) representing one connector type
-# The `<str>` is the connector type identifier. This is a `key` in TOML and
-# must comply with the TOML spec.
-
-# Most keys in a connector_types sub-table are optional
-[connector_types.<str>]
-
-# cable, pcb through hole, pcb surface mount, panel
-mount_type = <str>
-
-# optional
-# D, A, etc
-# Not parsed
-panel_cutout = <str>
-
-# (male, female, rpmale, rpfemale, hermaphroditic, unknown, unspecified)
-gender = <str>
-
-# optional
-# connector color
-# used to label the color of a flag or tag or ring on the connector
-color = <str>
-
-# optional
-# component designator
-component_designator = <str>
-
-# optional
-# array of schematic symbols that can represent this connector
-# values must be the sub-table name
-schematic_symbol = [<str>]
-
-# TODO: decide if these should be filepaths or directly included SVGs
-# SVGs should be layed out for a horizontal orientation when defined.
-# instances can be rotated when defined in project.
-# if not defined, a generic diagram will be used
-# this is the panel representation image
-visual_representation = <svg>
-
-# optional
-# array of which connector types mate with this connector type
-# needs to be populated with sub-table key of connectors
-connector_type_mate = [<str>]
-
-# Dimension subtable for each connector-type. Groups common properties
-[connector_types.<str>.dimensions]
-
-# height of connector
-height = {value = [<num>, <denom>], original_unit = <str>}
-
-# width of connector
-width = {value = [<num>, <denom>], original_unit = <str>}
-
-# depth of connector
-depth = {value = [<num>, <denom>], original_unit = <str>}
-
-# optional
-# diameter of circular connectors
-diameter = {value = [<num>, <denom>], original_unit = <str>}
-
-# Catalog subtable for each connector-type. Groups common properties
-# All fields here are optional, but highly encouraged.
-[connector_types.<str>.catalog]
-
-# manufacturer name
-manufacturer = <str>
-
-# connector model description
-model = <str>
-
-# free text field for larger descriptions
-description = <str>
-
-# [internal] part number
-part_number = <str>
-
-# manufacturer part number
-manufactuer_part_number = <str>
-
-# supplier name
-supplier = <str>
-
-# supplier part number
-supplier_part_number = <str>
-
-# Pin Info subtables for each connector-type.
-# each entry in this array describes one pin
-[connector_types.<str>.pins]
-
-# Table of attributes for a specific pin within
-# the connector.
-# <str> is the id of the pin within the connector
-[connector_types.<str>.pins.<str>]
-
-designation = <str>
-
-# optional
-label = <str>
-
-# optional
-signal_type = <str>
-
-# optional
-color = <str>
-
-# optional
-visual_rep = <str>
-
-# optional
-# pin specific gender
-gender = <str>
-
-# optional
-# pin specific rating information. Not parsed
-rating = <str>
-```
-
-#### Equipment Types
-```toml
-# Equipment type is not an abstract type of equipment
-# (like PLC, relay, circuit breaker, etc), but a manufacturer product.
-# This is a major difference between this and other similar software.
-# There is nothing stopping you from defining generic components,
-# but you will need to swap the generic definition for a manufacturer specific
-# one, once you decide on a specific part number.
-
-# dictionary of all available equipment types
-[equipment_types]
-
-# table (dictionary) representing one equipment type
-# The `<str>` is the equipment type identifier. This is a `key` in TOML and
-# must comply with the TOML spec.
-
-# Most keys in a equipment_types sub-table are optional
-[equipment_types.<str>]
-
-# optional
-# (19" rack, 23" rack, 1/2 19" rack, DIN rail,
-# surface wall mount, inset wall mount, panel, custom)
-mounting_type = [<str>]
-
-# optional
-# (audio, video, mix, lighting, networking, patch panel, power)
-category = <str>
-
-# optional
-# Equipment supertype: Relay, PLC, Motor, Relay, Circuit breaker, etc.
-supertype = <str>
-
-# optional
-# component designator
-component_designator = <str>
-
-
-# optional
-# rating of equipment. Not parsed
-rating = <str>
-
-# optional
-# overall visual representation of equipment
-visual_representation = <svg>
-
-# optional
-# array of schematic symbols that can represent this equipment
-# values must be the sub-table name
-schematic_symbols = [<str>]
-
-# Dimension subtable for each equipment_type. Groups common properties
-[equipment_types.<str>.dimensions]
-
-# height of equipment
-height = {value = [<num>, <denom>], original_unit = <str>}
-
-# width of equipment
-width = {value = [<num>, <denom>], original_unit = <str>}
-
-# optional
-# depth of equipment
-depth = {value = [<num>, <denom>], original_unit = <str>}
-
-# optional
-# diameter of equipment
-diameter = {value = [<num>, <denom>], original_unit = <str>}
-
-
-# Catalog subtable for each equipment_type. Groups common properties
-# All fields here are optional, but highly encouraged.
-[equipment_types.<str>.catalog]
-
-# manufacturer name
-manufacturer = <str>
-
-# equipment type model description
-model = <str>
-
-# free text field for larger descriptions
-description = <str>
-
-# [internal] part number
-part_number = <str>
-
-# manufacturer part number
-manufactuer_part_number = <str>
-
-# supplier
-supplier = <str>
-
-# supplier part number
-supplier_part_number = <str>
-
-# dictionary of faces that can have connectors associated with them,
-# and an associated visual representation.
-# Faces can be used in place of symbols to display equipment.
-[equipment_types.<str>.faces]
-
-# table of attributes of each face
-[equipment_types.<str>.faces.<str>]
-# TODO: use custom SVG tags to store locations of connectors instead of x/y coordinates
-# SVGs should be layed out for a horizontal orientation when defined.
-# instances can be rotated when defined in project.
-visual_representation = <svg>
-
-
-# dictionary of connectors on equipment.
-[equipment_types.<str>.faces.<str>.connectors]
-
-# table of attributes for each connector on a face of an equipment_type
-# last <str> identifier is a unique identifier for the connector on each face
-[equipment_types.<str>.faces.<str>.connectors.<str>]
-
-# id of connector type
-connector_type = <str>
-
-# (input, output, power input, power output, bidirectional, passive)
-direction = <str>
-
-# location of connector from bottom left of visrep of face to right
-x = <integer>
-
-# location of connector from bottom left of visrep of face up
-y = <integer>
-```
-
-
-#### Pathway Types
-```toml
-# Table (dictonary) of all available pathway types.
-# This is used for things like conduit, panduit and cable tray,
-# but also includes things like J-hooks, or free-air cables.
-[pathway_types]
-
-# table (dictionary) representing one pathway type
-# The `<str>` is the pathway type identifier. This is a `key` in TOML and
-# must comply with the TOML spec.
-
-# Most keys in a pathway_types sub-table are optional
-[pathway_types.<str>]
-
-# supertype of cable pathway (conduit, cable tray, etc)
-supertype = <str>
-
-# actual size measurements. Not parsed
-size = <str>
-
-# optional
-trade_size = <str>
-
-# optional
-# used to display a representation of the pathway on panel diagrams
-# mainly used for things like panduit or wireway mounted to panel directly
-visual_representation = <svg>
-
-# optional
-# Interior cross sectional area - used for conduit fill calculations
-cross_sect_area =  {value = [<num>,<denom>], original_unit = <str>}
-
-# primary material of pathway
-material = <str>
-
-# primary color of pathway
-color = <str>
-
-
-# optional
-# material properties/rating. Not parsed.
-# voltage/temp/flamability/etc
-rating = <str>
-
-# optional
-# Dimension subtable for each pathway_type. Groups common properties
-[pathway_types.<str>.dimensions]
-
-# height of equipment
-height = {value = [<num>, <denom>], original_unit = <str>}
-
-# width of equipment
-width = {value = [<num>, <denom>], original_unit = <str>}
-
-# optional
-# depth of equipment
-depth = {value = [<num>, <denom>], original_unit = <str>}
-
-# optional
-# diameter of equipment
-diameter = {value = [<num>, <denom>], original_unit = <str>}
-
-# Catalog subtable for each pathway_type. Groups common properties
-# All fields here are optional, but highly encouraged.
-[pathway_types.<str>.catalog]
-
-# manufacturer name
-manufacturer = <str>
-
-# pathway type model description
-model = <str>
-
-# free text field for larger descriptions
-description = <str>
-
-# [internal] part number
-part_number = <str>
-
-# manufacturer part number
-manufactuer_part_number = <str>
-
-# supplier
-supplier = <str>
-
-# supplier part number
-supplier_part_number = <str>
-
-# all items here are optional
-# and will use defaults if not specified
-# schematic appearance of linear items
-[pathway_types.<str>.line_style]
-
-color = <str>
-
-secondary_color = <str>
-
-line_thickness = {value = [<num>,<denom>], original_unit = <str>}
-
-# array of lengths/percentages of dashes and gaps
-# uses same specification as SVG stroke-dasharray field.
-line_appearance = [<int>]
-```
-
-
-#### Wire Types
-```toml
-# Table (dictonary) of all available wire types.
-# A wire is defined as a material (not necessarily conductive) with optional insulation.
-# if a product has a shield or additional layers, it must be defined as a cable
-# insulation color is defined on individual wire instance
-[wire_types]
-
-# Table (dictionary) representing one wire type
-# The `<str>` is the wire type identifier. This is a `key` in TOML and
-# must comply with the TOML spec.
-
-# Most keys in a wire_types sub-table are optional
-[wire_types.<str>]
-
-# THWN, XHHN, etc
-wire_type_code = <str>
-
-# copper, alumninum, ACSR, steel, glass, plastic
-material = <str>
-
-insulated = <bool>
-
-# PVC, Nylon, thermoplastic, etc
-insulation_material = <str>
-
-insulation_thickness =  {value = [<num>,<denom>], original_unit = <str>}
-
-# the cross sectional area of the conductor
-conductor_cross_sect_area =  {value = [<num>,<denom>], original_unit = <str>}
-
-# including insulation
-overall_cross_sect_area =  {value = [<num>,<denom>], original_unit = <str>}
-
-# If conductor is stranded
-stranded = <bool>
-
-# number of strands if cable is stranded. overriden to 1 if wire is not stranded
-num_strands = <int>
-
-strand_cross_sect_area = {value = [<num>,<denom>], original_unit = <str>}
-
-# AC voltage rating of insulation
-ac_insulation_potential_rating =  {value = [<num>,<denom>], original_unit = <str>}
-
-# DC voltage rating of insulation
-dc_insulation_potential_rating =  {value = [<num>,<denom>], original_unit = <str>}
-
-# temperature rating of insulation.
-insulation_temperature_rating =  {value = [<num>,<denom>], original_unit = <str>}
-
-# Other insulation properties such as
-# flamability or smoke generation
-insulation_rating: <str>
-
-insulation_color = <str>
-
-secondary_insulation_color = <str>
-
-# all items here are optional
-# and will use defaults or insulation color values if not specified
-# schematic appearance of linear items
-[wire_types.<str>.line_style]
-
-color = <str>
-
-secondary_color = <str>
-
-line_thickness = {value = [<num>,<denom>], original_unit = <str>}
-
-# array of lengths/percentages of dashes and gaps
-# uses same specification as SVG stroke-dasharray field.
-line_appearance = [<int>]
-
-
-# Catalog subtable for each wire_type. Groups common properties
-# All fields here are optional, but highly encouraged.
-[wire_types.<str>.catalog]
-
-# manufacturer name
-manufacturer = <str>
-
-# wire type model description
-model = <str>
-
-# free text field for larger descriptions
-description = <str>
-
-# [internal] part number
-part_number = <str>
-
-# manufacturer part number
-manufactuer_part_number = <str>
-
-# supplier
-supplier = <str>
-
-# supplier part number
-supplier_part_number = <str>
-```
-
 #### Cable Types
 ```toml
 # Table (dictonary) of all available cable types.
@@ -839,6 +385,573 @@ supplier = <str>
 supplier_part_number = <str>
 ```
 
+#### Connector Type
+```toml
+# table (dictionary) of all available connector types
+[connector_types]
+
+# table (dictionary) representing one connector type
+# The `<str>` is the connector type identifier. This is a `key` in TOML and
+# must comply with the TOML spec.
+
+# Most keys in a connector_types sub-table are optional
+[connector_types.<str>]
+
+# cable, pcb through hole, pcb surface mount, panel
+mount_type = <str>
+
+# optional
+# D, A, etc
+# Not parsed
+panel_cutout = <str>
+
+# (male, female, rpmale, rpfemale, hermaphroditic, unknown, unspecified)
+gender = <str>
+
+# optional
+# connector color
+# used to label the color of a flag or tag or ring on the connector
+color = <str>
+
+# optional
+# component designator
+component_designator = <str>
+
+# optional
+# array of schematic symbols that can represent this connector
+# values must be the sub-table name
+schematic_symbol = [<str>]
+
+# TODO: decide if these should be filepaths or directly included SVGs
+# SVGs should be layed out for a horizontal orientation when defined.
+# instances can be rotated when defined in project.
+# if not defined, a generic diagram will be used
+# this is the panel representation image
+visual_representation = <svg>
+
+# optional
+# array of which connector types mate with this connector type
+# needs to be populated with sub-table key of connectors
+connector_type_mate = [<str>]
+
+# Dimension subtable for each connector-type. Groups common properties
+[connector_types.<str>.dimensions]
+
+# height of connector
+height = {value = [<num>, <denom>], original_unit = <str>}
+
+# width of connector
+width = {value = [<num>, <denom>], original_unit = <str>}
+
+# depth of connector
+depth = {value = [<num>, <denom>], original_unit = <str>}
+
+# optional
+# diameter of circular connectors
+diameter = {value = [<num>, <denom>], original_unit = <str>}
+
+# Catalog subtable for each connector-type. Groups common properties
+# All fields here are optional, but highly encouraged.
+[connector_types.<str>.catalog]
+
+# manufacturer name
+manufacturer = <str>
+
+# connector model description
+model = <str>
+
+# free text field for larger descriptions
+description = <str>
+
+# [internal] part number
+part_number = <str>
+
+# manufacturer part number
+manufactuer_part_number = <str>
+
+# supplier name
+supplier = <str>
+
+# supplier part number
+supplier_part_number = <str>
+
+# Pin Info subtables for each connector-type.
+# each entry in this array describes one pin
+[connector_types.<str>.pins]
+
+# Table of attributes for a specific pin within
+# the connector.
+# <str> is the id of the pin within the connector
+[connector_types.<str>.pins.<str>]
+
+designation = <str>
+
+# optional
+label = <str>
+
+# optional
+signal_type = <str>
+
+# optional
+color = <str>
+
+# optional
+visual_rep = <str>
+
+# optional
+# pin specific gender
+gender = <str>
+
+# optional
+# pin specific rating information. Not parsed
+rating = <str>
+```
+
+#### Enclosure Types
+```toml
+# Table (dictionary) of all available enclosure_types.
+# An enclosure is a physical container or space like a
+# junction box, gutter or rack.
+[enclosure_types]
+
+# Table (dictionary) representing one enclosure_type
+# The `<str>` is the cable type identifier. This is a `key` in TOML and
+# must comply with the TOML spec.
+
+# Most keys in a enclosure_type sub-table are optional
+[enclosure_types.<str>]
+
+# usable internal width of enclosure
+usable_width =  {value = [<num>,<denom>], original_unit = <str>}
+
+# usable internal depth of enclosure
+usable_depth =  {value = [<num>,<denom>], original_unit = <str>}
+
+# usable internal height of enclosure
+usable_height =  {value = [<num>,<denom>], original_unit = <str>}
+
+# Other rating information for enclosure
+rating = <str>
+
+# optional
+# if not defined, a generic drawing will be used instead
+# SVGs should be layed out for a horizontal orientation when defined.
+# instances can be rotated when defined in project.
+visual_representation = <svg>
+
+# optional
+color = <str>
+
+# optional
+# Dimension subtable for each enclosure_type. Groups common properties
+[enclosure_types.<str>.dimensions]
+
+# overall height of enclosure
+height = {value = [<num>,<denom>], original_unit = <str>}
+
+# overall width of enclosure
+width = {value = [<num>,<denom>], original_unit = <str>}
+
+# optional
+# overall depth of enclosure
+depth =  {value = [<num>,<denom>], original_unit = <str>}
+
+# optional
+# diameter of enclosure
+diameter = {value = [<num>,<denom>], original_unit = <str>}
+
+# Catalog subtable for each enclosure_type. Groups common properties
+# All fields here are optional, but highly encouraged.
+[enclosure_types.<str>.catalog]
+
+# manufacturer name
+manufacturer = <str>
+
+# model description
+model = <str>
+
+# free text field for larger descriptions
+description = <str>
+
+# [internal] part number
+part_number = <str>
+
+# manufacturer part number
+manufactuer_part_number = <str>
+
+# supplier
+supplier = <str>
+
+# supplier part number
+supplier_part_number = <str>
+```
+
+#### Equipment Types
+```toml
+# Equipment type is not an abstract type of equipment
+# (like PLC, relay, circuit breaker, etc), but a manufacturer product.
+# This is a major difference between this and other similar software.
+# There is nothing stopping you from defining generic components,
+# but you will need to swap the generic definition for a manufacturer specific
+# one, once you decide on a specific part number.
+
+# dictionary of all available equipment types
+[equipment_types]
+
+# table (dictionary) representing one equipment type
+# The `<str>` is the equipment type identifier. This is a `key` in TOML and
+# must comply with the TOML spec.
+
+# Most keys in a equipment_types sub-table are optional
+[equipment_types.<str>]
+
+# optional
+# (19" rack, 23" rack, 1/2 19" rack, DIN rail,
+# surface wall mount, inset wall mount, panel, custom)
+mounting_type = [<str>]
+
+# optional
+# (audio, video, mix, lighting, networking, patch panel, power)
+category = <str>
+
+# optional
+# Equipment supertype: Relay, PLC, Motor, Relay, Circuit breaker, etc.
+supertype = <str>
+
+# optional
+# component designator
+component_designator = <str>
+
+
+# optional
+# rating of equipment. Not parsed
+rating = <str>
+
+# optional
+# overall visual representation of equipment
+visual_representation = <svg>
+
+# optional
+# array of schematic symbols that can represent this equipment
+# values must be the sub-table name
+schematic_symbols = [<str>]
+
+# Dimension subtable for each equipment_type. Groups common properties
+[equipment_types.<str>.dimensions]
+
+# height of equipment
+height = {value = [<num>, <denom>], original_unit = <str>}
+
+# width of equipment
+width = {value = [<num>, <denom>], original_unit = <str>}
+
+# optional
+# depth of equipment
+depth = {value = [<num>, <denom>], original_unit = <str>}
+
+# optional
+# diameter of equipment
+diameter = {value = [<num>, <denom>], original_unit = <str>}
+
+
+# Catalog subtable for each equipment_type. Groups common properties
+# All fields here are optional, but highly encouraged.
+[equipment_types.<str>.catalog]
+
+# manufacturer name
+manufacturer = <str>
+
+# equipment type model description
+model = <str>
+
+# free text field for larger descriptions
+description = <str>
+
+# [internal] part number
+part_number = <str>
+
+# manufacturer part number
+manufactuer_part_number = <str>
+
+# supplier
+supplier = <str>
+
+# supplier part number
+supplier_part_number = <str>
+
+# dictionary of faces that can have connectors associated with them,
+# and an associated visual representation.
+# Faces can be used in place of symbols to display equipment.
+[equipment_types.<str>.faces]
+
+# table of attributes of each face
+[equipment_types.<str>.faces.<str>]
+# TODO: use custom SVG tags to store locations of connectors instead of x/y coordinates
+# SVGs should be layed out for a horizontal orientation when defined.
+# instances can be rotated when defined in project.
+visual_representation = <svg>
+
+
+# dictionary of connectors on equipment.
+[equipment_types.<str>.faces.<str>.connectors]
+
+# table of attributes for each connector on a face of an equipment_type
+# last <str> identifier is a unique identifier for the connector on each face
+[equipment_types.<str>.faces.<str>.connectors.<str>]
+
+# id of connector type
+connector_type = <str>
+
+# (input, output, power input, power output, bidirectional, passive)
+direction = <str>
+
+# location of connector from bottom left of visrep of face to right
+x = <integer>
+
+# location of connector from bottom left of visrep of face up
+y = <integer>
+```
+
+#### Mounting Rail Types
+```toml
+# table of mounting rail types
+# mounting rails are defined and generated parametrically
+# to make usage easier.
+# They can also be defined with SVG segments showing beginning and end of rail
+# and the join points.
+#
+# mounting rail types are defined as if they are being mounted horizontally
+# when placed in a project, they can be oriented in any orientation.
+# any SVG files need to be designed to accomodate this layout.
+[mounting_rail_types]
+
+# table of attributes for specific mounting rail type
+# origin is defined as center left of mounting rail
+[mounting_rail_types.<str>]
+
+# overall height of rail
+# rail center point will be at
+# rail_height / 2
+rail_height = {value = [<num>,<denom>], original_unit = <str>}
+
+# total height of center/recessed section of mounting rail
+# centered on total height
+rail_center_height = {value = [<num>,<denom>], original_unit = <str>}
+
+# does mounting rail have slots
+slots = <bool>
+
+# are slots rounded or rectangular
+rounded_slots = <bool>
+
+# linear distance between origin and center of first slot
+# will also be used for the distance between the last slot
+# and the end of the rail.
+first_slot_center = {value = [<num>,<denom>], original_unit = <str>}
+
+# linear center to center distance between slots.
+slot_center_to_center = {value = [<num>,<denom>], original_unit = <str>}
+
+# slot length, includes length of rounded ends
+slot_length = {value = [<num>,<denom>], original_unit = <str>}
+
+slot_height = {value = [<num>,<denom>], original_unit = <str>}
+
+# the length of rail as specified by the manufacturer/supplier part number
+standard_rail_length = [<num>,<denom>]
+
+# User specified minimum length.
+# If not specified, will be set to 2x the first_slot_center distance
+# if instance length is set smaller than default minimum_rail_length
+# and no_partial_holes is false, then minimum_rail_length
+# will be ignored.
+minimum_rail_length = {value = [<num>,<denom>], original_unit = <str>}
+
+# extend rail so there are no partial holes
+no_partial_holes = <bool>
+
+# distance between top center_line and origin
+top_rail_center_height = {value = [<num>,<denom>], original_unit = <str>}
+
+# distance between bottom center_line and origin
+bottom_rail_center_height = {value = [<num>,<denom>], original_unit = <str>}
+
+# distance between origin and slot vertical center
+# positive above origin, negative below origin
+slot_vertical_center = {value = [<num>,<denom>], original_unit = <str>}
+
+# SVG files for start, end and middle of mounting rail
+# minimum rail length should be set to the length of the
+# start and end SVGs to not cause graphical issues
+# if minimum rail length is not set, the middle SVG
+# might get cut off unexpectedly.
+#
+# the start, middle and end images should not have lines where they join
+# so when the images are placed together, there is no overlap.
+
+start_image = <svg>
+
+middle_image = <svg>
+
+end_image = <svg>
+
+# Catalog subtable for each mounting_rail_type. Groups common properties
+# All fields here are optional, but highly encouraged.
+[mounting_rail_types.<str>.catalog]
+
+# manufacturer name
+manufacturer = <str>
+
+# model description
+model = <str>
+
+# free text field for larger descriptions
+description = <str>
+
+# [internal] part number
+part_number = <str>
+
+# manufacturer part number
+manufactuer_part_number = <str>
+
+# supplier
+supplier = <str>
+
+# supplier part number
+supplier_part_number = <str>
+```
+
+#### Pathway Types
+```toml
+# Table (dictonary) of all available pathway types.
+# This is used for things like conduit, panduit and cable tray,
+# but also includes things like J-hooks, or free-air cables.
+[pathway_types]
+
+# table (dictionary) representing one pathway type
+# The `<str>` is the pathway type identifier. This is a `key` in TOML and
+# must comply with the TOML spec.
+
+# Most keys in a pathway_types sub-table are optional
+[pathway_types.<str>]
+
+# supertype of cable pathway (conduit, cable tray, etc)
+supertype = <str>
+
+# actual size measurements. Not parsed
+size = <str>
+
+# optional
+trade_size = <str>
+
+# optional
+# used to display a representation of the pathway on panel diagrams
+# mainly used for things like panduit or wireway mounted to panel directly
+visual_representation = <svg>
+
+# optional
+# Interior cross sectional area - used for conduit fill calculations
+cross_sect_area =  {value = [<num>,<denom>], original_unit = <str>}
+
+# primary material of pathway
+material = <str>
+
+# primary color of pathway
+color = <str>
+
+
+# optional
+# material properties/rating. Not parsed.
+# voltage/temp/flamability/etc
+rating = <str>
+
+# optional
+# Dimension subtable for each pathway_type. Groups common properties
+[pathway_types.<str>.dimensions]
+
+# height of equipment
+height = {value = [<num>, <denom>], original_unit = <str>}
+
+# width of equipment
+width = {value = [<num>, <denom>], original_unit = <str>}
+
+# optional
+# depth of equipment
+depth = {value = [<num>, <denom>], original_unit = <str>}
+
+# optional
+# diameter of equipment
+diameter = {value = [<num>, <denom>], original_unit = <str>}
+
+# Catalog subtable for each pathway_type. Groups common properties
+# All fields here are optional, but highly encouraged.
+[pathway_types.<str>.catalog]
+
+# manufacturer name
+manufacturer = <str>
+
+# pathway type model description
+model = <str>
+
+# free text field for larger descriptions
+description = <str>
+
+# [internal] part number
+part_number = <str>
+
+# manufacturer part number
+manufactuer_part_number = <str>
+
+# supplier
+supplier = <str>
+
+# supplier part number
+supplier_part_number = <str>
+
+# all items here are optional
+# and will use defaults if not specified
+# schematic appearance of linear items
+[pathway_types.<str>.line_style]
+
+color = <str>
+
+secondary_color = <str>
+
+line_thickness = {value = [<num>,<denom>], original_unit = <str>}
+
+# array of lengths/percentages of dashes and gaps
+# uses same specification as SVG stroke-dasharray field.
+line_appearance = [<int>]
+```
+
+#### Schematic Symbol Types
+```toml
+# table of schematic symbol types
+# These usually represent multiple different models/manufacturers of equipment
+# but can be used to represent just 1 equipment type if desired
+# symbols should be layed out for a horizontal orientation when defined.
+# instances can be rotated.
+[schematic_symbol_types]
+
+# table of attributes for a specific symbol
+[schematic_symbol_types.<str>]
+
+visual_representation = <svg>
+
+# Short descriptive name.
+# Can contain spaces and special characters
+name = <str>
+
+# optional free-form description
+description = <str>
+
+# if this is true, svg will be searched
+# for special tags that indicate where dashed link lines
+# will connect.
+# this is used for things like relays and contactors
+# supports_links = <bool>
+```
+
 #### Term Cable Types
 ```toml
 # Table (dictonary) of all available term_cable_types.
@@ -945,85 +1058,6 @@ core = <str>
 pin = <str>
 ```
 
-#### Enclosure Types
-```toml
-# Table (dictionary) of all available enclosure_types.
-# An enclosure is a physical container or space like a
-# junction box, gutter or rack.
-[enclosure_types]
-
-# Table (dictionary) representing one enclosure_type
-# The `<str>` is the cable type identifier. This is a `key` in TOML and
-# must comply with the TOML spec.
-
-# Most keys in a enclosure_type sub-table are optional
-[enclosure_types.<str>]
-
-# usable internal width of enclosure
-usable_width =  {value = [<num>,<denom>], original_unit = <str>}
-
-# usable internal depth of enclosure
-usable_depth =  {value = [<num>,<denom>], original_unit = <str>}
-
-# usable internal height of enclosure
-usable_height =  {value = [<num>,<denom>], original_unit = <str>}
-
-# Other rating information for enclosure
-rating = <str>
-
-# optional
-# if not defined, a generic drawing will be used instead
-# SVGs should be layed out for a horizontal orientation when defined.
-# instances can be rotated when defined in project.
-visual_representation = <svg>
-
-# optional
-color = <str>
-
-# optional
-# Dimension subtable for each enclosure_type. Groups common properties
-[enclosure_types.<str>.dimensions]
-
-# overall height of enclosure
-height = {value = [<num>,<denom>], original_unit = <str>}
-
-# overall width of enclosure
-width = {value = [<num>,<denom>], original_unit = <str>}
-
-# optional
-# overall depth of enclosure
-depth =  {value = [<num>,<denom>], original_unit = <str>}
-
-# optional
-# diameter of enclosure
-diameter = {value = [<num>,<denom>], original_unit = <str>}
-
-# Catalog subtable for each enclosure_type. Groups common properties
-# All fields here are optional, but highly encouraged.
-[enclosure_types.<str>.catalog]
-
-# manufacturer name
-manufacturer = <str>
-
-# model description
-model = <str>
-
-# free text field for larger descriptions
-description = <str>
-
-# [internal] part number
-part_number = <str>
-
-# manufacturer part number
-manufactuer_part_number = <str>
-
-# supplier
-supplier = <str>
-
-# supplier part number
-supplier_part_number = <str>
-```
-
 #### Terminal Types
 ```toml
 # Table (dictionary) of all available terminal types.
@@ -1035,7 +1069,6 @@ supplier_part_number = <str>
 # Ferrules, ring/space/fork terminals, etc should be defined as connectors since
 # they associate with wires
 [terminal_types]
-
 
 # Table (dictionary) of all attributes on one particular terminal type
 [terminal_types.<str>]
@@ -1203,7 +1236,7 @@ supplier = <str>
 supplier_part_number = <str>
 ```
 
-#### Terminal Block Jumper Types
+#### Terminal Strip Jumper Types
 ```toml
 # Table of terminal block jumpers in library
 [terminal_strip_jumper_types]
@@ -1340,7 +1373,7 @@ supplier = <str>
 supplier_part_number = <str>
 ```
 
-#### Terminal Strip Accessories
+#### Terminal Strip Accessory Types
 ```toml
 # Table of terminal strip accessories in library
 # Terminal strip accessories are things like end plates or spacers
@@ -1403,125 +1436,90 @@ supplier = <str>
 supplier_part_number = <str>
 ```
 
-#### Schematic Symbol Types
+
+#### Wire Types
 ```toml
-# table of schematic symbol types
-# These usually represent multiple different models/manufacturers of equipment
-# but can be used to represent just 1 equipment type if desired
-# symbols should be layed out for a horizontal orientation when defined.
-# instances can be rotated.
-[schematic_symbol_types]
+# Table (dictonary) of all available wire types.
+# A wire is defined as a material (not necessarily conductive) with optional insulation.
+# if a product has a shield or additional layers, it must be defined as a cable
+# insulation color is defined on individual wire instance
+[wire_types]
 
-# table of attributes for a specific symbol
-[schematic_symbol_types.<str>]
+# Table (dictionary) representing one wire type
+# The `<str>` is the wire type identifier. This is a `key` in TOML and
+# must comply with the TOML spec.
 
-visual_representation = <svg>
+# Most keys in a wire_types sub-table are optional
+[wire_types.<str>]
 
-# Short descriptive name.
-# Can contain spaces and special characters
-name = <str>
+# THWN, XHHN, etc
+wire_type_code = <str>
 
-# optional free-form description
-description = <str>
+# copper, alumninum, ACSR, steel, glass, plastic
+material = <str>
 
-# if this is true, svg will be searched
-# for special tags that indicate where dashed link lines
-# will connect.
-# this is used for things like relays and contactors
-# supports_links = <bool>
-```
+insulated = <bool>
 
-#### Mounting Rail Types
-```toml
-# table of mounting rail types
-# mounting rails are defined and generated parametrically
-# to make usage easier.
-# They can also be defined with SVG segments showing beginning and end of rail
-# and the join points.
-#
-# mounting rail types are defined as if they are being mounted horizontally
-# when placed in a project, they can be oriented in any orientation.
-# any SVG files need to be designed to accomodate this layout.
-[mounting_rail_types]
+# PVC, Nylon, thermoplastic, etc
+insulation_material = <str>
 
-# table of attributes for specific mounting rail type
-# origin is defined as center left of mounting rail
-[mounting_rail_types.<str>]
+insulation_thickness =  {value = [<num>,<denom>], original_unit = <str>}
 
-# overall height of rail
-# rail center point will be at
-# rail_height / 2
-rail_height = {value = [<num>,<denom>], original_unit = <str>}
+# the cross sectional area of the conductor
+conductor_cross_sect_area =  {value = [<num>,<denom>], original_unit = <str>}
 
-# total height of center/recessed section of mounting rail
-# centered on total height
-rail_center_height = {value = [<num>,<denom>], original_unit = <str>}
+# including insulation
+overall_cross_sect_area =  {value = [<num>,<denom>], original_unit = <str>}
 
-# does mounting rail have slots
-slots = <bool>
+# If conductor is stranded
+stranded = <bool>
 
-# are slots rounded or rectangular
-rounded_slots = <bool>
+# number of strands if cable is stranded. overriden to 1 if wire is not stranded
+num_strands = <int>
 
-# linear distance between origin and center of first slot
-# will also be used for the distance between the last slot
-# and the end of the rail.
-first_slot_center = {value = [<num>,<denom>], original_unit = <str>}
+strand_cross_sect_area = {value = [<num>,<denom>], original_unit = <str>}
 
-# linear center to center distance between slots.
-slot_center_to_center = {value = [<num>,<denom>], original_unit = <str>}
+# AC voltage rating of insulation
+ac_insulation_potential_rating =  {value = [<num>,<denom>], original_unit = <str>}
 
-# slot length, includes length of rounded ends
-slot_length = {value = [<num>,<denom>], original_unit = <str>}
+# DC voltage rating of insulation
+dc_insulation_potential_rating =  {value = [<num>,<denom>], original_unit = <str>}
 
-slot_height = {value = [<num>,<denom>], original_unit = <str>}
+# temperature rating of insulation.
+insulation_temperature_rating =  {value = [<num>,<denom>], original_unit = <str>}
 
-# the length of rail as specified by the manufacturer/supplier part number
-standard_rail_length = [<num>,<denom>]
+# Other insulation properties such as
+# flamability or smoke generation
+insulation_rating: <str>
 
-# User specified minimum length.
-# If not specified, will be set to 2x the first_slot_center distance
-# if instance length is set smaller than default minimum_rail_length
-# and no_partial_holes is false, then minimum_rail_length
-# will be ignored.
-minimum_rail_length = {value = [<num>,<denom>], original_unit = <str>}
+insulation_color = <str>
 
-# extend rail so there are no partial holes
-no_partial_holes = <bool>
+secondary_insulation_color = <str>
 
-# distance between top center_line and origin
-top_rail_center_height = {value = [<num>,<denom>], original_unit = <str>}
+# all items here are optional
+# and will use defaults or insulation color values if not specified
+# schematic appearance of linear items
+[wire_types.<str>.line_style]
 
-# distance between bottom center_line and origin
-bottom_rail_center_height = {value = [<num>,<denom>], original_unit = <str>}
+color = <str>
 
-# distance between origin and slot vertical center
-# positive above origin, negative below origin
-slot_vertical_center = {value = [<num>,<denom>], original_unit = <str>}
+secondary_color = <str>
 
-# SVG files for start, end and middle of mounting rail
-# minimum rail length should be set to the length of the
-# start and end SVGs to not cause graphical issues
-# if minimum rail length is not set, the middle SVG
-# might get cut off unexpectedly.
-#
-# the start, middle and end images should not have lines where they join
-# so when the images are placed together, there is no overlap.
+line_thickness = {value = [<num>,<denom>], original_unit = <str>}
 
-start_image = <svg>
+# array of lengths/percentages of dashes and gaps
+# uses same specification as SVG stroke-dasharray field.
+line_appearance = [<int>]
 
-middle_image = <svg>
 
-end_image = <svg>
-
-# Catalog subtable for each mounting_rail_type. Groups common properties
+# Catalog subtable for each wire_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[mounting_rail_types.<str>.catalog]
+[wire_types.<str>.catalog]
 
 # manufacturer name
 manufacturer = <str>
 
-# model description
+# wire type model description
 model = <str>
 
 # free text field for larger descriptions
@@ -1557,129 +1555,6 @@ Projects consist of the following entities:
 - [Term Cables](#term-cables)
 - [Terminal Strips](#terminal-strips)
 - [Wires](#wires)
-
-#### Equipment
-```toml
-# dictionary of equipment defined in project
-[equipment]
-
-# table of attributes for an equipment instance
-[equipment.<str>]
-
-# ID of equipment type
-equipment_type = <str>
-
-# structured name
-identifier = <str>
-
-# must be in list of mounting types defined on equipment type
-mounting_type = <str>
-
-# optional
-# ID of enclosure instance
-enclosure = <str>
-
-# optional
-# enclosure must also be defined
-# ID of mount point (within an enclosure)
-mount_point = <str>
-
-# optional description
-description = <str>
-
-# Physical Location Information
-[equipment.<str>.physical_location]
-
-street_address = <str>
-city = <str>
-state = <str>
-zip_code = <str>
-latitude = [<num>, <denom>]
-longitude = [<num>, <denom>]
-structured_location_id = <str>
-planet = <str>
-building = <str>
-
-
-[equipment.<str>.iec_codes]
-location = <str>
-installation = <str>
-
-# custom fields for user specified data. Not parsed
-[equipment.<str>.user_fields]
-user0 = <str>
-user1 = <str>
-user2 = <str>
-user3 = <str>
-user4 = <str>
-user5 = <str>
-user6 = <str>
-user7 = <str>
-user8 = <str>
-user9 = <str>
-```
-
-#### Wires
-```toml
-# dictionary of wires defined in project
-# wires can only have two ends
-# Wires within cables are assigned IDs automatically and are not listed here
-[wires]
-
-# table of attributes for wire instance
-[wires.<str>]
-
-# ID of wire type
-wire_type = <str>
-
-# structured name / wire number
-identifier = <str>
-
-# optional description
-description = <str>
-
-# ID of containing pathway instance
-pathway = <str>
-
-# wire length
-length =  {value = [<num>,<denom>], original_unit = <str>}
-
-# will be checked for 1 pin only
-# intended for things like ferrules, ring terminals, etc.
-end1_connector_type = <str>
-
-end2_connector_type = <str>
-
-# Physical Location Information
-[wires.<str>.physical_location]
-
-street_address = <str>
-city = <str>
-state = <str>
-zip_code = <str>
-latitude = [<num>, <denom>]
-longitude = [<num>, <denom>]
-structured_location_id = <str>
-planet = <str>
-building = <str>
-
-[wires.<str>.iec_codes]
-location = <str>
-installation = <str>
-
-# custom fields for user specified data. Not parsed
-[wires.<str>.user_fields]
-user0 = <str>
-user1 = <str>
-user2 = <str>
-user3 = <str>
-user4 = <str>
-user5 = <str>
-user6 = <str>
-user7 = <str>
-user8 = <str>
-user9 = <str>
-```
 
 #### Cables
 ```toml
@@ -1733,105 +1608,24 @@ user8 = <str>
 user9 = <str>
 ```
 
-#### Term Cables
+#### Connections
 ```toml
-# table of all term_cables in project
-[term_cables]
+# Connections between two objects, commonly either wires/cables/term_cables and a terminal/connector on equipment
+# This is the only root level item in the project definition that is an array rather than a table with sub-tables
+# This is because there are no human generated identifiers. Individual connections are tracked internally.
 
-# table of attributes on a pathway instance
-[term_cables.<str>]
+# <str> for both end1 and end2 are dot joined ids of the specific objects
+# for example to connect a wire within a cable to a connection on a terminal block
+# TODO finish this example
+[[connections]]
 
-# ID of term_cable type
-term_cable_type = <str>
+end1 = <str>
 
-# structured name / cable number
-identifier = <str>
+end1_type = <str>
 
-# optional description
-description = <str>
+end2 = <str>
 
-# ID of pathway instance
-pathway = <str>
-
-# Physical Location Information
-[term_cables.<str>.physical_location]
-
-street_address = <str>
-city = <str>
-state = <str>
-zip_code = <str>
-latitude = [<num>, <denom>]
-longitude = [<num>, <denom>]
-structured_location_id = <str>
-planet = <str>
-building = <str>
-
-[term_cables.<str>.iec_codes]
-location = <str>
-installation = <str>
-
-# custom fields for user specified data. Not parsed
-[term_cables.<str>.user_fields]
-user0 = <str>
-user1 = <str>
-user2 = <str>
-user3 = <str>
-user4 = <str>
-user5 = <str>
-user6 = <str>
-user7 = <str>
-user8 = <str>
-user9 = <str>
-```
-
-#### Pathways
-```toml
-# Table of all pathways defined in project
-[pathways]
-
-# Table of attributes on a pathway instance
-[pathways.<str>]
-
-# ID of pathway type
-pathway_type = <str>
-
-# structured name / pathway identifier
-identifier = <str>
-
-# optional description
-description = <str>
-
-length =  {value = [<num>,<denom>], original_unit = <str>}
-
-# Physical Location Information
-[pathways.<str>.physical_location]
-
-street_address = <str>
-city = <str>
-state = <str>
-zip_code = <str>
-latitude = [<num>, <denom>]
-longitude = [<num>, <denom>]
-structured_location_id = <str>
-planet = <str>
-building = <str>
-
-[pathways.<str>.iec_codes]
-location = <str>
-installation = <str>
-
-# custom fields for user specified data. Not parsed
-[pathways.<str>.user_fields]
-user0 = <str>
-user1 = <str>
-user2 = <str>
-user3 = <str>
-user4 = <str>
-user5 = <str>
-user6 = <str>
-user7 = <str>
-user8 = <str>
-user9 = <str>
+end2_type = <str>
 ```
 
 #### Enclosures
@@ -1907,6 +1701,243 @@ y =  {value = [<num>,<denom>], original_unit = <str>}
 distance = {value = [<num>,<denom>], original_unit = <str>}
 ```
 
+#### Equipment
+```toml
+# dictionary of equipment defined in project
+[equipment]
+
+# table of attributes for an equipment instance
+[equipment.<str>]
+
+# ID of equipment type
+equipment_type = <str>
+
+# structured name
+identifier = <str>
+
+# must be in list of mounting types defined on equipment type
+mounting_type = <str>
+
+# optional
+# ID of enclosure instance
+enclosure = <str>
+
+# optional
+# enclosure must also be defined
+# ID of mount point (within an enclosure)
+mount_point = <str>
+
+# optional description
+description = <str>
+
+# Physical Location Information
+[equipment.<str>.physical_location]
+
+street_address = <str>
+city = <str>
+state = <str>
+zip_code = <str>
+latitude = [<num>, <denom>]
+longitude = [<num>, <denom>]
+structured_location_id = <str>
+planet = <str>
+building = <str>
+
+
+[equipment.<str>.iec_codes]
+location = <str>
+installation = <str>
+
+# custom fields for user specified data. Not parsed
+[equipment.<str>.user_fields]
+user0 = <str>
+user1 = <str>
+user2 = <str>
+user3 = <str>
+user4 = <str>
+user5 = <str>
+user6 = <str>
+user7 = <str>
+user8 = <str>
+user9 = <str>
+```
+
+#### Mounting Rails
+```toml
+# list of mounting rails in project
+[mounting_rails]
+
+# table of attributes for a specific mounting rail
+[mounting_rails.<str>]
+
+mounting_rail_type = <str>
+
+length = {value = [<num>,<denom>], original_unit = <str>}
+
+[mounting_rails.<str>.iec_codes]
+location = <str>
+installation = <str>
+
+# Physical Location Information
+[mounting_rails.<str>.physical_location]
+
+street_address = <str>
+city = <str>
+state = <str>
+zip_code = <str>
+latitude = [<num>, <denom>]
+longitude = [<num>, <denom>]
+structured_location_id = <str>
+planet = <str>
+building = <str>
+
+# custom fields for user specified data. Not parsed
+[mounting_rails.<str>.user_fields]
+user0 = <str>
+user1 = <str>
+user2 = <str>
+user3 = <str>
+user4 = <str>
+user5 = <str>
+user6 = <str>
+user7 = <str>
+user8 = <str>
+user9 = <str>
+```
+
+#### Pathways
+```toml
+# Table of all pathways defined in project
+[pathways]
+
+# Table of attributes on a pathway instance
+[pathways.<str>]
+
+# ID of pathway type
+pathway_type = <str>
+
+# structured name / pathway identifier
+identifier = <str>
+
+# optional description
+description = <str>
+
+length =  {value = [<num>,<denom>], original_unit = <str>}
+
+# Physical Location Information
+[pathways.<str>.physical_location]
+
+street_address = <str>
+city = <str>
+state = <str>
+zip_code = <str>
+latitude = [<num>, <denom>]
+longitude = [<num>, <denom>]
+structured_location_id = <str>
+planet = <str>
+building = <str>
+
+[pathways.<str>.iec_codes]
+location = <str>
+installation = <str>
+
+# custom fields for user specified data. Not parsed
+[pathways.<str>.user_fields]
+user0 = <str>
+user1 = <str>
+user2 = <str>
+user3 = <str>
+user4 = <str>
+user5 = <str>
+user6 = <str>
+user7 = <str>
+user8 = <str>
+user9 = <str>
+```
+
+#### Schematic Symbols
+```toml
+# This dictionary contains schematic symbols that represent equipment and components
+# in the project
+[schematic_symbols]
+
+# Table of attributes for a specific instance of a symbol
+[schematic_symbols.<str>]
+
+symbol_type = <str>
+
+symbol_color = <str>
+
+# What this symbol represents.
+# The type field must be filled in with Equipment, Terminal, or Connector
+# and the value field must be filled in with an ID of a matching project component
+represented_object = {type = <str>, value = <str>}
+
+# custom fields for user specified data. Not parsed
+[schematic_symbols.<str>.user_fields]
+user0 = <str>
+user1 = <str>
+user2 = <str>
+user3 = <str>
+user4 = <str>
+user5 = <str>
+user6 = <str>
+user7 = <str>
+user8 = <str>
+user9 = <str>
+```
+
+#### Term Cables
+```toml
+# table of all term_cables in project
+[term_cables]
+
+# table of attributes on a pathway instance
+[term_cables.<str>]
+
+# ID of term_cable type
+term_cable_type = <str>
+
+# structured name / cable number
+identifier = <str>
+
+# optional description
+description = <str>
+
+# ID of pathway instance
+pathway = <str>
+
+# Physical Location Information
+[term_cables.<str>.physical_location]
+
+street_address = <str>
+city = <str>
+state = <str>
+zip_code = <str>
+latitude = [<num>, <denom>]
+longitude = [<num>, <denom>]
+structured_location_id = <str>
+planet = <str>
+building = <str>
+
+[term_cables.<str>.iec_codes]
+location = <str>
+installation = <str>
+
+# custom fields for user specified data. Not parsed
+[term_cables.<str>.user_fields]
+user0 = <str>
+user1 = <str>
+user2 = <str>
+user3 = <str>
+user4 = <str>
+user5 = <str>
+user6 = <str>
+user7 = <str>
+user8 = <str>
+user9 = <str>
+```
+
 #### Terminal Strips
 ```toml
 # table of all terminal strips defined in the project
@@ -1976,7 +2007,6 @@ label = <str>
 # <str> is accessory_type_id
 accessories = [<str>]
 
-
 # TODO: this should probably be an embedded table
 # defining either terminal or terminal_strip_accessory type
 # must be defined under the defintion of the terminal_block array it applies to
@@ -2010,24 +2040,39 @@ label = <str>
 jumper_connections = [<str>]
 ```
 
-#### Mounting Rails
+#### Wires
 ```toml
-# list of mounting rails in project
-[mounting_rails]
+# dictionary of wires defined in project
+# wires can only have two ends
+# Wires within cables are assigned IDs automatically and are not listed here
+[wires]
 
-# table of attributes for a specific mounting rail
-[mounting_rails.<str>]
+# table of attributes for wire instance
+[wires.<str>]
 
-mounting_rail_type = <str>
+# ID of wire type
+wire_type = <str>
 
-length = {value = [<num>,<denom>], original_unit = <str>}
+# structured name / wire number
+identifier = <str>
 
-[mounting_rails.<str>.iec_codes]
-location = <str>
-installation = <str>
+# optional description
+description = <str>
+
+# ID of containing pathway instance
+pathway = <str>
+
+# wire length
+length =  {value = [<num>,<denom>], original_unit = <str>}
+
+# will be checked for 1 pin only
+# intended for things like ferrules, ring terminals, etc.
+end1_connector_type = <str>
+
+end2_connector_type = <str>
 
 # Physical Location Information
-[mounting_rails.<str>.physical_location]
+[wires.<str>.physical_location]
 
 street_address = <str>
 city = <str>
@@ -2039,8 +2084,12 @@ structured_location_id = <str>
 planet = <str>
 building = <str>
 
+[wires.<str>.iec_codes]
+location = <str>
+installation = <str>
+
 # custom fields for user specified data. Not parsed
-[mounting_rails.<str>.user_fields]
+[wires.<str>.user_fields]
 user0 = <str>
 user1 = <str>
 user2 = <str>
@@ -2053,55 +2102,5 @@ user8 = <str>
 user9 = <str>
 ```
 
-#### Connections
-```toml
-# Connections between two objects, commonly either wires/cables/term_cables and a terminal/connector on equipment
-# This is the only root level item in the project definition that is an array rather than a table with sub-tables
-# This is because there are no human generated identifiers. Individual connections are tracked internally.
-
-# <str> for both end1 and end2 are dot joined ids of the specific objects
-# for example to connect a wire within a cable to a connection on a terminal block
-# TODO finish this example
-[[connections]]
-
-end1 = <str>
-
-end1_type = <str>
-
-end2 = <str>
-
-end2_type = <str>
-
-
-# This dictionary contains schematic symbols that represent equipment and components
-# in the project
-[schematic_symbols]
-
-# Table of attributes for a specific instance of a symbol
-[schematic_symbols.<str>]
-
-symbol_type = <str>
-
-symbol_color = <str>
-
-# What this symbol represents.
-# The type field must be filled in with Equipment, Terminal, or Connector
-# and the value field must be filled in with an ID of a matching project component
-represented_object = {type = <str>, value = <str>}
-
-# custom fields for user specified data. Not parsed
-[schematic_symbols.<str>.user_fields]
-user0 = <str>
-user1 = <str>
-user2 = <str>
-user3 = <str>
-user4 = <str>
-user5 = <str>
-user6 = <str>
-user7 = <str>
-user8 = <str>
-user9 = <str>
-```
-
-TODO: schematic symbols, drawings
+TODO: drawings
 
