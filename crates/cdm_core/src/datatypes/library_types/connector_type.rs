@@ -54,7 +54,7 @@ pub struct ConnectorType {
     pub visual_representation: Option<Svg>,
     /// datafile the struct instance was read in from
     #[serde(skip)]
-    pub(super) contained_datafile_path: PathBuf,
+    pub(crate) contained_datafile_path: PathBuf,
 }
 impl FromFile for ConnectorType {
     fn datafile(&self) -> PathBuf {

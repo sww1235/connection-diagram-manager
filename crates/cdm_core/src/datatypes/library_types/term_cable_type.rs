@@ -35,7 +35,7 @@ pub struct TermCableType {
     pub end2: BTreeMap<String, Connector>,
     /// datafile the struct instance was read in from
     #[serde(skip)]
-    pub(super) contained_datafile_path: PathBuf,
+    pub(crate) contained_datafile_path: PathBuf,
 }
 impl FromFile for TermCableType {
     fn datafile(&self) -> PathBuf {

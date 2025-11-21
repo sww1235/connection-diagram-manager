@@ -47,7 +47,7 @@ pub struct PathwayType {
     pub line_style: Option<LineStyle>,
     /// datafile the struct instance was read in from
     #[serde(skip)]
-    pub(super) contained_datafile_path: PathBuf,
+    pub(crate) contained_datafile_path: PathBuf,
 }
 impl FromFile for PathwayType {
     fn datafile(&self) -> PathBuf {

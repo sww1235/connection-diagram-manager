@@ -33,7 +33,7 @@ pub struct TerminalStrip {
     pub jumpers: Vec<Jumper>,
     /// datafile the struct instance was read in from
     #[serde(skip)]
-    pub(super) contained_datafile_path: PathBuf,
+    pub(crate) contained_datafile_path: PathBuf,
 }
 
 /// `Terminal` represents one element of a terminal strip, be it terminal block or

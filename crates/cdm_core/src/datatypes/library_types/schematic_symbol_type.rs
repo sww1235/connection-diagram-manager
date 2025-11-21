@@ -21,7 +21,7 @@ pub struct SchematicSymbolType {
     pub supports_links: bool,
     /// datafile the struct instance was read in from
     #[serde(skip)]
-    pub(super) contained_datafile_path: PathBuf,
+    pub(crate) contained_datafile_path: PathBuf,
 }
 impl FromFile for SchematicSymbolType {
     fn datafile(&self) -> PathBuf {

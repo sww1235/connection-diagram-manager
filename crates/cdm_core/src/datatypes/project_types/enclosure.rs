@@ -34,7 +34,7 @@ pub struct Enclosure {
     pub mount_points: BTreeMap<String, MountPoint>,
     /// datafile the struct instance was read in from
     #[serde(skip)]
-    pub(super) contained_datafile_path: PathBuf,
+    pub(crate) contained_datafile_path: PathBuf,
 }
 /// `MountPoint` represents a particular physical x/y/z within an `Enclosure`
 ///

@@ -72,7 +72,7 @@ pub struct MountingRailType {
     pub end_image: Option<Svg>,
     /// datafile the struct instance was read in from
     #[serde(skip)]
-    pub(super) contained_datafile_path: PathBuf,
+    pub(crate) contained_datafile_path: PathBuf,
 }
 impl FromFile for MountingRailType {
     fn datafile(&self) -> PathBuf {
