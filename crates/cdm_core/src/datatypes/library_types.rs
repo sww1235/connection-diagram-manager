@@ -229,12 +229,12 @@ mod tests {
     // [x] minimal with multiple layers
     // [x] minimal with 1 layer and 1 core
     // [x] full with multiple cores and multiple layers
-    // [ ] Vary the cross section
+    // [x] Vary the cross section
     // [ ] incorrect unit string
     // [x] try with a few different unit strings
     // [x] multiple cables in one file
     // [x] multiple cables in one file, with one cable containing cores of the other cables
-    // [ ] merging 2 libraries together with cables
+    // [x] merging 2 libraries together with cables
     // [x] wires and cables in the same file
     #[test]
     /// Test importing a realistic minimal example file
@@ -1983,6 +1983,169 @@ mod tests {
         let library_file_contents = fs::read_to_string(&library_filepath).unwrap();
         let mut library_file: Library = toml::from_str(&library_file_contents).unwrap();
         library_file.add_datafile_paths(&library_filepath);
+        assert_eq!(test_library, library_file);
+    }
+    #[test]
+    /// Test importing a realistic minimal example file
+    ///
+    /// No validation of string keys within library
+    fn read_datafile_library_cable_library_merging() {
+        let soow14_3 = CableType {
+            cross_sect_area: CrossSectionalArea {
+                original_unit: "square inch".to_string(),
+                value: rational64::Area::new::<square_inch>(Rational64::new(14_389_229, 64_008_858)),
+            },
+            cross_section: CrossSection::Circular,
+            layers: vec![
+                CableLayer {
+                    layer_number: 1,
+                    layer_type: LayerType::Jacket,
+                    material: None,
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    rating: None,
+                    thickness: None,
+                    color: None,
+                }
+            ],
+            cores: {
+                let mut cores = BTreeMap::new();
+                cores.insert("green".to_string(), CableCore::WireType("soow14_green_inner".to_string()));
+                cores.insert("white".to_string(), CableCore::WireType("soow14_white_inner".to_string()));
+                cores.insert("black".to_string(), CableCore::WireType("soow14_black_inner".to_string()));
+                cores
+            },
+            cable_type_code: None,
+            catalog: None,
+            dimensions: None,
+            line_style: None,
+            contained_datafile_path: PathBuf::from("../../resources/test/library_tests/cable_type_test_minimal_realistic.toml")
+                .canonicalize()
+                .unwrap(),
+        };
+        let triax_rg11 = CableType {
+            cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(137, 1)),
+            },
+            cross_section: CrossSection::Circular,
+            layers: vec![
+                CableLayer {
+                    layer_number: 1,
+                    layer_type: LayerType::Insulation,
+                    material: Some("High Density Polyethylene Foam".to_string()),
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    rating: None,
+                    thickness: Some(Length {
+                        original_unit: "inch".to_string(),
+                        value: rational64::Length::new::<inch>(Rational64::new(31, 250)),
+                    }),
+                    color: Some(Color::White),
+                },
+                CableLayer {
+                    layer_number: 2,
+                    layer_type: LayerType::Shield,
+                    material: Some("Bare Copper".to_string()),
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    rating: None,
+                    thickness: None,
+                    color: None,
+                },
+                CableLayer {
+                    layer_number: 3,
+                    layer_type: LayerType::Jacket,
+                    material: Some("Polyethylene".to_string()),
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    rating: None,
+                    thickness: Some(Length {
+                        original_unit: "inch".to_string(),
+                        value: rational64::Length::new::<inch>(Rational64::new(79, 1000)),
+                    }),
+                    color: Some(Color::Black),
+                },
+                CableLayer {
+                    layer_number: 4,
+                    layer_type: LayerType::Shield,
+                    material: Some("Bare Copper".to_string()),
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    rating: None,
+                    thickness: None,
+                    color: None,
+                },
+                CableLayer {
+                    layer_number: 5,
+                    layer_type: LayerType::Jacket,
+                    material: Some("Polyvinyl Chloride".to_string()),
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: Some(TemperatureInterval {
+                        original_unit: "degree Celsius".to_string(),
+                        value: rational64::TemperatureInterval::new::<degree_celsius>(Rational64::new(80, 1)),
+                    }),
+                    rating: None,
+                    thickness: Some(Length {
+                        original_unit: "inch".to_string(),
+                        value: rational64::Length::new::<inch>(Rational64::new(13, 25)),
+                    }),
+                    color: Some(Color::Yellow),
+                }
+            ],
+            cores: {
+                let mut cores = BTreeMap::new();
+                cores.insert(
+                    "inner".to_string(),
+                    CableCore::WireType("triax_15awg_copper_inner".to_string()),
+                );
+                cores
+            },
+            cable_type_code: Some("RG11".to_string()),
+            catalog: None,
+            dimensions: None,
+            line_style: None,
+            contained_datafile_path: PathBuf::from("../../resources/test/library_tests/cable_type_test_multi_layer.toml")
+                .canonicalize()
+                .unwrap(),
+        };
+        let test_library = Library {
+            cable_types: {
+                let mut cable_types = BTreeMap::new();
+                cable_types.insert("soow14_3".to_string(), soow14_3);
+                cable_types.insert("triax_rg11".to_string(), triax_rg11);
+                cable_types
+            },
+            connector_types: BTreeMap::new(),
+            enclosure_types: BTreeMap::new(),
+            equipment_types: BTreeMap::new(),
+            mounting_rail_types: BTreeMap::new(),
+            pathway_types: BTreeMap::new(),
+            schematic_symbol_types: BTreeMap::new(),
+            term_cable_types: BTreeMap::new(),
+            terminal_types: BTreeMap::new(),
+            terminal_strip_jumper_types: BTreeMap::new(),
+            terminal_accessory_types: BTreeMap::new(),
+            terminal_strip_accessory_types: BTreeMap::new(),
+            wire_types: BTreeMap::new(),
+        };
+        let library_filepath_1 = PathBuf::from("../../resources/test/library_tests/cable_type_test_minimal_realistic.toml")
+            .canonicalize()
+            .unwrap();
+        let library_file_contents_1 = fs::read_to_string(&library_filepath_1).unwrap();
+        let library_filepath_2 = PathBuf::from("../../resources/test/library_tests/cable_type_test_multi_layer.toml").canonicalize().unwrap();
+        let library_file_contents_2 = fs::read_to_string(&library_filepath_2).unwrap();
+        let mut library_file2: Library = toml::from_str(&library_file_contents_2).unwrap();
+        library_file2.add_datafile_paths(&library_filepath_2);
+        let mut library_file: Library = toml::from_str(&library_file_contents_1).unwrap();
+        library_file.add_datafile_paths(&library_filepath_1);
+        library_file.merge(library_file2, &library_filepath_2).unwrap();
         assert_eq!(test_library, library_file);
     }
 }
