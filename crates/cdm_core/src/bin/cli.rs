@@ -179,6 +179,9 @@ fn main() -> anyhow::Result<()> {
         let mut library_data = Library::default();
         let mut project_data = Project::default();
         //TODO: include default libraries. use include_str! macro
+        //
+        //TODO: add prefix to all string keys read in from file (maybe file_name or something) to
+        //avoid unintended duplicate keys in multiple files
         for file in library_files {
             let library_file_contents = fs::read_to_string(&file)?;
             let library_file: Library = toml::from_str(&library_file_contents)?;

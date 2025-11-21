@@ -244,12 +244,11 @@ mod tests {
         let soow14_3 = CableType {
             cross_sect_area: CrossSectionalArea {
                 original_unit: "square inch".to_string(),
-                value: rational64::Area::new::<square_inch>(Rational64::new(14389229, 64008858)),
+                value: rational64::Area::new::<square_inch>(Rational64::new(14_389_229, 64_008_858)),
             },
             cross_section: CrossSection::Circular,
-            layers: {
-                let mut layers = Vec::new();
-                layers.push(CableLayer {
+            layers: vec![
+                CableLayer {
                     layer_number: 1,
                     layer_type: LayerType::Jacket,
                     material: None,
@@ -259,9 +258,8 @@ mod tests {
                     rating: None,
                     thickness: None,
                     color: None,
-                });
-                layers
-            },
+                }
+            ],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert("green".to_string(), CableCore::WireType("soow14_green_inner".to_string()));
@@ -302,7 +300,7 @@ mod tests {
         let library_file_contents = fs::read_to_string(&library_filepath).unwrap();
         let mut library_file: Library = toml::from_str(&library_file_contents).unwrap();
         library_file.add_datafile_paths(&library_filepath);
-        assert_eq!(test_library, library_file)
+        assert_eq!(test_library, library_file);
     }
     #[test]
     /// Test importing a cable with only required values
@@ -312,12 +310,11 @@ mod tests {
         let soow14_1 = CableType {
             cross_sect_area: CrossSectionalArea {
                 original_unit: "square inch".to_string(),
-                value: rational64::Area::new::<square_inch>(Rational64::new(14389229, 64008858)),
+                value: rational64::Area::new::<square_inch>(Rational64::new(14_389_229, 64_008_858)),
             },
             cross_section: CrossSection::Circular,
-            layers: {
-                let mut layers = Vec::new();
-                layers.push(CableLayer {
+            layers: vec![
+                CableLayer {
                     layer_number: 1,
                     layer_type: LayerType::Jacket,
                     material: None,
@@ -327,9 +324,8 @@ mod tests {
                     rating: None,
                     thickness: None,
                     color: None,
-                });
-                layers
-            },
+                }
+            ],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert(
@@ -371,7 +367,7 @@ mod tests {
         let library_file_contents = fs::read_to_string(&library_filepath).unwrap();
         let mut library_file: Library = toml::from_str(&library_file_contents).unwrap();
         library_file.add_datafile_paths(&library_filepath);
-        assert_eq!(test_library, library_file)
+        assert_eq!(test_library, library_file);
     }
     #[test]
     /// Test importing a cable with minimal values and multiple layers defined
@@ -384,9 +380,8 @@ mod tests {
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(137, 1)),
             },
             cross_section: CrossSection::Circular,
-            layers: {
-                let mut layers = Vec::new();
-                layers.push(CableLayer {
+            layers: vec![
+                CableLayer {
                     layer_number: 1,
                     layer_type: LayerType::Insulation,
                     material: Some("High Density Polyethylene Foam".to_string()),
@@ -399,8 +394,8 @@ mod tests {
                         value: rational64::Length::new::<inch>(Rational64::new(31, 250)),
                     }),
                     color: Some(Color::White),
-                });
-                layers.push(CableLayer {
+                },
+                CableLayer {
                     layer_number: 2,
                     layer_type: LayerType::Shield,
                     material: Some("Bare Copper".to_string()),
@@ -410,8 +405,8 @@ mod tests {
                     rating: None,
                     thickness: None,
                     color: None,
-                });
-                layers.push(CableLayer {
+                },
+                CableLayer {
                     layer_number: 3,
                     layer_type: LayerType::Jacket,
                     material: Some("Polyethylene".to_string()),
@@ -424,8 +419,8 @@ mod tests {
                         value: rational64::Length::new::<inch>(Rational64::new(79, 1000)),
                     }),
                     color: Some(Color::Black),
-                });
-                layers.push(CableLayer {
+                },
+                CableLayer {
                     layer_number: 4,
                     layer_type: LayerType::Shield,
                     material: Some("Bare Copper".to_string()),
@@ -435,8 +430,8 @@ mod tests {
                     rating: None,
                     thickness: None,
                     color: None,
-                });
-                layers.push(CableLayer {
+                },
+                CableLayer {
                     layer_number: 5,
                     layer_type: LayerType::Jacket,
                     material: Some("Polyvinyl Chloride".to_string()),
@@ -452,9 +447,8 @@ mod tests {
                         value: rational64::Length::new::<inch>(Rational64::new(13, 25)),
                     }),
                     color: Some(Color::Yellow),
-                });
-                layers
-            },
+                }
+            ],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert(
@@ -496,7 +490,7 @@ mod tests {
         let library_file_contents = fs::read_to_string(&library_filepath).unwrap();
         let mut library_file: Library = toml::from_str(&library_file_contents).unwrap();
         library_file.add_datafile_paths(&library_filepath);
-        assert_eq!(test_library, library_file)
+        assert_eq!(test_library, library_file);
     }
     #[test]
     /// Test importing a cable with all values defined
@@ -506,13 +500,12 @@ mod tests {
         let soow14_3 = CableType {
             cross_sect_area: CrossSectionalArea {
                 original_unit: "square inch".to_string(),
-                value: rational64::Area::new::<square_inch>(Rational64::new(14389229, 64008858)),
+                value: rational64::Area::new::<square_inch>(Rational64::new(14_389_229, 64_008_858)),
             },
             cross_section: CrossSection::Circular,
             cable_type_code: Some("SOOW".to_string()),
-            layers: {
-                let mut layers = Vec::new();
-                layers.push(CableLayer {
+            layers: vec![
+                CableLayer {
                     layer_number: 1,
                     layer_type: LayerType::Jacket,
                     material: Some("Clorinated Polyethylene".to_string()),
@@ -534,9 +527,8 @@ mod tests {
                         value: rational64::Length::new::<millimeter>(Rational64::new(203, 100)),
                     }),
                     color: Some(Color::Black),
-                });
-                layers
-            },
+                }
+            ],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert("green".to_string(), CableCore::WireType("soow14_green_inner".to_string()));
@@ -608,7 +600,7 @@ mod tests {
         let library_file_contents = fs::read_to_string(&library_filepath).unwrap();
         let mut library_file: Library = toml::from_str(&library_file_contents).unwrap();
         library_file.add_datafile_paths(&library_filepath);
-        assert_eq!(test_library, library_file)
+        assert_eq!(test_library, library_file);
     }
     #[test]
     #[expect(non_snake_case)]
@@ -619,7 +611,7 @@ mod tests {
     /// - wires and cables together in the same file
     ///
     /// this is a relatively realistic test, with a mix of filled in values, multiple items in
-    /// btreemaps, and validation of hashmap keys
+    /// btreemaps, and validation of btreemap keys
     fn read_datafile_library_cable_multi_cable_wire() {
         let datafile_path = PathBuf::from("../../resources/test/library_tests/cable_type_test_multicore_realistic.toml")
             .canonicalize()
@@ -630,9 +622,8 @@ mod tests {
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(688, 1)),
             },
             cross_section: CrossSection::Circular,
-            layers: {
-                let mut layers = Vec::new();
-                layers.push(CableLayer {
+            layers: vec![
+                CableLayer {
                     layer_number: 1,
                     layer_type: LayerType::Jacket,
                     material: Some("Polyvinyl Chloride".to_string()),
@@ -651,9 +642,8 @@ mod tests {
                     thickness: None,
                     rating: Some("UL Listed, Plenum, Flamarrest®".to_string()),
                     color: Some(Color::Yellow),
-                });
-                layers
-            },
+                }
+            ],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert(
@@ -718,9 +708,8 @@ mod tests {
             cable_type_code: None,
             catalog: None,
             line_style: None,
-            layers: {
-                let mut layers = Vec::new();
-                layers.push(CableLayer {
+            layers: vec![
+                CableLayer {
                     layer_number: 1,
                     layer_type: LayerType::Shield,
                     material: Some("Bi-Laminate (Alum+Poly) Tape".to_string()),
@@ -730,8 +719,8 @@ mod tests {
                     thickness: None,
                     rating: None,
                     color: None,
-                });
-                layers.push(CableLayer {
+                },
+                CableLayer {
                     layer_number: 2,
                     layer_type: LayerType::Jacket,
                     material: Some("Polyvinyl Chloride".to_string()),
@@ -741,9 +730,8 @@ mod tests {
                     thickness: None,
                     rating: Some("Flamarrest®".to_string()),
                     color: Some(Color::Orange),
-                });
-                layers
-            },
+                }
+            ],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert(
@@ -798,9 +786,8 @@ mod tests {
             cable_type_code: None,
             catalog: None,
             line_style: None,
-            layers: {
-                let mut layers = Vec::new();
-                layers.push(CableLayer {
+            layers: vec![
+                CableLayer {
                     layer_number: 1,
                     layer_type: LayerType::Shield,
                     material: Some("Bi-Laminate (Alum+Poly) Tape".to_string()),
@@ -810,8 +797,8 @@ mod tests {
                     thickness: None,
                     rating: None,
                     color: None,
-                });
-                layers.push(CableLayer {
+                },
+                CableLayer {
                     layer_number: 2,
                     layer_type: LayerType::Jacket,
                     material: Some("Polyvinyl Chloride".to_string()),
@@ -821,9 +808,8 @@ mod tests {
                     thickness: None,
                     rating: Some("Flamarrest®".to_string()),
                     color: Some(Color::White),
-                });
-                layers
-            },
+                }
+            ],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert(
@@ -863,9 +849,8 @@ mod tests {
             cable_type_code: None,
             catalog: None,
             line_style: None,
-            layers: {
-                let mut layers = Vec::new();
-                layers.push(CableLayer {
+            layers: vec![
+                CableLayer {
                     layer_number: 1,
                     layer_type: LayerType::Shield,
                     material: Some("Bi-Laminate (Alum+Poly) Tape".to_string()),
@@ -875,8 +860,8 @@ mod tests {
                     thickness: None,
                     rating: None,
                     color: None,
-                });
-                layers.push(CableLayer {
+                },
+                CableLayer {
                     layer_number: 2,
                     layer_type: LayerType::Jacket,
                     material: Some("Polyvinyl Chloride".to_string()),
@@ -886,9 +871,8 @@ mod tests {
                     thickness: None,
                     rating: Some("Flamarrest®".to_string()),
                     color: Some(Color::Blue),
-                });
-                layers
-            },
+                }
+            ],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert(
@@ -936,9 +920,8 @@ mod tests {
             cable_type_code: None,
             catalog: None,
             line_style: None,
-            layers: {
-                let mut layers = Vec::new();
-                layers.push(CableLayer {
+            layers: vec![
+                CableLayer {
                     layer_number: 1,
                     layer_type: LayerType::Shield,
                     material: Some("Bi-Laminate (Alum+Poly) Tape".to_string()),
@@ -948,8 +931,8 @@ mod tests {
                     thickness: None,
                     rating: None,
                     color: None,
-                });
-                layers.push(CableLayer {
+                },
+                CableLayer {
                     layer_number: 2,
                     layer_type: LayerType::Jacket,
                     material: Some("Polyvinyl Chloride".to_string()),
@@ -959,9 +942,8 @@ mod tests {
                     thickness: None,
                     rating: Some("Flamarrest®".to_string()),
                     color: Some(Color::Grey),
-                });
-                layers
-            },
+                }
+            ],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert(

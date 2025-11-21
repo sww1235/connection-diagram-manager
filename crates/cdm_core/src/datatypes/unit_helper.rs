@@ -1205,7 +1205,7 @@ mod tests {
 \x20\x20   square mile     |         mi²\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20   square yard     |         yd²\x20\x20\x20\x20\x20\x20\x20\x20\x20
 ";
-        assert_eq!(test_string, Area::output_units())
+        assert_eq!(test_string, Area::output_units());
     }
 
     // using escape codes to work around issues with VIM and rustfmt. Also to provide a more robust
@@ -1246,7 +1246,7 @@ mod tests {
 \x20\x20   square mile     |         mi²\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20   square yard     |         yd²\x20\x20\x20\x20\x20\x20\x20\x20\x20
 ";
-        assert_eq!(test_string, CrossSectionalArea::output_units())
+        assert_eq!(test_string, CrossSectionalArea::output_units());
     }
     // using escape codes to work around issues with VIM and rustfmt. Also to provide a more robust
     // representation of the expected output
@@ -1279,7 +1279,7 @@ mod tests {
 \x20\x20\x20\x20\x20\x20 abvolt        |         abV\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20\x20\x20\x20\x20statvolt       |        statV\x20\x20\x20\x20\x20\x20\x20\x20
 ";
-        assert_eq!(test_string, ElectricPotential::output_units())
+        assert_eq!(test_string, ElectricPotential::output_units());
     }
 
     // using escape codes to work around issues with VIM and rustfmt. Also to provide a more robust
@@ -1334,7 +1334,7 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
 \x20        rod         |         rd\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20       yard         |         yd\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 ";
-        assert_eq!(test_string, Length::output_units())
+        assert_eq!(test_string, Length::output_units());
     }
     // using escape codes to work around issues with VIM and rustfmt. Also to provide a more robust
     // representation of the expected output
@@ -1368,6 +1368,6 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
 \x20\x20degree Fahrenheit  |         °F\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20 degree Rankine    |         °R\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 ";
-        assert_eq!(test_string, TemperatureInterval::output_units())
+        assert_eq!(test_string, TemperatureInterval::output_units());
     }
 }
