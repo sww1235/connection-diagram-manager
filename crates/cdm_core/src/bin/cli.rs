@@ -185,12 +185,12 @@ fn main() -> anyhow::Result<()> {
         for file in library_files {
             let library_file_contents = fs::read_to_string(&file)?;
             let library_file: Library = toml::from_str(&library_file_contents)?;
-            library_data.merge(library_file, &file.display().to_string())?;
+            library_data.merge(library_file, &file)?;
         }
         for file in project_files {
             let project_file_contents = fs::read_to_string(&file)?;
             let project_file: Project = toml::from_str(&project_file_contents)?;
-            project_data.merge(project_file, &file.display().to_string())?;
+            project_data.merge(project_file, &file)?;
         }
 
         debug! {"{library_data:?}"};

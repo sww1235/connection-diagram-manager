@@ -3,6 +3,8 @@ use pdf_helper::Error as PDFError;
 use thiserror::Error;
 use usvg::Error as USVGError;
 
+use std::path::PathBuf;
+
 //TODO: flesh this out more
 #[derive(Error, Debug)]
 #[non_exhaustive]
@@ -63,9 +65,9 @@ pub enum Error {
         /// key of tested hashmap
         key: String,
         /// filepath of file first imported which is being compared against
-        origin_file: String,
+        origin_file: PathBuf,
         /// filepath of file being checked for duplicates
-        test_file: String,
+        test_file: PathBuf,
     },
     /// Errors relating to linebreaking
     #[error(transparent)]

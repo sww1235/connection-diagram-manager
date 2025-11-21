@@ -67,7 +67,7 @@ impl Library {
     /// # Errors
     ///
     /// Will error if there are duplicate keys found in `other` map
-    pub fn merge(&mut self, test_map: Library, test_file: &str) -> Result<(), Error> {
+    pub fn merge(&mut self, test_map: Library, test_file: &Path) -> Result<(), Error> {
         util_functions::merge_btreemaps(&mut self.cable_types, test_map.cable_types, test_file)?;
         util_functions::merge_btreemaps(&mut self.connector_types, test_map.connector_types, test_file)?;
         util_functions::merge_btreemaps(&mut self.enclosure_types, test_map.enclosure_types, test_file)?;

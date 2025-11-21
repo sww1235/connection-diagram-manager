@@ -1,4 +1,5 @@
 use std::collections::{BTreeMap, btree_map::Entry};
+use std::path::Path;
 
 use crate::{error::Error, traits::FromFile};
 
@@ -12,7 +13,7 @@ use crate::{error::Error, traits::FromFile};
 pub fn merge_btreemaps<V>(
     origin_map: &mut BTreeMap<String, V>,
     test_map: BTreeMap<String, V>,
-    test_file: &str,
+    test_file: &Path,
 ) -> Result<(), Error>
 where
     V: FromFile,
@@ -27,8 +28,8 @@ where
         } else {
             return Err(Error::DuplicateKey {
                 key: key.clone(),
-                origin_file: value.datafile().display().to_string(),
-                test_file: test_file.to_string(),
+                origin_file: value.datafile().clone(),
+                test_file: test_file.to_path_buf(),
             });
         }
     }

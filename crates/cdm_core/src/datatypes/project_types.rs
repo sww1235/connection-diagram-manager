@@ -68,7 +68,7 @@ impl Project {
     /// # Errors
     ///
     /// Will error if there are duplicate keys found in `other` map
-    pub fn merge(&mut self, test_map: Project, test_file: &str) -> Result<(), Error> {
+    pub fn merge(&mut self, test_map: Project, test_file: &Path) -> Result<(), Error> {
         util_functions::merge_btreemaps(&mut self.cables, test_map.cables, test_file)?;
         self.connections.extend(test_map.connections);
         //TODO: are connectors going to be read in separately?
