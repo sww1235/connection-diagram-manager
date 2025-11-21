@@ -297,7 +297,14 @@ cross_section = <str>
 # counted from inside to outside of cable
 layer_number = <int>
 
-# insulation, semiconductor, shield, screen, concentric neutral, jacket, armor
+# - Insulation
+# - Semiconductor
+# - Shield
+# - Screen
+# - ConcentricNeutral
+# - Jacket
+# - Armor
+# - WaterBlocking
 layer_type = <str>
 
 material = <str>

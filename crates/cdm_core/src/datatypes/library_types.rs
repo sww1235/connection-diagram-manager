@@ -179,13 +179,14 @@ impl Library {
 }
 
 #[cfg(test)]
+#[allow(clippy::too_many_lines)]
 mod tests {
     use std::{collections::BTreeMap, fs, path::PathBuf};
 
     use num_rational::Rational64;
     use pretty_assertions::assert_eq;
     use uom::si::{
-        area::{square_inch, square_millimeter},
+        area::{square_inch, square_millimeter, square_micrometer},
         electric_potential::volt,
         length::{inch, millimeter, point_computer},
         rational64,
@@ -227,14 +228,14 @@ mod tests {
     // [x] minimal realistic (soow14_3)
     // [x] minimal with multiple layers
     // [x] minimal with 1 layer and 1 core
-    // [ ] full with multiple cores and multiple layers
+    // [x] full with multiple cores and multiple layers
     // [ ] Vary the cross section
     // [ ] incorrect unit string
-    // [ ] try with a few different unit strings
-    // [ ] multiple cables in one file
-    // [ ] multiple cables in one file, with one cable containing cores of the other cables
-    // [ ] multiple cables in one library merged together
-    // [ ] wires and cables in the same file
+    // [x] try with a few different unit strings
+    // [x] multiple cables in one file
+    // [x] multiple cables in one file, with one cable containing cores of the other cables
+    // [ ] merging 2 libraries together with cables
+    // [x] wires and cables in the same file
     #[test]
     /// Test importing a realistic minimal example file
     ///
@@ -1323,6 +1324,683 @@ mod tests {
         let library_file_contents = fs::read_to_string(&library_filepath).unwrap();
         let mut library_file: Library = toml::from_str(&library_file_contents).unwrap();
         library_file.add_datafile_paths(&library_filepath);
-        assert_eq!(test_library, library_file)
+        assert_eq!(test_library, library_file);
+    }
+
+    #[test]
+    /// This tests the following:
+    /// - different cross sections
+    /// - multiple cable definitions in one file, with one cable referencing cores of the other
+    /// - wires and cables together in the same file
+    ///
+    /// this is a relatively realistic test, with a mix of filled in values, multiple items in
+    /// btreemaps, and validation of btreemap keys
+    fn read_datafile_library_cable_alt_cross_section() {
+        let datafile_path = PathBuf::from("../../resources/test/library_tests/cable_type_test_figure8_aerial_fiber.toml")
+            .canonicalize()
+            .unwrap();
+        let fig8_fiber = CableType {
+            cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(1918, 5)),
+            },
+            cross_section: CrossSection::Figure8,
+            layers: vec![
+                CableLayer {
+                    layer_number: 1,
+                    layer_type: LayerType::Jacket,
+                    material: Some("Polyethylene".to_string()),
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    thickness: Some(Length {
+                        original_unit: "mm".to_string(),
+                        value: rational64::Length::new::<millimeter>(Rational64::new(3, 2)),
+                    }),
+                    rating: None,
+                    color: Some(Color::Black),
+                }
+            ],
+            cores: {
+                let mut cores = BTreeMap::new();
+                cores.insert(
+                    "messenger_wire".to_string(),
+                    CableCore::WireType("corning_steel_messenger_025".to_string()),
+                );
+                cores.insert(
+                    "fiber_cable".to_string(),
+                    CableCore::CableType("corning_altos_os2_12_strand_fiber".to_string()),
+                );
+                cores
+            },
+            cable_type_code: None,
+            line_style: None,
+            dimensions: Some(Dimension {
+                height: Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(221, 10)),
+                },
+                width: Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(21, 2)),
+                },
+                depth: None,
+                diameter: Some(Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(21, 2)),
+                }),
+            }),
+            catalog: Some(Catalog {
+                manufacturer: Some("Corning".to_string()),
+                model: Some("ALTOS® Figure-8 Loose Tube, Gel-Free Cable  12 F, Single-mode (OS2)".to_string()),
+                description: Some("12 strand single mode OS2 fiber cable with messenger wire. OSP rated.".to_string()),
+                //totally made up
+                part_number: Some("00-1500-12".to_string()),
+                manufacturer_part_number: Some("012EUA-T4101D20".to_string()),
+                supplier: Some("LAN Shack".to_string()),
+                supplier_part_number: Some("FBTF-CA-OSP-AWM-SM-12".to_string()),
+            }),
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let corning_altos_os2_12_strand_fiber = CableType {
+            cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(803, 5)),
+            },
+            cross_section: CrossSection::Circular,
+            cable_type_code: None,
+            catalog: None,
+            line_style: None,
+            layers: vec![
+                CableLayer {
+                    layer_number: 1,
+                    layer_type: LayerType::WaterBlocking,
+                    material: Some("Water blocking tape".to_string()),
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    thickness: None,
+                    rating: None,
+                    color: None,
+                }
+            ],
+            cores: {
+                let mut cores = BTreeMap::new();
+                cores.insert(
+                    "1oclock".to_string(),
+                    CableCore::WireType("corning_filling_element".to_string()),
+                );
+                cores.insert(
+                    "3oclock".to_string(),
+                    CableCore::CableType("corning_12_strand_buffer_tube".to_string()),
+                );
+                cores.insert(
+                    "5oclock".to_string(),
+                    CableCore::WireType("corning_filling_element".to_string()),
+                );
+                cores.insert(
+                    "7oclock".to_string(),
+                    CableCore::WireType("corning_filling_element".to_string()),
+                );
+                cores.insert(
+                    "9oclock".to_string(),
+                    CableCore::WireType("corning_filling_element".to_string()),
+                );
+                cores.insert(
+                    "11oclock".to_string(),
+                    CableCore::WireType("corning_filling_element".to_string()),
+                );
+                cores.insert(
+                    "central_element".to_string(),
+                    CableCore::WireType("corning_dialectric_central_member".to_string()),
+                );
+                cores
+            },
+            dimensions: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+        let corning_12_strand_buffer_tube = CableType {
+            cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(491, 100)),
+            },
+            cross_section: CrossSection::Circular,
+            cable_type_code: None,
+            catalog: None,
+            line_style: None,
+            layers: vec![
+                CableLayer {
+                    layer_number: 1,
+                    layer_type: LayerType::Jacket,
+                    material: Some("Buffer Tube".to_string()),
+                    ac_electric_potential_rating: None,
+                    dc_electric_potential_rating: None,
+                    temperature_rating: None,
+                    thickness: None,
+                    rating: None,
+                    color: Some(Color::Blue),
+                }
+            ],
+            cores: {
+                let mut cores = BTreeMap::new();
+                cores.insert(
+                    "blue".to_string(),
+                    CableCore::WireType("corning_os2_fiber_strand_blue".to_string()),
+                );
+                cores.insert(
+                    "orange".to_string(),
+                    CableCore::WireType("corning_os2_fiber_strand_orange".to_string()),
+                );
+                cores.insert(
+                    "green".to_string(),
+                    CableCore::WireType("corning_os2_fiber_strand_green".to_string()),
+                );
+                cores.insert(
+                    "brown".to_string(),
+                    CableCore::WireType("corning_os2_fiber_strand_brown".to_string()),
+                );
+                cores.insert(
+                    "slate".to_string(),
+                    CableCore::WireType("corning_os2_fiber_strand_slate".to_string()),
+                );
+                cores.insert(
+                    "white".to_string(),
+                    CableCore::WireType("corning_os2_fiber_strand_white".to_string()),
+                );
+                cores.insert(
+                    "red".to_string(),
+                    CableCore::WireType("corning_os2_fiber_strand_red".to_string()),
+                );
+                cores.insert(
+                    "black".to_string(),
+                    CableCore::WireType("corning_os2_fiber_strand_black".to_string()),
+                );
+                cores.insert(
+                    "yellow".to_string(),
+                    CableCore::WireType("corning_os2_fiber_strand_yellow".to_string()),
+                );
+                cores.insert(
+                    "violet".to_string(),
+                    CableCore::WireType("corning_os2_fiber_strand_violet".to_string()),
+                );
+                cores.insert(
+                    "rose".to_string(),
+                    CableCore::WireType("corning_os2_fiber_strand_rose".to_string()),
+                );
+                cores.insert(
+                    "aqua".to_string(),
+                    CableCore::WireType("corning_os2_fiber_strand_aqua".to_string()),
+                );
+                cores
+            },
+            dimensions: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let corning_steel_messenger = WireType {
+            material: "Steel".to_string(),
+            insulated: false,
+            insulation_material: None,
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(317, 10)),
+            },
+            stranded: true,
+            num_strands: 7,
+            strand_cross_sect_area: None,
+            insulation_rating: None,
+            insulation_color: None,
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: None,
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let corning_filling_element = WireType {
+            material: "Water blocking yarn".to_string(),
+            insulated: false,
+            insulation_material: None,
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(491, 100)),
+            },
+            stranded: false,
+            num_strands: 1,
+            strand_cross_sect_area: None,
+            insulation_rating: None,
+            insulation_color: None,
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: None,
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let corning_dialectric_central_member = WireType {
+            material: "Glass Reinforced Plastic Dialectric".to_string(),
+            insulated: false,
+            insulation_material: None,
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(491, 100)),
+            },
+            stranded: false,
+            num_strands: 1,
+            strand_cross_sect_area: None,
+            insulation_rating: None,
+            insulation_color: None,
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: None,
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let corning_os2_fiber_strand_blue = WireType {
+            material: "Glass".to_string(),
+            insulated: true,
+            insulation_material: Some("Acrylate".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
+            },
+            stranded: false,
+            num_strands: 1,
+            strand_cross_sect_area: None,
+            insulation_rating: None,
+            insulation_color: Some(Color::Blue),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
+            }),
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let corning_os2_fiber_strand_orange = WireType {
+            material: "Glass".to_string(),
+            insulated: true,
+            insulation_material: Some("Acrylate".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
+            },
+            stranded: false,
+            num_strands: 1,
+            strand_cross_sect_area: None,
+            insulation_rating: None,
+            insulation_color: Some(Color::Orange),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
+            }),
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let corning_os2_fiber_strand_green = WireType {
+            material: "Glass".to_string(),
+            insulated: true,
+            insulation_material: Some("Acrylate".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
+            },
+            stranded: false,
+            num_strands: 1,
+            strand_cross_sect_area: None,
+            insulation_rating: None,
+            insulation_color: Some(Color::Green),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
+            }),
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let corning_os2_fiber_strand_brown = WireType {
+            material: "Glass".to_string(),
+            insulated: true,
+            insulation_material: Some("Acrylate".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
+            },
+            stranded: false,
+            num_strands: 1,
+            strand_cross_sect_area: None,
+            insulation_rating: None,
+            insulation_color: Some(Color::Brown),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
+            }),
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let corning_os2_fiber_strand_slate = WireType {
+            material: "Glass".to_string(),
+            insulated: true,
+            insulation_material: Some("Acrylate".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
+            },
+            stranded: false,
+            num_strands: 1,
+            strand_cross_sect_area: None,
+            insulation_rating: None,
+            insulation_color: Some(Color::Slate),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
+            }),
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let corning_os2_fiber_strand_white = WireType {
+            material: "Glass".to_string(),
+            insulated: true,
+            insulation_material: Some("Acrylate".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
+            },
+            stranded: false,
+            num_strands: 1,
+            strand_cross_sect_area: None,
+            insulation_rating: None,
+            insulation_color: Some(Color::White),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
+            }),
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let corning_os2_fiber_strand_red = WireType {
+            material: "Glass".to_string(),
+            insulated: true,
+            insulation_material: Some("Acrylate".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
+            },
+            stranded: false,
+            num_strands: 1,
+            strand_cross_sect_area: None,
+            insulation_rating: None,
+            insulation_color: Some(Color::Red),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
+            }),
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let corning_os2_fiber_strand_black = WireType {
+            material: "Glass".to_string(),
+            insulated: true,
+            insulation_material: Some("Acrylate".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
+            },
+            stranded: false,
+            num_strands: 1,
+            strand_cross_sect_area: None,
+            insulation_rating: None,
+            insulation_color: Some(Color::Black),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
+            }),
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let corning_os2_fiber_strand_yellow = WireType {
+            material: "Glass".to_string(),
+            insulated: true,
+            insulation_material: Some("Acrylate".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
+            },
+            stranded: false,
+            num_strands: 1,
+            strand_cross_sect_area: None,
+            insulation_rating: None,
+            insulation_color: Some(Color::Yellow),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
+            }),
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let corning_os2_fiber_strand_violet = WireType {
+            material: "Glass".to_string(),
+            insulated: true,
+            insulation_material: Some("Acrylate".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
+            },
+            stranded: false,
+            num_strands: 1,
+            strand_cross_sect_area: None,
+            insulation_rating: None,
+            insulation_color: Some(Color::Violet),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
+            }),
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let corning_os2_fiber_strand_rose = WireType {
+            material: "Glass".to_string(),
+            insulated: true,
+            insulation_material: Some("Acrylate".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
+            },
+            stranded: false,
+            num_strands: 1,
+            strand_cross_sect_area: None,
+            insulation_rating: None,
+            insulation_color: Some(Color::Rose),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
+            }),
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let corning_os2_fiber_strand_aqua = WireType {
+            material: "Glass".to_string(),
+            insulated: true,
+            insulation_material: Some("Acrylate".to_string()),
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
+            },
+            stranded: false,
+            num_strands: 1,
+            strand_cross_sect_area: None,
+            insulation_rating: None,
+            insulation_color: Some(Color::Aqua),
+            catalog: None,
+            wire_type_code: None,
+            ac_insulation_potential_rating: None,
+            dc_insulation_potential_rating: None,
+            insulation_temperature_rating: None,
+            insulation_thickness: None,
+            line_style: None,
+            overall_cross_sect_area: Some(CrossSectionalArea {
+                original_unit: "square micrometer".to_string(),
+                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
+            }),
+            secondary_insulation_color: None,
+            contained_datafile_path: datafile_path.clone(),
+        };
+
+        let test_library = Library {
+            cable_types: {
+                let mut cable_types = BTreeMap::new();
+                cable_types.insert("fig8_fiber".to_string(), fig8_fiber);
+                cable_types.insert(
+                    "corning_altos_os2_12_strand_fiber".to_string(),
+                    corning_altos_os2_12_strand_fiber,
+                );
+                cable_types.insert("corning_12_strand_buffer_tube".to_string(), corning_12_strand_buffer_tube);
+                cable_types
+            },
+            connector_types: BTreeMap::new(),
+            enclosure_types: BTreeMap::new(),
+            equipment_types: BTreeMap::new(),
+            mounting_rail_types: BTreeMap::new(),
+            pathway_types: BTreeMap::new(),
+            schematic_symbol_types: BTreeMap::new(),
+            term_cable_types: BTreeMap::new(),
+            terminal_types: BTreeMap::new(),
+            terminal_strip_jumper_types: BTreeMap::new(),
+            terminal_accessory_types: BTreeMap::new(),
+            terminal_strip_accessory_types: BTreeMap::new(),
+            wire_types: {
+                let mut wire_types = BTreeMap::new();
+                wire_types.insert("corning_os2_fiber_strand_blue".to_string(), corning_os2_fiber_strand_blue);
+                wire_types.insert("corning_os2_fiber_strand_orange".to_string(), corning_os2_fiber_strand_orange);
+                wire_types.insert("corning_os2_fiber_strand_green".to_string(), corning_os2_fiber_strand_green);
+                wire_types.insert("corning_os2_fiber_strand_brown".to_string(), corning_os2_fiber_strand_brown);
+                wire_types.insert("corning_os2_fiber_strand_slate".to_string(), corning_os2_fiber_strand_slate);
+                wire_types.insert("corning_os2_fiber_strand_white".to_string(), corning_os2_fiber_strand_white);
+                wire_types.insert("corning_os2_fiber_strand_red".to_string(), corning_os2_fiber_strand_red);
+                wire_types.insert("corning_os2_fiber_strand_black".to_string(), corning_os2_fiber_strand_black);
+                wire_types.insert("corning_os2_fiber_strand_yellow".to_string(), corning_os2_fiber_strand_yellow);
+                wire_types.insert("corning_os2_fiber_strand_violet".to_string(), corning_os2_fiber_strand_violet);
+                wire_types.insert("corning_os2_fiber_strand_rose".to_string(), corning_os2_fiber_strand_rose);
+                wire_types.insert("corning_os2_fiber_strand_aqua".to_string(), corning_os2_fiber_strand_aqua);
+                wire_types.insert("corning_steel_messenger_025".to_string(), corning_steel_messenger);
+                wire_types.insert("corning_filling_element".to_string(), corning_filling_element);
+                wire_types.insert(
+                    "corning_dialectric_central_member".to_string(),
+                    corning_dialectric_central_member,
+                );
+
+                wire_types
+            },
+        };
+        let library_filepath = PathBuf::from("../../resources/test/library_tests/cable_type_test_figure8_aerial_fiber.toml")
+            .canonicalize()
+            .unwrap();
+        let library_file_contents = fs::read_to_string(&library_filepath).unwrap();
+        let mut library_file: Library = toml::from_str(&library_file_contents).unwrap();
+        library_file.add_datafile_paths(&library_filepath);
+        assert_eq!(test_library, library_file);
     }
 }

@@ -14,6 +14,12 @@ use crate::{
     traits::FromFile,
 };
 
+//TODO: add validation to check that Figure8 cable cross sections only have 2 cores
+//
+//TODO: add optional parameters for ac/dc electric potential, min/max temperature rating to
+//cableType itself, maybe?
+//
+//TODO: add optional min/max bend radius parameters
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has
 /// one core, then it is a wire, not a cable.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
@@ -67,7 +73,6 @@ pub enum CableCore {
 
 //TODO: add a way to link 2 cores as a pair within a cable, and specify twisted + parameters
 //
-//TODO: add validation to check that Figure8 cable cross sections only have 2 cores
 
 //TODO: either need to validate that layer number is unique within a cable, or remove and rely on
 //ordering within TOML file. Need to test
@@ -116,4 +121,7 @@ pub enum LayerType {
     Armor,
     /// `Jacket` is the outer-most insulation of a cable.
     Jacket,
+    /// `WaterBlocking` is a material that helps prevent ingress of water into cable, in addition
+    /// to outer jackets and insulation. Common materials are water swellable tape or gel.
+    WaterBlocking,
 }

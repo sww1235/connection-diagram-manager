@@ -1,0 +1,243 @@
+# None of the values in this file should be trusted for production usage
+[cable_types]
+
+[cable_types.fig8_fiber]
+cross_sect_area = {value = [1918, 5], original_unit = "square millimeter"}
+cross_section = "Figure8"
+
+[cable_types.fig8_fiber.cores]
+
+[cable_types.fig8_fiber.cores.messenger_wire]
+WireType = "corning_steel_messenger_025"
+[cable_types.fig8_fiber.cores.fiber_cable]
+CableType = "corning_altos_os2_12_strand_fiber"
+[[cable_types.fig8_fiber.layers]]
+layer_number = 1
+layer_type = "Jacket"
+material = "Polyethylene"
+color = "Black"
+thickness = {value = [3,2], original_unit = "mm"}
+[cable_types.fig8_fiber.catalog]
+manufacturer = "Corning"
+model = "ALTOS® Figure-8 Loose Tube, Gel-Free Cable  12 F, Single-mode (OS2)"
+description = "12 strand single mode OS2 fiber cable with messenger wire. OSP rated."
+# totally made up
+part_number = "00-1500-12"
+manufacturer_part_number = "012EUA-T4101D20"
+supplier = "LAN Shack"
+supplier_part_number = "FBTF-CA-OSP-AWM-SM-12"
+
+[cable_types.fig8_fiber.dimensions]
+height = {value = [221,10], original_unit = "mm"}
+width = {value = [21,2], original_unit = "mm"}
+diameter = {value = [21, 2], original_unit = "mm"}
+
+[cable_types.corning_altos_os2_12_strand_fiber]
+cross_sect_area = {value = [803, 5], original_unit = "square millimeter"}
+cross_section = "Circular"
+
+[cable_types.corning_altos_os2_12_strand_fiber.cores]
+
+[cable_types.corning_altos_os2_12_strand_fiber.cores.1oclock]
+WireType = "corning_filling_element"
+[cable_types.corning_altos_os2_12_strand_fiber.cores.3oclock]
+CableType = "corning_12_strand_buffer_tube"
+[cable_types.corning_altos_os2_12_strand_fiber.cores.5oclock]
+WireType = "corning_filling_element"
+[cable_types.corning_altos_os2_12_strand_fiber.cores.7oclock]
+WireType = "corning_filling_element"
+[cable_types.corning_altos_os2_12_strand_fiber.cores.9oclock]
+WireType = "corning_filling_element"
+[cable_types.corning_altos_os2_12_strand_fiber.cores.11oclock]
+WireType = "corning_filling_element"
+[cable_types.corning_altos_os2_12_strand_fiber.cores.central_element]
+WireType = "corning_dialectric_central_member"
+
+[[cable_types.corning_altos_os2_12_strand_fiber.layers]]
+layer_number = 1
+layer_type = "WaterBlocking"
+material = "Water blocking tape"
+
+[cable_types.corning_12_strand_buffer_tube]
+cross_sect_area = {value = [491, 100], original_unit = "square millimeter"}
+cross_section = "Circular"
+
+[cable_types.corning_12_strand_buffer_tube.cores]
+
+[cable_types.corning_12_strand_buffer_tube.cores.blue]
+WireType = "corning_os2_fiber_strand_blue"
+[cable_types.corning_12_strand_buffer_tube.cores.orange]
+WireType = "corning_os2_fiber_strand_orange"
+[cable_types.corning_12_strand_buffer_tube.cores.green]
+WireType = "corning_os2_fiber_strand_green"
+[cable_types.corning_12_strand_buffer_tube.cores.brown]
+WireType = "corning_os2_fiber_strand_brown"
+[cable_types.corning_12_strand_buffer_tube.cores.slate]
+WireType = "corning_os2_fiber_strand_slate"
+[cable_types.corning_12_strand_buffer_tube.cores.white]
+WireType = "corning_os2_fiber_strand_white"
+[cable_types.corning_12_strand_buffer_tube.cores.red]
+WireType = "corning_os2_fiber_strand_red"
+[cable_types.corning_12_strand_buffer_tube.cores.black]
+WireType = "corning_os2_fiber_strand_black"
+[cable_types.corning_12_strand_buffer_tube.cores.yellow]
+WireType = "corning_os2_fiber_strand_yellow"
+[cable_types.corning_12_strand_buffer_tube.cores.violet]
+WireType = "corning_os2_fiber_strand_violet"
+[cable_types.corning_12_strand_buffer_tube.cores.rose]
+WireType = "corning_os2_fiber_strand_rose"
+[cable_types.corning_12_strand_buffer_tube.cores.aqua]
+WireType = "corning_os2_fiber_strand_aqua"
+
+[[cable_types.corning_12_strand_buffer_tube.layers]]
+layer_number = 1
+layer_type = "Jacket"
+material = "Buffer Tube"
+color = "Blue"
+
+[wire_types]
+
+[wire_types.corning_steel_messenger_025]
+material = "Steel"
+insulated = false
+conductor_cross_sect_area = {value = [317,10], original_unit = "square millimeter"}
+stranded = true
+num_strands = 7
+
+[wire_types.corning_filling_element]
+material = "Water blocking yarn"
+insulated = false
+conductor_cross_sect_area = {value = [491, 100], original_unit = "square millimeter"}
+stranded = false
+num_strands = 1
+
+[wire_types.corning_dialectric_central_member]
+material = "Glass Reinforced Plastic Dialectric"
+insulated = false
+# This value is probably inaccurate as it is not detailed in the datasheet
+conductor_cross_sect_area = {value = [491, 100], original_unit = "square millimeter"}
+stranded = false
+num_strands = 1
+
+[wire_types.corning_os2_fiber_strand_blue]
+material = "Glass"
+# core and cladding
+conductor_cross_sect_area = {value = [12272,1], original_unit = "square micrometer"}
+overall_cross_sect_area = {value = [48695,1], original_unit = "square micrometer"}
+insulated = true
+stranded = false
+num_strands = 1
+insulation_material = "Acrylate"
+insulation_color = "Blue"
+[wire_types.corning_os2_fiber_strand_orange]
+material = "Glass"
+# core and cladding
+conductor_cross_sect_area = {value = [12272,1], original_unit = "square micrometer"}
+overall_cross_sect_area = {value = [48695,1], original_unit = "square micrometer"}
+insulated = true
+stranded = false
+num_strands = 1
+insulation_material = "Acrylate"
+insulation_color = "Orange"
+[wire_types.corning_os2_fiber_strand_green]
+material = "Glass"
+# core and cladding
+conductor_cross_sect_area = {value = [12272,1], original_unit = "square micrometer"}
+overall_cross_sect_area = {value = [48695,1], original_unit = "square micrometer"}
+insulated = true
+stranded = false
+num_strands = 1
+insulation_material = "Acrylate"
+insulation_color = "Green"
+[wire_types.corning_os2_fiber_strand_brown]
+material = "Glass"
+# core and cladding
+conductor_cross_sect_area = {value = [12272,1], original_unit = "square micrometer"}
+overall_cross_sect_area = {value = [48695,1], original_unit = "square micrometer"}
+insulated = true
+stranded = false
+num_strands = 1
+insulation_material = "Acrylate"
+insulation_color = "Brown"
+[wire_types.corning_os2_fiber_strand_slate]
+material = "Glass"
+# core and cladding
+conductor_cross_sect_area = {value = [12272,1], original_unit = "square micrometer"}
+overall_cross_sect_area = {value = [48695,1], original_unit = "square micrometer"}
+insulated = true
+stranded = false
+num_strands = 1
+insulation_material = "Acrylate"
+insulation_color = "Slate"
+[wire_types.corning_os2_fiber_strand_white]
+material = "Glass"
+# core and cladding
+conductor_cross_sect_area = {value = [12272,1], original_unit = "square micrometer"}
+overall_cross_sect_area = {value = [48695,1], original_unit = "square micrometer"}
+insulated = true
+stranded = false
+num_strands = 1
+insulation_material = "Acrylate"
+insulation_color = "White"
+[wire_types.corning_os2_fiber_strand_red]
+material = "Glass"
+# core and cladding
+conductor_cross_sect_area = {value = [12272,1], original_unit = "square micrometer"}
+overall_cross_sect_area = {value = [48695,1], original_unit = "square micrometer"}
+insulated = true
+stranded = false
+num_strands = 1
+insulation_material = "Acrylate"
+insulation_color = "Red"
+[wire_types.corning_os2_fiber_strand_black]
+material = "Glass"
+# core and cladding
+conductor_cross_sect_area = {value = [12272,1], original_unit = "square micrometer"}
+overall_cross_sect_area = {value = [48695,1], original_unit = "square micrometer"}
+insulated = true
+stranded = false
+num_strands = 1
+insulation_material = "Acrylate"
+insulation_color = "Black"
+[wire_types.corning_os2_fiber_strand_yellow]
+material = "Glass"
+# core and cladding
+conductor_cross_sect_area = {value = [12272,1], original_unit = "square micrometer"}
+overall_cross_sect_area = {value = [48695,1], original_unit = "square micrometer"}
+insulated = true
+stranded = false
+num_strands = 1
+insulation_material = "Acrylate"
+insulation_color = "Yellow"
+[wire_types.corning_os2_fiber_strand_violet]
+material = "Glass"
+# core and cladding
+conductor_cross_sect_area = {value = [12272,1], original_unit = "square micrometer"}
+overall_cross_sect_area = {value = [48695,1], original_unit = "square micrometer"}
+insulated = true
+stranded = false
+num_strands = 1
+insulation_material = "Acrylate"
+insulation_color = "Violet"
+[wire_types.corning_os2_fiber_strand_rose]
+material = "Glass"
+# core and cladding
+conductor_cross_sect_area = {value = [12272,1], original_unit = "square micrometer"}
+overall_cross_sect_area = {value = [48695,1], original_unit = "square micrometer"}
+insulated = true
+stranded = false
+num_strands = 1
+insulation_material = "Acrylate"
+insulation_color = "Rose"
+[wire_types.corning_os2_fiber_strand_aqua]
+material = "Glass"
+# core and cladding
+conductor_cross_sect_area = {value = [12272,1], original_unit = "square micrometer"}
+overall_cross_sect_area = {value = [48695,1], original_unit = "square micrometer"}
+insulated = true
+stranded = false
+num_strands = 1
+insulation_material = "Acrylate"
+insulation_color = "Aqua"
+
+
