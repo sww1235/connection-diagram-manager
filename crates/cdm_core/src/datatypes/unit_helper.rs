@@ -2046,6 +2046,99 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
             Err(x) => panic!("{x}"),
         }
     }
+    #[test]
+    #[should_panic(expected = "Unsupported unit string")]
+    fn test_area_unsupported_units() {
+        let test_units = vec![
+            IntermediateUnit {
+                value: Rational64::new(5, 2),
+                original_unit: "Ym²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 2),
+                original_unit: "square yottameter".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "Zm²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square zettameter".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "Em²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square exameter".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "Pm²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square petameter".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "Tm²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square terameter".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "pm²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square picometer".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "fm²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square femtometer".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "am²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square attometer".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "zm²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square zeptometer".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "ym²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square yoctometer".to_string(),
+            },
+        ];
+
+        for test in test_units.into_iter() {
+            match Area::try_from(test) {
+                Ok(x) => continue,
+                Err(x) => panic!("{x}"),
+            }
+        }
+    }
 
     #[test]
     fn test_cross_sectional_area_try_from() {
@@ -2564,6 +2657,100 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
     }
 
     #[test]
+    #[should_panic(expected = "Unsupported unit string")]
+    fn test_cross_sectional_area_unsupported_units() {
+        let test_units = vec![
+            IntermediateUnit {
+                value: Rational64::new(5, 2),
+                original_unit: "Ym²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 2),
+                original_unit: "square yottameter".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "Zm²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square zettameter".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "Em²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square exameter".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "Pm²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square petameter".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "Tm²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square terameter".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "pm²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square picometer".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "fm²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square femtometer".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "am²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square attometer".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "zm²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square zeptometer".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "ym²".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "square yoctometer".to_string(),
+            },
+        ];
+
+        for test in test_units.into_iter() {
+            match CrossSectionalArea::try_from(test) {
+                Ok(x) => continue,
+                Err(x) => panic!("{x}"),
+            }
+        }
+    }
+
+    #[test]
     fn test_electric_potential_try_from() {
         //01_000_000_000_000_000_000
         //18_446_744_073_709_551_615
@@ -2963,6 +3150,51 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
         match ElectricPotential::try_from(test_value) {
             Ok(x) => assert_eq!(x, comparision_value),
             Err(x) => panic!("{x}"),
+        }
+    }
+    #[test]
+    #[should_panic(expected = "Unsupported unit string")]
+    fn test_electric_potential_unsupported_units() {
+        let test_units = vec![
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "YV".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "yottavolt".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "ZV".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "zettavolt".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "zV".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "zeptovolt".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "yV".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "yoctovolt".to_string(),
+            },
+        ];
+
+        for test in test_units.into_iter() {
+            match ElectricPotential::try_from(test) {
+                Ok(x) => continue,
+                Err(x) => panic!("{x}"),
+            }
         }
     }
 
@@ -3709,6 +3941,51 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
             Err(x) => panic!("{x}"),
         }
     }
+    #[test]
+    #[should_panic(expected = "Unsupported unit string")]
+    fn test_length_unsupported_units() {
+        let test_units = vec![
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "Ym".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "yottameter".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "Zm".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "zettameter".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "zm".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "zeptometer".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "ym".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "yoctometer".to_string(),
+            },
+        ];
+
+        for test in test_units.into_iter() {
+            match Length::try_from(test) {
+                Ok(x) => continue,
+                Err(x) => panic!("{x}"),
+            }
+        }
+    }
 
     #[test]
     fn test_temp_interval_try_from() {
@@ -4127,6 +4404,52 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
         match TemperatureInterval::try_from(test_value) {
             Ok(x) => assert_eq!(x, comparision_value),
             Err(x) => panic!("{x}"),
+        }
+    }
+
+    #[test]
+    #[should_panic(expected = "Unsupported unit string")]
+    fn test_temp_interval_unsupported_units() {
+        let test_units = vec![
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "YK".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "yottakelvin".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "ZK".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "zettakelvin".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "zK".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "zeptokelvin".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "yK".to_string(),
+            },
+            IntermediateUnit {
+                value: Rational64::new(5, 1),
+                original_unit: "yoctokelvin".to_string(),
+            },
+        ];
+
+        for test in test_units.into_iter() {
+            match TemperatureInterval::try_from(test) {
+                Ok(x) => continue,
+                Err(x) => panic!("{x}"),
+            }
         }
     }
 }
