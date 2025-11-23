@@ -71,43 +71,44 @@ impl Area {
     /// outputs all usable `Area` units allowed in configuration files in the form of `<unit name>:
     /// <unit abbreviation>`
     #[must_use]
-    #[expect(clippy::string_add, clippy::too_many_lines)]
+    #[expect(clippy::string_add)]
     pub fn output_units() -> String {
         // need to do this hack AFAIK so the spacing is the same
         let string1 = "Unit Name";
         let string2 = "Abbreviation";
         let dash_string = "-".repeat(21);
         format!("{string1:^21}|{string2:^21}\n{dash_string}|{dash_string}\n")
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_yottameter::singular(),
-                square_yottameter::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_zettameter::singular(),
-                square_zettameter::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_exameter::singular(),
-                square_exameter::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_petameter::singular(),
-                square_petameter::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_terameter::singular(),
-                square_terameter::abbreviation()
-            )
-            .as_str()
+            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_yottameter::singular(),
+            //    square_yottameter::abbreviation()
+            //)
+            //.as_str()
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_zettameter::singular(),
+            //    square_zettameter::abbreviation()
+            //)
+            //.as_str()
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_exameter::singular(),
+            //    square_exameter::abbreviation()
+            //)
+            //.as_str()
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_petameter::singular(),
+            //    square_petameter::abbreviation()
+            //)
+            //.as_str()
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_terameter::singular(),
+            //    square_terameter::abbreviation()
+            //)
+            //.as_str()
             + format!(
                 "{:^21}|{:^21}\n",
                 square_gigameter::singular(),
@@ -169,36 +170,37 @@ impl Area {
                 square_nanometer::abbreviation()
             )
             .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_picometer::singular(),
-                square_picometer::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_femtometer::singular(),
-                square_femtometer::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_attometer::singular(),
-                square_attometer::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_zeptometer::singular(),
-                square_zeptometer::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_yoctometer::singular(),
-                square_yoctometer::abbreviation()
-            )
-            .as_str()
+            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_picometer::singular(),
+            //    square_picometer::abbreviation()
+            //)
+            //.as_str()
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_femtometer::singular(),
+            //    square_femtometer::abbreviation()
+            //)
+            //.as_str()
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_attometer::singular(),
+            //    square_attometer::abbreviation()
+            //)
+            //.as_str()
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_zeptometer::singular(),
+            //    square_zeptometer::abbreviation()
+            //)
+            //.as_str()
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_yoctometer::singular(),
+            //    square_yoctometer::abbreviation()
+            //)
+            //.as_str()
             + format!("{:^21}|{:^21}\n", acre::singular(), acre::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", are::singular(), are::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", barn::singular(), barn::abbreviation()).as_str()
@@ -215,42 +217,43 @@ impl CrossSectionalArea {
     /// outputs all usable `CrossSectionalArea` units allowed in configuration files in the form of
     /// `<unit name>: <unit abbreviation>`
     #[must_use]
-    #[expect(clippy::string_add, clippy::too_many_lines)]
+    #[expect(clippy::string_add)]
     pub fn output_units() -> String {
         let string1 = "Unit Name";
         let string2 = "Abbreviation";
         let dash_string = "-".repeat(21);
         format!("{string1:^21}|{string2:^21}\n{dash_string}|{dash_string}\n")
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_yottameter::singular(),
-                square_yottameter::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_zettameter::singular(),
-                square_zettameter::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_exameter::singular(),
-                square_exameter::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_petameter::singular(),
-                square_petameter::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_terameter::singular(),
-                square_terameter::abbreviation()
-            )
-            .as_str()
+            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_yottameter::singular(),
+            //    square_yottameter::abbreviation()
+            //)
+            //.as_str()
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_zettameter::singular(),
+            //    square_zettameter::abbreviation()
+            //)
+            //.as_str()
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_exameter::singular(),
+            //    square_exameter::abbreviation()
+            //)
+            //.as_str()
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_petameter::singular(),
+            //    square_petameter::abbreviation()
+            //)
+            //.as_str()
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_terameter::singular(),
+            //    square_terameter::abbreviation()
+            //)
+            //.as_str()
             + format!(
                 "{:^21}|{:^21}\n",
                 square_gigameter::singular(),
@@ -312,36 +315,37 @@ impl CrossSectionalArea {
                 square_nanometer::abbreviation()
             )
             .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_picometer::singular(),
-                square_picometer::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_femtometer::singular(),
-                square_femtometer::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_attometer::singular(),
-                square_attometer::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_zeptometer::singular(),
-                square_zeptometer::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_yoctometer::singular(),
-                square_yoctometer::abbreviation()
-            )
-            .as_str()
+            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_picometer::singular(),
+            //    square_picometer::abbreviation()
+            //)
+            //.as_str()
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_femtometer::singular(),
+            //    square_femtometer::abbreviation()
+            //)
+            //.as_str()
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_attometer::singular(),
+            //    square_attometer::abbreviation()
+            //)
+            //.as_str()
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_zeptometer::singular(),
+            //    square_zeptometer::abbreviation()
+            //)
+            //.as_str()
+            //+ format!(
+            //    "{:^21}|{:^21}\n",
+            //    square_yoctometer::singular(),
+            //    square_yoctometer::abbreviation()
+            //)
+            //.as_str()
             + format!("{:^21}|{:^21}\n", acre::singular(), acre::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", are::singular(), are::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", barn::singular(), barn::abbreviation()).as_str()
@@ -364,8 +368,9 @@ impl ElectricPotential {
         let string2 = "Abbreviation";
         let dash_string = "-".repeat(21);
         format!("{string1:^21}|{string2:^21}\n{dash_string}|{dash_string}\n")
-            + format!("{:^21}|{:^21}\n", yottavolt::singular(), yottavolt::abbreviation()).as_str()
-            + format!("{:^21}|{:^21}\n", zettavolt::singular(), zettavolt::abbreviation()).as_str()
+            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+            //+ format!("{:^21}|{:^21}\n", yottavolt::singular(), yottavolt::abbreviation()).as_str()
+            //+ format!("{:^21}|{:^21}\n", zettavolt::singular(), zettavolt::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", exavolt::singular(), exavolt::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", petavolt::singular(), petavolt::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", teravolt::singular(), teravolt::abbreviation()).as_str()
@@ -383,8 +388,9 @@ impl ElectricPotential {
             + format!("{:^21}|{:^21}\n", picovolt::singular(), picovolt::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", femtovolt::singular(), femtovolt::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", attovolt::singular(), attovolt::abbreviation()).as_str()
-            + format!("{:^21}|{:^21}\n", zeptovolt::singular(), zeptovolt::abbreviation()).as_str()
-            + format!("{:^21}|{:^21}\n", yoctovolt::singular(), yoctovolt::abbreviation()).as_str()
+            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+            //+ format!("{:^21}|{:^21}\n", zeptovolt::singular(), zeptovolt::abbreviation()).as_str()
+            //+ format!("{:^21}|{:^21}\n", yoctovolt::singular(), yoctovolt::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", abvolt::singular(), abvolt::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", statvolt::singular(), statvolt::abbreviation()).as_str()
     }
@@ -400,8 +406,9 @@ impl Length {
         let string2 = "Abbreviation";
         let dash_string = "-".repeat(21);
         format!("{string1:^21}|{string2:^21}\n{dash_string}|{dash_string}\n")
-            + format!("{:^21}|{:^21}\n", yottameter::singular(), yottameter::abbreviation()).as_str()
-            + format!("{:^21}|{:^21}\n", zettameter::singular(), zettameter::abbreviation()).as_str()
+            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+            //+ format!("{:^21}|{:^21}\n", yottameter::singular(), yottameter::abbreviation()).as_str()
+            //+ format!("{:^21}|{:^21}\n", zettameter::singular(), zettameter::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", exameter::singular(), exameter::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", petameter::singular(), petameter::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", terameter::singular(), terameter::abbreviation()).as_str()
@@ -419,8 +426,9 @@ impl Length {
             + format!("{:^21}|{:^21}\n", picometer::singular(), picometer::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", femtometer::singular(), femtometer::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", attometer::singular(), attometer::abbreviation()).as_str()
-            + format!("{:^21}|{:^21}\n", zeptometer::singular(), zeptometer::abbreviation()).as_str()
-            + format!("{:^21}|{:^21}\n", yoctometer::singular(), yoctometer::abbreviation()).as_str()
+            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+            //+ format!("{:^21}|{:^21}\n", zeptometer::singular(), zeptometer::abbreviation()).as_str()
+            //+ format!("{:^21}|{:^21}\n", yoctometer::singular(), yoctometer::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", angstrom::singular(), angstrom::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", bohr_radius::singular(), bohr_radius::abbreviation()).as_str()
             + format!(
@@ -467,8 +475,9 @@ impl TemperatureInterval {
         let string2 = "Abbreviation";
         let dash_string = "-".repeat(21);
         format!("{string1:^21}|{string2:^21}\n{dash_string}|{dash_string}\n")
-            + format!("{:^21}|{:^21}\n", yottakelvin::singular(), yottakelvin::abbreviation()).as_str()
-            + format!("{:^21}|{:^21}\n", zettakelvin::singular(), zettakelvin::abbreviation()).as_str()
+            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+            //+ format!("{:^21}|{:^21}\n", yottakelvin::singular(), yottakelvin::abbreviation()).as_str()
+            //+ format!("{:^21}|{:^21}\n", zettakelvin::singular(), zettakelvin::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", exakelvin::singular(), exakelvin::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", petakelvin::singular(), petakelvin::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", terakelvin::singular(), terakelvin::abbreviation()).as_str()
@@ -486,8 +495,9 @@ impl TemperatureInterval {
             + format!("{:^21}|{:^21}\n", picokelvin::singular(), picokelvin::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", femtokelvin::singular(), femtokelvin::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", attokelvin::singular(), attokelvin::abbreviation()).as_str()
-            + format!("{:^21}|{:^21}\n", zeptokelvin::singular(), zeptokelvin::abbreviation()).as_str()
-            + format!("{:^21}|{:^21}\n", yoctokelvin::singular(), yoctokelvin::abbreviation()).as_str()
+            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+            //+ format!("{:^21}|{:^21}\n", zeptokelvin::singular(), zeptokelvin::abbreviation()).as_str()
+            //+ format!("{:^21}|{:^21}\n", yoctokelvin::singular(), yoctokelvin::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", degree_celsius::singular(), degree_celsius::abbreviation()).as_str()
             + format!(
                 "{:^21}|{:^21}\n",
@@ -502,28 +512,53 @@ impl TemperatureInterval {
 //TODO: return a different error if the unit is of the wrong type rather than just unknown unit
 impl TryFrom<IntermediateUnit> for Area {
     type Error = UnitParsingError;
-    #[expect(clippy::too_many_lines)]
+    #[expect(clippy::too_many_lines, clippy::match_same_arms)]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
         match item.original_unit.as_str() {
-            "Ym²" | "square yottameter" => Ok(Self {
-                value: rational64::Area::new::<square_yottameter>(item.value),
-                original_unit: item.original_unit,
+            //"Ym²" | "square yottameter" => Ok(Self {
+            //    value: rational64::Area::new::<square_yottameter>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "Ym²" | "square yottameter" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
-            "Zm²" | "square zettameter" => Ok(Self {
-                value: rational64::Area::new::<square_zettameter>(item.value),
-                original_unit: item.original_unit,
+            //"Zm²" | "square zettameter" => Ok(Self {
+            //    value: rational64::Area::new::<square_zettameter>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "Zm²" | "square zettameter" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
-            "Em²" | "square exameter" => Ok(Self {
-                value: rational64::Area::new::<square_exameter>(item.value),
-                original_unit: item.original_unit,
+            //"Em²" | "square exameter" => Ok(Self {
+            //    value: rational64::Area::new::<square_exameter>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "Em²" | "square exameter" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
-            "Pm²" | "square petameter" => Ok(Self {
-                value: rational64::Area::new::<square_petameter>(item.value),
-                original_unit: item.original_unit,
+            //"Pm²" | "square petameter" => Ok(Self {
+            //    value: rational64::Area::new::<square_petameter>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "Pm²" | "square petameter" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
-            "Tm²" | "square terameter" => Ok(Self {
-                value: rational64::Area::new::<square_terameter>(item.value),
-                original_unit: item.original_unit,
+            //"Tm²" | "square terameter" => Ok(Self {
+            //    value: rational64::Area::new::<square_terameter>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "Tm²" | "square terameter" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
             "Gm²" | "square gigameter" => Ok(Self {
                 value: rational64::Area::new::<square_gigameter>(item.value),
@@ -569,25 +604,50 @@ impl TryFrom<IntermediateUnit> for Area {
                 value: rational64::Area::new::<square_nanometer>(item.value),
                 original_unit: item.original_unit,
             }),
-            "pm²" | "square picometer" => Ok(Self {
-                value: rational64::Area::new::<square_picometer>(item.value),
-                original_unit: item.original_unit,
+            //"pm²" | "square picometer" => Ok(Self {
+            //    value: rational64::Area::new::<square_picometer>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "pm²" | "square picometer" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
-            "fm²" | "square femtometer" => Ok(Self {
-                value: rational64::Area::new::<square_femtometer>(item.value),
-                original_unit: item.original_unit,
+            //"fm²" | "square femtometer" => Ok(Self {
+            //    value: rational64::Area::new::<square_femtometer>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "fm²" | "square femtometer" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
-            "am²" | "square attometer" => Ok(Self {
-                value: rational64::Area::new::<square_attometer>(item.value),
-                original_unit: item.original_unit,
+            //"am²" | "square attometer" => Ok(Self {
+            //    value: rational64::Area::new::<square_attometer>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "am²" | "square attometer" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
-            "zm²" | "square zeptometer" => Ok(Self {
-                value: rational64::Area::new::<square_zeptometer>(item.value),
-                original_unit: item.original_unit,
+            //"zm²" | "square zeptometer" => Ok(Self {
+            //    value: rational64::Area::new::<square_zeptometer>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "zm²" | "square zeptometer" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
-            "ym²" | "square yoctometer" => Ok(Self {
-                value: rational64::Area::new::<square_yoctometer>(item.value),
-                original_unit: item.original_unit,
+            //"ym²" | "square yoctometer" => Ok(Self {
+            //    value: rational64::Area::new::<square_yoctometer>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "ym²" | "square yoctometer" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
             "ac" | "acre" => Ok(Self {
                 value: rational64::Area::new::<acre>(item.value),
@@ -635,28 +695,53 @@ impl TryFrom<IntermediateUnit> for Area {
 
 impl TryFrom<IntermediateUnit> for CrossSectionalArea {
     type Error = UnitParsingError;
-    #[expect(clippy::too_many_lines)]
+    #[expect(clippy::too_many_lines, clippy::match_same_arms)]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
         match item.original_unit.as_str() {
-            "Ym²" | "square yottameter" => Ok(Self {
-                value: rational64::Area::new::<square_yottameter>(item.value),
-                original_unit: item.original_unit,
+            //"Ym²" | "square yottameter" => Ok(Self {
+            //    value: rational64::Area::new::<square_yottameter>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "Ym²" | "square yottameter" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
-            "Zm²" | "square zettameter" => Ok(Self {
-                value: rational64::Area::new::<square_zettameter>(item.value),
-                original_unit: item.original_unit,
+            //"Zm²" | "square zettameter" => Ok(Self {
+            //    value: rational64::Area::new::<square_zettameter>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "Zm²" | "square zettameter" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
-            "Em²" | "square exameter" => Ok(Self {
-                value: rational64::Area::new::<square_exameter>(item.value),
-                original_unit: item.original_unit,
+            //"Em²" | "square exameter" => Ok(Self {
+            //    value: rational64::Area::new::<square_exameter>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "Em²" | "square exameter" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
-            "Pm²" | "square petameter" => Ok(Self {
-                value: rational64::Area::new::<square_petameter>(item.value),
-                original_unit: item.original_unit,
+            //"Pm²" | "square petameter" => Ok(Self {
+            //    value: rational64::Area::new::<square_petameter>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "Pm²" | "square petameter" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
-            "Tm²" | "square terameter" => Ok(Self {
-                value: rational64::Area::new::<square_terameter>(item.value),
-                original_unit: item.original_unit,
+            //"Tm²" | "square terameter" => Ok(Self {
+            //    value: rational64::Area::new::<square_terameter>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "Tm²" | "square terameter" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
             "Gm²" | "square gigameter" => Ok(Self {
                 value: rational64::Area::new::<square_gigameter>(item.value),
@@ -702,25 +787,50 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
                 value: rational64::Area::new::<square_nanometer>(item.value),
                 original_unit: item.original_unit,
             }),
-            "pm²" | "square picometer" => Ok(Self {
-                value: rational64::Area::new::<square_picometer>(item.value),
-                original_unit: item.original_unit,
+            //"pm²" | "square picometer" => Ok(Self {
+            //    value: rational64::Area::new::<square_picometer>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "pm²" | "square picometer" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
-            "fm²" | "square femtometer" => Ok(Self {
-                value: rational64::Area::new::<square_femtometer>(item.value),
-                original_unit: item.original_unit,
+            //"fm²" | "square femtometer" => Ok(Self {
+            //    value: rational64::Area::new::<square_femtometer>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "fm²" | "square femtometer" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
-            "am²" | "square attometer" => Ok(Self {
-                value: rational64::Area::new::<square_attometer>(item.value),
-                original_unit: item.original_unit,
+            //"am²" | "square attometer" => Ok(Self {
+            //    value: rational64::Area::new::<square_attometer>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "am²" | "square attometer" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
-            "zm²" | "square zeptometer" => Ok(Self {
-                value: rational64::Area::new::<square_zeptometer>(item.value),
-                original_unit: item.original_unit,
+            //"zm²" | "square zeptometer" => Ok(Self {
+            //    value: rational64::Area::new::<square_zeptometer>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "zm²" | "square zeptometer" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
-            "ym²" | "square yoctometer" => Ok(Self {
-                value: rational64::Area::new::<square_yoctometer>(item.value),
-                original_unit: item.original_unit,
+            //"ym²" | "square yoctometer" => Ok(Self {
+            //    value: rational64::Area::new::<square_yoctometer>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "ym²" | "square yoctometer" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Area".to_string(),
             }),
             "ac" | "acre" => Ok(Self {
                 value: rational64::Area::new::<acre>(item.value),
@@ -768,15 +878,26 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
 
 impl TryFrom<IntermediateUnit> for ElectricPotential {
     type Error = UnitParsingError;
+    #[expect(clippy::match_same_arms)]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
         match item.original_unit.as_str() {
-            "YV" | "yottavolt" => Ok(Self {
-                value: rational64::ElectricPotential::new::<yottavolt>(item.value),
-                original_unit: item.original_unit,
+            //"YV" | "yottavolt" => Ok(Self {
+            //    value: rational64::ElectricPotential::new::<yottavolt>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "YV" | "yottavolt" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Electric Potential".to_string(),
             }),
-            "ZV" | "zettavolt" => Ok(Self {
-                value: rational64::ElectricPotential::new::<zettavolt>(item.value),
-                original_unit: item.original_unit,
+            //"ZV" | "zettavolt" => Ok(Self {
+            //    value: rational64::ElectricPotential::new::<zettavolt>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "ZV" | "zettavolt" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Electric Potential".to_string(),
             }),
             "EV" | "exavolt" => Ok(Self {
                 value: rational64::ElectricPotential::new::<exavolt>(item.value),
@@ -846,13 +967,23 @@ impl TryFrom<IntermediateUnit> for ElectricPotential {
                 value: rational64::ElectricPotential::new::<attovolt>(item.value),
                 original_unit: item.original_unit,
             }),
-            "zV" | "zeptovolt" => Ok(Self {
-                value: rational64::ElectricPotential::new::<zeptovolt>(item.value),
-                original_unit: item.original_unit,
+            //"zV" | "zeptovolt" => Ok(Self {
+            //    value: rational64::ElectricPotential::new::<zeptovolt>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "zV" | "zeptovolt" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Electric Potential".to_string(),
             }),
-            "yV" | "yoctovolt" => Ok(Self {
-                value: rational64::ElectricPotential::new::<yoctovolt>(item.value),
-                original_unit: item.original_unit,
+            //"yV" | "yoctovolt" => Ok(Self {
+            //    value: rational64::ElectricPotential::new::<yoctovolt>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "yV" | "yoctovolt" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Electric Potential".to_string(),
             }),
             "abV" | "abvolt" => Ok(Self {
                 value: rational64::ElectricPotential::new::<abvolt>(item.value),
@@ -873,16 +1004,26 @@ impl TryFrom<IntermediateUnit> for ElectricPotential {
 
 impl TryFrom<IntermediateUnit> for Length {
     type Error = UnitParsingError;
-    #[expect(clippy::too_many_lines)]
+    #[expect(clippy::too_many_lines, clippy::match_same_arms)]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
         match item.original_unit.as_str() {
-            "Ym" | "yottameter" => Ok(Self {
-                value: rational64::Length::new::<yottameter>(item.value),
-                original_unit: item.original_unit,
+            //"Ym" | "yottameter" => Ok(Self {
+            //    value: rational64::Length::new::<yottameter>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "Ym" | "yottameter" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Length".to_string(),
             }),
-            "Zm" | "zettameter" => Ok(Self {
-                value: rational64::Length::new::<zettameter>(item.value),
-                original_unit: item.original_unit,
+            //"Zm" | "zettameter" => Ok(Self {
+            //    value: rational64::Length::new::<zettameter>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "Zm" | "zettameter" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Length".to_string(),
             }),
             "Em" | "exameter" => Ok(Self {
                 value: rational64::Length::new::<exameter>(item.value),
@@ -952,15 +1093,24 @@ impl TryFrom<IntermediateUnit> for Length {
                 value: rational64::Length::new::<attometer>(item.value),
                 original_unit: item.original_unit,
             }),
-            "zm" | "zeptometer" => Ok(Self {
-                value: rational64::Length::new::<zeptometer>(item.value),
-                original_unit: item.original_unit,
+            //"zm" | "zeptometer" => Ok(Self {
+            //    value: rational64::Length::new::<zeptometer>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "zm" | "zeptometer" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Length".to_string(),
             }),
-            "ym" | "yoctometer" => Ok(Self {
-                value: rational64::Length::new::<yoctometer>(item.value),
-                original_unit: item.original_unit,
+            //"ym" | "yoctometer" => Ok(Self {
+            //    value: rational64::Length::new::<yoctometer>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "ym" | "yoctometer" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Length".to_string(),
             }),
-
             "Å" | "ångström" => Ok(Self {
                 value: rational64::Length::new::<angstrom>(item.value),
                 original_unit: item.original_unit,
@@ -1070,16 +1220,26 @@ impl TryFrom<IntermediateUnit> for Length {
 
 impl TryFrom<IntermediateUnit> for TemperatureInterval {
     type Error = UnitParsingError;
-    #[expect(clippy::too_many_lines)]
+    #[expect(clippy::too_many_lines, clippy::match_same_arms)]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
         match item.original_unit.as_str() {
-            "YK" | "yottakelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<yottakelvin>(item.value),
-                original_unit: item.original_unit,
+            //"YK" | "yottakelvin" => Ok(Self {
+            //    value: rational64::TemperatureInterval::new::<yottakelvin>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "YK" | "yottakelvin" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Temperature Interval".to_string(),
             }),
-            "ZK" | "zettakelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<zettakelvin>(item.value),
-                original_unit: item.original_unit,
+            //"ZK" | "zettakelvin" => Ok(Self {
+            //    value: rational64::TemperatureInterval::new::<zettakelvin>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "ZK" | "zettakelvin" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Temperature Interval".to_string(),
             }),
             "EK" | "exakelvin" => Ok(Self {
                 value: rational64::TemperatureInterval::new::<exakelvin>(item.value),
@@ -1149,13 +1309,23 @@ impl TryFrom<IntermediateUnit> for TemperatureInterval {
                 value: rational64::TemperatureInterval::new::<attokelvin>(item.value),
                 original_unit: item.original_unit,
             }),
-            "zK" | "zeptokelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<zeptokelvin>(item.value),
-                original_unit: item.original_unit,
+            //"zK" | "zeptokelvin" => Ok(Self {
+            //    value: rational64::TemperatureInterval::new::<zeptokelvin>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "zK" | "zeptokelvin" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Temperature Interval".to_string(),
             }),
-            "yK" | "yoctokelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<yoctokelvin>(item.value),
-                original_unit: item.original_unit,
+            //"yK" | "yoctokelvin" => Ok(Self {
+            //    value: rational64::TemperatureInterval::new::<yoctokelvin>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "yK" | "yoctokelvin" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Temperature Interval".to_string(),
             }),
             "°C" | "degree Celsius" => Ok(Self {
                 value: rational64::TemperatureInterval::new::<degree_celsius>(item.value),
@@ -1189,16 +1359,13 @@ mod tests {
 
     // using escape codes to work around issues with VIM and rustfmt. Also to provide a more robust
     // representation of the expected output
+    //
+    // TODO: When iliekturtles/uom#60 is fixed, restore deleted parts of strings from git
     #[test]
     fn test_area_unit_output() {
         let test_string = "\
 \x20\x20\x20\x20\x20\x20Unit Name      |    Abbreviation\x20\x20\x20\x20\x20
 ---------------------|---------------------
-\x20\x20square yottameter  |         Ym²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20square zettameter  |         Zm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20 square exameter   |         Em²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20square petameter   |         Pm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20square terameter   |         Tm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20square gigameter   |         Gm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20square megameter   |         Mm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20square kilometer   |         km²\x20\x20\x20\x20\x20\x20\x20\x20\x20
@@ -1210,11 +1377,6 @@ mod tests {
 \x20\x20square millimeter  |         mm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20square micrometer  |         µm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20square nanometer   |         nm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20square picometer   |         pm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20square femtometer  |         fm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20square attometer   |         am²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20square zeptometer  |         zm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20square yoctometer  |         ym²\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20      acre         |         ac\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20       are         |          a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20      barn         |          b\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
@@ -1235,11 +1397,6 @@ mod tests {
         let test_string = "\
 \x20\x20\x20\x20\x20\x20Unit Name      |    Abbreviation\x20\x20\x20\x20\x20
 ---------------------|---------------------
-\x20\x20square yottameter  |         Ym²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20square zettameter  |         Zm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20\x20square exameter   |         Em²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20square petameter   |         Pm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20square terameter   |         Tm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20square gigameter   |         Gm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20square megameter   |         Mm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20square kilometer   |         km²\x20\x20\x20\x20\x20\x20\x20\x20\x20
@@ -1251,11 +1408,6 @@ mod tests {
 \x20\x20square millimeter  |         mm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20square micrometer  |         µm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20square nanometer   |         nm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20square picometer   |         pm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20square femtometer  |         fm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20square attometer   |         am²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20square zeptometer  |         zm²\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20square yoctometer  |         ym²\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20      acre         |         ac\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20       are         |          a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20      barn         |          b\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
@@ -1275,8 +1427,6 @@ mod tests {
         let test_string = "\
 \x20\x20\x20\x20\x20\x20Unit Name      |    Abbreviation\x20\x20\x20\x20\x20
 ---------------------|---------------------
-\x20\x20\x20\x20\x20\x20yottavolt      |         YV\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20\x20\x20\x20\x20zettavolt      |         ZV\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20\x20\x20\x20\x20 exavolt       |         EV\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20\x20\x20\x20\x20petavolt       |         PV\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20\x20\x20\x20\x20teravolt       |         TV\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
@@ -1294,8 +1444,6 @@ mod tests {
 \x20\x20\x20\x20\x20\x20picovolt       |         pV\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20\x20\x20\x20\x20femtovolt      |         fV\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20\x20\x20\x20\x20attovolt       |         aV\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20\x20\x20\x20\x20zeptovolt      |         zV\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20\x20\x20\x20\x20yoctovolt      |         yV\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20\x20\x20\x20\x20 abvolt        |         abV\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20\x20\x20\x20\x20statvolt       |        statV\x20\x20\x20\x20\x20\x20\x20\x20
 ";
@@ -1309,8 +1457,6 @@ mod tests {
         let test_string = "\
 \x20\x20\x20\x20\x20\x20Unit Name      |    Abbreviation\x20\x20\x20\x20\x20
 ---------------------|---------------------
-\x20\x20\x20\x20\x20yottameter      |         Ym\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20\x20\x20\x20zettameter      |         Zm\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20\x20\x20\x20 exameter       |         Em\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20\x20\x20\x20 petameter      |         Pm\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20\x20\x20\x20 terameter      |         Tm\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
@@ -1328,8 +1474,6 @@ mod tests {
 \x20\x20\x20\x20\x20 picometer      |         pm\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20\x20\x20\x20femtometer      |         fm\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20\x20\x20\x20 attometer      |         am\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20\x20\x20\x20zeptometer      |         zm\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20\x20\x20\x20yoctometer      |         ym\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20\x20\x20\x20 ångström       |          Å\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20\x20\x20\x20bohr radius     |         a₀\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 atomic unit of length|   a.u. of length\x20\x20\x20\x20
@@ -1363,8 +1507,6 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
         let test_string = "\
 \x20\x20\x20\x20\x20\x20Unit Name      |    Abbreviation\x20\x20\x20\x20\x20
 ---------------------|---------------------
-\x20\x20   yottakelvin     |         YK\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20   zettakelvin     |         ZK\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20    exakelvin      |         EK\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20   petakelvin      |         PK\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20   terakelvin      |         TK\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
@@ -1382,8 +1524,6 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
 \x20\x20   picokelvin      |         pK\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20   femtokelvin     |         fK\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20   attokelvin      |         aK\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20   zeptokelvin     |         zK\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
-\x20\x20   yoctokelvin     |         yK\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20 degree Celsius    |         °C\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20degree Fahrenheit  |         °F\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
 \x20\x20 degree Rankine    |         °R\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20
@@ -1396,46 +1536,46 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
         //01_000_000_000_000_000_000
         //18_446_744_073_709_551_615
         let test_units = vec![
-            IntermediateUnit {
-                value: Rational64::new(5, 2),
-                original_unit: "Ym²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 2),
-                original_unit: "square yottameter".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "Zm²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square zettameter".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "Em²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square exameter".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "Pm²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square petameter".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "Tm²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square terameter".to_string(),
-            },
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 2),
+            //    original_unit: "Ym²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 2),
+            //    original_unit: "square yottameter".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "Zm²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square zettameter".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "Em²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square exameter".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "Pm²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square petameter".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "Tm²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square terameter".to_string(),
+            //},
             IntermediateUnit {
                 value: Rational64::new(5, 1),
                 original_unit: "Gm²".to_string(),
@@ -1524,46 +1664,46 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
                 value: Rational64::new(5, 1),
                 original_unit: "square nanometer".to_string(),
             },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "pm²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square picometer".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "fm²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square femtometer".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "am²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square attometer".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "zm²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square zeptometer".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "ym²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square yoctometer".to_string(),
-            },
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "pm²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square picometer".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "fm²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square femtometer".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "am²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square attometer".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "zm²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square zeptometer".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "ym²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square yoctometer".to_string(),
+            //},
             IntermediateUnit {
                 value: Rational64::new(5, 1),
                 original_unit: "ac".to_string(),
@@ -1639,46 +1779,46 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
         ];
 
         let comparision_units = vec![
-            Area {
-                value: rational64::Area::new::<square_yottameter>(Rational64::new(5, 2)),
-                original_unit: "Ym²".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_yottameter>(Rational64::new(5, 2)),
-                original_unit: "square yottameter".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_zettameter>(Rational64::new(5, 1)),
-                original_unit: "Zm²".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_zettameter>(Rational64::new(5, 1)),
-                original_unit: "square zettameter".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_exameter>(Rational64::new(5, 1)),
-                original_unit: "Em²".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_exameter>(Rational64::new(5, 1)),
-                original_unit: "square exameter".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_petameter>(Rational64::new(5, 1)),
-                original_unit: "Pm²".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_petameter>(Rational64::new(5, 1)),
-                original_unit: "square petameter".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_terameter>(Rational64::new(5, 1)),
-                original_unit: "Tm²".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_terameter>(Rational64::new(5, 1)),
-                original_unit: "square terameter".to_string(),
-            },
+            //Area {
+            //    value: rational64::Area::new::<square_yottameter>(Rational64::new(5, 2)),
+            //    original_unit: "Ym²".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_yottameter>(Rational64::new(5, 2)),
+            //    original_unit: "square yottameter".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_zettameter>(Rational64::new(5, 1)),
+            //    original_unit: "Zm²".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_zettameter>(Rational64::new(5, 1)),
+            //    original_unit: "square zettameter".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_exameter>(Rational64::new(5, 1)),
+            //    original_unit: "Em²".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_exameter>(Rational64::new(5, 1)),
+            //    original_unit: "square exameter".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_petameter>(Rational64::new(5, 1)),
+            //    original_unit: "Pm²".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_petameter>(Rational64::new(5, 1)),
+            //    original_unit: "square petameter".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_terameter>(Rational64::new(5, 1)),
+            //    original_unit: "Tm²".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_terameter>(Rational64::new(5, 1)),
+            //    original_unit: "square terameter".to_string(),
+            //},
             Area {
                 value: rational64::Area::new::<square_gigameter>(Rational64::new(5, 1)),
                 original_unit: "Gm²".to_string(),
@@ -1767,46 +1907,46 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
                 value: rational64::Area::new::<square_nanometer>(Rational64::new(5, 1)),
                 original_unit: "square nanometer".to_string(),
             },
-            Area {
-                value: rational64::Area::new::<square_picometer>(Rational64::new(5, 1)),
-                original_unit: "pm²".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_picometer>(Rational64::new(5, 1)),
-                original_unit: "square picometer".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_femtometer>(Rational64::new(5, 1)),
-                original_unit: "fm²".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_femtometer>(Rational64::new(5, 1)),
-                original_unit: "square femtometer".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_attometer>(Rational64::new(5, 1)),
-                original_unit: "am²".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_attometer>(Rational64::new(5, 1)),
-                original_unit: "square attometer".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_zeptometer>(Rational64::new(5, 1)),
-                original_unit: "zm²".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_zeptometer>(Rational64::new(5, 1)),
-                original_unit: "square zeptometer".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_yoctometer>(Rational64::new(5, 1)),
-                original_unit: "ym²".to_string(),
-            },
-            Area {
-                value: rational64::Area::new::<square_yoctometer>(Rational64::new(5, 1)),
-                original_unit: "square yoctometer".to_string(),
-            },
+            //Area {
+            //    value: rational64::Area::new::<square_picometer>(Rational64::new(5, 1)),
+            //    original_unit: "pm²".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_picometer>(Rational64::new(5, 1)),
+            //    original_unit: "square picometer".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_femtometer>(Rational64::new(5, 1)),
+            //    original_unit: "fm²".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_femtometer>(Rational64::new(5, 1)),
+            //    original_unit: "square femtometer".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_attometer>(Rational64::new(5, 1)),
+            //    original_unit: "am²".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_attometer>(Rational64::new(5, 1)),
+            //    original_unit: "square attometer".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_zeptometer>(Rational64::new(5, 1)),
+            //    original_unit: "zm²".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_zeptometer>(Rational64::new(5, 1)),
+            //    original_unit: "square zeptometer".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_yoctometer>(Rational64::new(5, 1)),
+            //    original_unit: "ym²".to_string(),
+            //},
+            //Area {
+            //    value: rational64::Area::new::<square_yoctometer>(Rational64::new(5, 1)),
+            //    original_unit: "square yoctometer".to_string(),
+            //},
             Area {
                 value: rational64::Area::new::<acre>(Rational64::new(5, 1)),
                 original_unit: "ac".to_string(),
@@ -1912,46 +2052,46 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
         //01_000_000_000_000_000_000
         //18_446_744_073_709_551_615
         let test_units = vec![
-            IntermediateUnit {
-                value: Rational64::new(5, 2),
-                original_unit: "Ym²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 2),
-                original_unit: "square yottameter".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "Zm²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square zettameter".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "Em²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square exameter".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "Pm²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square petameter".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "Tm²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square terameter".to_string(),
-            },
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 2),
+            //    original_unit: "Ym²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 2),
+            //    original_unit: "square yottameter".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "Zm²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square zettameter".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "Em²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square exameter".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "Pm²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square petameter".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "Tm²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square terameter".to_string(),
+            //},
             IntermediateUnit {
                 value: Rational64::new(5, 1),
                 original_unit: "Gm²".to_string(),
@@ -2040,46 +2180,46 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
                 value: Rational64::new(5, 1),
                 original_unit: "square nanometer".to_string(),
             },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "pm²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square picometer".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "fm²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square femtometer".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "am²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square attometer".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "zm²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square zeptometer".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "ym²".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "square yoctometer".to_string(),
-            },
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "pm²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square picometer".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "fm²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square femtometer".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "am²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square attometer".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "zm²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square zeptometer".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "ym²".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "square yoctometer".to_string(),
+            //},
             IntermediateUnit {
                 value: Rational64::new(5, 1),
                 original_unit: "ac".to_string(),
@@ -2155,46 +2295,46 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
         ];
 
         let comparision_units = vec![
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_yottameter>(Rational64::new(5, 2)),
-                original_unit: "Ym²".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_yottameter>(Rational64::new(5, 2)),
-                original_unit: "square yottameter".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_zettameter>(Rational64::new(5, 1)),
-                original_unit: "Zm²".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_zettameter>(Rational64::new(5, 1)),
-                original_unit: "square zettameter".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_exameter>(Rational64::new(5, 1)),
-                original_unit: "Em²".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_exameter>(Rational64::new(5, 1)),
-                original_unit: "square exameter".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_petameter>(Rational64::new(5, 1)),
-                original_unit: "Pm²".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_petameter>(Rational64::new(5, 1)),
-                original_unit: "square petameter".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_terameter>(Rational64::new(5, 1)),
-                original_unit: "Tm²".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_terameter>(Rational64::new(5, 1)),
-                original_unit: "square terameter".to_string(),
-            },
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_yottameter>(Rational64::new(5, 2)),
+            //    original_unit: "Ym²".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_yottameter>(Rational64::new(5, 2)),
+            //    original_unit: "square yottameter".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_zettameter>(Rational64::new(5, 1)),
+            //    original_unit: "Zm²".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_zettameter>(Rational64::new(5, 1)),
+            //    original_unit: "square zettameter".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_exameter>(Rational64::new(5, 1)),
+            //    original_unit: "Em²".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_exameter>(Rational64::new(5, 1)),
+            //    original_unit: "square exameter".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_petameter>(Rational64::new(5, 1)),
+            //    original_unit: "Pm²".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_petameter>(Rational64::new(5, 1)),
+            //    original_unit: "square petameter".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_terameter>(Rational64::new(5, 1)),
+            //    original_unit: "Tm²".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_terameter>(Rational64::new(5, 1)),
+            //    original_unit: "square terameter".to_string(),
+            //},
             CrossSectionalArea {
                 value: rational64::Area::new::<square_gigameter>(Rational64::new(5, 1)),
                 original_unit: "Gm²".to_string(),
@@ -2283,46 +2423,46 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
                 value: rational64::Area::new::<square_nanometer>(Rational64::new(5, 1)),
                 original_unit: "square nanometer".to_string(),
             },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_picometer>(Rational64::new(5, 1)),
-                original_unit: "pm²".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_picometer>(Rational64::new(5, 1)),
-                original_unit: "square picometer".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_femtometer>(Rational64::new(5, 1)),
-                original_unit: "fm²".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_femtometer>(Rational64::new(5, 1)),
-                original_unit: "square femtometer".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_attometer>(Rational64::new(5, 1)),
-                original_unit: "am²".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_attometer>(Rational64::new(5, 1)),
-                original_unit: "square attometer".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_zeptometer>(Rational64::new(5, 1)),
-                original_unit: "zm²".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_zeptometer>(Rational64::new(5, 1)),
-                original_unit: "square zeptometer".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_yoctometer>(Rational64::new(5, 1)),
-                original_unit: "ym²".to_string(),
-            },
-            CrossSectionalArea {
-                value: rational64::Area::new::<square_yoctometer>(Rational64::new(5, 1)),
-                original_unit: "square yoctometer".to_string(),
-            },
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_picometer>(Rational64::new(5, 1)),
+            //    original_unit: "pm²".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_picometer>(Rational64::new(5, 1)),
+            //    original_unit: "square picometer".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_femtometer>(Rational64::new(5, 1)),
+            //    original_unit: "fm²".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_femtometer>(Rational64::new(5, 1)),
+            //    original_unit: "square femtometer".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_attometer>(Rational64::new(5, 1)),
+            //    original_unit: "am²".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_attometer>(Rational64::new(5, 1)),
+            //    original_unit: "square attometer".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_zeptometer>(Rational64::new(5, 1)),
+            //    original_unit: "zm²".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_zeptometer>(Rational64::new(5, 1)),
+            //    original_unit: "square zeptometer".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_yoctometer>(Rational64::new(5, 1)),
+            //    original_unit: "ym²".to_string(),
+            //},
+            //CrossSectionalArea {
+            //    value: rational64::Area::new::<square_yoctometer>(Rational64::new(5, 1)),
+            //    original_unit: "square yoctometer".to_string(),
+            //},
             CrossSectionalArea {
                 value: rational64::Area::new::<acre>(Rational64::new(5, 1)),
                 original_unit: "ac".to_string(),
@@ -2428,22 +2568,22 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
         //01_000_000_000_000_000_000
         //18_446_744_073_709_551_615
         let test_units = vec![
-            IntermediateUnit {
-                value: Rational64::new(5, 2),
-                original_unit: "YV".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 2),
-                original_unit: "yottavolt".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "ZV".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "zettavolt".to_string(),
-            },
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "YV".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "yottavolt".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "ZV".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "zettavolt".to_string(),
+            //},
             IntermediateUnit {
                 value: Rational64::new(5, 1),
                 original_unit: "EV".to_string(),
@@ -2580,22 +2720,22 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
                 value: Rational64::new(5, 1),
                 original_unit: "attovolt".to_string(),
             },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "zV".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "zeptovolt".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "yV".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "yoctovolt".to_string(),
-            },
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "zV".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "zeptovolt".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "yV".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "yoctovolt".to_string(),
+            //},
             IntermediateUnit {
                 value: Rational64::new(5, 1),
                 original_unit: "abV".to_string(),
@@ -2616,21 +2756,21 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
 
         let comparision_units = vec![
             //ElectricPotential {
-            //    value: rational64::ElectricPotential::new::<yottavolt>(Rational64::new(5, 2)),
+            //    value: rational64::ElectricPotential::new::<yottavolt>(Rational64::new(5, 1)),
             //    original_unit: "YV".to_string(),
             //},
-            ElectricPotential {
-                value: rational64::ElectricPotential::new::<yottavolt>(Rational64::new(5, 2)),
-                original_unit: "yottavolt".to_string(),
-            },
-            ElectricPotential {
-                value: rational64::ElectricPotential::new::<zettavolt>(Rational64::new(5, 1)),
-                original_unit: "ZV".to_string(),
-            },
-            ElectricPotential {
-                value: rational64::ElectricPotential::new::<zettavolt>(Rational64::new(5, 1)),
-                original_unit: "zettavolt".to_string(),
-            },
+            //ElectricPotential {
+            //    value: rational64::ElectricPotential::new::<yottavolt>(Rational64::new(5, 1)),
+            //    original_unit: "yottavolt".to_string(),
+            //},
+            //ElectricPotential {
+            //    value: rational64::ElectricPotential::new::<zettavolt>(Rational64::new(5, 1)),
+            //    original_unit: "ZV".to_string(),
+            //},
+            //ElectricPotential {
+            //    value: rational64::ElectricPotential::new::<zettavolt>(Rational64::new(5, 1)),
+            //    original_unit: "zettavolt".to_string(),
+            //},
             ElectricPotential {
                 value: rational64::ElectricPotential::new::<exavolt>(Rational64::new(5, 1)),
                 original_unit: "EV".to_string(),
@@ -2767,22 +2907,22 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
                 value: rational64::ElectricPotential::new::<attovolt>(Rational64::new(5, 1)),
                 original_unit: "attovolt".to_string(),
             },
-            ElectricPotential {
-                value: rational64::ElectricPotential::new::<zeptovolt>(Rational64::new(5, 1)),
-                original_unit: "zV".to_string(),
-            },
-            ElectricPotential {
-                value: rational64::ElectricPotential::new::<zeptovolt>(Rational64::new(5, 1)),
-                original_unit: "zeptovolt".to_string(),
-            },
-            ElectricPotential {
-                value: rational64::ElectricPotential::new::<yoctovolt>(Rational64::new(5, 1)),
-                original_unit: "yV".to_string(),
-            },
-            ElectricPotential {
-                value: rational64::ElectricPotential::new::<yoctovolt>(Rational64::new(5, 1)),
-                original_unit: "yoctovolt".to_string(),
-            },
+            //ElectricPotential {
+            //    value: rational64::ElectricPotential::new::<zeptovolt>(Rational64::new(5, 1)),
+            //    original_unit: "zV".to_string(),
+            //},
+            //ElectricPotential {
+            //    value: rational64::ElectricPotential::new::<zeptovolt>(Rational64::new(5, 1)),
+            //    original_unit: "zeptovolt".to_string(),
+            //},
+            //ElectricPotential {
+            //    value: rational64::ElectricPotential::new::<yoctovolt>(Rational64::new(5, 1)),
+            //    original_unit: "yV".to_string(),
+            //},
+            //ElectricPotential {
+            //    value: rational64::ElectricPotential::new::<yoctovolt>(Rational64::new(5, 1)),
+            //    original_unit: "yoctovolt".to_string(),
+            //},
             ElectricPotential {
                 value: rational64::ElectricPotential::new::<abvolt>(Rational64::new(5, 1)),
                 original_unit: "abV".to_string(),
@@ -2831,22 +2971,22 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
         //01_000_000_000_000_000_000
         //18_446_744_073_709_551_615
         let test_units = vec![
-            IntermediateUnit {
-                value: Rational64::new(5, 2),
-                original_unit: "Ym".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 2),
-                original_unit: "yottameter".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "Zm".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "zettameter".to_string(),
-            },
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "Ym".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "yottameter".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "Zm".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "zettameter".to_string(),
+            //},
             IntermediateUnit {
                 value: Rational64::new(5, 1),
                 original_unit: "Em".to_string(),
@@ -2983,22 +3123,22 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
                 value: Rational64::new(5, 1),
                 original_unit: "attometer".to_string(),
             },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "zm".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "zeptometer".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "ym".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "yoctometer".to_string(),
-            },
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "zm".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "zeptometer".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "ym".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "yoctometer".to_string(),
+            //},
             IntermediateUnit {
                 value: Rational64::new(5, 1),
                 original_unit: "Å".to_string(),
@@ -3188,22 +3328,22 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
         ];
 
         let comparision_units = vec![
-            Length {
-                value: rational64::Length::new::<yottameter>(Rational64::new(5, 2)),
-                original_unit: "Ym".to_string(),
-            },
-            Length {
-                value: rational64::Length::new::<yottameter>(Rational64::new(5, 2)),
-                original_unit: "yottameter".to_string(),
-            },
-            Length {
-                value: rational64::Length::new::<zettameter>(Rational64::new(5, 1)),
-                original_unit: "Zm".to_string(),
-            },
-            Length {
-                value: rational64::Length::new::<zettameter>(Rational64::new(5, 1)),
-                original_unit: "zettameter".to_string(),
-            },
+            //Length {
+            //    value: rational64::Length::new::<yottameter>(Rational64::new(5, 1)),
+            //    original_unit: "Ym".to_string(),
+            //},
+            //Length {
+            //    value: rational64::Length::new::<yottameter>(Rational64::new(5, 1)),
+            //    original_unit: "yottameter".to_string(),
+            //},
+            //Length {
+            //    value: rational64::Length::new::<zettameter>(Rational64::new(5, 1)),
+            //    original_unit: "Zm".to_string(),
+            //},
+            //Length {
+            //    value: rational64::Length::new::<zettameter>(Rational64::new(5, 1)),
+            //    original_unit: "zettameter".to_string(),
+            //},
             Length {
                 value: rational64::Length::new::<exameter>(Rational64::new(5, 1)),
                 original_unit: "Em".to_string(),
@@ -3340,22 +3480,22 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
                 value: rational64::Length::new::<attometer>(Rational64::new(5, 1)),
                 original_unit: "attometer".to_string(),
             },
-            Length {
-                value: rational64::Length::new::<zeptometer>(Rational64::new(5, 1)),
-                original_unit: "zm".to_string(),
-            },
-            Length {
-                value: rational64::Length::new::<zeptometer>(Rational64::new(5, 1)),
-                original_unit: "zeptometer".to_string(),
-            },
-            Length {
-                value: rational64::Length::new::<yoctometer>(Rational64::new(5, 1)),
-                original_unit: "ym".to_string(),
-            },
-            Length {
-                value: rational64::Length::new::<yoctometer>(Rational64::new(5, 1)),
-                original_unit: "yoctometer".to_string(),
-            },
+            //Length {
+            //    value: rational64::Length::new::<zeptometer>(Rational64::new(5, 1)),
+            //    original_unit: "zm".to_string(),
+            //},
+            //Length {
+            //    value: rational64::Length::new::<zeptometer>(Rational64::new(5, 1)),
+            //    original_unit: "zeptometer".to_string(),
+            //},
+            //Length {
+            //    value: rational64::Length::new::<yoctometer>(Rational64::new(5, 1)),
+            //    original_unit: "ym".to_string(),
+            //},
+            //Length {
+            //    value: rational64::Length::new::<yoctometer>(Rational64::new(5, 1)),
+            //    original_unit: "yoctometer".to_string(),
+            //},
             Length {
                 value: rational64::Length::new::<angstrom>(Rational64::new(5, 1)),
                 original_unit: "Å".to_string(),
@@ -3575,22 +3715,22 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
         //01_000_000_000_000_000_000
         //18_446_744_073_709_551_615
         let test_units = vec![
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "YK".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "yottakelvin".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "ZK".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "zettakelvin".to_string(),
-            },
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "YK".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "yottakelvin".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "ZK".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "zettakelvin".to_string(),
+            //},
             IntermediateUnit {
                 value: Rational64::new(5, 1),
                 original_unit: "EK".to_string(),
@@ -3727,22 +3867,22 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
                 value: Rational64::new(5, 1),
                 original_unit: "attokelvin".to_string(),
             },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "zK".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "zeptokelvin".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "yK".to_string(),
-            },
-            IntermediateUnit {
-                value: Rational64::new(5, 1),
-                original_unit: "yoctokelvin".to_string(),
-            },
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "zK".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "zeptokelvin".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "yK".to_string(),
+            //},
+            //IntermediateUnit {
+            //    value: Rational64::new(5, 1),
+            //    original_unit: "yoctokelvin".to_string(),
+            //},
             IntermediateUnit {
                 value: Rational64::new(5, 1),
                 original_unit: "°C".to_string(),
@@ -3770,22 +3910,22 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
         ];
 
         let comparision_units = vec![
-            TemperatureInterval {
-                value: rational64::TemperatureInterval::new::<yottakelvin>(Rational64::new(5, 2)),
-                original_unit: "YK".to_string(),
-            },
-            TemperatureInterval {
-                value: rational64::TemperatureInterval::new::<yottakelvin>(Rational64::new(5, 2)),
-                original_unit: "yottakelvin".to_string(),
-            },
-            TemperatureInterval {
-                value: rational64::TemperatureInterval::new::<zettakelvin>(Rational64::new(5, 1)),
-                original_unit: "ZK".to_string(),
-            },
-            TemperatureInterval {
-                value: rational64::TemperatureInterval::new::<zettakelvin>(Rational64::new(5, 1)),
-                original_unit: "zettakelvin".to_string(),
-            },
+            //TemperatureInterval {
+            //    value: rational64::TemperatureInterval::new::<yottakelvin>(Rational64::new(5, 1)),
+            //    original_unit: "YK".to_string(),
+            //},
+            //TemperatureInterval {
+            //    value: rational64::TemperatureInterval::new::<yottakelvin>(Rational64::new(5, 1)),
+            //    original_unit: "yottakelvin".to_string(),
+            //},
+            //TemperatureInterval {
+            //    value: rational64::TemperatureInterval::new::<zettakelvin>(Rational64::new(5, 1)),
+            //    original_unit: "ZK".to_string(),
+            //},
+            //TemperatureInterval {
+            //    value: rational64::TemperatureInterval::new::<zettakelvin>(Rational64::new(5, 1)),
+            //    original_unit: "zettakelvin".to_string(),
+            //},
             TemperatureInterval {
                 value: rational64::TemperatureInterval::new::<exakelvin>(Rational64::new(5, 1)),
                 original_unit: "EK".to_string(),
@@ -3922,22 +4062,22 @@ atomic unit of length|   a.u. of length\x20\x20\x20\x20
                 value: rational64::TemperatureInterval::new::<attokelvin>(Rational64::new(5, 1)),
                 original_unit: "attokelvin".to_string(),
             },
-            TemperatureInterval {
-                value: rational64::TemperatureInterval::new::<zeptokelvin>(Rational64::new(5, 1)),
-                original_unit: "zK".to_string(),
-            },
-            TemperatureInterval {
-                value: rational64::TemperatureInterval::new::<zeptokelvin>(Rational64::new(5, 1)),
-                original_unit: "zeptokelvin".to_string(),
-            },
-            TemperatureInterval {
-                value: rational64::TemperatureInterval::new::<yoctokelvin>(Rational64::new(5, 1)),
-                original_unit: "yK".to_string(),
-            },
-            TemperatureInterval {
-                value: rational64::TemperatureInterval::new::<yoctokelvin>(Rational64::new(5, 1)),
-                original_unit: "yoctokelvin".to_string(),
-            },
+            //TemperatureInterval {
+            //    value: rational64::TemperatureInterval::new::<zeptokelvin>(Rational64::new(5, 1)),
+            //    original_unit: "zK".to_string(),
+            //},
+            //TemperatureInterval {
+            //    value: rational64::TemperatureInterval::new::<zeptokelvin>(Rational64::new(5, 1)),
+            //    original_unit: "zeptokelvin".to_string(),
+            //},
+            //TemperatureInterval {
+            //    value: rational64::TemperatureInterval::new::<yoctokelvin>(Rational64::new(5, 1)),
+            //    original_unit: "yK".to_string(),
+            //},
+            //TemperatureInterval {
+            //    value: rational64::TemperatureInterval::new::<yoctokelvin>(Rational64::new(5, 1)),
+            //    original_unit: "yoctokelvin".to_string(),
+            //},
             TemperatureInterval {
                 value: rational64::TemperatureInterval::new::<degree_celsius>(Rational64::new(5, 1)),
                 original_unit: "°C".to_string(),
