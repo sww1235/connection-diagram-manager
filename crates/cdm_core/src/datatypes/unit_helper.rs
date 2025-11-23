@@ -625,7 +625,10 @@ impl TryFrom<IntermediateUnit> for Area {
                 value: rational64::Area::new::<square_yard>(item.value),
                 original_unit: item.original_unit,
             }),
-            x => Err(UnitParsingError::UnknownUnit(x.to_string())),
+            x => Err(UnitParsingError::UnknownUnit {
+                unit_string: x.to_string(),
+                unit_type: "Area".to_string(),
+            }),
         }
     }
 }
@@ -754,7 +757,10 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
                 value: rational64::Area::new::<square_yard>(item.value),
                 original_unit: item.original_unit,
             }),
-            x => Err(UnitParsingError::UnknownUnit(x.to_string())),
+            x => Err(UnitParsingError::UnknownUnit {
+                unit_string: x.to_string(),
+                unit_type: "Cross Sectional Area".to_string(),
+            }),
         }
     }
 }
@@ -856,7 +862,10 @@ impl TryFrom<IntermediateUnit> for ElectricPotential {
                 original_unit: item.original_unit,
             }),
 
-            x => Err(UnitParsingError::UnknownUnit(x.to_string())),
+            x => Err(UnitParsingError::UnknownUnit {
+                unit_string: x.to_string(),
+                unit_type: "Electric Potential".to_string(),
+            }),
         }
     }
 }
@@ -1050,7 +1059,10 @@ impl TryFrom<IntermediateUnit> for Length {
                 original_unit: item.original_unit,
             }),
 
-            x => Err(UnitParsingError::UnknownUnit(x.to_string())),
+            x => Err(UnitParsingError::UnknownUnit {
+                unit_string: x.to_string(),
+                unit_type: "Length".to_string(),
+            }),
         }
     }
 }
@@ -1156,7 +1168,10 @@ impl TryFrom<IntermediateUnit> for TemperatureInterval {
                 original_unit: item.original_unit,
             }),
 
-            x => Err(UnitParsingError::UnknownUnit(x.to_string())),
+            x => Err(UnitParsingError::UnknownUnit {
+                unit_string: x.to_string(),
+                unit_type: "Temperature Interval".to_string(),
+            }),
         }
     }
 }

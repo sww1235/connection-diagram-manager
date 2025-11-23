@@ -1,9 +1,9 @@
+use std::path::PathBuf;
+
 use paragraph_breaker::Error as ParagraphError;
 use pdf_helper::Error as PDFError;
 use thiserror::Error;
 use usvg::Error as USVGError;
-
-use std::path::PathBuf;
 
 //TODO: flesh this out more
 #[derive(Error, Debug)]
@@ -105,7 +105,12 @@ pub enum PDFGenerationError {
 #[derive(Debug, Error)]
 #[non_exhaustive]
 pub enum UnitParsingError {
-    #[error("Unknown unit string {0}")]
+    #[error("Unknown unit string {unit_string} for unit {unit_type}")]
     /// Error resulting from an unknown unit string
-    UnknownUnit(String),
+    UnknownUnit {
+        /// tested unit string
+        unit_string: String,
+        /// checked unit type
+        unit_type: String,
+    },
 }
