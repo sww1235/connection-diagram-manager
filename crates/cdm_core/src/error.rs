@@ -105,12 +105,12 @@ pub enum PDFGenerationError {
 #[derive(Debug, Error)]
 #[non_exhaustive]
 pub enum UnitParsingError {
-    #[error("Unknown unit string {unit_string} for unit {unit_type}")]
+    #[error("Unknown unit string {unit_string} for quantity type {quantity_type}")]
     /// Error resulting from an unknown unit string
     UnknownUnit {
         /// tested unit string
         unit_string: String,
         /// checked unit type
-        unit_type: String,
+        quantity_type: String,
     },
 }

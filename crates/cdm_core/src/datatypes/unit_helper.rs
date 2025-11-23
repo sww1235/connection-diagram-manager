@@ -627,7 +627,7 @@ impl TryFrom<IntermediateUnit> for Area {
             }),
             x => Err(UnitParsingError::UnknownUnit {
                 unit_string: x.to_string(),
-                unit_type: "Area".to_string(),
+                quantity_type: "Area".to_string(),
             }),
         }
     }
@@ -760,7 +760,7 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
             }),
             x => Err(UnitParsingError::UnknownUnit {
                 unit_string: x.to_string(),
-                unit_type: "Cross Sectional Area".to_string(),
+                quantity_type: "Cross Sectional Area".to_string(),
             }),
         }
     }
@@ -865,7 +865,7 @@ impl TryFrom<IntermediateUnit> for ElectricPotential {
 
             x => Err(UnitParsingError::UnknownUnit {
                 unit_string: x.to_string(),
-                unit_type: "Electric Potential".to_string(),
+                quantity_type: "Electric Potential".to_string(),
             }),
         }
     }
@@ -1062,7 +1062,7 @@ impl TryFrom<IntermediateUnit> for Length {
 
             x => Err(UnitParsingError::UnknownUnit {
                 unit_string: x.to_string(),
-                unit_type: "Length".to_string(),
+                quantity_type: "Length".to_string(),
             }),
         }
     }
@@ -1172,7 +1172,7 @@ impl TryFrom<IntermediateUnit> for TemperatureInterval {
 
             x => Err(UnitParsingError::UnknownUnit {
                 unit_string: x.to_string(),
-                unit_type: "Temperature Interval".to_string(),
+                quantity_type: "Temperature Interval".to_string(),
             }),
         }
     }
