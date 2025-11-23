@@ -186,7 +186,7 @@ mod tests {
     use num_rational::Rational64;
     use pretty_assertions::assert_eq;
     use uom::si::{
-        area::{square_inch, square_millimeter, square_micrometer},
+        area::{square_inch, square_micrometer, square_millimeter},
         electric_potential::volt,
         length::{inch, millimeter, point_computer},
         rational64,
@@ -247,19 +247,17 @@ mod tests {
                 value: rational64::Area::new::<square_inch>(Rational64::new(14_389_229, 64_008_858)),
             },
             cross_section: CrossSection::Circular,
-            layers: vec![
-                CableLayer {
-                    layer_number: 1,
-                    layer_type: LayerType::Jacket,
-                    material: None,
-                    ac_electric_potential_rating: None,
-                    dc_electric_potential_rating: None,
-                    temperature_rating: None,
-                    rating: None,
-                    thickness: None,
-                    color: None,
-                }
-            ],
+            layers: vec![CableLayer {
+                layer_number: 1,
+                layer_type: LayerType::Jacket,
+                material: None,
+                ac_electric_potential_rating: None,
+                dc_electric_potential_rating: None,
+                temperature_rating: None,
+                rating: None,
+                thickness: None,
+                color: None,
+            }],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert("green".to_string(), CableCore::WireType("soow14_green_inner".to_string()));
@@ -313,19 +311,17 @@ mod tests {
                 value: rational64::Area::new::<square_inch>(Rational64::new(14_389_229, 64_008_858)),
             },
             cross_section: CrossSection::Circular,
-            layers: vec![
-                CableLayer {
-                    layer_number: 1,
-                    layer_type: LayerType::Jacket,
-                    material: None,
-                    ac_electric_potential_rating: None,
-                    dc_electric_potential_rating: None,
-                    temperature_rating: None,
-                    rating: None,
-                    thickness: None,
-                    color: None,
-                }
-            ],
+            layers: vec![CableLayer {
+                layer_number: 1,
+                layer_type: LayerType::Jacket,
+                material: None,
+                ac_electric_potential_rating: None,
+                dc_electric_potential_rating: None,
+                temperature_rating: None,
+                rating: None,
+                thickness: None,
+                color: None,
+            }],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert(
@@ -447,7 +443,7 @@ mod tests {
                         value: rational64::Length::new::<inch>(Rational64::new(13, 25)),
                     }),
                     color: Some(Color::Yellow),
-                }
+                },
             ],
             cores: {
                 let mut cores = BTreeMap::new();
@@ -504,31 +500,29 @@ mod tests {
             },
             cross_section: CrossSection::Circular,
             cable_type_code: Some("SOOW".to_string()),
-            layers: vec![
-                CableLayer {
-                    layer_number: 1,
-                    layer_type: LayerType::Jacket,
-                    material: Some("Clorinated Polyethylene".to_string()),
-                    ac_electric_potential_rating: Some(ElectricPotential {
-                        original_unit: "volt".to_string(),
-                        value: rational64::ElectricPotential::new::<volt>(Rational64::new(600, 1)),
-                    }),
-                    dc_electric_potential_rating: Some(ElectricPotential {
-                        original_unit: "volt".to_string(),
-                        value: rational64::ElectricPotential::new::<volt>(Rational64::new(600, 1)),
-                    }),
-                    temperature_rating: Some(TemperatureInterval {
-                        original_unit: "degree Celsius".to_string(),
-                        value: rational64::TemperatureInterval::new::<degree_celsius>(Rational64::new(90, 1)),
-                    }),
-                    rating: Some("UL Listed".to_string()),
-                    thickness: Some(Length {
-                        original_unit: "mm".to_string(),
-                        value: rational64::Length::new::<millimeter>(Rational64::new(203, 100)),
-                    }),
-                    color: Some(Color::Black),
-                }
-            ],
+            layers: vec![CableLayer {
+                layer_number: 1,
+                layer_type: LayerType::Jacket,
+                material: Some("Clorinated Polyethylene".to_string()),
+                ac_electric_potential_rating: Some(ElectricPotential {
+                    original_unit: "volt".to_string(),
+                    value: rational64::ElectricPotential::new::<volt>(Rational64::new(600, 1)),
+                }),
+                dc_electric_potential_rating: Some(ElectricPotential {
+                    original_unit: "volt".to_string(),
+                    value: rational64::ElectricPotential::new::<volt>(Rational64::new(600, 1)),
+                }),
+                temperature_rating: Some(TemperatureInterval {
+                    original_unit: "degree Celsius".to_string(),
+                    value: rational64::TemperatureInterval::new::<degree_celsius>(Rational64::new(90, 1)),
+                }),
+                rating: Some("UL Listed".to_string()),
+                thickness: Some(Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(203, 100)),
+                }),
+                color: Some(Color::Black),
+            }],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert("green".to_string(), CableCore::WireType("soow14_green_inner".to_string()));
@@ -622,28 +616,26 @@ mod tests {
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(688, 1)),
             },
             cross_section: CrossSection::Circular,
-            layers: vec![
-                CableLayer {
-                    layer_number: 1,
-                    layer_type: LayerType::Jacket,
-                    material: Some("Polyvinyl Chloride".to_string()),
-                    ac_electric_potential_rating: Some(ElectricPotential {
-                        original_unit: "volt".to_string(),
-                        value: rational64::ElectricPotential::new::<volt>(Rational64::new(300, 1)),
-                    }),
-                    dc_electric_potential_rating: Some(ElectricPotential {
-                        original_unit: "volt".to_string(),
-                        value: rational64::ElectricPotential::new::<volt>(Rational64::new(300, 1)),
-                    }),
-                    temperature_rating: Some(TemperatureInterval {
-                        original_unit: "degree Celsius".to_string(),
-                        value: rational64::TemperatureInterval::new::<degree_celsius>(Rational64::new(75, 1)),
-                    }),
-                    thickness: None,
-                    rating: Some("UL Listed, Plenum, Flamarrest®".to_string()),
-                    color: Some(Color::Yellow),
-                }
-            ],
+            layers: vec![CableLayer {
+                layer_number: 1,
+                layer_type: LayerType::Jacket,
+                material: Some("Polyvinyl Chloride".to_string()),
+                ac_electric_potential_rating: Some(ElectricPotential {
+                    original_unit: "volt".to_string(),
+                    value: rational64::ElectricPotential::new::<volt>(Rational64::new(300, 1)),
+                }),
+                dc_electric_potential_rating: Some(ElectricPotential {
+                    original_unit: "volt".to_string(),
+                    value: rational64::ElectricPotential::new::<volt>(Rational64::new(300, 1)),
+                }),
+                temperature_rating: Some(TemperatureInterval {
+                    original_unit: "degree Celsius".to_string(),
+                    value: rational64::TemperatureInterval::new::<degree_celsius>(Rational64::new(75, 1)),
+                }),
+                thickness: None,
+                rating: Some("UL Listed, Plenum, Flamarrest®".to_string()),
+                color: Some(Color::Yellow),
+            }],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert(
@@ -730,7 +722,7 @@ mod tests {
                     thickness: None,
                     rating: Some("Flamarrest®".to_string()),
                     color: Some(Color::Orange),
-                }
+                },
             ],
             cores: {
                 let mut cores = BTreeMap::new();
@@ -808,7 +800,7 @@ mod tests {
                     thickness: None,
                     rating: Some("Flamarrest®".to_string()),
                     color: Some(Color::White),
-                }
+                },
             ],
             cores: {
                 let mut cores = BTreeMap::new();
@@ -871,7 +863,7 @@ mod tests {
                     thickness: None,
                     rating: Some("Flamarrest®".to_string()),
                     color: Some(Color::Blue),
-                }
+                },
             ],
             cores: {
                 let mut cores = BTreeMap::new();
@@ -942,7 +934,7 @@ mod tests {
                     thickness: None,
                     rating: Some("Flamarrest®".to_string()),
                     color: Some(Color::Grey),
-                }
+                },
             ],
             cores: {
                 let mut cores = BTreeMap::new();
@@ -1327,22 +1319,20 @@ mod tests {
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(1918, 5)),
             },
             cross_section: CrossSection::Figure8,
-            layers: vec![
-                CableLayer {
-                    layer_number: 1,
-                    layer_type: LayerType::Jacket,
-                    material: Some("Polyethylene".to_string()),
-                    ac_electric_potential_rating: None,
-                    dc_electric_potential_rating: None,
-                    temperature_rating: None,
-                    thickness: Some(Length {
-                        original_unit: "mm".to_string(),
-                        value: rational64::Length::new::<millimeter>(Rational64::new(3, 2)),
-                    }),
-                    rating: None,
-                    color: Some(Color::Black),
-                }
-            ],
+            layers: vec![CableLayer {
+                layer_number: 1,
+                layer_type: LayerType::Jacket,
+                material: Some("Polyethylene".to_string()),
+                ac_electric_potential_rating: None,
+                dc_electric_potential_rating: None,
+                temperature_rating: None,
+                thickness: Some(Length {
+                    original_unit: "mm".to_string(),
+                    value: rational64::Length::new::<millimeter>(Rational64::new(3, 2)),
+                }),
+                rating: None,
+                color: Some(Color::Black),
+            }],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert(
@@ -1394,19 +1384,17 @@ mod tests {
             cable_type_code: None,
             catalog: None,
             line_style: None,
-            layers: vec![
-                CableLayer {
-                    layer_number: 1,
-                    layer_type: LayerType::WaterBlocking,
-                    material: Some("Water blocking tape".to_string()),
-                    ac_electric_potential_rating: None,
-                    dc_electric_potential_rating: None,
-                    temperature_rating: None,
-                    thickness: None,
-                    rating: None,
-                    color: None,
-                }
-            ],
+            layers: vec![CableLayer {
+                layer_number: 1,
+                layer_type: LayerType::WaterBlocking,
+                material: Some("Water blocking tape".to_string()),
+                ac_electric_potential_rating: None,
+                dc_electric_potential_rating: None,
+                temperature_rating: None,
+                thickness: None,
+                rating: None,
+                color: None,
+            }],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert(
@@ -1451,19 +1439,17 @@ mod tests {
             cable_type_code: None,
             catalog: None,
             line_style: None,
-            layers: vec![
-                CableLayer {
-                    layer_number: 1,
-                    layer_type: LayerType::Jacket,
-                    material: Some("Buffer Tube".to_string()),
-                    ac_electric_potential_rating: None,
-                    dc_electric_potential_rating: None,
-                    temperature_rating: None,
-                    thickness: None,
-                    rating: None,
-                    color: Some(Color::Blue),
-                }
-            ],
+            layers: vec![CableLayer {
+                layer_number: 1,
+                layer_type: LayerType::Jacket,
+                material: Some("Buffer Tube".to_string()),
+                ac_electric_potential_rating: None,
+                dc_electric_potential_rating: None,
+                temperature_rating: None,
+                thickness: None,
+                rating: None,
+                color: Some(Color::Blue),
+            }],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert(
@@ -1996,19 +1982,17 @@ mod tests {
                 value: rational64::Area::new::<square_inch>(Rational64::new(14_389_229, 64_008_858)),
             },
             cross_section: CrossSection::Circular,
-            layers: vec![
-                CableLayer {
-                    layer_number: 1,
-                    layer_type: LayerType::Jacket,
-                    material: None,
-                    ac_electric_potential_rating: None,
-                    dc_electric_potential_rating: None,
-                    temperature_rating: None,
-                    rating: None,
-                    thickness: None,
-                    color: None,
-                }
-            ],
+            layers: vec![CableLayer {
+                layer_number: 1,
+                layer_type: LayerType::Jacket,
+                material: None,
+                ac_electric_potential_rating: None,
+                dc_electric_potential_rating: None,
+                temperature_rating: None,
+                rating: None,
+                thickness: None,
+                color: None,
+            }],
             cores: {
                 let mut cores = BTreeMap::new();
                 cores.insert("green".to_string(), CableCore::WireType("soow14_green_inner".to_string()));
@@ -2097,7 +2081,7 @@ mod tests {
                         value: rational64::Length::new::<inch>(Rational64::new(13, 25)),
                     }),
                     color: Some(Color::Yellow),
-                }
+                },
             ],
             cores: {
                 let mut cores = BTreeMap::new();
@@ -2139,7 +2123,9 @@ mod tests {
             .canonicalize()
             .unwrap();
         let library_file_contents_1 = fs::read_to_string(&library_filepath_1).unwrap();
-        let library_filepath_2 = PathBuf::from("../../resources/test/library_tests/cable_type_test_multi_layer.toml").canonicalize().unwrap();
+        let library_filepath_2 = PathBuf::from("../../resources/test/library_tests/cable_type_test_multi_layer.toml")
+            .canonicalize()
+            .unwrap();
         let library_file_contents_2 = fs::read_to_string(&library_filepath_2).unwrap();
         let mut library_file2: Library = toml::from_str(&library_file_contents_2).unwrap();
         library_file2.add_datafile_paths(&library_filepath_2);

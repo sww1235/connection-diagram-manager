@@ -1069,6 +1069,7 @@ impl TryFrom<IntermediateUnit> for Length {
 
 impl TryFrom<IntermediateUnit> for TemperatureInterval {
     type Error = UnitParsingError;
+    #[expect(clippy::too_many_lines)]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
         match item.original_unit.as_str() {
             "YK" | "yottakelvin" => Ok(Self {

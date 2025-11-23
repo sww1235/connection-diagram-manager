@@ -1,5 +1,7 @@
-use std::collections::{BTreeMap, btree_map::Entry};
-use std::path::Path;
+use std::{
+    collections::{BTreeMap, btree_map::Entry},
+    path::Path,
+};
 
 use crate::{error::Error, traits::FromFile};
 
@@ -10,11 +12,7 @@ use crate::{error::Error, traits::FromFile};
 /// # Errors
 ///
 /// Will error if there are duplicate keys found in `test_map`
-pub fn merge_btreemaps<U,V>(
-    origin_map: &mut BTreeMap<U, V>,
-    test_map: BTreeMap<U, V>,
-    test_file: &Path,
-) -> Result<(), Error>
+pub fn merge_btreemaps<U, V>(origin_map: &mut BTreeMap<U, V>, test_map: BTreeMap<U, V>, test_file: &Path) -> Result<(), Error>
 where
     U: Ord + Clone + ToString,
     V: FromFile,
@@ -39,17 +37,15 @@ where
 
 #[cfg(test)]
 mod tests {
-use std::collections::{BTreeMap};
-use std::path::Path;
+    use std::{collections::BTreeMap, path::Path};
 
-use num_rational::Rational64;
+    use num_rational::Rational64;
+    use uom::si::{area::square_millimeter, rational64};
 
-use uom::si::{rational64, area::square_millimeter};
-
-use crate::datatypes::library_types::Library;
-use crate::datatypes::library_types::wire_type::WireType;
-use crate::datatypes::unit_helper::CrossSectionalArea;
-
+    use crate::datatypes::{
+        library_types::{Library, wire_type::WireType},
+        unit_helper::CrossSectionalArea,
+    };
 
     #[test]
     fn no_duplicates() {
@@ -61,7 +57,10 @@ use crate::datatypes::unit_helper::CrossSectionalArea;
             insulated: false,
             insulation_material: None,
             insulation_thickness: None,
-            conductor_cross_sect_area: CrossSectionalArea {original_unit: "square_millimeter".to_string(), value: rational64::Area::new::<square_millimeter>(Rational64::new(4,1))},
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square_millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(4, 1)),
+            },
             overall_cross_sect_area: None,
             stranded: true,
             num_strands: 4,
@@ -82,7 +81,10 @@ use crate::datatypes::unit_helper::CrossSectionalArea;
             insulated: false,
             insulation_material: None,
             insulation_thickness: None,
-            conductor_cross_sect_area: CrossSectionalArea {original_unit: "square_millimeter".to_string(), value: rational64::Area::new::<square_millimeter>(Rational64::new(4,1))},
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square_millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(4, 1)),
+            },
             overall_cross_sect_area: None,
             stranded: true,
             num_strands: 7,
@@ -103,7 +105,10 @@ use crate::datatypes::unit_helper::CrossSectionalArea;
             insulated: false,
             insulation_material: None,
             insulation_thickness: None,
-            conductor_cross_sect_area: CrossSectionalArea {original_unit: "square_millimeter".to_string(), value: rational64::Area::new::<square_millimeter>(Rational64::new(4,1))},
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square_millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(4, 1)),
+            },
             overall_cross_sect_area: None,
             stranded: true,
             num_strands: 2,
@@ -149,7 +154,10 @@ use crate::datatypes::unit_helper::CrossSectionalArea;
             insulated: false,
             insulation_material: None,
             insulation_thickness: None,
-            conductor_cross_sect_area: CrossSectionalArea {original_unit: "square_millimeter".to_string(), value: rational64::Area::new::<square_millimeter>(Rational64::new(4,1))},
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square_millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(4, 1)),
+            },
             overall_cross_sect_area: None,
             stranded: true,
             num_strands: 4,
@@ -170,7 +178,10 @@ use crate::datatypes::unit_helper::CrossSectionalArea;
             insulated: false,
             insulation_material: None,
             insulation_thickness: None,
-            conductor_cross_sect_area: CrossSectionalArea {original_unit: "square_millimeter".to_string(), value: rational64::Area::new::<square_millimeter>(Rational64::new(4,1))},
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square_millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(4, 1)),
+            },
             overall_cross_sect_area: None,
             stranded: true,
             num_strands: 7,
@@ -191,7 +202,10 @@ use crate::datatypes::unit_helper::CrossSectionalArea;
             insulated: false,
             insulation_material: None,
             insulation_thickness: None,
-            conductor_cross_sect_area: CrossSectionalArea {original_unit: "square_millimeter".to_string(), value: rational64::Area::new::<square_millimeter>(Rational64::new(4,1))},
+            conductor_cross_sect_area: CrossSectionalArea {
+                original_unit: "square_millimeter".to_string(),
+                value: rational64::Area::new::<square_millimeter>(Rational64::new(4, 1)),
+            },
             overall_cross_sect_area: None,
             stranded: true,
             num_strands: 2,
