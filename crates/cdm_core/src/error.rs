@@ -113,4 +113,12 @@ pub enum UnitParsingError {
         /// checked unit type
         quantity_type: String,
     },
+    #[error("Unsupported unit string {unit_string} for quantity type {quantity_type}")]
+    /// Error resulting from an unsupported unit string
+    UnsupportedUnit {
+        /// tested unit string
+        unit_string: String,
+        /// checked quantity type
+        quantity_type: String,
+    },
 }
