@@ -44,7 +44,7 @@ mod tests {
 
     use crate::datatypes::{
         library_types::{Library, wire_type::WireType},
-        unit_helper::CrossSectionalArea,
+        unit_helper::cross_sectional_area::CrossSectionalArea,
     };
 
     #[test]
@@ -57,11 +57,11 @@ mod tests {
             insulated: false,
             insulation_material: None,
             insulation_thickness: None,
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square_millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(4, 1)),
-            },
-            overall_cross_sect_area: None,
+            }),
             stranded: true,
             num_strands: 4,
             strand_cross_sect_area: None,
@@ -81,11 +81,11 @@ mod tests {
             insulated: false,
             insulation_material: None,
             insulation_thickness: None,
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square_millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(4, 1)),
-            },
-            overall_cross_sect_area: None,
+            }),
             stranded: true,
             num_strands: 7,
             strand_cross_sect_area: None,
@@ -105,11 +105,11 @@ mod tests {
             insulated: false,
             insulation_material: None,
             insulation_thickness: None,
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square_millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(4, 1)),
-            },
-            overall_cross_sect_area: None,
+            }),
             stranded: true,
             num_strands: 2,
             strand_cross_sect_area: None,
@@ -154,11 +154,11 @@ mod tests {
             insulated: false,
             insulation_material: None,
             insulation_thickness: None,
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square_millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(4, 1)),
-            },
-            overall_cross_sect_area: None,
+            }),
             stranded: true,
             num_strands: 4,
             strand_cross_sect_area: None,
@@ -178,11 +178,11 @@ mod tests {
             insulated: false,
             insulation_material: None,
             insulation_thickness: None,
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square_millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(4, 1)),
-            },
-            overall_cross_sect_area: None,
+            }),
             stranded: true,
             num_strands: 7,
             strand_cross_sect_area: None,
@@ -202,11 +202,11 @@ mod tests {
             insulated: false,
             insulation_material: None,
             insulation_thickness: None,
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square_millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(4, 1)),
-            },
-            overall_cross_sect_area: None,
+            }),
             stranded: true,
             num_strands: 2,
             strand_cross_sect_area: None,

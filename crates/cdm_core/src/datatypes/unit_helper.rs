@@ -34,7 +34,14 @@ mod tests {
     use pretty_assertions::assert_eq;
     use uom::si::{area::*, electric_potential::*, length::*, rational64, temperature_interval::*};
 
-    use super::{Area, CrossSectionalArea, ElectricPotential, IntermediateUnit, Length, TemperatureInterval};
+    use super::{
+        IntermediateUnit,
+        area::Area,
+        cross_sectional_area::CrossSectionalArea,
+        electric_potential::ElectricPotential,
+        length::Length,
+        temperature_interval::TemperatureInterval,
+    };
 
     // using escape codes to work around issues with VIM and rustfmt. Also to provide a more robust
     // representation of the expected output

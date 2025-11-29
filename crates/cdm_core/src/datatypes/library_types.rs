@@ -201,7 +201,12 @@ mod tests {
                 cable_type::{CableCore, CableLayer, CableType, LayerType},
                 wire_type::WireType,
             },
-            unit_helper::{CrossSectionalArea, ElectricPotential, Length, TemperatureInterval},
+            unit_helper::{
+                cross_sectional_area::CrossSectionalArea,
+                electric_potential::ElectricPotential,
+                length::Length,
+                temperature_interval::TemperatureInterval,
+            },
             util_types::{Catalog, CrossSection, Dimension, LineStyle},
         },
         traits::FromFile,
@@ -978,10 +983,11 @@ mod tests {
             material: "Copper".to_string(),
             insulated: true,
             insulation_material: Some("Polyvinyl Chloride".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
-            },
+            }),
             stranded: true,
             num_strands: 7,
             strand_cross_sect_area: Some(CrossSectionalArea {
@@ -997,7 +1003,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: None,
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1005,10 +1010,11 @@ mod tests {
             material: "Copper".to_string(),
             insulated: true,
             insulation_material: Some("Polyvinyl Chloride".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
-            },
+            }),
             stranded: true,
             num_strands: 7,
             strand_cross_sect_area: Some(CrossSectionalArea {
@@ -1024,7 +1030,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: None,
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1032,10 +1037,11 @@ mod tests {
             material: "Copper".to_string(),
             insulated: true,
             insulation_material: Some("Polyvinyl Chloride".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
-            },
+            }),
             stranded: true,
             num_strands: 7,
             strand_cross_sect_area: Some(CrossSectionalArea {
@@ -1051,7 +1057,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: None,
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1059,10 +1064,11 @@ mod tests {
             material: "Copper".to_string(),
             insulated: true,
             insulation_material: Some("Polyvinyl Chloride".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
-            },
+            }),
             stranded: true,
             num_strands: 7,
             strand_cross_sect_area: Some(CrossSectionalArea {
@@ -1078,7 +1084,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: None,
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1086,10 +1091,11 @@ mod tests {
             material: "Copper".to_string(),
             insulated: true,
             insulation_material: Some("Polyvinyl Chloride".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
-            },
+            }),
             stranded: true,
             num_strands: 7,
             strand_cross_sect_area: Some(CrossSectionalArea {
@@ -1105,7 +1111,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: None,
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1113,10 +1118,11 @@ mod tests {
             material: "Copper".to_string(),
             insulated: true,
             insulation_material: Some("Polyvinyl Chloride".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(8229, 10000)),
-            },
+            }),
             stranded: true,
             num_strands: 7,
             strand_cross_sect_area: Some(CrossSectionalArea {
@@ -1132,7 +1138,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: None,
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1140,10 +1145,11 @@ mod tests {
             material: "Copper".to_string(),
             insulated: true,
             insulation_material: Some("Polyvinyl Chloride".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(327, 250)),
-            },
+            }),
             stranded: true,
             num_strands: 19,
             strand_cross_sect_area: Some(CrossSectionalArea {
@@ -1159,7 +1165,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: None,
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1167,10 +1172,11 @@ mod tests {
             material: "Copper".to_string(),
             insulated: true,
             insulation_material: Some("Polyvinyl Chloride".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(327, 250)),
-            },
+            }),
             stranded: true,
             num_strands: 19,
             strand_cross_sect_area: Some(CrossSectionalArea {
@@ -1186,7 +1192,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: None,
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1194,10 +1199,11 @@ mod tests {
             material: "Copper".to_string(),
             insulated: true,
             insulation_material: Some("Polyvinyl Chloride".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(327, 250)),
-            },
+            }),
             stranded: true,
             num_strands: 19,
             strand_cross_sect_area: Some(CrossSectionalArea {
@@ -1213,7 +1219,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: None,
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1221,10 +1226,11 @@ mod tests {
             material: "Copper".to_string(),
             insulated: true,
             insulation_material: Some("Polyvinyl Chloride".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(327, 250)),
-            },
+            }),
             stranded: true,
             num_strands: 19,
             strand_cross_sect_area: Some(CrossSectionalArea {
@@ -1240,7 +1246,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: None,
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1510,10 +1515,11 @@ mod tests {
             material: "Steel".to_string(),
             insulated: false,
             insulation_material: None,
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(317, 10)),
-            },
+            }),
             stranded: true,
             num_strands: 7,
             strand_cross_sect_area: None,
@@ -1526,7 +1532,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: None,
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1535,10 +1540,11 @@ mod tests {
             material: "Water blocking yarn".to_string(),
             insulated: false,
             insulation_material: None,
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(491, 100)),
-            },
+            }),
             stranded: false,
             num_strands: 1,
             strand_cross_sect_area: None,
@@ -1551,7 +1557,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: None,
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1560,10 +1565,11 @@ mod tests {
             material: "Glass Reinforced Plastic Dialectric".to_string(),
             insulated: false,
             insulation_material: None,
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square millimeter".to_string(),
                 value: rational64::Area::new::<square_millimeter>(Rational64::new(491, 100)),
-            },
+            }),
             stranded: false,
             num_strands: 1,
             strand_cross_sect_area: None,
@@ -1576,7 +1582,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: None,
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1585,10 +1590,11 @@ mod tests {
             material: "Glass".to_string(),
             insulated: true,
             insulation_material: Some("Acrylate".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square micrometer".to_string(),
                 value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
-            },
+            }),
             stranded: false,
             num_strands: 1,
             strand_cross_sect_area: None,
@@ -1601,10 +1607,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: Some(CrossSectionalArea {
-                original_unit: "square micrometer".to_string(),
-                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
-            }),
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1613,10 +1615,11 @@ mod tests {
             material: "Glass".to_string(),
             insulated: true,
             insulation_material: Some("Acrylate".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square micrometer".to_string(),
                 value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
-            },
+            }),
             stranded: false,
             num_strands: 1,
             strand_cross_sect_area: None,
@@ -1629,10 +1632,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: Some(CrossSectionalArea {
-                original_unit: "square micrometer".to_string(),
-                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
-            }),
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1641,10 +1640,11 @@ mod tests {
             material: "Glass".to_string(),
             insulated: true,
             insulation_material: Some("Acrylate".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square micrometer".to_string(),
                 value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
-            },
+            }),
             stranded: false,
             num_strands: 1,
             strand_cross_sect_area: None,
@@ -1657,10 +1657,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: Some(CrossSectionalArea {
-                original_unit: "square micrometer".to_string(),
-                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
-            }),
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1669,10 +1665,11 @@ mod tests {
             material: "Glass".to_string(),
             insulated: true,
             insulation_material: Some("Acrylate".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square micrometer".to_string(),
                 value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
-            },
+            }),
             stranded: false,
             num_strands: 1,
             strand_cross_sect_area: None,
@@ -1685,10 +1682,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: Some(CrossSectionalArea {
-                original_unit: "square micrometer".to_string(),
-                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
-            }),
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1697,10 +1690,11 @@ mod tests {
             material: "Glass".to_string(),
             insulated: true,
             insulation_material: Some("Acrylate".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square micrometer".to_string(),
                 value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
-            },
+            }),
             stranded: false,
             num_strands: 1,
             strand_cross_sect_area: None,
@@ -1713,10 +1707,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: Some(CrossSectionalArea {
-                original_unit: "square micrometer".to_string(),
-                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
-            }),
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1725,10 +1715,11 @@ mod tests {
             material: "Glass".to_string(),
             insulated: true,
             insulation_material: Some("Acrylate".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square micrometer".to_string(),
                 value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
-            },
+            }),
             stranded: false,
             num_strands: 1,
             strand_cross_sect_area: None,
@@ -1741,10 +1732,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: Some(CrossSectionalArea {
-                original_unit: "square micrometer".to_string(),
-                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
-            }),
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1753,10 +1740,11 @@ mod tests {
             material: "Glass".to_string(),
             insulated: true,
             insulation_material: Some("Acrylate".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square micrometer".to_string(),
                 value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
-            },
+            }),
             stranded: false,
             num_strands: 1,
             strand_cross_sect_area: None,
@@ -1769,10 +1757,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: Some(CrossSectionalArea {
-                original_unit: "square micrometer".to_string(),
-                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
-            }),
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1781,10 +1765,11 @@ mod tests {
             material: "Glass".to_string(),
             insulated: true,
             insulation_material: Some("Acrylate".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square micrometer".to_string(),
                 value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
-            },
+            }),
             stranded: false,
             num_strands: 1,
             strand_cross_sect_area: None,
@@ -1797,10 +1782,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: Some(CrossSectionalArea {
-                original_unit: "square micrometer".to_string(),
-                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
-            }),
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1809,10 +1790,11 @@ mod tests {
             material: "Glass".to_string(),
             insulated: true,
             insulation_material: Some("Acrylate".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square micrometer".to_string(),
                 value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
-            },
+            }),
             stranded: false,
             num_strands: 1,
             strand_cross_sect_area: None,
@@ -1825,10 +1807,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: Some(CrossSectionalArea {
-                original_unit: "square micrometer".to_string(),
-                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
-            }),
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1837,10 +1815,11 @@ mod tests {
             material: "Glass".to_string(),
             insulated: true,
             insulation_material: Some("Acrylate".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square micrometer".to_string(),
                 value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
-            },
+            }),
             stranded: false,
             num_strands: 1,
             strand_cross_sect_area: None,
@@ -1853,10 +1832,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: Some(CrossSectionalArea {
-                original_unit: "square micrometer".to_string(),
-                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
-            }),
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1865,10 +1840,11 @@ mod tests {
             material: "Glass".to_string(),
             insulated: true,
             insulation_material: Some("Acrylate".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square micrometer".to_string(),
                 value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
-            },
+            }),
             stranded: false,
             num_strands: 1,
             strand_cross_sect_area: None,
@@ -1881,10 +1857,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: Some(CrossSectionalArea {
-                original_unit: "square micrometer".to_string(),
-                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
-            }),
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
@@ -1893,10 +1865,11 @@ mod tests {
             material: "Glass".to_string(),
             insulated: true,
             insulation_material: Some("Acrylate".to_string()),
-            conductor_cross_sect_area: CrossSectionalArea {
+            nominal_cross_section: None,
+            conductor_cross_sect_area: Some(CrossSectionalArea {
                 original_unit: "square micrometer".to_string(),
                 value: rational64::Area::new::<square_micrometer>(Rational64::new(12272, 1)),
-            },
+            }),
             stranded: false,
             num_strands: 1,
             strand_cross_sect_area: None,
@@ -1909,10 +1882,6 @@ mod tests {
             insulation_temperature_rating: None,
             insulation_thickness: None,
             line_style: None,
-            overall_cross_sect_area: Some(CrossSectionalArea {
-                original_unit: "square micrometer".to_string(),
-                value: rational64::Area::new::<square_micrometer>(Rational64::new(48695, 1)),
-            }),
             secondary_insulation_color: None,
             contained_datafile_path: datafile_path.clone(),
         };
