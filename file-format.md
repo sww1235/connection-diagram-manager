@@ -35,6 +35,11 @@ Electrical).
 Files must only contain library definitions or project design data as specified
 below.
 
+> [!IMPORTANT]
+> Most values are optional in project data files. As TOML doesn't have an easy
+> way of representing optional values, see the datatype definitions within the
+> docs.rs page for more complete details.
+
 Some libraries will be autopopulated with default values when the program
 starts. An optional flag, provided either in the project or on the command line
 will prevent this and only use the values loaded from the files specified in
@@ -47,9 +52,7 @@ and into a log file. File parsing should not stop on errors, and should
 output a complete list of errors, however this is not guaranteed. Multiple
 attempts to open the project may be needed to catch all errors.
 
-All file format references show the data type using angle brackets, like
-`"PLACEHOLDER"`. Any arrays or inline tables are indicated with the appropriate TOML
-syntax below. When filling out the files, they need to be valid TOML documents.
+When creating project data files, they need to be valid TOML documents.
 See [the TOML documentation](https://toml.io/en/v1.0.0) for more details.
 
 Per the TOML spec, root tables do not need to be defined if not needed. They
@@ -69,7 +72,7 @@ are defined in the examples below for clarity.
 
 All images are specified as SVG, so drawings can scale easily.
 
-Where a color `"PLACEHOLDER"` is specified, you can choose from the following options,
+Where a color is specified, you can choose from the following options,
 or specify a custom RGB color using hexadecimal #RRGGBB syntax (not finalized yet).
 
 If anyone has official color standards/values for these, along with the
@@ -1485,6 +1488,9 @@ insulation_material = "PLACEHOLDER"
 insulation_thickness =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # the cross sectional area of the conductor
+conductor_cross_sect_area =  {value = [0,0], original_unit = "PLACEHOLDER"}
+
+# Nominal cross section of wire
 conductor_cross_sect_area =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # including insulation
