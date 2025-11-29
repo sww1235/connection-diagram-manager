@@ -24,6 +24,14 @@ All file formats are currently based on TOML, (and inspired by
 [WireViz](https://github.com/formatc1702/WireViz) and the good parts of AutoCAD
 Electrical).
 
+> [!NOTE]
+> - Placeholder text in the file format descriptions below are indicated
+> with `"PLACEHOLDER"`.
+> - Placeholder `Rationa64` values are indicated with `[0, 0]` which is a value
+> that cannot be represented by a `Rationa64`
+> - All other placeholder values are indicated with end of
+> line comment when possible.
+
 Files must only contain library definitions or project design data as specified
 below.
 
@@ -40,27 +48,28 @@ output a complete list of errors, however this is not guaranteed. Multiple
 attempts to open the project may be needed to catch all errors.
 
 All file format references show the data type using angle brackets, like
-`<str>`. Any arrays or inline tables are indicated with the appropriate TOML
+`"PLACEHOLDER"`. Any arrays or inline tables are indicated with the appropriate TOML
 syntax below. When filling out the files, they need to be valid TOML documents.
 See [the TOML documentation](https://toml.io/en/v1.0.0) for more details.
 
 Per the TOML spec, root tables do not need to be defined if not needed. They
 are defined in the examples below for clarity.
 
-**NOTE:** Any number that is not specifically an integer, is implemented
-internally as a
-[Rational64](https://docs.rs/num-rational/latest/num_rational/type.Rational64.html)
-to work around precision issues with floats. You must specify both a numerator
-and denominator in the array or you will get an error. As an example, if you
-wanted to represent the number 1/3, a float of 0.3333̅33̅. isn't exact. With
-Rational types, you can specify it as exactly 1/3 and be satisfied. Floating
-point numbers are still used, especially to produce decimal output from
-Rational types but all the math internally is done with Rational types and just
-the output step is converted.
+> [!NOTE]
+> Any number that is not specifically an integer, is implemented
+> internally as a
+> [Rational64](https://docs.rs/num-rational/latest/num_rational/type.Rational64.html)
+> to work around precision issues with floats. You must specify both a
+> numerator and denominator in the array or you will get an error. As an
+> example, if you wanted to represent the number 1/3, a float of 0.3333̅33̅.
+> isn't exact. With Rational types, you can specify it as exactly 1/3 and be
+> satisfied. Floating point numbers are still used, especially to produce
+> decimal output from Rational types but all the math internally is done with
+> Rational types and just the output step is converted.
 
 All images are specified as SVG, so drawings can scale easily.
 
-Where a color `<str>` is specified, you can choose from the following options,
+Where a color `"PLACEHOLDER"` is specified, you can choose from the following options,
 or specify a custom RGB color using hexadecimal #RRGGBB syntax (not finalized yet).
 
 If anyone has official color standards/values for these, along with the
@@ -114,47 +123,47 @@ a full list of supported units.
 # If a path listed is a directory, all `.toml` files within
 # will be treated as library files.
 # hidden files/directories will be ignored
-default_library_locations = [<path string>]
+default_library_locations = ["PLACEHOLDER PATH STRING"]
 
 # optional
 # enable the usage of a postgres database
-enable_post_gres = <bool>
+enable_post_gres = true # PLACEHOLDER
 
 # optional
-post_gres_dsn = <str>
+post_gres_dsn = "PLACEHOLDER"
 
 # optional
-default_area_unit = <str>
+default_area_unit = "PLACEHOLDER"
 
 # optional
-default_length_unit = <str>
+default_length_unit = "PLACEHOLDER"
 
 # optional
 # used for cross sectional area of wires
-default_cross_section_area_unit = <str>
+default_cross_section_area_unit = "PLACEHOLDER"
 
 # optional
-default_electric_potential_unit = <str>
+default_electric_potential_unit = "PLACEHOLDER"
 
 # optional
-default_temperature_interval_unit = <str>
+default_temperature_interval_unit = "PLACEHOLDER"
 
 # optional
 # specify to display wire sizes in USA customary units
 # (AWG/circular mils instead of mm^2 when possible
-use_awg = <bool>
+use_awg = true # PLACEHOLDER
 
 # optional
 # use feet, square feet, farenheit instead of default SI units.
 # Can override specific units with the default options above.
 # Will set use_awg = true, unless specifically set to false.
-use_usa_customary_units = <bool>
+use_usa_customary_units = true # PLACEHOLDER
 
 # optional
 # Whether to display units with up to 3 digits before the decimal place
 # and adjust the displayed unit prefix appropriately,
 # or display all values in their default units only.
-use_engineering_prefixes = <bool>
+use_engineering_prefixes = true # PLACEHOLDER
 ```
 
 #### Application Configuration Defaults
@@ -190,17 +199,17 @@ tee, wire connection,
 
 ```toml
 # Required
-project_name = <str>
+project_name = "PLACEHOLDER"
 
 # Required
-load_default_libraries = <bool>
+load_default_libraries = true # PLACEHOLDER
 
 # optional
 # Paths can be either relative or absolute
 # If a path listed is a directory, all `.toml` files within
 # it or subidirectories will be treated as library files.
 # Hidden files/directories are ignored
-library_paths = [<path string>]
+library_paths = ["PLACEHOLDER PATH STRING"]
 
 # optional
 # If this is not defined, all TOML files in the directory that the cfg file is in,
@@ -212,20 +221,20 @@ library_paths = [<path string>]
 # root directory or subidirectories of the project will be parsed as
 # project files.
 # Hidden files/directories are ignored
-source_paths = [<path string>]
+source_paths = ["PLACEHOLDER PATH STRING"]
 
 # optional
 # Code reference used for wire ampacity checks and conduit fill, etc.
 # These are complicated enough that they are currently defined in code
 # rather than a configuration file.
-electrical_code_standard = <str>
+electrical_code_standard = "PLACEHOLDER"
 
 # optional
 # IEC project code
-project_code = <str>
+project_code = "PLACEHOLDER"
 
 # optional
-description = <str>
+description = "PLACEHOLDER"
 ```
 
 
@@ -270,32 +279,32 @@ document. A summary of base tables is listed below:
 [cable_types]
 
 # Table (dictionary) representing one cable type
-# The `<str>` is the cable type identifier. This is a `key` in TOML and
+# The `"PLACEHOLDER"` is the cable type identifier. This is a `key` in TOML and
 # must comply with the TOML spec.
 
 # Most keys in a cable_type sub-table are optional
-[cable_types.<str>]
+[cable_types."PLACEHOLDER"]
 
 # SOOW, FC, FCC, TC, MC, AC, MC, UF, PLTC, MV, etc
-cable_type_code = <str>
+cable_type_code = "PLACEHOLDER"
 
 # Outer cross sectional area of cable
-cross_sect_area =  {value = [<num>,<denom>], original_unit = <str>}
+cross_sect_area =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # Oval, Circular, Figure8
 #
 # If cross section is Figure8, then only 2 cable_cores must be defined.
 # any more than 2 will be reported as an error during validation
-cross_section = <str>
+cross_section = "PLACEHOLDER"
 
 # array of tables of outer layers of cable
 # define a new array instance for each layer
 # Includes insulation, semiconductor, shields, screens,
 # concentric neutrals, jackets, mechanical armor
-[[cable_types.<str>.layers]]
+[[cable_types."PLACEHOLDER".layers]]
 
 # counted from inside to outside of cable
-layer_number = <int>
+layer_number = 0 # PLACEHOLDER
 
 # - Insulation
 # - Semiconductor
@@ -305,94 +314,94 @@ layer_number = <int>
 # - Jacket
 # - Armor
 # - WaterBlocking
-layer_type = <str>
+layer_type = "PLACEHOLDER"
 
-material = <str>
+material = "PLACEHOLDER"
 
 # AC electric potential rating for insulation layer
-ac_electric_potential_rating =  {value = [<num>,<denom>], original_unit = <str>}
+ac_electric_potential_rating =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # DC electric potential rating for insulation layer
-dc_electric_potential_rating =  {value = [<num>,<denom>], original_unit = <str>}
+dc_electric_potential_rating =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # temp rating for insulation layer
-temperature_rating =  {value = [<num>,<denom>], original_unit = <str>}
+temperature_rating =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # Other insulation properties such as
 # fire spread resistance, smoke generation, etc
-rating = <str>
+rating = "PLACEHOLDER"
 
 # layer thickness
-thickness = {value = [<num>,<denom>], original_unit = <str>}
+thickness = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # color of insulation or semiconductor
-color = <str>
+color = "PLACEHOLDER"
 
 
 # dictionary of wire or cable cores inside cable.
 # strength members are treated as a wire
-[cable_types.<str>.cores]
+[cable_types."PLACEHOLDER".cores]
 
-# second <str> is identifier of individual core. Must be unique per cable_type
-[cable_types.<str>.cores.<str>]
+# second "PLACEHOLDER" is identifier of individual core. Must be unique per cable_type
+[cable_types."PLACEHOLDER".cores."PLACEHOLDER"]
 
 # identifier of wire/cable type that core is
 # <contained_type> can be either WireType or CableType
-<contained_type> = <str>
+<contained_type> = "PLACEHOLDER"
 
 # all items here are optional
 # and will use defaults or cable outer jacket/insulation color if not specified
 # schematic appearance of linear items
-[cable_types.<str>.line_style]
+[cable_types."PLACEHOLDER".line_style]
 
-color = <str>
+color = "PLACEHOLDER"
 
-secondary_color = <str>
+secondary_color = "PLACEHOLDER"
 
-line_thickness = {value = [<num>,<denom>], original_unit = <str>}
+line_thickness = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # array of lengths/percentages of dashes and gaps
 # uses same specification as SVG stroke-dasharray field.
-line_appearance = [<int>]
+line_appearance = [0] # PLACEHOLDER
 
 # optional
 # Dimension subtable for each cable_type. Groups common properties
-[cable_types.<str>.dimensions]
+[cable_types."PLACEHOLDER".dimensions]
 
 # height of cable
-height = {value = [<num>,<denom>], original_unit = <str>}
+height = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # width of cable
-width = {value = [<num>,<denom>], original_unit = <str>}
+width = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # diameter of cable
-diameter = {value = [<num>,<denom>], original_unit = <str>}
+diameter = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 
 # Catalog subtable for each cable_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[cable_types.<str>.catalog]
+[cable_types."PLACEHOLDER".catalog]
 
 # manufacturer name
-manufacturer = <str>
+manufacturer = "PLACEHOLDER"
 
 # cable type model description
-model = <str>
+model = "PLACEHOLDER"
 
 # free text field for larger descriptions
-description = <str>
+description = "PLACEHOLDER"
 
 # [internal] part number
-part_number = <str>
+part_number = "PLACEHOLDER"
 
 # manufacturer part number
-manufactuer_part_number = <str>
+manufactuer_part_number = "PLACEHOLDER"
 
 # supplier
-supplier = <str>
+supplier = "PLACEHOLDER"
 
 # supplier part number
-supplier_part_number = <str>
+supplier_part_number = "PLACEHOLDER"
 ```
 
 #### Connector Type
@@ -401,120 +410,120 @@ supplier_part_number = <str>
 [connector_types]
 
 # table (dictionary) representing one connector type
-# The `<str>` is the connector type identifier. This is a `key` in TOML and
+# The `"PLACEHOLDER"` is the connector type identifier. This is a `key` in TOML and
 # must comply with the TOML spec.
 
 # Most keys in a connector_types sub-table are optional
-[connector_types.<str>]
+[connector_types."PLACEHOLDER"]
 
 # cable, pcb through hole, pcb surface mount, panel
-mount_type = <str>
+mount_type = "PLACEHOLDER"
 
 # optional
 # D, A, etc
 # Not parsed
-panel_cutout = <str>
+panel_cutout = "PLACEHOLDER"
 
 # (male, female, rpmale, rpfemale, hermaphroditic, unknown, unspecified)
-gender = <str>
+gender = "PLACEHOLDER"
 
 # optional
 # connector color
 # used to label the color of a flag or tag or ring on the connector
-color = <str>
+color = "PLACEHOLDER"
 
 # optional
 # component designator
-component_designator = <str>
+component_designator = "PLACEHOLDER"
 
 # optional
 # array of schematic symbols that can represent this connector
 # values must be the sub-table name
-schematic_symbol = [<str>]
+schematic_symbol = ["PLACEHOLDER"]
 
 # TODO: decide if these should be filepaths or directly included SVGs
 # SVGs should be layed out for a horizontal orientation when defined.
 # instances can be rotated when defined in project.
 # if not defined, a generic diagram will be used
 # this is the panel representation image
-visual_representation = <svg>
+visual_representation = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
 # optional
 # array of which connector types mate with this connector type
 # needs to be populated with sub-table key of connectors
-connector_type_mate = [<str>]
+connector_type_mate = ["PLACEHOLDER"]
 
 # Dimension subtable for each connector-type. Groups common properties
-[connector_types.<str>.dimensions]
+[connector_types."PLACEHOLDER".dimensions]
 
 # height of connector
-height = {value = [<num>, <denom>], original_unit = <str>}
+height = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # width of connector
-width = {value = [<num>, <denom>], original_unit = <str>}
+width = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # depth of connector
-depth = {value = [<num>, <denom>], original_unit = <str>}
+depth = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # optional
 # diameter of circular connectors
-diameter = {value = [<num>, <denom>], original_unit = <str>}
+diameter = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # Catalog subtable for each connector-type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[connector_types.<str>.catalog]
+[connector_types."PLACEHOLDER".catalog]
 
 # manufacturer name
-manufacturer = <str>
+manufacturer = "PLACEHOLDER"
 
 # connector model description
-model = <str>
+model = "PLACEHOLDER"
 
 # free text field for larger descriptions
-description = <str>
+description = "PLACEHOLDER"
 
 # [internal] part number
-part_number = <str>
+part_number = "PLACEHOLDER"
 
 # manufacturer part number
-manufactuer_part_number = <str>
+manufactuer_part_number = "PLACEHOLDER"
 
 # supplier name
-supplier = <str>
+supplier = "PLACEHOLDER"
 
 # supplier part number
-supplier_part_number = <str>
+supplier_part_number = "PLACEHOLDER"
 
 # Pin Info subtables for each connector-type.
 # each entry in this array describes one pin
-[connector_types.<str>.pins]
+[connector_types."PLACEHOLDER".pins]
 
 # Table of attributes for a specific pin within
 # the connector.
-# <str> is the id of the pin within the connector
-[connector_types.<str>.pins.<str>]
+# "PLACEHOLDER" is the id of the pin within the connector
+[connector_types."PLACEHOLDER".pins."PLACEHOLDER"]
 
-designation = <str>
-
-# optional
-label = <str>
+designation = "PLACEHOLDER"
 
 # optional
-signal_type = <str>
+label = "PLACEHOLDER"
 
 # optional
-color = <str>
+signal_type = "PLACEHOLDER"
 
 # optional
-visual_rep = <str>
+color = "PLACEHOLDER"
+
+# optional
+visual_rep = "PLACEHOLDER"
 
 # optional
 # pin specific gender
-gender = <str>
+gender = "PLACEHOLDER"
 
 # optional
 # pin specific rating information. Not parsed
-rating = <str>
+rating = "PLACEHOLDER"
 ```
 
 #### Enclosure Types
@@ -525,75 +534,75 @@ rating = <str>
 [enclosure_types]
 
 # Table (dictionary) representing one enclosure_type
-# The `<str>` is the cable type identifier. This is a `key` in TOML and
+# The `"PLACEHOLDER"` is the cable type identifier. This is a `key` in TOML and
 # must comply with the TOML spec.
 
 # Most keys in a enclosure_type sub-table are optional
-[enclosure_types.<str>]
+[enclosure_types."PLACEHOLDER"]
 
 # usable internal width of enclosure
-usable_width =  {value = [<num>,<denom>], original_unit = <str>}
+usable_width =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # usable internal depth of enclosure
-usable_depth =  {value = [<num>,<denom>], original_unit = <str>}
+usable_depth =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # usable internal height of enclosure
-usable_height =  {value = [<num>,<denom>], original_unit = <str>}
+usable_height =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # Other rating information for enclosure
-rating = <str>
+rating = "PLACEHOLDER"
 
 # optional
 # if not defined, a generic drawing will be used instead
 # SVGs should be layed out for a horizontal orientation when defined.
 # instances can be rotated when defined in project.
-visual_representation = <svg>
+visual_representation = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
 # optional
-color = <str>
+color = "PLACEHOLDER"
 
 # optional
 # Dimension subtable for each enclosure_type. Groups common properties
-[enclosure_types.<str>.dimensions]
+[enclosure_types."PLACEHOLDER".dimensions]
 
 # overall height of enclosure
-height = {value = [<num>,<denom>], original_unit = <str>}
+height = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # overall width of enclosure
-width = {value = [<num>,<denom>], original_unit = <str>}
+width = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # optional
 # overall depth of enclosure
-depth =  {value = [<num>,<denom>], original_unit = <str>}
+depth =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # optional
 # diameter of enclosure
-diameter = {value = [<num>,<denom>], original_unit = <str>}
+diameter = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # Catalog subtable for each enclosure_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[enclosure_types.<str>.catalog]
+[enclosure_types."PLACEHOLDER".catalog]
 
 # manufacturer name
-manufacturer = <str>
+manufacturer = "PLACEHOLDER"
 
 # model description
-model = <str>
+model = "PLACEHOLDER"
 
 # free text field for larger descriptions
-description = <str>
+description = "PLACEHOLDER"
 
 # [internal] part number
-part_number = <str>
+part_number = "PLACEHOLDER"
 
 # manufacturer part number
-manufactuer_part_number = <str>
+manufactuer_part_number = "PLACEHOLDER"
 
 # supplier
-supplier = <str>
+supplier = "PLACEHOLDER"
 
 # supplier part number
-supplier_part_number = <str>
+supplier_part_number = "PLACEHOLDER"
 ```
 
 #### Equipment Types
@@ -609,117 +618,117 @@ supplier_part_number = <str>
 [equipment_types]
 
 # table (dictionary) representing one equipment type
-# The `<str>` is the equipment type identifier. This is a `key` in TOML and
+# The `"PLACEHOLDER"` is the equipment type identifier. This is a `key` in TOML and
 # must comply with the TOML spec.
 
 # Most keys in a equipment_types sub-table are optional
-[equipment_types.<str>]
+[equipment_types."PLACEHOLDER"]
 
 # optional
 # (19" rack, 23" rack, 1/2 19" rack, DIN rail,
 # surface wall mount, inset wall mount, panel, custom)
-mounting_type = [<str>]
+mounting_type = ["PLACEHOLDER"]
 
 # optional
 # (audio, video, mix, lighting, networking, patch panel, power)
-category = <str>
+category = "PLACEHOLDER"
 
 # optional
 # Equipment supertype: Relay, PLC, Motor, Relay, Circuit breaker, etc.
-supertype = <str>
+supertype = "PLACEHOLDER"
 
 # optional
 # component designator
-component_designator = <str>
+component_designator = "PLACEHOLDER"
 
 
 # optional
 # rating of equipment. Not parsed
-rating = <str>
+rating = "PLACEHOLDER"
 
 # optional
 # overall visual representation of equipment
-visual_representation = <svg>
+visual_representation = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
 # optional
 # array of schematic symbols that can represent this equipment
 # values must be the sub-table name
-schematic_symbols = [<str>]
+schematic_symbols = ["PLACEHOLDER"]
 
 # Dimension subtable for each equipment_type. Groups common properties
-[equipment_types.<str>.dimensions]
+[equipment_types."PLACEHOLDER".dimensions]
 
 # height of equipment
-height = {value = [<num>, <denom>], original_unit = <str>}
+height = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # width of equipment
-width = {value = [<num>, <denom>], original_unit = <str>}
+width = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # optional
 # depth of equipment
-depth = {value = [<num>, <denom>], original_unit = <str>}
+depth = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # optional
 # diameter of equipment
-diameter = {value = [<num>, <denom>], original_unit = <str>}
+diameter = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 
 # Catalog subtable for each equipment_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[equipment_types.<str>.catalog]
+[equipment_types."PLACEHOLDER".catalog]
 
 # manufacturer name
-manufacturer = <str>
+manufacturer = "PLACEHOLDER"
 
 # equipment type model description
-model = <str>
+model = "PLACEHOLDER"
 
 # free text field for larger descriptions
-description = <str>
+description = "PLACEHOLDER"
 
 # [internal] part number
-part_number = <str>
+part_number = "PLACEHOLDER"
 
 # manufacturer part number
-manufactuer_part_number = <str>
+manufactuer_part_number = "PLACEHOLDER"
 
 # supplier
-supplier = <str>
+supplier = "PLACEHOLDER"
 
 # supplier part number
-supplier_part_number = <str>
+supplier_part_number = "PLACEHOLDER"
 
 # dictionary of faces that can have connectors associated with them,
 # and an associated visual representation.
 # Faces can be used in place of symbols to display equipment.
-[equipment_types.<str>.faces]
+[equipment_types."PLACEHOLDER".faces]
 
 # table of attributes of each face
-[equipment_types.<str>.faces.<str>]
+[equipment_types."PLACEHOLDER".faces."PLACEHOLDER"]
 # TODO: use custom SVG tags to store locations of connectors instead of x/y coordinates
 # SVGs should be layed out for a horizontal orientation when defined.
 # instances can be rotated when defined in project.
-visual_representation = <svg>
+visual_representation = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
 
 # dictionary of connectors on equipment.
-[equipment_types.<str>.faces.<str>.connectors]
+[equipment_types."PLACEHOLDER".faces."PLACEHOLDER".connectors]
 
 # table of attributes for each connector on a face of an equipment_type
-# last <str> identifier is a unique identifier for the connector on each face
-[equipment_types.<str>.faces.<str>.connectors.<str>]
+# last "PLACEHOLDER" identifier is a unique identifier for the connector on each face
+[equipment_types."PLACEHOLDER".faces."PLACEHOLDER".connectors."PLACEHOLDER"]
 
 # id of connector type
-connector_type = <str>
+connector_type = "PLACEHOLDER"
 
 # (input, output, power input, power output, bidirectional, passive)
-direction = <str>
+direction = "PLACEHOLDER"
 
 # location of connector from bottom left of visrep of face to right
-x = <integer>
+x = 0 # PLACEHOLDER
 
 # location of connector from bottom left of visrep of face up
-y = <integer>
+y = 0 # PLACEHOLDER
 ```
 
 #### Mounting Rail Types
@@ -737,58 +746,58 @@ y = <integer>
 
 # table of attributes for specific mounting rail type
 # origin is defined as center left of mounting rail
-[mounting_rail_types.<str>]
+[mounting_rail_types."PLACEHOLDER"]
 
 # overall height of rail
 # rail center point will be at
 # rail_height / 2
-rail_height = {value = [<num>,<denom>], original_unit = <str>}
+rail_height = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # total height of center/recessed section of mounting rail
 # centered on total height
-rail_center_height = {value = [<num>,<denom>], original_unit = <str>}
+rail_center_height = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # does mounting rail have slots
-slots = <bool>
+slots = true # PLACEHOLDER
 
 # are slots rounded or rectangular
-rounded_slots = <bool>
+rounded_slots = true # PLACEHOLDER
 
 # linear distance between origin and center of first slot
 # will also be used for the distance between the last slot
 # and the end of the rail.
-first_slot_center = {value = [<num>,<denom>], original_unit = <str>}
+first_slot_center = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # linear center to center distance between slots.
-slot_center_to_center = {value = [<num>,<denom>], original_unit = <str>}
+slot_center_to_center = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # slot length, includes length of rounded ends
-slot_length = {value = [<num>,<denom>], original_unit = <str>}
+slot_length = {value = [0,0], original_unit = "PLACEHOLDER"}
 
-slot_height = {value = [<num>,<denom>], original_unit = <str>}
+slot_height = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # the length of rail as specified by the manufacturer/supplier part number
-standard_rail_length = [<num>,<denom>]
+standard_rail_length = [0,0]
 
 # User specified minimum length.
 # If not specified, will be set to 2x the first_slot_center distance
 # if instance length is set smaller than default minimum_rail_length
 # and no_partial_holes is false, then minimum_rail_length
 # will be ignored.
-minimum_rail_length = {value = [<num>,<denom>], original_unit = <str>}
+minimum_rail_length = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # extend rail so there are no partial holes
-no_partial_holes = <bool>
+no_partial_holes = true # PLACEHOLDER
 
 # distance between top center_line and origin
-top_rail_center_height = {value = [<num>,<denom>], original_unit = <str>}
+top_rail_center_height = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # distance between bottom center_line and origin
-bottom_rail_center_height = {value = [<num>,<denom>], original_unit = <str>}
+bottom_rail_center_height = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # distance between origin and slot vertical center
 # positive above origin, negative below origin
-slot_vertical_center = {value = [<num>,<denom>], original_unit = <str>}
+slot_vertical_center = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # SVG files for start, end and middle of mounting rail
 # minimum rail length should be set to the length of the
@@ -799,36 +808,36 @@ slot_vertical_center = {value = [<num>,<denom>], original_unit = <str>}
 # the start, middle and end images should not have lines where they join
 # so when the images are placed together, there is no overlap.
 
-start_image = <svg>
+start_image = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
-middle_image = <svg>
+middle_image = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
-end_image = <svg>
+end_image = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
 # Catalog subtable for each mounting_rail_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[mounting_rail_types.<str>.catalog]
+[mounting_rail_types."PLACEHOLDER".catalog]
 
 # manufacturer name
-manufacturer = <str>
+manufacturer = "PLACEHOLDER"
 
 # model description
-model = <str>
+model = "PLACEHOLDER"
 
 # free text field for larger descriptions
-description = <str>
+description = "PLACEHOLDER"
 
 # [internal] part number
-part_number = <str>
+part_number = "PLACEHOLDER"
 
 # manufacturer part number
-manufactuer_part_number = <str>
+manufactuer_part_number = "PLACEHOLDER"
 
 # supplier
-supplier = <str>
+supplier = "PLACEHOLDER"
 
 # supplier part number
-supplier_part_number = <str>
+supplier_part_number = "PLACEHOLDER"
 ```
 
 #### Pathway Types
@@ -839,99 +848,99 @@ supplier_part_number = <str>
 [pathway_types]
 
 # table (dictionary) representing one pathway type
-# The `<str>` is the pathway type identifier. This is a `key` in TOML and
+# The `"PLACEHOLDER"` is the pathway type identifier. This is a `key` in TOML and
 # must comply with the TOML spec.
 
 # Most keys in a pathway_types sub-table are optional
-[pathway_types.<str>]
+[pathway_types."PLACEHOLDER"]
 
 # supertype of cable pathway (conduit, cable tray, etc)
-supertype = <str>
+supertype = "PLACEHOLDER"
 
 # actual size measurements. Not parsed
-size = <str>
+size = "PLACEHOLDER"
 
 # optional
-trade_size = <str>
+trade_size = "PLACEHOLDER"
 
 # optional
 # used to display a representation of the pathway on panel diagrams
 # mainly used for things like panduit or wireway mounted to panel directly
-visual_representation = <svg>
+visual_representation = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
 # optional
 # Interior cross sectional area - used for conduit fill calculations
-cross_sect_area =  {value = [<num>,<denom>], original_unit = <str>}
+cross_sect_area =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # primary material of pathway
-material = <str>
+material = "PLACEHOLDER"
 
 # primary color of pathway
-color = <str>
+color = "PLACEHOLDER"
 
 
 # optional
 # material properties/rating. Not parsed.
 # voltage/temp/flamability/etc
-rating = <str>
+rating = "PLACEHOLDER"
 
 # optional
 # Dimension subtable for each pathway_type. Groups common properties
-[pathway_types.<str>.dimensions]
+[pathway_types."PLACEHOLDER".dimensions]
 
 # height of equipment
-height = {value = [<num>, <denom>], original_unit = <str>}
+height = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # width of equipment
-width = {value = [<num>, <denom>], original_unit = <str>}
+width = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # optional
 # depth of equipment
-depth = {value = [<num>, <denom>], original_unit = <str>}
+depth = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # optional
 # diameter of equipment
-diameter = {value = [<num>, <denom>], original_unit = <str>}
+diameter = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # Catalog subtable for each pathway_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[pathway_types.<str>.catalog]
+[pathway_types."PLACEHOLDER".catalog]
 
 # manufacturer name
-manufacturer = <str>
+manufacturer = "PLACEHOLDER"
 
 # pathway type model description
-model = <str>
+model = "PLACEHOLDER"
 
 # free text field for larger descriptions
-description = <str>
+description = "PLACEHOLDER"
 
 # [internal] part number
-part_number = <str>
+part_number = "PLACEHOLDER"
 
 # manufacturer part number
-manufactuer_part_number = <str>
+manufactuer_part_number = "PLACEHOLDER"
 
 # supplier
-supplier = <str>
+supplier = "PLACEHOLDER"
 
 # supplier part number
-supplier_part_number = <str>
+supplier_part_number = "PLACEHOLDER"
 
 # all items here are optional
 # and will use defaults if not specified
 # schematic appearance of linear items
-[pathway_types.<str>.line_style]
+[pathway_types."PLACEHOLDER".line_style]
 
-color = <str>
+color = "PLACEHOLDER"
 
-secondary_color = <str>
+secondary_color = "PLACEHOLDER"
 
-line_thickness = {value = [<num>,<denom>], original_unit = <str>}
+line_thickness = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # array of lengths/percentages of dashes and gaps
 # uses same specification as SVG stroke-dasharray field.
-line_appearance = [<int>]
+line_appearance = [0] # PLACEHOLDER
 ```
 
 #### Schematic Symbol Types
@@ -944,22 +953,22 @@ line_appearance = [<int>]
 [schematic_symbol_types]
 
 # table of attributes for a specific symbol
-[schematic_symbol_types.<str>]
+[schematic_symbol_types."PLACEHOLDER"]
 
-visual_representation = <svg>
+visual_representation = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
 # Short descriptive name.
 # Can contain spaces and special characters
-name = <str>
+name = "PLACEHOLDER"
 
 # optional free-form description
-description = <str>
+description = "PLACEHOLDER"
 
 # if this is true, svg will be searched
 # for special tags that indicate where dashed link lines
 # will connect.
 # this is used for things like relays and contactors
-# supports_links = <bool>
+# supports_links = true # PLACEHOLDER
 ```
 
 #### Term Cable Types
@@ -974,98 +983,98 @@ description = <str>
 [term_cable_types]
 
 # Table (dictionary) representing one term_cable_type
-# The `<str>` is the cable type identifier. This is a `key` in TOML and
+# The `"PLACEHOLDER"` is the cable type identifier. This is a `key` in TOML and
 # must comply with the TOML spec.
 
 # Most keys in a term_cable_types sub-table are optional
-[term_cable_types.<str>]
+[term_cable_types."PLACEHOLDER"]
 
-nominal_length =  {value = [<num>,<denom>], original_unit = <str>}
+nominal_length =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # actual length of cable
-length =  {value = [<num>,<denom>], original_unit = <str>}
+length =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # all items here are optional
 # and will use defaults or outer insulation color if not specified
 # schematic appearance of linear items
-[term_cable_types.<str>.line_style]
+[term_cable_types."PLACEHOLDER".line_style]
 
-color = <str>
+color = "PLACEHOLDER"
 
-secondary_color = <str>
+secondary_color = "PLACEHOLDER"
 
-line_thickness = {value = [<num>,<denom>], original_unit = <str>}
+line_thickness = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # array of lengths/percentages of dashes and gaps
 # uses same specification as SVG stroke-dasharray field.
-line_appearance = [<int>]
+line_appearance = [0] # PLACEHOLDER
 
 # Catalog subtable for each cable_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[term_cable_types.<str>.catalog]
+[term_cable_types."PLACEHOLDER".catalog]
 
 # manufacturer name
-manufacturer = <str>
+manufacturer = "PLACEHOLDER"
 
 # term_cable type model description
-model = <str>
+model = "PLACEHOLDER"
 
 # free text field for larger descriptions
-description = <str>
+description = "PLACEHOLDER"
 
 # [internal] part number
-part_number = <str>
+part_number = "PLACEHOLDER"
 
 # manufacturer part number
-manufactuer_part_number = <str>
+manufactuer_part_number = "PLACEHOLDER"
 
 # supplier
-supplier = <str>
+supplier = "PLACEHOLDER"
 
 # supplier part number
-supplier_part_number = <str>
+supplier_part_number = "PLACEHOLDER"
 
 # The flexible portion of the term_cable.
-# The second <str> either needs to be wire_type or cable_type, to indicate if
+# The second "PLACEHOLDER" either needs to be wire_type or cable_type, to indicate if
 # the included core_id is for a wire_type or cable_type
-[term_cable_types.<str>.<str>]
+[term_cable_types."PLACEHOLDER"."PLACEHOLDER"]
 
 # either a wire_type id or a cable_type id based on what is defined above.
-core_id = <str>
+core_id = "PLACEHOLDER"
 
 # table of connectors attached to one end of term_cable
-[term_cable_types.<str>.end1]
+[term_cable_types."PLACEHOLDER".end1]
 
 # table defining a specific connector on end 1
-# connector id is end <str>
-[term_cable_types.<str>.end1.<str>]
+# connector id is end "PLACEHOLDER"
+[term_cable_types."PLACEHOLDER".end1."PLACEHOLDER"]
 
 # ID of connector type
-connector_type = <str>
+connector_type = "PLACEHOLDER"
 
 # array of tables of core to connector pin mappings for each connector
 # specify one table for each pin-core mapping
-[[term_cable_types.<str>.end1.<str>.terminations]]
+[[term_cable_types."PLACEHOLDER".end1."PLACEHOLDER".terminations]]
 
-core = <str>
-pin = <str>
+core = "PLACEHOLDER"
+pin = "PLACEHOLDER"
 
 # table of connectors attached to the other end of term_cable
-[term_cable_types.<str>.end2]
+[term_cable_types."PLACEHOLDER".end2]
 
 # table defining a specific connector on end 2
-# connector id is end <str>
-[term_cable_types.<str>.end2.<str>]
+# connector id is end "PLACEHOLDER"
+[term_cable_types."PLACEHOLDER".end2."PLACEHOLDER"]
 
 # ID of connector type
-connector_type = <str>
+connector_type = "PLACEHOLDER"
 
 # array of tables of core to connector pin mappings for each connector
 # specify one table for each pin-core mapping
-[[term_cable_types.<str>.end2.<str>.terminations]]
+[[term_cable_types."PLACEHOLDER".end2."PLACEHOLDER".terminations]]
 
-core = <str>
-pin = <str>
+core = "PLACEHOLDER"
+pin = "PLACEHOLDER"
 ```
 
 #### Terminal Types
@@ -1081,79 +1090,79 @@ pin = <str>
 [terminal_types]
 
 # Table (dictionary) of all attributes on one particular terminal type
-[terminal_types.<str>]
+[terminal_types."PLACEHOLDER"]
 
 # optional
-color = <str>
+color = "PLACEHOLDER"
 
 # optional
-secondary_color = <str>
+secondary_color = "PLACEHOLDER"
 
 # optional
 # used to display a representation of the terminal on panel diagrams
 # SVGs should be layed out for a horizontal orientation when defined.
 # instances can be rotated when defined in project.
-visual_representation = <svg>
+visual_representation = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
 # optional
 # component designator
-component_designator = <str>
+component_designator = "PLACEHOLDER"
 
 # If this terminal type accepts plug in accessories
 # like fuses or component holders
-accepts_accessories = <bool>
+accepts_accessories = true # PLACEHOLDER
 
 # Fuse terminal block
 # only set to true if the terminal block is a true fuse only terminal block
 # and not a terminal block that can accept a fuse holder accessory
-fuse_terminal = <bool>
+fuse_terminal = true # PLACEHOLDER
 
 # optional
 # fuse rating inside terminal block. Not parsed.
 # only use if fuse_terminal = true
-fuse_rating = <str>
+fuse_rating = "PLACEHOLDER"
 
 # optional
 # if there is an indicator present
 # usually this is an LED on a fuse holder or integrated into the terminal block
-indicator_present = <bool>
+indicator_present = true # PLACEHOLDER
 
 # non-parsed string indicating the indicator type
-indicator_type = <str>
+indicator_type = "PLACEHOLDER"
 
 # non-parsed string for indicator voltage/current ratings
-indicator_rating = <str>
+indicator_rating = "PLACEHOLDER"
 
 # if there is a discrete component embedded inside the terminal
 # like a Diode or resistor
 # This should only be marked if the component is non-replaceable while in
 # a terminal strip or not replaceable at all.
-discrete_component_present = <bool>
+discrete_component_present = true # PLACEHOLDER
 
 # non-parsed string for component rating
-discrete_component_rating = <str>
+discrete_component_rating = "PLACEHOLDER"
 
 # type of discrete component
 # resistor, diode, etc.
-discrete_component_type = <str>
+discrete_component_type = "PLACEHOLDER"
 
 # if there is an integrated, non-removable disconnect present
 # if the disconnect is removable, use an accessory
-integrated_disconnect_present = <bool>
+integrated_disconnect_present = true # PLACEHOLDER
 
 # dictionary defining terminal layers
 # at least one layer is required for a terminal
-# last <str> is unique layer identifier within terminal
-[terminal_types.<str>.layers.<str>]
+# last "PLACEHOLDER" is unique layer identifier within terminal
+[terminal_types."PLACEHOLDER".layers."PLACEHOLDER"]
 
 # array defining the number of connection points per terminal layer
 # define 1 instance of this table array per connection point per layer
-[[terminal_types.<str>.layers.<str>.connections]]
+[[terminal_types."PLACEHOLDER".layers."PLACEHOLDER".connections]]
 
 # connection designation
 # must be unique among connection points on a layer
 # only used to fill out the internal_connections section below
-connection_description = <str>
+connection_description = "PLACEHOLDER"
 
 # connection type of terminal
 # allowed options are:
@@ -1165,19 +1174,19 @@ connection_description = <str>
 # - Spade
 # - Spring Cage
 # - Lever Lock
-connection_type = <str>
+connection_type = "PLACEHOLDER"
 
 # optional
 # connection entry angle
-entry_angle = <str>
+entry_angle = "PLACEHOLDER"
 
 # maximum number of wires allowed to be connected to this terminal.
 # can be lower than manufacturer recommended values
-maxiumum_wires = <int>
+maxiumum_wires = 0 # PLACEHOLDER
 
-maximum_wire_cross_section = {value = [<num>,<denom>], original_unit = <str>}
+maximum_wire_cross_section = {value = [0,0], original_unit = "PLACEHOLDER"}
 
-minimum_wire_cross_section = {value = [<num>,<denom>], original_unit = <str>}
+minimum_wire_cross_section = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # what types of wire/connectors are supported by terminal connection
 # current supported list is:
@@ -1185,65 +1194,65 @@ minimum_wire_cross_section = {value = [<num>,<denom>], original_unit = <str>}
 # - stranded
 # - stranded_ferrule
 # - spade
-wire_types_accepted = [<str>]
+wire_types_accepted = ["PLACEHOLDER"]
 
 # internal connections within terminal block
 # define one instance of this table array per set of connected terminals
-[[terminal_types.<str>.internal_connections]]
+[[terminal_types."PLACEHOLDER".internal_connections]]
 
 # array of terminal designations.
 # use layer_designation.connection_designation in each array value
 # to show what terminals are connected together
-connected_connections = [<str>]
+connected_connections = ["PLACEHOLDER"]
 
 # used to indicate a connection from this set of internal connections
 # to the mounting rail.
 # mainly used for PE/grounding terminal blocks.
-mount_connection = <bool>
+mount_connection = true # PLACEHOLDER
 
 
 # optional
 # Dimension subtable for each terminal_type. Groups common properties
-[terminal_types.<str>.dimensions]
+[terminal_types."PLACEHOLDER".dimensions]
 
 # overall height of terminal
-height = {value = [<num>,<denom>], original_unit = <str>}
+height = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # overall width of terminal
-width = {value = [<num>,<denom>], original_unit = <str>}
+width = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # optional
 # overall depth of terminal
-depth =  {value = [<num>,<denom>], original_unit = <str>}
+depth =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # optional
 # diameter of terminal
-diameter = {value = [<num>,<denom>], original_unit = <str>}
+diameter = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # Catalog subtable for each terminal_block_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[terminal_types.<str>.catalog]
+[terminal_types."PLACEHOLDER".catalog]
 
 # manufacturer name
-manufacturer = <str>
+manufacturer = "PLACEHOLDER"
 
 # model description
-model = <str>
+model = "PLACEHOLDER"
 
 # free text field for larger descriptions
-description = <str>
+description = "PLACEHOLDER"
 
 # [internal] part number
-part_number = <str>
+part_number = "PLACEHOLDER"
 
 # manufacturer part number
-manufactuer_part_number = <str>
+manufactuer_part_number = "PLACEHOLDER"
 
 # supplier
-supplier = <str>
+supplier = "PLACEHOLDER"
 
 # supplier part number
-supplier_part_number = <str>
+supplier_part_number = "PLACEHOLDER"
 ```
 
 #### Terminal Strip Jumper Types
@@ -1252,69 +1261,69 @@ supplier_part_number = <str>
 [terminal_strip_jumper_types]
 
 # table of attributes for one jumper type
-[terminal_strip_jumper_types.<str>]
+[terminal_strip_jumper_types."PLACEHOLDER"]
 
 # terminal block types compatible with
 # If a jumper is compatible with multiple sizes of terminal blocks
 # like the phoenix contact reducing bridges, then use the per-pin arrays to specify
-compatible_terminal_type = [<str>]
+compatible_terminal_type = ["PLACEHOLDER"]
 
-number_of_positions = <int>
+number_of_positions = 0 # PLACEHOLDER
 
 # SVGs should be layed out for a horizontal orientation when defined.
 # instances can be rotated when defined in project.
-visual_representation = <svg>
+visual_representation = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
-color = <str>
+color = "PLACEHOLDER"
 
 # optional
 # per pin compatible terminal_block_types
 # specify an array of terminal_block_types per pin
 # terminal block jumpers are reversable when specified in a terminal_strip
-pin_compatible_terminal_types = [[<str>], [<str>]]
+pin_compatible_terminal_types = [["PLACEHOLDER"], ["PLACEHOLDER"]]
 
 # optional
 # Dimension subtable for each terminal_strip_jumper_type. Groups common properties
-[terminal_strip_jumper_types.<str>.dimensions]
+[terminal_strip_jumper_types."PLACEHOLDER".dimensions]
 
 # overall height of terminal
-height = {value = [<num>,<denom>], original_unit = <str>}
+height = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # overall width of terminal
-width = {value = [<num>,<denom>], original_unit = <str>}
+width = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # optional
 # overall depth of terminal
-depth =  {value = [<num>,<denom>], original_unit = <str>}
+depth =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # optional
 # diameter of terminal
-diameter = {value = [<num>,<denom>], original_unit = <str>}
+diameter = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # Catalog subtable for each terminal_block_jumper_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[terminal_strip_jumper_types.<str>.catalog]
+[terminal_strip_jumper_types."PLACEHOLDER".catalog]
 
 # manufacturer name
-manufacturer = <str>
+manufacturer = "PLACEHOLDER"
 
 # model description
-model = <str>
+model = "PLACEHOLDER"
 
 # free text field for larger descriptions
-description = <str>
+description = "PLACEHOLDER"
 
 # [internal] part number
-part_number = <str>
+part_number = "PLACEHOLDER"
 
 # manufacturer part number
-manufactuer_part_number = <str>
+manufactuer_part_number = "PLACEHOLDER"
 
 # supplier
-supplier = <str>
+supplier = "PLACEHOLDER"
 
 # supplier part number
-supplier_part_number = <str>
+supplier_part_number = "PLACEHOLDER"
 ```
 
 #### Terminal Accessory Types
@@ -1324,63 +1333,63 @@ supplier_part_number = <str>
 [terminal_accessory_types]
 
 # Table of attributes for a specific terminal_accessory_type
-[terminal_accessory_types.<str>]
+[terminal_accessory_types."PLACEHOLDER"]
 
 # fuse holder, component holder, disconnect_blade, etc
-accessory_supertype = <str>
+accessory_supertype = "PLACEHOLDER"
 
 # array of compatible terminal_type IDs
-compatible_terminal_type = [<str>]
+compatible_terminal_type = ["PLACEHOLDER"]
 
 
 # SVGs should be layed out for a horizontal orientation when defined.
 # instances can be rotated when defined in project.
-visual_representation = <svg>
+visual_representation = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
-color = <str>
+color = "PLACEHOLDER"
 
 # optional
 # Dimension subtable for each terminal_accessory_type. Groups common properties
-[terminal_accessory_types.<str>.dimensions]
+[terminal_accessory_types."PLACEHOLDER".dimensions]
 
 # overall height of terminal accessory
-height = [<num>, <denom>]{value = [<num>,<denom>], original_unit = <str>}
+height = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # overall width of terminal accessory
-width = {value = [<num>,<denom>], original_unit = <str>}
+width = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # optional
 # overall depth of terminal accessory
-depth =  {value = [<num>,<denom>], original_unit = <str>}
+depth =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # optional
 # diameter of terminal accessory
-diameter = {value = [<num>,<denom>], original_unit = <str>}
+diameter = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # Catalog subtable for each terminal_accessory_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[terminal_accessory_types.<str>.catalog]
+[terminal_accessory_types."PLACEHOLDER".catalog]
 
 # manufacturer name
-manufacturer = <str>
+manufacturer = "PLACEHOLDER"
 
 # model description
-model = <str>
+model = "PLACEHOLDER"
 
 # free text field for larger descriptions
-description = <str>
+description = "PLACEHOLDER"
 
 # [internal] part number
-part_number = <str>
+part_number = "PLACEHOLDER"
 
 # manufacturer part number
-manufactuer_part_number = <str>
+manufactuer_part_number = "PLACEHOLDER"
 
 # supplier
-supplier = <str>
+supplier = "PLACEHOLDER"
 
 # supplier part number
-supplier_part_number = <str>
+supplier_part_number = "PLACEHOLDER"
 ```
 
 #### Terminal Strip Accessory Types
@@ -1394,56 +1403,56 @@ supplier_part_number = <str>
 
 
 # table of attributes for one terminal_block_accessory_type
-[terminal_strip_accessory_types.<str>]
+[terminal_strip_accessory_types."PLACEHOLDER"]
 
 # terminal types compatible with
-compatible_terminal_type = [<str>]
+compatible_terminal_type = ["PLACEHOLDER"]
 
 # SVGs should be layed out for a horizontal orientation when defined.
 # instances can be rotated when defined in project.
-visual_representation = <svg>
+visual_representation = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
-color = <str>
+color = "PLACEHOLDER"
 
 # optional
 # Dimension subtable for each terminal_accessory_type. Groups common properties
-[terminal_strip_accessory_types.<str>.dimensions]
+[terminal_strip_accessory_types."PLACEHOLDER".dimensions]
 
 # overall height of terminal accessory
-height = {value = [<num>,<denom>], original_unit = <str>}<num>, <denom>]
+height = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # overall width of terminal accessory
-width = {value = [<num>,<denom>], original_unit = <str>}
+width = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # optional
 # overall depth of terminal accessory
-depth =  {value = [<num>,<denom>], original_unit = <str>}
+depth =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 
 # Catalog subtable for each terminal_strip_accessory_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[terminal_strip_accessory_types.<str>.catalog]
+[terminal_strip_accessory_types."PLACEHOLDER".catalog]
 
 # manufacturer name
-manufacturer = <str>
+manufacturer = "PLACEHOLDER"
 
 # model description
-model = <str>
+model = "PLACEHOLDER"
 
 # free text field for larger descriptions
-description = <str>
+description = "PLACEHOLDER"
 
 # [internal] part number
-part_number = <str>
+part_number = "PLACEHOLDER"
 
 # manufacturer part number
-manufactuer_part_number = <str>
+manufactuer_part_number = "PLACEHOLDER"
 
 # supplier
-supplier = <str>
+supplier = "PLACEHOLDER"
 
 # supplier part number
-supplier_part_number = <str>
+supplier_part_number = "PLACEHOLDER"
 ```
 
 
@@ -1456,96 +1465,96 @@ supplier_part_number = <str>
 [wire_types]
 
 # Table (dictionary) representing one wire type
-# The `<str>` is the wire type identifier. This is a `key` in TOML and
+# The `"PLACEHOLDER"` is the wire type identifier. This is a `key` in TOML and
 # must comply with the TOML spec.
 
 # Most keys in a wire_types sub-table are optional
-[wire_types.<str>]
+[wire_types."PLACEHOLDER"]
 
 # THWN, XHHN, etc
-wire_type_code = <str>
+wire_type_code = "PLACEHOLDER"
 
 # copper, alumninum, ACSR, steel, glass, plastic
-material = <str>
+material = "PLACEHOLDER"
 
-insulated = <bool>
+insulated = true # PLACEHOLDER
 
 # PVC, Nylon, thermoplastic, etc
-insulation_material = <str>
+insulation_material = "PLACEHOLDER"
 
-insulation_thickness =  {value = [<num>,<denom>], original_unit = <str>}
+insulation_thickness =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # the cross sectional area of the conductor
-conductor_cross_sect_area =  {value = [<num>,<denom>], original_unit = <str>}
+conductor_cross_sect_area =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # including insulation
-overall_cross_sect_area =  {value = [<num>,<denom>], original_unit = <str>}
+overall_cross_sect_area =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # If conductor is stranded
-stranded = <bool>
+stranded = true # PLACEHOLDER
 
 # number of strands if cable is stranded. overriden to 1 if wire is not stranded
-num_strands = <int>
+num_strands = 0 # PLACEHOLDER
 
-strand_cross_sect_area = {value = [<num>,<denom>], original_unit = <str>}
+strand_cross_sect_area = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # AC voltage rating of insulation
-ac_insulation_potential_rating =  {value = [<num>,<denom>], original_unit = <str>}
+ac_insulation_potential_rating =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # DC voltage rating of insulation
-dc_insulation_potential_rating =  {value = [<num>,<denom>], original_unit = <str>}
+dc_insulation_potential_rating =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # temperature rating of insulation.
-insulation_temperature_rating =  {value = [<num>,<denom>], original_unit = <str>}
+insulation_temperature_rating =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # Other insulation properties such as
 # flamability or smoke generation
-insulation_rating: <str>
+insulation_rating: "PLACEHOLDER"
 
-insulation_color = <str>
+insulation_color = "PLACEHOLDER"
 
-secondary_insulation_color = <str>
+secondary_insulation_color = "PLACEHOLDER"
 
 # all items here are optional
 # and will use defaults or insulation color values if not specified
 # schematic appearance of linear items
-[wire_types.<str>.line_style]
+[wire_types."PLACEHOLDER".line_style]
 
-color = <str>
+color = "PLACEHOLDER"
 
-secondary_color = <str>
+secondary_color = "PLACEHOLDER"
 
-line_thickness = {value = [<num>,<denom>], original_unit = <str>}
+line_thickness = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # array of lengths/percentages of dashes and gaps
 # uses same specification as SVG stroke-dasharray field.
-line_appearance = [<int>]
+line_appearance = [0] # PLACEHOLDER
 
 
 # Catalog subtable for each wire_type. Groups common properties
 # All fields here are optional, but highly encouraged.
-[wire_types.<str>.catalog]
+[wire_types."PLACEHOLDER".catalog]
 
 # manufacturer name
-manufacturer = <str>
+manufacturer = "PLACEHOLDER"
 
 # wire type model description
-model = <str>
+model = "PLACEHOLDER"
 
 # free text field for larger descriptions
-description = <str>
+description = "PLACEHOLDER"
 
 # [internal] part number
-part_number = <str>
+part_number = "PLACEHOLDER"
 
 # manufacturer part number
-manufactuer_part_number = <str>
+manufactuer_part_number = "PLACEHOLDER"
 
 # supplier
-supplier = <str>
+supplier = "PLACEHOLDER"
 
 # supplier part number
-supplier_part_number = <str>
+supplier_part_number = "PLACEHOLDER"
 ```
 
 ### Project Definitions
@@ -1572,50 +1581,50 @@ Projects consist of the following entities:
 [cables]
 
 # table of attributes on cable instance
-[cables.<str>]
+[cables."PLACEHOLDER"]
 # ID of cable type
-cable_type = <str>
+cable_type = "PLACEHOLDER"
 
 # structured name / cable number
-identifier = <str>
+identifier = "PLACEHOLDER"
 
 # optional description
-description = <str>
+description = "PLACEHOLDER"
 
 # ID of pathway instance
-pathway = <str>
+pathway = "PLACEHOLDER"
 
-length =  {value = [<num>,<denom>], original_unit = <str>}
+length =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # Physical Location Information
-[cables.<str>.physical_location]
+[cables."PLACEHOLDER".physical_location]
 
-street_address = <str>
-city = <str>
-state = <str>
-zip_code = <str>
-latitude = [<num>, <denom>]
-longitude = [<num>, <denom>]
-structured_location_id = <str>
-planet = <str>
-building = <str>
+street_address = "PLACEHOLDER"
+city = "PLACEHOLDER"
+state = "PLACEHOLDER"
+zip_code = "PLACEHOLDER"
+latitude = [0,0]
+longitude = [0,0]
+structured_location_id = "PLACEHOLDER"
+planet = "PLACEHOLDER"
+building = "PLACEHOLDER"
 
-[cables.<str>.iec_codes]
-location = <str>
-installation = <str>
+[cables."PLACEHOLDER".iec_codes]
+location = "PLACEHOLDER"
+installation = "PLACEHOLDER"
 
 # custom fields for user specified data. Not parsed
-[cables.<str>.user_fields]
-user0 = <str>
-user1 = <str>
-user2 = <str>
-user3 = <str>
-user4 = <str>
-user5 = <str>
-user6 = <str>
-user7 = <str>
-user8 = <str>
-user9 = <str>
+[cables."PLACEHOLDER".user_fields]
+user0 = "PLACEHOLDER"
+user1 = "PLACEHOLDER"
+user2 = "PLACEHOLDER"
+user3 = "PLACEHOLDER"
+user4 = "PLACEHOLDER"
+user5 = "PLACEHOLDER"
+user6 = "PLACEHOLDER"
+user7 = "PLACEHOLDER"
+user8 = "PLACEHOLDER"
+user9 = "PLACEHOLDER"
 ```
 
 #### Connections
@@ -1624,18 +1633,18 @@ user9 = <str>
 # This is the only root level item in the project definition that is an array rather than a table with sub-tables
 # This is because there are no human generated identifiers. Individual connections are tracked internally.
 
-# <str> for both end1 and end2 are dot joined ids of the specific objects
+# "PLACEHOLDER" for both end1 and end2 are dot joined ids of the specific objects
 # for example to connect a wire within a cable to a connection on a terminal block
 # TODO finish this example
 [[connections]]
 
-end1 = <str>
+end1 = "PLACEHOLDER"
 
-end1_type = <str>
+end1_type = "PLACEHOLDER"
 
-end2 = <str>
+end2 = "PLACEHOLDER"
 
-end2_type = <str>
+end2_type = "PLACEHOLDER"
 ```
 
 #### Enclosures
@@ -1644,45 +1653,45 @@ end2_type = <str>
 [enclosures]
 
 # table of attributes on enclosure instance
-[enclosures.<str>]
+[enclosures."PLACEHOLDER"]
 # ID of enclosure type
-enclosure_type = <str>
+enclosure_type = "PLACEHOLDER"
 
 # structured name
-identifier = <str>
+identifier = "PLACEHOLDER"
 
 # optional description
-description = <str>
+description = "PLACEHOLDER"
 
 # Physical Location Information
-[enclosures.<str>.physical_location]
+[enclosures."PLACEHOLDER".physical_location]
 
-street_address = <str>
-city = <str>
-state = <str>
-zip_code = <str>
-latitude = [<num>, <denom>]
-longitude = [<num>, <denom>]
-structured_location_id = <str>
-planet = <str>
-building = <str>
+street_address = "PLACEHOLDER"
+city = "PLACEHOLDER"
+state = "PLACEHOLDER"
+zip_code = "PLACEHOLDER"
+latitude = [0,0]
+longitude = [0,0]
+structured_location_id = "PLACEHOLDER"
+planet = "PLACEHOLDER"
+building = "PLACEHOLDER"
 
-[enclosures.<str>.iec_codes]
-location = <str>
-installation = <str>
+[enclosures."PLACEHOLDER".iec_codes]
+location = "PLACEHOLDER"
+installation = "PLACEHOLDER"
 
 # custom fields for user specified data. Not parsed
-[enclosures.<str>.user_fields]
-user0 = <str>
-user1 = <str>
-user2 = <str>
-user3 = <str>
-user4 = <str>
-user5 = <str>
-user6 = <str>
-user7 = <str>
-user8 = <str>
-user9 = <str>
+[enclosures."PLACEHOLDER".user_fields]
+user0 = "PLACEHOLDER"
+user1 = "PLACEHOLDER"
+user2 = "PLACEHOLDER"
+user3 = "PLACEHOLDER"
+user4 = "PLACEHOLDER"
+user5 = "PLACEHOLDER"
+user6 = "PLACEHOLDER"
+user7 = "PLACEHOLDER"
+user8 = "PLACEHOLDER"
+user9 = "PLACEHOLDER"
 
 # dictionary of tables of sublocations/mounting locations within the enclosure
 # used to represent DIN rail, or just specific coordinate locations in a specific location
@@ -1694,21 +1703,21 @@ user9 = <str>
 # individual DIN rails on a backplane, and then the distance along the DIN rail
 # individual keystone slots on a panel
 # rack units / sub rack units within a rack
-[enclosures.<str>.mount_points.CoordinatePair.<str>]
+[enclosures."PLACEHOLDER".mount_points.CoordinatePair."PLACEHOLDER"]
 
 # optional mounting rail id
 # this ID must be defined in the project.
-mounting_rail_id = <str>
+mounting_rail_id = "PLACEHOLDER"
 
 # distance from left side of parent enclosure or location
-x =  {value = [<num>,<denom>], original_unit = <str>}
+x =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # distance from bottom of parent enclosure
-y =  {value = [<num>,<denom>], original_unit = <str>}
+y =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # distance along left side of location or rail
 # allows you to not have to specify another sub-location for every single rail mounted component
-distance = {value = [<num>,<denom>], original_unit = <str>}
+distance = {value = [0,0], original_unit = "PLACEHOLDER"}
 ```
 
 #### Equipment
@@ -1717,59 +1726,59 @@ distance = {value = [<num>,<denom>], original_unit = <str>}
 [equipment]
 
 # table of attributes for an equipment instance
-[equipment.<str>]
+[equipment."PLACEHOLDER"]
 
 # ID of equipment type
-equipment_type = <str>
+equipment_type = "PLACEHOLDER"
 
 # structured name
-identifier = <str>
+identifier = "PLACEHOLDER"
 
 # must be in list of mounting types defined on equipment type
-mounting_type = <str>
+mounting_type = "PLACEHOLDER"
 
 # optional
 # ID of enclosure instance
-enclosure = <str>
+enclosure = "PLACEHOLDER"
 
 # optional
 # enclosure must also be defined
 # ID of mount point (within an enclosure)
-mount_point = <str>
+mount_point = "PLACEHOLDER"
 
 # optional description
-description = <str>
+description = "PLACEHOLDER"
 
 # Physical Location Information
-[equipment.<str>.physical_location]
+[equipment."PLACEHOLDER".physical_location]
 
-street_address = <str>
-city = <str>
-state = <str>
-zip_code = <str>
-latitude = [<num>, <denom>]
-longitude = [<num>, <denom>]
-structured_location_id = <str>
-planet = <str>
-building = <str>
+street_address = "PLACEHOLDER"
+city = "PLACEHOLDER"
+state = "PLACEHOLDER"
+zip_code = "PLACEHOLDER"
+latitude = [0,0]
+longitude = [0,0]
+structured_location_id = "PLACEHOLDER"
+planet = "PLACEHOLDER"
+building = "PLACEHOLDER"
 
 
-[equipment.<str>.iec_codes]
-location = <str>
-installation = <str>
+[equipment."PLACEHOLDER".iec_codes]
+location = "PLACEHOLDER"
+installation = "PLACEHOLDER"
 
 # custom fields for user specified data. Not parsed
-[equipment.<str>.user_fields]
-user0 = <str>
-user1 = <str>
-user2 = <str>
-user3 = <str>
-user4 = <str>
-user5 = <str>
-user6 = <str>
-user7 = <str>
-user8 = <str>
-user9 = <str>
+[equipment."PLACEHOLDER".user_fields]
+user0 = "PLACEHOLDER"
+user1 = "PLACEHOLDER"
+user2 = "PLACEHOLDER"
+user3 = "PLACEHOLDER"
+user4 = "PLACEHOLDER"
+user5 = "PLACEHOLDER"
+user6 = "PLACEHOLDER"
+user7 = "PLACEHOLDER"
+user8 = "PLACEHOLDER"
+user9 = "PLACEHOLDER"
 ```
 
 #### Mounting Rails
@@ -1778,41 +1787,41 @@ user9 = <str>
 [mounting_rails]
 
 # table of attributes for a specific mounting rail
-[mounting_rails.<str>]
+[mounting_rails."PLACEHOLDER"]
 
-mounting_rail_type = <str>
+mounting_rail_type = "PLACEHOLDER"
 
-length = {value = [<num>,<denom>], original_unit = <str>}
+length = {value = [0,0], original_unit = "PLACEHOLDER"}
 
-[mounting_rails.<str>.iec_codes]
-location = <str>
-installation = <str>
+[mounting_rails."PLACEHOLDER".iec_codes]
+location = "PLACEHOLDER"
+installation = "PLACEHOLDER"
 
 # Physical Location Information
-[mounting_rails.<str>.physical_location]
+[mounting_rails."PLACEHOLDER".physical_location]
 
-street_address = <str>
-city = <str>
-state = <str>
-zip_code = <str>
-latitude = [<num>, <denom>]
-longitude = [<num>, <denom>]
-structured_location_id = <str>
-planet = <str>
-building = <str>
+street_address = "PLACEHOLDER"
+city = "PLACEHOLDER"
+state = "PLACEHOLDER"
+zip_code = "PLACEHOLDER"
+latitude = [0,0]
+longitude = [0,0]
+structured_location_id = "PLACEHOLDER"
+planet = "PLACEHOLDER"
+building = "PLACEHOLDER"
 
 # custom fields for user specified data. Not parsed
-[mounting_rails.<str>.user_fields]
-user0 = <str>
-user1 = <str>
-user2 = <str>
-user3 = <str>
-user4 = <str>
-user5 = <str>
-user6 = <str>
-user7 = <str>
-user8 = <str>
-user9 = <str>
+[mounting_rails."PLACEHOLDER".user_fields]
+user0 = "PLACEHOLDER"
+user1 = "PLACEHOLDER"
+user2 = "PLACEHOLDER"
+user3 = "PLACEHOLDER"
+user4 = "PLACEHOLDER"
+user5 = "PLACEHOLDER"
+user6 = "PLACEHOLDER"
+user7 = "PLACEHOLDER"
+user8 = "PLACEHOLDER"
+user9 = "PLACEHOLDER"
 ```
 
 #### Pathways
@@ -1821,48 +1830,48 @@ user9 = <str>
 [pathways]
 
 # Table of attributes on a pathway instance
-[pathways.<str>]
+[pathways."PLACEHOLDER"]
 
 # ID of pathway type
-pathway_type = <str>
+pathway_type = "PLACEHOLDER"
 
 # structured name / pathway identifier
-identifier = <str>
+identifier = "PLACEHOLDER"
 
 # optional description
-description = <str>
+description = "PLACEHOLDER"
 
-length =  {value = [<num>,<denom>], original_unit = <str>}
+length =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # Physical Location Information
-[pathways.<str>.physical_location]
+[pathways."PLACEHOLDER".physical_location]
 
-street_address = <str>
-city = <str>
-state = <str>
-zip_code = <str>
-latitude = [<num>, <denom>]
-longitude = [<num>, <denom>]
-structured_location_id = <str>
-planet = <str>
-building = <str>
+street_address = "PLACEHOLDER"
+city = "PLACEHOLDER"
+state = "PLACEHOLDER"
+zip_code = "PLACEHOLDER"
+latitude = [0,0]
+longitude = [0,0]
+structured_location_id = "PLACEHOLDER"
+planet = "PLACEHOLDER"
+building = "PLACEHOLDER"
 
-[pathways.<str>.iec_codes]
-location = <str>
-installation = <str>
+[pathways."PLACEHOLDER".iec_codes]
+location = "PLACEHOLDER"
+installation = "PLACEHOLDER"
 
 # custom fields for user specified data. Not parsed
-[pathways.<str>.user_fields]
-user0 = <str>
-user1 = <str>
-user2 = <str>
-user3 = <str>
-user4 = <str>
-user5 = <str>
-user6 = <str>
-user7 = <str>
-user8 = <str>
-user9 = <str>
+[pathways."PLACEHOLDER".user_fields]
+user0 = "PLACEHOLDER"
+user1 = "PLACEHOLDER"
+user2 = "PLACEHOLDER"
+user3 = "PLACEHOLDER"
+user4 = "PLACEHOLDER"
+user5 = "PLACEHOLDER"
+user6 = "PLACEHOLDER"
+user7 = "PLACEHOLDER"
+user8 = "PLACEHOLDER"
+user9 = "PLACEHOLDER"
 ```
 
 #### Schematic Symbols
@@ -1872,29 +1881,29 @@ user9 = <str>
 [schematic_symbols]
 
 # Table of attributes for a specific instance of a symbol
-[schematic_symbols.<str>]
+[schematic_symbols."PLACEHOLDER"]
 
-symbol_type = <str>
+symbol_type = "PLACEHOLDER"
 
-symbol_color = <str>
+symbol_color = "PLACEHOLDER"
 
 # What this symbol represents.
 # The type field must be filled in with Equipment, Terminal, or Connector
 # and the value field must be filled in with an ID of a matching project component
-represented_object = {type = <str>, value = <str>}
+represented_object = {type = "PLACEHOLDER", value = "PLACEHOLDER"}
 
 # custom fields for user specified data. Not parsed
-[schematic_symbols.<str>.user_fields]
-user0 = <str>
-user1 = <str>
-user2 = <str>
-user3 = <str>
-user4 = <str>
-user5 = <str>
-user6 = <str>
-user7 = <str>
-user8 = <str>
-user9 = <str>
+[schematic_symbols."PLACEHOLDER".user_fields]
+user0 = "PLACEHOLDER"
+user1 = "PLACEHOLDER"
+user2 = "PLACEHOLDER"
+user3 = "PLACEHOLDER"
+user4 = "PLACEHOLDER"
+user5 = "PLACEHOLDER"
+user6 = "PLACEHOLDER"
+user7 = "PLACEHOLDER"
+user8 = "PLACEHOLDER"
+user9 = "PLACEHOLDER"
 ```
 
 #### Term Cables
@@ -1903,49 +1912,49 @@ user9 = <str>
 [term_cables]
 
 # table of attributes on a pathway instance
-[term_cables.<str>]
+[term_cables."PLACEHOLDER"]
 
 # ID of term_cable type
-term_cable_type = <str>
+term_cable_type = "PLACEHOLDER"
 
 # structured name / cable number
-identifier = <str>
+identifier = "PLACEHOLDER"
 
 # optional description
-description = <str>
+description = "PLACEHOLDER"
 
 # ID of pathway instance
-pathway = <str>
+pathway = "PLACEHOLDER"
 
 # Physical Location Information
-[term_cables.<str>.physical_location]
+[term_cables."PLACEHOLDER".physical_location]
 
-street_address = <str>
-city = <str>
-state = <str>
-zip_code = <str>
-latitude = [<num>, <denom>]
-longitude = [<num>, <denom>]
-structured_location_id = <str>
-planet = <str>
-building = <str>
+street_address = "PLACEHOLDER"
+city = "PLACEHOLDER"
+state = "PLACEHOLDER"
+zip_code = "PLACEHOLDER"
+latitude = [0,0]
+longitude = [0,0]
+structured_location_id = "PLACEHOLDER"
+planet = "PLACEHOLDER"
+building = "PLACEHOLDER"
 
-[term_cables.<str>.iec_codes]
-location = <str>
-installation = <str>
+[term_cables."PLACEHOLDER".iec_codes]
+location = "PLACEHOLDER"
+installation = "PLACEHOLDER"
 
 # custom fields for user specified data. Not parsed
-[term_cables.<str>.user_fields]
-user0 = <str>
-user1 = <str>
-user2 = <str>
-user3 = <str>
-user4 = <str>
-user5 = <str>
-user6 = <str>
-user7 = <str>
-user8 = <str>
-user9 = <str>
+[term_cables."PLACEHOLDER".user_fields]
+user0 = "PLACEHOLDER"
+user1 = "PLACEHOLDER"
+user2 = "PLACEHOLDER"
+user3 = "PLACEHOLDER"
+user4 = "PLACEHOLDER"
+user5 = "PLACEHOLDER"
+user6 = "PLACEHOLDER"
+user7 = "PLACEHOLDER"
+user8 = "PLACEHOLDER"
+user9 = "PLACEHOLDER"
 ```
 
 #### Terminal Strips
@@ -1956,98 +1965,98 @@ user9 = <str>
 [terminal_strips]
 
 # table of attributes for a specific terminal strip
-[terminal_strips.<str>]
+[terminal_strips."PLACEHOLDER"]
 
 # structured name/tag strip ID / terminal strip name
-identifier = <str>
+identifier = "PLACEHOLDER"
 
 # containing enclosure id
-enclosure = <str>
+enclosure = "PLACEHOLDER"
 
 # mounting rail id
-mounting_rail = <str>
+mounting_rail = "PLACEHOLDER"
 
 # Physical Location Information
-[terminal_strips.<str>.physical_location]
+[terminal_strips."PLACEHOLDER".physical_location]
 
-street_address = <str>
-city = <str>
-state = <str>
-zip_code = <str>
-latitude = [<num>, <denom>]
-longitude = [<num>, <denom>]
-structured_location_id = <str>
-planet = <str>
-building = <str>
+street_address = "PLACEHOLDER"
+city = "PLACEHOLDER"
+state = "PLACEHOLDER"
+zip_code = "PLACEHOLDER"
+latitude = [0,0]
+longitude = [0,0]
+structured_location_id = "PLACEHOLDER"
+planet = "PLACEHOLDER"
+building = "PLACEHOLDER"
 
-[terminal_strips.<str>.iec_codes]
-location = <str>
-installation = <str>
+[terminal_strips."PLACEHOLDER".iec_codes]
+location = "PLACEHOLDER"
+installation = "PLACEHOLDER"
 
 # custom fields for user specified data. Not parsed
-[terminal_strips.<str>.user_fields]
-user0 = <str>
-user1 = <str>
-user2 = <str>
-user3 = <str>
-user4 = <str>
-user5 = <str>
-user6 = <str>
-user7 = <str>
-user8 = <str>
-user9 = <str>
+[terminal_strips."PLACEHOLDER".user_fields]
+user0 = "PLACEHOLDER"
+user1 = "PLACEHOLDER"
+user2 = "PLACEHOLDER"
+user3 = "PLACEHOLDER"
+user4 = "PLACEHOLDER"
+user5 = "PLACEHOLDER"
+user6 = "PLACEHOLDER"
+user7 = "PLACEHOLDER"
+user8 = "PLACEHOLDER"
+user9 = "PLACEHOLDER"
 
 # array of tables defining individual terminal blocks
 # in terminal_strip.
 # Definitions proceed left to right, horizontally.
-[[terminal_strips.<str>.terminals]]
+[[terminal_strips."PLACEHOLDER".terminals]]
 
 # number used for display order, defined left to right
-terminal_number = <int>
+terminal_number = 0 # PLACEHOLDER
 
 # structured name / terminal number
-identifier = <str>
+identifier = "PLACEHOLDER"
 
 # optional descriptive label
-label = <str>
+label = "PLACEHOLDER"
 
 # terminal functional accessories
 # These are things like fuses/fuse holders, component holders,
 # lights, etc.
-# <str> is accessory_type_id
-accessories = [<str>]
+# "PLACEHOLDER" is accessory_type_id
+accessories = ["PLACEHOLDER"]
 
 # TODO: this should probably be an embedded table
 # defining either terminal or terminal_strip_accessory type
 # must be defined under the defintion of the terminal_block array it applies to
-# second <str> can either be `Terminal` or `Accessory`
-[terminal_strips.<str>.terminals.<str>]
+# second "PLACEHOLDER" can either be `Terminal` or `Accessory`
+[terminal_strips."PLACEHOLDER".terminals."PLACEHOLDER"]
 
 # ID of terminal_block_type or terminal_strip_accessory_type
-component_type = <str>
+component_type = "PLACEHOLDER"
 
 # array of jumpers defined in terminal strip
 # these are only jumpers that exist within
 # one terminal strip.
 # wire jumpers that cross terminal strips
 # should be defined as wires
-[[terminal_strips.<str>.jumpers]]
+[[terminal_strips."PLACEHOLDER".jumpers]]
 
 # id of jumper type
-jumper_type = <str>
+jumper_type = "PLACEHOLDER"
 
 # structured name / terminal number
-identifier = <str>
+identifier = "PLACEHOLDER"
 
 # optional descriptive label
-label = <str>
+label = "PLACEHOLDER"
 
 # array of `terminal_number`s as defined in the terminals array
 # that indicate which terminals within a terminal strip
 # this jumper connects
 # can optionally have the terminal layer indicated with a dot and
 # the terminal layer designation, allowing for multi-layer jumpers
-jumper_connections = [<str>]
+jumper_connections = ["PLACEHOLDER"]
 ```
 
 #### Wires
@@ -2058,58 +2067,58 @@ jumper_connections = [<str>]
 [wires]
 
 # table of attributes for wire instance
-[wires.<str>]
+[wires."PLACEHOLDER"]
 
 # ID of wire type
-wire_type = <str>
+wire_type = "PLACEHOLDER"
 
 # structured name / wire number
-identifier = <str>
+identifier = "PLACEHOLDER"
 
 # optional description
-description = <str>
+description = "PLACEHOLDER"
 
 # ID of containing pathway instance
-pathway = <str>
+pathway = "PLACEHOLDER"
 
 # wire length
-length =  {value = [<num>,<denom>], original_unit = <str>}
+length =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # will be checked for 1 pin only
 # intended for things like ferrules, ring terminals, etc.
-end1_connector_type = <str>
+end1_connector_type = "PLACEHOLDER"
 
-end2_connector_type = <str>
+end2_connector_type = "PLACEHOLDER"
 
 # Physical Location Information
-[wires.<str>.physical_location]
+[wires."PLACEHOLDER".physical_location]
 
-street_address = <str>
-city = <str>
-state = <str>
-zip_code = <str>
-latitude = [<num>, <denom>]
-longitude = [<num>, <denom>]
-structured_location_id = <str>
-planet = <str>
-building = <str>
+street_address = "PLACEHOLDER"
+city = "PLACEHOLDER"
+state = "PLACEHOLDER"
+zip_code = "PLACEHOLDER"
+latitude = [0,0]
+longitude = [0,0]
+structured_location_id = "PLACEHOLDER"
+planet = "PLACEHOLDER"
+building = "PLACEHOLDER"
 
-[wires.<str>.iec_codes]
-location = <str>
-installation = <str>
+[wires."PLACEHOLDER".iec_codes]
+location = "PLACEHOLDER"
+installation = "PLACEHOLDER"
 
 # custom fields for user specified data. Not parsed
-[wires.<str>.user_fields]
-user0 = <str>
-user1 = <str>
-user2 = <str>
-user3 = <str>
-user4 = <str>
-user5 = <str>
-user6 = <str>
-user7 = <str>
-user8 = <str>
-user9 = <str>
+[wires."PLACEHOLDER".user_fields]
+user0 = "PLACEHOLDER"
+user1 = "PLACEHOLDER"
+user2 = "PLACEHOLDER"
+user3 = "PLACEHOLDER"
+user4 = "PLACEHOLDER"
+user5 = "PLACEHOLDER"
+user6 = "PLACEHOLDER"
+user7 = "PLACEHOLDER"
+user8 = "PLACEHOLDER"
+user9 = "PLACEHOLDER"
 ```
 
 TODO: drawings
