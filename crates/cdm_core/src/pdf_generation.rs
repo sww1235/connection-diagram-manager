@@ -12,7 +12,7 @@ use crate::{
             enclosure::{Enclosure, MountPoint},
         },
     },
-    error::{ProjectError, LibraryError, Error, PDFGenerationError},
+    error::{Error, LibraryError, PDFGenerationError, ProjectError},
 };
 
 //TODO: add page templates with proper borders and titleblocks

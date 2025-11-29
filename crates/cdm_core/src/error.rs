@@ -78,7 +78,7 @@ pub enum LibraryError {
     },
     /// `WireTypeError` are errors resulting from functions specific to `WireType`s.
     #[error(transparent)]
-    WireTypeError(#[from] WireTypeError)
+    WireTypeError(#[from] WireTypeError),
 }
 /// `WireTypeError` are errors resulting from functions specific to `WireType`s.
 #[derive(Debug, Error)]
@@ -86,7 +86,7 @@ pub enum LibraryError {
 pub enum WireTypeError {
     /// This error is used when failing to calculate Overall Cross Sectional Area
     #[error("Overall Cross Seectional Area calculation failed due to {0}")]
-    UnableToCalculateOverallCrossSectionalArea(String)
+    UnableToCalculateOverallCrossSectionalArea(String),
 }
 
 /// `ProjectError` is the list of errors that can occur within code related to `Project` data,
