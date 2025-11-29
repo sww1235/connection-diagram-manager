@@ -349,8 +349,8 @@ color = "PLACEHOLDER"
 [cable_types."PLACEHOLDER".cores."PLACEHOLDER"]
 
 # identifier of wire/cable type that core is
-# <contained_type> can be either WireType or CableType
-<contained_type> = "PLACEHOLDER"
+# the key of this key/value pair can be either WireType or CableType
+WireType = "PLACEHOLDER"
 
 # all items here are optional
 # and will use defaults or cable outer jacket/insulation color if not specified
@@ -1515,7 +1515,7 @@ insulation_temperature_rating =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # Other insulation properties such as
 # flamability or smoke generation
-insulation_rating: "PLACEHOLDER"
+insulation_rating = "PLACEHOLDER"
 
 insulation_color = "PLACEHOLDER"
 
