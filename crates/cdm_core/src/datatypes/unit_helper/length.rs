@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+#[expect(clippy::wildcard_imports)]
 use uom::si::{Unit, length::*, rational64};
 
 use super::IntermediateUnit;

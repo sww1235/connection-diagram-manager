@@ -9,7 +9,7 @@ use crate::{
     datatypes::{
         color::Color,
         svg::Svg,
-        unit_helper::CrossSectionalArea,
+        unit_helper::cross_sectional_area::CrossSectionalArea,
         util_types::{Catalog, Dimension},
     },
     traits::FromFile,

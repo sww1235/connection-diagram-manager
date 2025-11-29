@@ -1,17 +1,19 @@
 use std::path::{Path, PathBuf};
 
-use num_integer::Roots;
-use num_rational::Rational64;
-use num_traits::FromPrimitive;
 use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
         color::Color,
-        unit_helper::{CrossSectionalArea, ElectricPotential, Length, NominalWireSize, TemperatureInterval},
+        unit_helper::{
+            cross_sectional_area::CrossSectionalArea,
+            electric_potential::ElectricPotential,
+            length::Length,
+            nominal_wire_size::NominalWireSize,
+            temperature_interval::TemperatureInterval,
+        },
         util_types::{Catalog, LineStyle},
     },
-    error::WireTypeError,
     traits::FromFile,
 };
 
@@ -61,7 +63,7 @@ pub struct WireType {
     /// How many strands is conductor made of
     pub num_strands: u64,
     /// cross sectional area of individual strand.
-    pub strand_cross_sect_area: Option<Area>,
+    pub strand_cross_sect_area: Option<CrossSectionalArea>,
     /// datafile the struct instance was read in from
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,

@@ -152,4 +152,12 @@ pub enum UnitParsingError {
         /// checked quantity type
         quantity_type: String,
     },
+    #[error("Unable to store provided value of quantity type {quantity_type} into a {data_type}")]
+    /// Error resulting from a value that is unable to be stored in the underlying datatype
+    ValueError {
+        /// provided quantity type
+        quantity_type: String,
+        /// underlying datatype
+        data_type: String,
+    },
 }

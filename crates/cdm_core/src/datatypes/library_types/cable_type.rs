@@ -8,7 +8,12 @@ use serde::{Deserialize, Serialize};
 use crate::{
     datatypes::{
         color::Color,
-        unit_helper::{CrossSectionalArea, ElectricPotential, Length, TemperatureInterval},
+        unit_helper::{
+            cross_sectional_area::CrossSectionalArea,
+            electric_potential::ElectricPotential,
+            length::Length,
+            temperature_interval::TemperatureInterval,
+        },
         util_types::{Catalog, CrossSection, Dimension, LineStyle},
     },
     traits::FromFile,

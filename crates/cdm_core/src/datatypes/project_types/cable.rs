@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
-        unit_helper::Length,
+        unit_helper::length::Length,
         util_types::{IECCodes, PhysicalLocation, UserFields},
     },
     traits::FromFile,

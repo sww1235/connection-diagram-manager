@@ -1,11 +1,17 @@
 use num_rational::Rational64;
 use serde::{Deserialize, Serialize};
 
+/// Helper types and functions for `Area` units
 pub mod area;
+/// Helper types and functions for `Cross Sectional Area` units
 pub mod cross_sectional_area;
+/// Helper types and functions for `Electric Potential` units
 pub mod electric_potential;
+/// Helper types and functions for `Length` units
 pub mod length;
+/// Helper types and functions for `Nominal Wire Size` units
 pub mod nominal_wire_size;
+/// Helper types and functions for `Temperature Interval` units
 pub mod temperature_interval;
 
 //TODO: implement to/from CrossSectionalArea to AWG

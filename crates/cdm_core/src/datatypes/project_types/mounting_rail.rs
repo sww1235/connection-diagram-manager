@@ -8,7 +8,7 @@ use crate::{
     datatypes::{
         library_types::Library,
         svg::Svg,
-        unit_helper::Length,
+        unit_helper::length::Length,
         util_types::{IECCodes, PhysicalLocation, UserFields},
     },
     error::{Error, LibraryError},

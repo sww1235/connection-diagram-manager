@@ -18,7 +18,14 @@ use cdm_core::{
     datatypes::{
         library_types::Library,
         project_types::{self, Project},
-        unit_helper::{Area, CrossSectionalArea, ElectricPotential, Length, TemperatureInterval},
+        unit_helper::{
+            area::Area,
+            cross_sectional_area::CrossSectionalArea,
+            electric_potential::ElectricPotential,
+            length::Length,
+            nominal_wire_size::NominalWireSize,
+            temperature_interval::TemperatureInterval,
+        },
     },
     directory_navigator,
 };
@@ -137,6 +144,11 @@ fn main() -> anyhow::Result<()> {
             println!("{}", Length::output_units());
             return Ok(());
         }
+        Some(PrintUnitCmdOption::NominalWireSize) => {
+            println!("{:^43}", "Nominal Wire Size Units");
+            println!("{}", NominalWireSize::output_units());
+            return Ok(());
+        }
         Some(PrintUnitCmdOption::TemperatureInterval) => {
             println!("{:^43}", "Temperature Units");
             println!("{}", TemperatureInterval::output_units());
@@ -246,6 +258,8 @@ enum PrintUnitCmdOption {
     ElectricPotential,
     /// Print `Length` unit options
     Length,
+    /// Print `NominalWiresize` unit options
+    NominalWireSize,
     /// Print `TemperatureInterval` unit options
     TemperatureInterval,
 }

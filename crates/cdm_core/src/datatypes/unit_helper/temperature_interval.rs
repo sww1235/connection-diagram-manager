@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+#[expect(clippy::wildcard_imports)]
 use uom::si::{Unit, rational64, temperature_interval::*};
 
 use super::IntermediateUnit;

@@ -1,3 +1,4 @@
+use num_traits::ToPrimitive;
 use serde::{Deserialize, Serialize};
 
 use super::IntermediateUnit;
@@ -17,6 +18,7 @@ pub struct NominalWireSize {
 //TODO: replace f64 with a fixed/decimal equivalent type
 /// Represents common nominal units for wire sizes
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[non_exhaustive]
 pub enum NominalWireUnit {
     /// Nominal size represented in American Wire Gauge (AWG)
     Awg(f64),
@@ -32,131 +34,63 @@ impl Default for NominalWireUnit {
     }
 }
 
+impl NominalWireSize {
+    /// outputs all usable `NominalWireSize` units allowed in configuration files in the form of
+    /// `<unit name>: <unit abbreviation>`
+    #[must_use]
+    #[expect(clippy::string_add)]
+    pub fn output_units() -> String {
+        // need to do this hack AFAIK so the spacing is the same
+        let string1 = "Unit Name";
+        let string2 = "Abbreviation";
+        let dash_string = "-".repeat(21);
+        format!("{string1:^21}|{string2:^21}\n{dash_string}|{dash_string}\n")
+            + format!("{:^21}|{:^21}\n", "American Wire Gauge", "awg").as_str()
+            + format!("{:^21}|{:^21}\n", "square millimeter", "mm²").as_str()
+            + format!("{:^21}|{:^21}\n", "circular mil", "cmil").as_str()
+            + format!("{:^21}|{:^21}\n", "thousand circular mil", "kcmil").as_str()
+            + format!("{:^21}|{:^21}\n", "thousand circular mil", "MCM").as_str()
+    }
+}
+
 impl TryFrom<IntermediateUnit> for NominalWireSize {
     type Error = UnitParsingError;
-    #[expect(clippy::too_many_lines, clippy::match_same_arms)]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
-        match item.original_unit.as_str() {
-            //"YK" | "yottakelvin" => Ok(Self {
-            //    value: rational64::TemperatureInterval::new::<yottakelvin>(item.value),
-            //    original_unit: item.original_unit,
-            //}),
-            // Unit unsupported due to iliekturtles/uom#60
-            "YK" | "yottakelvin" => Err(UnitParsingError::UnsupportedUnit {
-                unit_string: item.original_unit,
-                quantity_type: "Temperature Interval".to_string(),
-            }),
-            //"ZK" | "zettakelvin" => Ok(Self {
-            //    value: rational64::TemperatureInterval::new::<zettakelvin>(item.value),
-            //    original_unit: item.original_unit,
-            //}),
-            // Unit unsupported due to iliekturtles/uom#60
-            "ZK" | "zettakelvin" => Err(UnitParsingError::UnsupportedUnit {
-                unit_string: item.original_unit,
-                quantity_type: "Temperature Interval".to_string(),
-            }),
-            "EK" | "exakelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<exakelvin>(item.value),
+        match item.original_unit.to_uppercase().as_str() {
+            "AWG" | "American Wire Gauge" => Ok(Self {
+                value: NominalWireUnit::Awg(item.value.to_f64().ok_or(UnitParsingError::ValueError {
+                    quantity_type: "Nominal Wire Size".to_string(),
+                    data_type: "f64".to_string(),
+                })?),
                 original_unit: item.original_unit,
             }),
-            "PK" | "petakelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<petakelvin>(item.value),
+            "MM²" => Ok(Self {
+                value: NominalWireUnit::Mm2(item.value.to_f64().ok_or(UnitParsingError::ValueError {
+                    quantity_type: "Nominal Wire Size".to_string(),
+                    data_type: "f64".to_string(),
+                })?),
                 original_unit: item.original_unit,
             }),
-            "TK" | "terakelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<terakelvin>(item.value),
+            "CMIL" => Ok(Self {
+                value: NominalWireUnit::Cmil(item.value.to_f64().ok_or(UnitParsingError::ValueError {
+                    quantity_type: "Nominal Wire Size".to_string(),
+                    data_type: "f64".to_string(),
+                })?),
                 original_unit: item.original_unit,
             }),
-            "GK" | "gigakelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<gigakelvin>(item.value),
-                original_unit: item.original_unit,
-            }),
-            "MK" | "megakelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<megakelvin>(item.value),
-                original_unit: item.original_unit,
-            }),
-            "kK" | "kilokelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<kilokelvin>(item.value),
-                original_unit: item.original_unit,
-            }),
-            "hK" | "hectokelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<hectokelvin>(item.value),
-                original_unit: item.original_unit,
-            }),
-            "daK" | "decakelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<decakelvin>(item.value),
-                original_unit: item.original_unit,
-            }),
-            "K" | "kelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<kelvin>(item.value),
-                original_unit: item.original_unit,
-            }),
-            "dK" | "decikelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<decikelvin>(item.value),
-                original_unit: item.original_unit,
-            }),
-            "cK" | "centikelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<centikelvin>(item.value),
-                original_unit: item.original_unit,
-            }),
-            "mK" | "millikelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<millikelvin>(item.value),
-                original_unit: item.original_unit,
-            }),
-            "µK" | "microkelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<microkelvin>(item.value),
-                original_unit: item.original_unit,
-            }),
-            "nK" | "nanokelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<nanokelvin>(item.value),
-                original_unit: item.original_unit,
-            }),
-            "pK" | "picokelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<picokelvin>(item.value),
-                original_unit: item.original_unit,
-            }),
-            "fK" | "femtokelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<femtokelvin>(item.value),
-                original_unit: item.original_unit,
-            }),
-            "aK" | "attokelvin" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<attokelvin>(item.value),
-                original_unit: item.original_unit,
-            }),
-            //"zK" | "zeptokelvin" => Ok(Self {
-            //    value: rational64::TemperatureInterval::new::<zeptokelvin>(item.value),
-            //    original_unit: item.original_unit,
-            //}),
-            // Unit unsupported due to iliekturtles/uom#60
-            "zK" | "zeptokelvin" => Err(UnitParsingError::UnsupportedUnit {
-                unit_string: item.original_unit,
-                quantity_type: "Temperature Interval".to_string(),
-            }),
-            //"yK" | "yoctokelvin" => Ok(Self {
-            //    value: rational64::TemperatureInterval::new::<yoctokelvin>(item.value),
-            //    original_unit: item.original_unit,
-            //}),
-            // Unit unsupported due to iliekturtles/uom#60
-            "yK" | "yoctokelvin" => Err(UnitParsingError::UnsupportedUnit {
-                unit_string: item.original_unit,
-                quantity_type: "Temperature Interval".to_string(),
-            }),
-            "°C" | "degree Celsius" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<degree_celsius>(item.value),
-                original_unit: item.original_unit,
-            }),
-            "°F" | "degree Fahrenheit" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<degree_fahrenheit>(item.value),
-                original_unit: item.original_unit,
-            }),
-            "°R" | "degree Rankine" => Ok(Self {
-                value: rational64::TemperatureInterval::new::<degree_rankine>(item.value),
+            "KCMIL" | "MCM" => Ok(Self {
+                value: NominalWireUnit::Cmil(
+                    item.value.to_f64().ok_or(UnitParsingError::ValueError {
+                        quantity_type: "Nominal Wire Size".to_string(),
+                        data_type: "f64".to_string(),
+                    })? / 1000.0,
+                ),
                 original_unit: item.original_unit,
             }),
 
             x => Err(UnitParsingError::UnknownUnit {
                 unit_string: x.to_string(),
-                quantity_type: "Temperature Interval".to_string(),
+                quantity_type: "Nominal Wire Size".to_string(),
             }),
         }
     }

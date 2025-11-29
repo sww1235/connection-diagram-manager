@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    datatypes::{svg::Svg, unit_helper::Length, util_types::Catalog},
+    datatypes::{svg::Svg, unit_helper::length::Length, util_types::Catalog},
     traits::FromFile,
 };
 

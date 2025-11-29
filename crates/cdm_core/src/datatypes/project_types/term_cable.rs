@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     datatypes::{
         library_types::Library,
-        unit_helper::Length,
+        unit_helper::length::Length,
         util_types::{IECCodes, PhysicalLocation, UserFields},
     },
     error::LibraryError,
