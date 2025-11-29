@@ -24,6 +24,7 @@ paragraph_breaker = {path = "crates/paragraph_breaker/", version = "~0"}
 pdf_helper = {path = "crates/pdf_helper/", version = "~0"}
 num-rational = { version = "~0.4", features = ["std", "serde", "num-bigint"] }
 num-traits = { version = "~0.2" }
+num-integer = { version = "~0.1"}
 anyhow = { version = "~1" }
 pretty_assertions = { version = "~1.4"}
 

@@ -28,6 +28,29 @@ pub struct CrossSectionalArea {
     pub original_unit: String,
 }
 
+/// Struct representing Nominal wire size which may be different than its actual `CrossSectionalArea`
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[serde(try_from = "IntermediateUnit")]
+pub struct NominalWireSize {
+    /// contained uom Unit
+    pub value: NominalWireUnit,
+    /// original unit in datafile
+    pub original_unit: String,
+}
+
+    //TODO: replace f64 with a fixed/decimal equivalent type
+/// Represents common nominal units for wire sizes
+#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+pub enum NominalWireUnit {
+    /// Nominal size represented in American Wire Gauge (AWG)
+    Awg(f64),
+    /// Nominal size represented in mm²
+    Mm2(f64),
+    /// Nominal size represented in Circular Mil
+    Cmil(f64),
+}
+
+
 /// Struct representing `Electric Potential` values
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(try_from = "IntermediateUnit")]
@@ -704,6 +727,9 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
             //"Ym²" | "square yottameter" => Ok(Self {
             //    value: rational64::Area::new::<square_yottameter>(item.value),
             //    original_unit: item.original_unit,
+            //    stranded: false,
+            //    num_strands: 1,
+            //    strand_cross_sect_area: None
             //}),
             // Unit unsupported due to iliekturtles/uom#60
             "Ym²" | "square yottameter" => Err(UnitParsingError::UnsupportedUnit {
@@ -713,6 +739,9 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
             //"Zm²" | "square zettameter" => Ok(Self {
             //    value: rational64::Area::new::<square_zettameter>(item.value),
             //    original_unit: item.original_unit,
+            //    stranded: false,
+            //    num_strands: 1,
+            //    strand_cross_sect_area: None
             //}),
             // Unit unsupported due to iliekturtles/uom#60
             "Zm²" | "square zettameter" => Err(UnitParsingError::UnsupportedUnit {
@@ -722,6 +751,9 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
             //"Em²" | "square exameter" => Ok(Self {
             //    value: rational64::Area::new::<square_exameter>(item.value),
             //    original_unit: item.original_unit,
+            //    stranded: false,
+            //    num_strands: 1,
+            //    strand_cross_sect_area: None
             //}),
             // Unit unsupported due to iliekturtles/uom#60
             "Em²" | "square exameter" => Err(UnitParsingError::UnsupportedUnit {
@@ -731,6 +763,9 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
             //"Pm²" | "square petameter" => Ok(Self {
             //    value: rational64::Area::new::<square_petameter>(item.value),
             //    original_unit: item.original_unit,
+            //    stranded: false,
+            //    num_strands: 1,
+            //    strand_cross_sect_area: None
             //}),
             // Unit unsupported due to iliekturtles/uom#60
             "Pm²" | "square petameter" => Err(UnitParsingError::UnsupportedUnit {
@@ -740,6 +775,9 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
             //"Tm²" | "square terameter" => Ok(Self {
             //    value: rational64::Area::new::<square_terameter>(item.value),
             //    original_unit: item.original_unit,
+            //    stranded: false,
+            //    num_strands: 1,
+            //    strand_cross_sect_area: None
             //}),
             // Unit unsupported due to iliekturtles/uom#60
             "Tm²" | "square terameter" => Err(UnitParsingError::UnsupportedUnit {
@@ -749,50 +787,86 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
             "Gm²" | "square gigameter" => Ok(Self {
                 value: rational64::Area::new::<square_gigameter>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "Mm²" | "square megameter" => Ok(Self {
                 value: rational64::Area::new::<square_megameter>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "km²" | "square kilometer" => Ok(Self {
                 value: rational64::Area::new::<square_kilometer>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "hm²" | "square hectometer" => Ok(Self {
                 value: rational64::Area::new::<square_hectometer>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "dam²" | "square decameter" => Ok(Self {
                 value: rational64::Area::new::<square_decameter>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "m²" | "square meter" => Ok(Self {
                 value: rational64::Area::new::<square_meter>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "dm²" | "square decimeter" => Ok(Self {
                 value: rational64::Area::new::<square_decimeter>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "cm²" | "square centimeter" => Ok(Self {
                 value: rational64::Area::new::<square_centimeter>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "mm²" | "square millimeter" => Ok(Self {
                 value: rational64::Area::new::<square_millimeter>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "µm²" | "square micrometer" => Ok(Self {
                 value: rational64::Area::new::<square_micrometer>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "nm²" | "square nanometer" => Ok(Self {
                 value: rational64::Area::new::<square_nanometer>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             //"pm²" | "square picometer" => Ok(Self {
             //    value: rational64::Area::new::<square_picometer>(item.value),
             //    original_unit: item.original_unit,
+            //    stranded: false,
+            //    num_strands: 1,
+            //    strand_cross_sect_area: None
             //}),
             // Unit unsupported due to iliekturtles/uom#60
             "pm²" | "square picometer" => Err(UnitParsingError::UnsupportedUnit {
@@ -802,6 +876,9 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
             //"fm²" | "square femtometer" => Ok(Self {
             //    value: rational64::Area::new::<square_femtometer>(item.value),
             //    original_unit: item.original_unit,
+            //    stranded: false,
+            //    num_strands: 1,
+            //    strand_cross_sect_area: None
             //}),
             // Unit unsupported due to iliekturtles/uom#60
             "fm²" | "square femtometer" => Err(UnitParsingError::UnsupportedUnit {
@@ -811,6 +888,9 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
             //"am²" | "square attometer" => Ok(Self {
             //    value: rational64::Area::new::<square_attometer>(item.value),
             //    original_unit: item.original_unit,
+            //    stranded: false,
+            //    num_strands: 1,
+            //    strand_cross_sect_area: None
             //}),
             // Unit unsupported due to iliekturtles/uom#60
             "am²" | "square attometer" => Err(UnitParsingError::UnsupportedUnit {
@@ -820,6 +900,9 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
             //"zm²" | "square zeptometer" => Ok(Self {
             //    value: rational64::Area::new::<square_zeptometer>(item.value),
             //    original_unit: item.original_unit,
+            //    stranded: false,
+            //    num_strands: 1,
+            //    strand_cross_sect_area: None
             //}),
             // Unit unsupported due to iliekturtles/uom#60
             "zm²" | "square zeptometer" => Err(UnitParsingError::UnsupportedUnit {
@@ -829,6 +912,9 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
             //"ym²" | "square yoctometer" => Ok(Self {
             //    value: rational64::Area::new::<square_yoctometer>(item.value),
             //    original_unit: item.original_unit,
+            //    stranded: false,
+            //    num_strands: 1,
+            //    strand_cross_sect_area: None
             //}),
             // Unit unsupported due to iliekturtles/uom#60
             "ym²" | "square yoctometer" => Err(UnitParsingError::UnsupportedUnit {
@@ -838,38 +924,65 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
             "ac" | "acre" => Ok(Self {
                 value: rational64::Area::new::<acre>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "a" | "are" => Ok(Self {
                 value: rational64::Area::new::<are>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "b" | "barn" => Ok(Self {
                 value: rational64::Area::new::<barn>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "cmil" | "circular mil" => Ok(Self {
                 value: rational64::Area::new::<circular_mil>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "ha" | "hectare" => Ok(Self {
                 value: rational64::Area::new::<hectare>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "ft²" | "square foot" => Ok(Self {
                 value: rational64::Area::new::<square_foot>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "in²" | "square inch" => Ok(Self {
                 value: rational64::Area::new::<square_inch>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "mi²" | "square mile" => Ok(Self {
                 value: rational64::Area::new::<square_mile>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             "yd²" | "square yard" => Ok(Self {
                 value: rational64::Area::new::<square_yard>(item.value),
                 original_unit: item.original_unit,
+                stranded: false,
+                num_strands: 1,
+                strand_cross_sect_area: None
             }),
             x => Err(UnitParsingError::UnknownUnit {
                 unit_string: x.to_string(),
@@ -1351,6 +1464,136 @@ impl TryFrom<IntermediateUnit> for TemperatureInterval {
     }
 }
 
+
+impl TryFrom<IntermediateUnit> for NominalWireSize {
+    type Error = UnitParsingError;
+    #[expect(clippy::too_many_lines, clippy::match_same_arms)]
+    fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
+        match item.original_unit.as_str() {
+            //"YK" | "yottakelvin" => Ok(Self {
+            //    value: rational64::TemperatureInterval::new::<yottakelvin>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "YK" | "yottakelvin" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Temperature Interval".to_string(),
+            }),
+            //"ZK" | "zettakelvin" => Ok(Self {
+            //    value: rational64::TemperatureInterval::new::<zettakelvin>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "ZK" | "zettakelvin" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Temperature Interval".to_string(),
+            }),
+            "EK" | "exakelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<exakelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "PK" | "petakelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<petakelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "TK" | "terakelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<terakelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "GK" | "gigakelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<gigakelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "MK" | "megakelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<megakelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "kK" | "kilokelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<kilokelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "hK" | "hectokelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<hectokelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "daK" | "decakelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<decakelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "K" | "kelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<kelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "dK" | "decikelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<decikelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "cK" | "centikelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<centikelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "mK" | "millikelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<millikelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "µK" | "microkelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<microkelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "nK" | "nanokelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<nanokelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "pK" | "picokelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<picokelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "fK" | "femtokelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<femtokelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "aK" | "attokelvin" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<attokelvin>(item.value),
+                original_unit: item.original_unit,
+            }),
+            //"zK" | "zeptokelvin" => Ok(Self {
+            //    value: rational64::TemperatureInterval::new::<zeptokelvin>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "zK" | "zeptokelvin" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Temperature Interval".to_string(),
+            }),
+            //"yK" | "yoctokelvin" => Ok(Self {
+            //    value: rational64::TemperatureInterval::new::<yoctokelvin>(item.value),
+            //    original_unit: item.original_unit,
+            //}),
+            // Unit unsupported due to iliekturtles/uom#60
+            "yK" | "yoctokelvin" => Err(UnitParsingError::UnsupportedUnit {
+                unit_string: item.original_unit,
+                quantity_type: "Temperature Interval".to_string(),
+            }),
+            "°C" | "degree Celsius" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<degree_celsius>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "°F" | "degree Fahrenheit" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<degree_fahrenheit>(item.value),
+                original_unit: item.original_unit,
+            }),
+            "°R" | "degree Rankine" => Ok(Self {
+                value: rational64::TemperatureInterval::new::<degree_rankine>(item.value),
+                original_unit: item.original_unit,
+            }),
+
+            x => Err(UnitParsingError::UnknownUnit {
+                unit_string: x.to_string(),
+                quantity_type: "Temperature Interval".to_string(),
+            }),
+        }
+    }
+}
 #[cfg(test)]
 #[allow(clippy::too_many_lines)]
 mod tests {

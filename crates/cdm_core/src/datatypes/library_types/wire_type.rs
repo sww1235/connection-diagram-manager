@@ -2,10 +2,15 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
+use num_rational::Rational64;
+use num_traits::FromPrimitive;
+use num_integer::Roots;
+
+
 use crate::{
     datatypes::{
         color::Color,
-        unit_helper::{CrossSectionalArea, ElectricPotential, Length, TemperatureInterval},
+        unit_helper::{CrossSectionalArea, ElectricPotential, Length, TemperatureInterval, NominalWireSize},
         util_types::{Catalog, LineStyle},
     },
     traits::FromFile,
@@ -35,15 +40,9 @@ pub struct WireType {
     /// Thickness of outer insulation
     pub insulation_thickness: Option<Length>,
     /// Conductor cross sectional area.
-    pub conductor_cross_sect_area: CrossSectionalArea,
-    /// Overall wire cross sectional area, incluidng insulation.
-    pub overall_cross_sect_area: Option<CrossSectionalArea>,
-    /// If conductor is stranded
-    pub stranded: bool,
-    /// How many strands is conductor made of
-    pub num_strands: u64,
-    /// cross sectional area of individual strand.
-    pub strand_cross_sect_area: Option<CrossSectionalArea>,
+    pub conductor_cross_sect_area: Option<CrossSectionalArea>,
+    /// Nominal cross sectional area
+    pub nominal_cross_section: Option<NominalWireSize>, 
     /// AC Insulation voltage rating.
     pub ac_insulation_potential_rating: Option<ElectricPotential>,
     /// DC Insulation voltage rating.
@@ -59,6 +58,12 @@ pub struct WireType {
     pub secondary_insulation_color: Option<Color>,
     /// appearance in schematics
     pub line_style: Option<LineStyle>,
+    /// If `WireType` is stranded
+    pub stranded: bool,
+    /// How many strands is conductor made of
+    pub num_strands: u64,
+    /// cross sectional area of individual strand.
+    pub strand_cross_sect_area: Option<Area>,
     /// datafile the struct instance was read in from
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
@@ -71,3 +76,29 @@ impl FromFile for WireType {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
+
+impl WireType {
+    //pub fn overall_cross_sectional_area(&self) -> Result<CrossSectionalArea,WireTypeError>  {
+    //    if !self.insulated {return Ok(self.conductor_cross_sect_area)}
+    //   if self.insulated && self.insulation_thickness.is_none() {
+    //        return Err(WireTypeError::UnableToCalculateOverallCrossSectionalArea("Insulation thickness not defined".to_string()));
+    //   }
+    //   if let Some(insulation_thickness) = self.insulation_thickness && self.insulated{
+    //       if insulation_thickness.value == uom::si::rational64::Length::new::<uom::si::length::millimeter>(Rational64::new(0,1)) {
+    //            
+    //   Err(WireTypeError::UnableToCalculateOverallCrossSectionalArea("Insulation Thickness is zero".to_string()));
+    //       }
+    //       let pi = Rational64::from_f64(std::f64::consts::PI).ok_or(WireTypeError::UnableToCalculateOverallCrossSectionalArea("PI failed to fit inside f64".to_string()))?;
+    //       let test = uom::si::rational64::Area::new::<uom::si::area::square_millimeter>(Rational64::new(5,2));
+    //       let test_sqrt = test.sqrt();
+    //        let conductor_radius = self.conductor_cross_sect_area.value.sqrt() / pi;
+    //        let overall_radius: uom::si::rational64::Area = conductor_radius + insulation_thickness.value;
+    //        
+    //        let overall_cross_sect_area = CrossSectionalArea {value: pi * overall_radius.powi(2), original_unit: self.conductor_cross_sect_area.original_unit, stranded: self.conductor_cross_sect_area.stranded, num_strands: self.conductor_cross_sect_area.num_strands, strand_cross_sect_area: self.conductor_cross_sect_area.strand_cross_sect_area};
+    //   return Ok(overall_cross_sect_area);
+    //   }
+    //   Err(WireTypeError::UnableToCalculateOverallCrossSectionalArea("Something weird happened".to_string()))
+    //   
+    //}
+}
+
