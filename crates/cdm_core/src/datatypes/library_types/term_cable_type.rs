@@ -11,8 +11,8 @@ use crate::{
         unit_helper::Length,
         util_types::{Catalog, LineStyle},
     },
-    error::Error,
-    traits::{Connector as ConnectorT, FromFile},
+    error::LibraryError,
+    traits::{Connector as ConnectorTrait, FromFile},
 };
 
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
@@ -75,13 +75,13 @@ pub struct Connector {
     pub terminations: Vec<Termination>,
 }
 
-impl ConnectorT for Connector {
+impl ConnectorTrait for Connector {
     #[expect(clippy::unwrap_in_result)]
-    fn pin_count(&self, library: &Library) -> Result<u64, Error> {
+    fn pin_count(&self, library: &Library) -> Result<u64, LibraryError> {
         let connector_type = library
             .connector_types
             .get(&self.connector_type)
-            .ok_or(Error::LibraryValueNotFound {
+            .ok_or(LibraryError::ValueNotFound {
                 id: self.connector_type.clone(),
                 library_type: "Connector Type".to_string(),
             })?;

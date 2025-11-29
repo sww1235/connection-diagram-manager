@@ -8,7 +8,7 @@ use crate::{
         unit_helper::Length,
         util_types::{IECCodes, PhysicalLocation, UserFields},
     },
-    error::Error,
+    error::LibraryError,
     traits::FromFile,
 };
 
@@ -41,11 +41,11 @@ impl TermCable {
     /// # Errors
     ///
     /// Will error if `term_cable_type` id not found in provided library
-    pub fn len(&self, library: &Library) -> Result<Length, Error> {
+    pub fn len(&self, library: &Library) -> Result<Length, LibraryError> {
         let term_cable_type = library
             .term_cable_types
             .get(&self.term_cable_type)
-            .ok_or(Error::LibraryValueNotFound {
+            .ok_or(LibraryError::ValueNotFound {
                 id: self.term_cable_type.clone(),
                 library_type: "Term Cable Type".to_string(),
             })?;

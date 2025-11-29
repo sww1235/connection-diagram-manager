@@ -11,7 +11,7 @@ use crate::{
         unit_helper::Length,
         util_types::{IECCodes, PhysicalLocation, UserFields},
     },
-    error::Error,
+    error::{Error, LibraryError},
     traits::FromFile,
 };
 
@@ -59,7 +59,7 @@ impl MountingRail {
         let rail_type = library
             .mounting_rail_types
             .get(&self.mounting_rail_type)
-            .ok_or(Error::LibraryValueNotFound {
+            .ok_or(LibraryError::ValueNotFound {
                 id: self.mounting_rail_type.clone(),
                 library_type: "Mounting Rail Type".to_string(),
             })?;
@@ -101,11 +101,11 @@ impl MountingRail {
     /// # Errors
     ///
     /// Will error if `mounting_rail_type` is not found in library
-    pub fn is_standard_length(&self, library: &Library) -> Result<bool, Error> {
+    pub fn is_standard_length(&self, library: &Library) -> Result<bool, LibraryError> {
         let rail_type = library
             .mounting_rail_types
             .get(&self.mounting_rail_type)
-            .ok_or(Error::LibraryValueNotFound {
+            .ok_or(LibraryError::ValueNotFound {
                 id: self.mounting_rail_type.clone(),
                 library_type: "Mounting Rail Type".to_string(),
             })?;

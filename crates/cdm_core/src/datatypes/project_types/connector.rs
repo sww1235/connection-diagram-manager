@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{datatypes::library_types::Library, error::Error, traits};
+use crate::{datatypes::library_types::Library, error::LibraryError, traits};
 
 /// `Connector` is an instance of a [`ConnectorType`](super::connector_type::ConnectorType)
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
@@ -13,11 +13,11 @@ pub struct Connector {
 
 impl traits::Connector for Connector {
     #[expect(clippy::unwrap_in_result)]
-    fn pin_count(&self, library: &Library) -> Result<u64, Error> {
+    fn pin_count(&self, library: &Library) -> Result<u64, LibraryError> {
         let connector_type = library
             .connector_types
             .get(&self.connector_type)
-            .ok_or(Error::LibraryValueNotFound {
+            .ok_or(LibraryError::ValueNotFound {
                 id: self.connector_type.clone(),
                 library_type: "Connector Type".to_string(),
             })?;

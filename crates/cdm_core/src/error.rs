@@ -10,54 +10,6 @@ use usvg::Error as USVGError;
 #[non_exhaustive]
 /// `Error` is the list of errors and error types that can occur in the `cdm_core` library
 pub enum Error {
-    /// This error is used when a lookup is made in the library and the ID is not found
-    #[error("The ID {id} of type {library_type} not found in library")]
-    LibraryValueNotFound {
-        /// The ID of the the `Library` entry
-        id: String,
-        //TODO: switch to using a derived enum for library_type
-        /// The type of the `Library` entry
-        library_type: String,
-    },
-    /// This error is used when a lookup is made in the project and the ID is not found
-    #[error("The ID {id} of type {project_type} not found in project")]
-    ProjectValueNotFound {
-        /// The ID of the the `Library` entry
-        id: String,
-        //TODO: switch to using a derived enum for project_type
-        /// The type of the `Project` entry
-        project_type: String,
-    },
-    /// This error is used when optional data is missing from library data when required for a
-    /// certain operation in the program.
-    #[error(
-        "The Library entry of type {library_type} with ID {id} requires the following data to peform the operation requested: \
-         {data_missing}"
-    )]
-    LibraryDataMissing {
-        /// The ID of the the `Library` entry
-        id: String,
-        //TODO: switch to using a derived enum for library_type
-        /// The type of the `Library` entry
-        library_type: String,
-        /// What data was missing from the `Library` entry
-        data_missing: String,
-    },
-    /// This error is used when optional data is missing from project data when required for a
-    /// certain operation in the program.
-    #[error(
-        "The Project entry of type {project_type} with ID {id} requires the following data to peform the operation requested: \
-         {data_missing}"
-    )]
-    ProjectDataMissing {
-        /// The ID of the the `Project` entry
-        id: String,
-        //TODO: switch to using a derived enum for project_type
-        /// The type of the `Project` entry
-        project_type: String,
-        /// What data was missing from the `Project` entry
-        data_missing: String,
-    },
     /// This error is used when duplicate keys are found in `Project` or `Library` structs during
     /// import
     #[error("Duplicate key {key} found in {origin_file} and {test_file}")]
@@ -69,6 +21,12 @@ pub enum Error {
         /// filepath of file being checked for duplicates
         test_file: PathBuf,
     },
+    /// Errors from `Library` code
+    #[error(transparent)]
+    LibraryError(#[from] LibraryError),
+    /// Errors from `Project` code
+    #[error(transparent)]
+    ProjectError(#[from] ProjectError),
     /// Errors relating to linebreaking
     #[error(transparent)]
     ParagraphBreaking(#[from] ParagraphError),
@@ -87,6 +45,79 @@ pub enum Error {
     /// Errors resulting from parsing unit name strings during Deserialize
     #[error(transparent)]
     UnitParsingError(#[from] UnitParsingError),
+}
+
+/// `LibraryError` is the list of errors that can occur within code related to `Library` data,
+/// especially during parsing
+#[derive(Debug, Error)]
+#[non_exhaustive]
+pub enum LibraryError {
+    /// This error is used when a lookup is made in the library and the ID is not found
+    #[error("The ID {id} of type {library_type} not found in library")]
+    ValueNotFound {
+        /// The ID of the the `Library` entry
+        id: String,
+        //TODO: switch to using a derived enum for library_type
+        /// The type of the `Library` entry
+        library_type: String,
+    },
+    /// This error is used when optional data is missing from library data when required for a
+    /// certain operation in the program.
+    #[error(
+        "The Library entry of type {library_type} with ID {id} requires the following data to peform the operation requested: \
+         {data_missing}"
+    )]
+    DataMissing {
+        /// The ID of the the `Library` entry
+        id: String,
+        //TODO: switch to using a derived enum for library_type
+        /// The type of the `Library` entry
+        library_type: String,
+        /// What data was missing from the `Library` entry
+        data_missing: String,
+    },
+    /// `WireTypeError` are errors resulting from functions specific to `WireType`s.
+    #[error(transparent)]
+    WireTypeError(#[from] WireTypeError)
+}
+/// `WireTypeError` are errors resulting from functions specific to `WireType`s.
+#[derive(Debug, Error)]
+#[non_exhaustive]
+pub enum WireTypeError {
+    /// This error is used when failing to calculate Overall Cross Sectional Area
+    #[error("Overall Cross Seectional Area calculation failed due to {0}")]
+    UnableToCalculateOverallCrossSectionalArea(String)
+}
+
+/// `ProjectError` is the list of errors that can occur within code related to `Project` data,
+/// especially during parsing
+#[derive(Debug, Error)]
+#[non_exhaustive]
+pub enum ProjectError {
+    /// This error is used when a lookup is made in the project and the ID is not found
+    #[error("The ID {id} of type {project_type} not found in project")]
+    ValueNotFound {
+        /// The ID of the the `Library` entry
+        id: String,
+        //TODO: switch to using a derived enum for project_type
+        /// The type of the `Project` entry
+        project_type: String,
+    },
+    /// This error is used when optional data is missing from project data when required for a
+    /// certain operation in the program.
+    #[error(
+        "The Project entry of type {project_type} with ID {id} requires the following data to peform the operation requested: \
+         {data_missing}"
+    )]
+    DataMissing {
+        /// The ID of the the `Project` entry
+        id: String,
+        //TODO: switch to using a derived enum for project_type
+        /// The type of the `Project` entry
+        project_type: String,
+        /// What data was missing from the `Project` entry
+        data_missing: String,
+    },
 }
 
 /// `PDFGenerationError` is the list of errors that can occur in `pdf_generation`

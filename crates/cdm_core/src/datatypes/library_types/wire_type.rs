@@ -9,6 +9,7 @@ use crate::{
         util_types::{Catalog, LineStyle},
     },
     traits::FromFile,
+    error::WireTypeError,
 };
 
 /// `WireType` represents a particular type of wire

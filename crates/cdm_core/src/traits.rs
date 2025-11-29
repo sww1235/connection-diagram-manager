@@ -1,6 +1,6 @@
 use std::path::{Path, PathBuf};
 
-use crate::{datatypes::library_types::Library, error::Error};
+use crate::{datatypes::library_types::Library, error::LibraryError};
 
 /// `Connector` contains common methods for various specific connector types defined in the library
 pub trait Connector {
@@ -9,7 +9,7 @@ pub trait Connector {
     /// # Errors
     ///
     /// Will error if the connector type is not found in the provided library
-    fn pin_count(&self, library: &Library) -> Result<u64, Error>;
+    fn pin_count(&self, library: &Library) -> Result<u64, LibraryError>;
 
     //TODO: add more methods here
 }

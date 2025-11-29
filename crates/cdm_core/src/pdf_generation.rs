@@ -12,7 +12,7 @@ use crate::{
             enclosure::{Enclosure, MountPoint},
         },
     },
-    error::{Error, PDFGenerationError},
+    error::{ProjectError, LibraryError, Error, PDFGenerationError},
 };
 
 //TODO: add page templates with proper borders and titleblocks
@@ -104,7 +104,7 @@ pub fn render_enclosure(
     let enclosure_type = library
         .enclosure_types
         .get(&enclosure.enclosure_type)
-        .ok_or(Error::LibraryValueNotFound {
+        .ok_or(LibraryError::ValueNotFound {
             id: enclosure.enclosure_type.clone(),
             library_type: "Enclosure Type".to_string(),
         })?;
@@ -145,7 +145,7 @@ pub fn render_enclosure(
                 project
                     .mounting_rails
                     .get(mounting_rail)
-                    .ok_or(Error::ProjectValueNotFound {
+                    .ok_or(ProjectError::ValueNotFound {
                         id: mounting_rail.clone(),
                         project_type: "MountingRail".to_string(),
                     })?
@@ -170,11 +170,11 @@ pub fn render_enclosure(
             let equipment_type = library
                 .equipment_types
                 .get(&equipment.equipment_type)
-                .ok_or(Error::LibraryValueNotFound {
+                .ok_or(LibraryError::ValueNotFound {
                     id: equipment.equipment_type.clone(),
                     library_type: "Equipment_type".to_string(),
                 })?;
-            let equipment_mount_point_id = equipment.mount_point.clone().ok_or(Error::ProjectDataMissing {
+            let equipment_mount_point_id = equipment.mount_point.clone().ok_or(ProjectError::DataMissing {
                 id: equipment_id.clone(),
                 project_type: "Equipment".to_string(),
                 data_missing: "mount point".to_string(),
@@ -183,7 +183,7 @@ pub fn render_enclosure(
                 enclosure
                     .mount_points
                     .get(&equipment_mount_point_id)
-                    .ok_or(Error::ProjectDataMissing {
+                    .ok_or(ProjectError::DataMissing {
                         id: enclosure_id.clone(),
                         project_type: "Enclosure".to_string(),
                         data_missing: format!("mount_point with id {equipment_mount_point_id}").to_string(),
