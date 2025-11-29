@@ -6,9 +6,6 @@
 //!
 //! Config file can live in either root project directory or src directory under root directory.
 
-//TODO: change datafile parsing to parse individual files, and keep track of which files, which
-//values came from.
-
 use std::{
     fs,
     io::{self, ErrorKind},

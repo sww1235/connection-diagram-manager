@@ -44,6 +44,7 @@ impl FromFile for MountingRail {
 }
 
 impl MountingRail {
+    //TODO: Change this to a USVG error return
     /// Output a generated SVG either based on the parameters in `MountingRail` and
     /// `MountingRailType` or the `start_image`, `middle_image` and `end_image` parameters
     ///

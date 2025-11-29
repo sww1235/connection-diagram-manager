@@ -230,7 +230,7 @@ mod tests {
     // [x] minimal with 1 layer and 1 core
     // [x] full with multiple cores and multiple layers
     // [x] Vary the cross section
-    // [ ] incorrect unit string
+    // [x] incorrect unit string
     // [x] try with a few different unit strings
     // [x] multiple cables in one file
     // [x] multiple cables in one file, with one cable containing cores of the other cables

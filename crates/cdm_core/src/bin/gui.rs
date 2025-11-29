@@ -2,9 +2,6 @@
 //!
 //! `cdm_gui` is a graphical user interface for Connection Diagram Manager
 
-//TODO: change datafile parsing to parse individual files, and keep track of which files, which
-//values came from.
-
 use std::path::PathBuf;
 
 use cdm_core::{

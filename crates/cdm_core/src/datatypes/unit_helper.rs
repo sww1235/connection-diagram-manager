@@ -16,6 +16,9 @@ pub struct Area {
 }
 
 /// Struct representing `Cross Sectional Area` values of conductors
+///
+/// `CrossSectionalArea` is broken out specifically for use with wires and cables, and so has
+/// extra methods associated with it to help with conversion between AWG and sane units
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(try_from = "IntermediateUnit")]
 pub struct CrossSectionalArea {
