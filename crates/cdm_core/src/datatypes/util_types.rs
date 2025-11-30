@@ -62,6 +62,17 @@ pub struct LineStyle {
     /// uses same specification as SVG stroke-dasharray field.
     pub line_appearance: Option<Vec<u64>>,
 }
+
+/// Style information for symbols
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+pub struct SymbolStyle {
+    /// Primary `Color` of line
+    pub color: Option<Color>,
+    /// Thickness or width of line
+    pub line_thickness: Option<Length>,
+}
+
+
 /// Custom fields for user specified data. Not parsed
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(missing_docs)]

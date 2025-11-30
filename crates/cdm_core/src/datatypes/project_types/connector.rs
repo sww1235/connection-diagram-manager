@@ -1,14 +1,18 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{datatypes::library_types::Library, error::LibraryError, traits};
+use crate::{
+    datatypes::{library_types::Library, util_types::SymbolStyle},
+    error::LibraryError,
+    traits,
+};
 
 /// `Connector` is an instance of a [`ConnectorType`](super::connector_type::ConnectorType)
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Connector {
-    /// `id` of connector
-    pub id: String,
     /// The type of this connector instance
     pub connector_type: String,
+    /// Optional styling data for schematic symbol
+    pub symbol_style: Option<SymbolStyle>,
 }
 
 impl traits::Connector for Connector {

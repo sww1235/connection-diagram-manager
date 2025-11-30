@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    datatypes::util_types::{IECCodes, PhysicalLocation, UserFields},
+    datatypes::util_types::{IECCodes, PhysicalLocation, SymbolStyle, UserFields},
     traits::FromFile,
 };
 
@@ -71,6 +71,7 @@ pub struct Jumper {
     pub label: Option<String>,
     /// Array of `terminal_number`s that this jumper makes connections to
     pub jumper_connections: Vec<u64>,
+    pub symbol_style: Option<SymbolStyle>,
 }
 
 impl FromFile for TerminalStrip {

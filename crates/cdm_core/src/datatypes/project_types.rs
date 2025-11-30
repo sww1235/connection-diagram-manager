@@ -11,8 +11,6 @@ pub mod equipment;
 pub mod mounting_rail;
 /// `pathway` represents an instance of a `PathwayType`
 pub mod pathway;
-/// `schematic_symbol` represents an instance of `SchematicSymbolType`
-pub mod schematic_symbol;
 /// `term_cable` represents an instance of a `TermCableType`
 pub mod term_cable;
 /// `terminal_strip` contains the main `terminal_strip` type and accessory types
@@ -53,8 +51,6 @@ pub struct Project {
     pub mounting_rails: BTreeMap<String, mounting_rail::MountingRail>,
     /// contains all pathways read in from files and/or added in via program logic
     pub pathways: BTreeMap<String, pathway::Pathway>,
-    /// contains all schematic symbols read in from files and/or added in via program logic
-    pub schematic_symbols: BTreeMap<String, schematic_symbol::SchematicSymbol>,
     /// contains all term cables read in from files, and/or added in via program logic
     pub term_cables: BTreeMap<String, term_cable::TermCable>,
     /// contains all terminal strips read in from files and/or added in via program logic
@@ -79,7 +75,6 @@ impl Project {
         util_functions::merge_btreemaps(&mut self.equipment, test_map.equipment, test_file)?;
         util_functions::merge_btreemaps(&mut self.mounting_rails, test_map.mounting_rails, test_file)?;
         util_functions::merge_btreemaps(&mut self.pathways, test_map.pathways, test_file)?;
-        util_functions::merge_btreemaps(&mut self.schematic_symbols, test_map.schematic_symbols, test_file)?;
         util_functions::merge_btreemaps(&mut self.term_cables, test_map.term_cables, test_file)?;
         util_functions::merge_btreemaps(&mut self.terminal_strips, test_map.terminal_strips, test_file)?;
         util_functions::merge_btreemaps(&mut self.wires, test_map.wires, test_file)?;
@@ -128,12 +123,6 @@ impl Project {
         if !self.pathways.is_empty() {
             for pathway in self.pathways.values_mut() {
                 pathway.set_datafile(datafile_path);
-            }
-        }
-        // Schematic Symbols
-        if !self.schematic_symbols.is_empty() {
-            for schematic_symbol in self.schematic_symbols.values_mut() {
-                schematic_symbol.set_datafile(datafile_path);
             }
         }
         // Term Cables

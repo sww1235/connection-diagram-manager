@@ -441,8 +441,7 @@ component_designator = "PLACEHOLDER"
 
 # optional
 # array of schematic symbols that can represent this connector
-# values must be the sub-table name
-schematic_symbol = ["PLACEHOLDER"]
+schematic_symbols = ["PLACEHOLDER"]
 
 # TODO: decide if these should be filepaths or directly included SVGs
 # SVGs should be layed out for a horizontal orientation when defined.
@@ -655,7 +654,6 @@ visual_representation = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
 # optional
 # array of schematic symbols that can represent this equipment
-# values must be the sub-table name
 schematic_symbols = ["PLACEHOLDER"]
 
 # Dimension subtable for each equipment_type. Groups common properties
@@ -1108,6 +1106,10 @@ secondary_color = "PLACEHOLDER"
 visual_representation = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
 # optional
+# array of schematic symbols that can represent this terminal_type
+schematic_symbols = ["PLACEHOLDER"]
+
+# optional
 # component designator
 component_designator = "PLACEHOLDER"
 
@@ -1277,6 +1279,10 @@ number_of_positions = 0 # PLACEHOLDER
 # instances can be rotated when defined in project.
 visual_representation = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
+# optional
+# array of schematic symbols that can represent this terminal strip jumper type
+schematic_symbols = ["PLACEHOLDER"]
+
 color = "PLACEHOLDER"
 
 # optional
@@ -1349,6 +1355,10 @@ compatible_terminal_type = ["PLACEHOLDER"]
 # instances can be rotated when defined in project.
 visual_representation = "SVG PLACEHOLDER STRING" # PLACEHOLDER
 
+# optional
+# array of schematic symbols that can represent this terminal accessory
+schematic_symbols = ["PLACEHOLDER"]
+
 color = "PLACEHOLDER"
 
 # optional
@@ -1414,6 +1424,10 @@ compatible_terminal_type = ["PLACEHOLDER"]
 # SVGs should be layed out for a horizontal orientation when defined.
 # instances can be rotated when defined in project.
 visual_representation = "SVG PLACEHOLDER STRING" # PLACEHOLDER
+
+# optional
+# array of schematic symbols that can represent this terminal strip accessory type
+schematic_symbols = ["PLACEHOLDER"]
 
 color = "PLACEHOLDER"
 
@@ -1660,6 +1674,17 @@ end1 = "PLACEHOLDER"
 end2 = "PLACEHOLDER"
 ```
 
+#### Connectors
+```toml
+[connectors]
+
+[connectors."PLACEHOLDER"]
+connector_type = "PLACEHOLDER"
+
+[connectors."PLACEHOLDER".symbol_style]
+color = "PLACEHOLDER"
+line_thickness = {value = [0,0], original_unit = "PLACEHOLDER"}
+```
 #### Enclosures
 ```toml
 # table of all enclosure instances defined in project
@@ -1780,6 +1805,10 @@ building = "PLACEHOLDER"
 location = "PLACEHOLDER"
 installation = "PLACEHOLDER"
 
+[equipment."PLACEHOLDER".symbol_style]
+color = "PLACEHOLDER"
+line_thickness = {value = [0,0], original_unit = "PLACEHOLDER"}
+
 # custom fields for user specified data. Not parsed
 [equipment."PLACEHOLDER".user_fields]
 user0 = "PLACEHOLDER"
@@ -1875,38 +1904,6 @@ installation = "PLACEHOLDER"
 
 # custom fields for user specified data. Not parsed
 [pathways."PLACEHOLDER".user_fields]
-user0 = "PLACEHOLDER"
-user1 = "PLACEHOLDER"
-user2 = "PLACEHOLDER"
-user3 = "PLACEHOLDER"
-user4 = "PLACEHOLDER"
-user5 = "PLACEHOLDER"
-user6 = "PLACEHOLDER"
-user7 = "PLACEHOLDER"
-user8 = "PLACEHOLDER"
-user9 = "PLACEHOLDER"
-```
-
-#### Schematic Symbols
-```toml
-# This dictionary contains schematic symbols that represent equipment and components
-# in the project
-[schematic_symbols]
-
-# Table of attributes for a specific instance of a symbol
-[schematic_symbols."PLACEHOLDER"]
-
-symbol_type = "PLACEHOLDER"
-
-symbol_color = "PLACEHOLDER"
-
-# What this symbol represents.
-# The type field must be filled in with Equipment, Terminal, or Connector
-# and the value field must be filled in with an ID of a matching project component
-represented_object = {type = "PLACEHOLDER", value = "PLACEHOLDER"}
-
-# custom fields for user specified data. Not parsed
-[schematic_symbols."PLACEHOLDER".user_fields]
 user0 = "PLACEHOLDER"
 user1 = "PLACEHOLDER"
 user2 = "PLACEHOLDER"
@@ -2039,6 +2036,11 @@ label = "PLACEHOLDER"
 # "PLACEHOLDER" is accessory_type_id
 accessories = ["PLACEHOLDER"]
 
+[terminal_strips."PLACEHOLDER".terminals.symbol_style]
+color = "PLACEHOLDER"
+line_thickness = {value = [0,0], original_unit = "PLACEHOLDER"}
+
+
 # TODO: this should probably be an embedded table
 # defining either terminal or terminal_strip_accessory type
 # must be defined under the defintion of the terminal_block array it applies to
@@ -2070,6 +2072,10 @@ label = "PLACEHOLDER"
 # can optionally have the terminal layer indicated with a dot and
 # the terminal layer designation, allowing for multi-layer jumpers
 jumper_connections = ["PLACEHOLDER"]
+
+[terminal_strips."PLACEHOLDER".jumpers.symbol_style]
+color = "PLACEHOLDER"
+line_thickness = {value = [0,0], original_unit = "PLACEHOLDER"}
 ```
 
 #### Wires

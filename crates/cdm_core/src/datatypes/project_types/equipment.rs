@@ -3,8 +3,13 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    datatypes::util_types::{IECCodes, PhysicalLocation, UserFields},
-    traits::FromFile,
+    datatypes::{
+        library_types::Library,
+        svg::Svg,
+        util_types::{IECCodes, PhysicalLocation, SymbolStyle, UserFields},
+    },
+    error::LibraryError,
+    traits::{FromFile, SchematicRepresentation},
 };
 
 /// `Equipment` represents a particular instance of an `EquipmentType`.
@@ -32,6 +37,8 @@ pub struct Equipment {
     pub description: Option<String>,
     /// Optional user Fields
     pub user_fields: Option<UserFields>,
+    /// Optional styling data for schematic symbol
+    pub symbol_style: Option<SymbolStyle>,
     /// datafile the struct instance was read in from
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
@@ -43,5 +50,36 @@ impl FromFile for Equipment {
     }
     fn set_datafile(&mut self, datafile_path: &Path) {
         self.contained_datafile_path = datafile_path.to_path_buf();
+    }
+}
+
+
+impl SchematicRepresentation for Equipment {
+    fn schematic_symbol(&self, library: &Library, symbol_selector: Option<usize>) -> Result<Svg, LibraryError> {
+        let equipment_type = library
+            .equipment_types
+            .get(&self.equipment_type)
+            .ok_or(LibraryError::ValueNotFound {
+                id: self.equipment_type,
+                library_type: "Equipment Type".to_string(),
+            })?;
+        let schematic_symbol_type_id = equipment_type
+            .schematic_symbols
+            .ok_or(LibraryError::DataMissing {
+                id: self.equipment_type,
+                library_type: "Equipment Type".to_string(),
+                data_missing: "Schematic Symbols".to_owned(),
+            })?
+            .get(symbol_selector.unwrap_or(0));
+        let schematic_symbol = library
+            .schematic_symbol_types
+            .get(&schematic_symbol_type_id)
+            .ok_or(LibraryError::ValueNotFound {
+                id: schematic_symbol_type_id.clone(),
+                library_type: "Schematic Symbol".to_string(),
+            })?
+            .visual_representation;
+
+        Ok(schematic_symbol)
     }
 }

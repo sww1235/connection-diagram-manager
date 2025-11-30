@@ -69,6 +69,9 @@ pub struct TerminalType {
     pub integrated_disconnect_present: Option<String>,
     /// Visual representation of `TerminalType`
     pub visual_representation: Option<Svg>,
+    /// Vector of schematic symbols that can represent this terminal.
+    /// values must be the id of the `symbol_type`
+    pub schematic_symbols: Option<Vec<String>>,
     /// `BTreeMap` defining terminal layers
     /// at least 1 layer is required for a terminal
     pub layers: BTreeMap<String, Layer>,
@@ -212,6 +215,9 @@ pub struct TerminalStripJumperType {
     pub color: Option<Color>,
     /// Visual representation of `TerminalStripJumperType`
     pub visual_representation: Option<Svg>,
+    /// Vector of schematic symbols that can represent this terminal strip jumper type.
+    /// values must be the id of the `symbol_type`
+    pub schematic_symbols: Option<Vec<String>>,
     /// per pin compatible `terminal_block_type`s
     /// specify an array of `terminal_block_type`s per pin
     pub pin_compatible_terminal_types: Option<Vec<Vec<String>>>,
@@ -245,6 +251,9 @@ pub struct TerminalAccessoryType {
     pub accessory_supertype: String,
     /// Visual representation of `TerminalAccessoryType`
     pub visual_representation: Option<Svg>,
+    /// Vector of schematic symbols that can represent this terminal accessory type.
+    /// values must be the id of the `symbol_type`
+    pub schematic_symbols: Option<Vec<String>>,
     /// color of accessory
     pub color: Option<Color>,
     /// datafile the struct instance was read in from
@@ -280,6 +289,9 @@ pub struct TerminalStripAccessoryType {
     pub accessory_supertype: String,
     /// Visual representation of `TerminalAccessoryType`
     pub visual_representation: Option<Svg>,
+    /// Vector of schematic symbols that can represent this terminal strip accessory type.
+    /// values must be the id of the `symbol_type`
+    pub schematic_symbols: Option<Vec<String>>,
     /// color of accessory
     pub color: Option<Color>,
     /// datafile the struct instance was read in from

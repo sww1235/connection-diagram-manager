@@ -1,6 +1,9 @@
 use std::path::{Path, PathBuf};
 
-use crate::{datatypes::library_types::Library, error::LibraryError};
+use crate::{
+    datatypes::{library_types::Library, svg::Svg},
+    error::LibraryError,
+};
 
 /// `Connector` contains common methods for various specific connector types defined in the library
 pub trait Connector {
@@ -23,4 +26,18 @@ pub trait FromFile {
     /// `set_file` sets the datafile path in the struct
     fn set_datafile(&mut self, datafile_path: &Path);
 }
-//TODO: add trait for vis_rep
+
+/// `SchematicRepresentation` provides a SVG symbol used for drawing schematic diagrams
+pub trait SchematicRepresentation {
+    /// returns a SVG schematic symbol of the entity.
+    ///
+    /// `symbol_selector` selects an alternate symbol for a specific entity. If the variable is
+    /// `None` or larger than `vec.len()-1`, the recommended implementation is to return the SVG at
+    /// index `0`.
+    ///
+    /// # Errors
+    ///
+    /// Will error if the id of `&self.entity_type` is not found in the provided library or other
+    /// implementation specific errors
+    fn schematic_symbol(&self, library: &Library, symbol_selector: Option<usize>) -> Result<Svg, LibraryError>;
+}
