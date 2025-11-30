@@ -5,12 +5,11 @@ use crate::datatypes::{color::Color, unit_helper::length::Length};
 
 /// Cross section of wire or cable
 #[non_exhaustive]
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum CrossSection {
     /// A wire or cable with an oval or flat cross section
     Oval,
     /// A wire or cable with a circular cross section
-    #[default]
     Circular,
     /// A cable consisting of 2 wires/cables bonded to each other in a figure 8 layout inside the
     /// same external jacket.
@@ -18,7 +17,7 @@ pub enum CrossSection {
 }
 
 /// Common Catalog information for Library Types
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Catalog {
     /// manufacturer name
     pub manufacturer: Option<String>,
@@ -37,7 +36,7 @@ pub struct Catalog {
 }
 
 /// Common Dimension information for Library Types
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Dimension {
     /// height of connector
     pub height: Length,
@@ -51,7 +50,7 @@ pub struct Dimension {
 
 //TODO: make defaults for these part of application and project configuration file
 /// Style information for linear items
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct LineStyle {
     /// Primary `Color` of line
     pub color: Option<Color>,
@@ -64,7 +63,7 @@ pub struct LineStyle {
     pub line_appearance: Option<Vec<u64>>,
 }
 /// Custom fields for user specified data. Not parsed
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(missing_docs)]
 pub struct UserFields {
     pub user0: Option<String>,
@@ -80,7 +79,7 @@ pub struct UserFields {
 }
 
 /// Fields to support IEC coding of assets
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct IECCodes {
     /// Location code for IEC Coding
     pub location: Option<String>,
