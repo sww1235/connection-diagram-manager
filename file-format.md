@@ -24,6 +24,9 @@ All file formats are currently based on TOML, (and inspired by
 [WireViz](https://github.com/formatc1702/WireViz) and the good parts of AutoCAD
 Electrical).
 
+Files must only contain [library definitions](#library-files) or [project
+design data](#project-definitions) as specified in the following sections.
+
 > [!NOTE]
 > - Placeholder text in the file format descriptions below are indicated
 > with `"PLACEHOLDER"`.
@@ -31,9 +34,6 @@ Electrical).
 > that cannot be represented by a `Rationa64`
 > - All other placeholder values are indicated with end of
 > line comment when possible.
-
-Files must only contain library definitions or project design data as specified
-below.
 
 > [!IMPORTANT]
 > Most values are optional in project data files. As TOML doesn't have an easy
@@ -2018,7 +2018,7 @@ user9 = "PLACEHOLDER"
 
 # array of tables defining individual terminal blocks
 # in terminal_strip.
-# Definitions proceed left to right, horizontally.
+# Definitions proceed left to right, horizontally or top to bottom vertically
 [[terminal_strips."PLACEHOLDER".terminals]]
 
 # number used for display order, defined left to right
