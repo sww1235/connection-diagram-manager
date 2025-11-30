@@ -32,6 +32,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::{error::Error, traits::FromFile, util_functions};
 
+//TODO: implement validation function for all datatypes
+
 /// `Project` represents all project specific data used in program
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(default)]

@@ -111,7 +111,7 @@ All keys are optional in the configuration file. Any that are not specified
 will use the default values instead.
 
 Unit definitions in the file can be specified either with full unit names or
-abbreviations. You can run the cli binary using a TODO commandline flag to get
+abbreviations. You can run the cli binary using the `--print-units`  command line flag to get
 a full list of supported units.
 
 - `~/.config/ConnectionDiagramManager/cdm_config.toml`
@@ -1639,18 +1639,25 @@ user9 = "PLACEHOLDER"
 # This is the only root level item in the project definition that is an array rather than a table with sub-tables
 # This is because there are no human generated identifiers. Individual connections are tracked internally.
 
-# "PLACEHOLDER" for both end1 and end2 are dot joined ids of the specific objects
-# for example to connect a wire within a cable to a connection on a terminal block
-# TODO finish this example
+# There are no specific rules for what types end1 and end2 can be, but
+# suggested that end1 be the wire/cable type and end2 be the
+# terminal/equipment/connector, etc
+
+# replace end1 and end2 with options from the following list:
+# - Wire
+# - Cable
+# - TermCable
+# - Equipment
+# - TerminalStrip
+# - Connector
+
+# The "PLACEHOLDER" text should be replaced with the ID of the entity
+
 [[connections]]
 
 end1 = "PLACEHOLDER"
 
-end1_type = "PLACEHOLDER"
-
 end2 = "PLACEHOLDER"
-
-end2_type = "PLACEHOLDER"
 ```
 
 #### Enclosures

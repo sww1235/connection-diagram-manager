@@ -9,6 +9,7 @@ use crate::{
         library_types::Library,
         project_types::{
             Project,
+            connection::ConnectionType,
             enclosure::{Enclosure, MountPoint},
         },
     },
@@ -81,6 +82,7 @@ pub fn pdf_one_enclosure(
 /// # Panics
 ///
 /// Will panic if key is not found for value in enclosures hashmap.
+#[expect(clippy::too_many_lines)]
 pub fn render_enclosure(
     project: &Project,
     library: &Library,
@@ -208,7 +210,56 @@ pub fn render_enclosure(
 
     //TODO: fix this
     for connection in &project.connections {
-        //
+        match &connection.end1 {
+            ConnectionType::Wire(outer_wire_id) => match &connection.end2 {
+                ConnectionType::Wire(inner_wire_id) => {}
+                ConnectionType::Cable(inner_cable_id) => {}
+                ConnectionType::TermCable(inner_term_cable_id) => {}
+                ConnectionType::Equipment(inner_equipment_id) => {}
+                ConnectionType::TerminalStrip(inner_terminal_strip_id) => {}
+                ConnectionType::Connector(inner_connector_id) => {}
+            },
+            ConnectionType::Cable(outer_cable_id) => match &connection.end2 {
+                ConnectionType::Wire(inner_wire_id) => {}
+                ConnectionType::Cable(inner_cable_id) => {}
+                ConnectionType::TermCable(inner_term_cable_id) => {}
+                ConnectionType::Equipment(inner_equipment_id) => {}
+                ConnectionType::TerminalStrip(inner_terminal_strip_id) => {}
+                ConnectionType::Connector(inner_connector_id) => {}
+            },
+            ConnectionType::TermCable(outer_term_cable_id) => match &connection.end2 {
+                ConnectionType::Wire(inner_wire_id) => {}
+                ConnectionType::Cable(inner_cable_id) => {}
+                ConnectionType::TermCable(inner_term_cable_id) => {}
+                ConnectionType::Equipment(inner_equipment_id) => {}
+                ConnectionType::TerminalStrip(inner_terminal_strip_id) => {}
+                ConnectionType::Connector(inner_connector_id) => {}
+            },
+            ConnectionType::Equipment(outer_equipment_id) => match &connection.end2 {
+                ConnectionType::Wire(inner_wire_id) => {}
+                ConnectionType::Cable(inner_cable_id) => {}
+                ConnectionType::TermCable(inner_term_cable_id) => {}
+                ConnectionType::Equipment(inner_equipment_id) => {}
+                ConnectionType::TerminalStrip(inner_terminal_strip_id) => {}
+                ConnectionType::Connector(inner_connector_id) => {}
+            },
+            ConnectionType::TerminalStrip(outer_terminal_strip_id) => match &connection.end2 {
+                ConnectionType::Wire(inner_wire_id) => {}
+                ConnectionType::Cable(inner_cable_id) => {}
+                ConnectionType::TermCable(inner_term_cable_id) => {}
+                ConnectionType::Equipment(inner_equipment_id) => {}
+                ConnectionType::TerminalStrip(inner_terminal_strip_id) => {}
+                ConnectionType::Connector(inner_connector_id) => {}
+            },
+            ConnectionType::Connector(outer_connector_id) => match &connection.end2 {
+                ConnectionType::Wire(inner_wire_id) => {}
+                ConnectionType::Cable(inner_cable_id) => {}
+                ConnectionType::TermCable(inner_term_cable_id) => {}
+                ConnectionType::Equipment(inner_equipment_id) => {}
+                ConnectionType::TerminalStrip(inner_terminal_strip_id) => {}
+                ConnectionType::Connector(inner_connector_id) => {}
+            },
+        }
     }
     //TODO: now need to figure out which equipment is connected to which other equipment in the
     //same location and draw those connections and pathways

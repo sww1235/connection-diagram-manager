@@ -60,6 +60,8 @@ pub struct Library {
     pub wire_types: BTreeMap<String, wire_type::WireType>,
 }
 
+//TODO: implement validation function for all datatypes
+
 impl Library {
     /// Merges two instances of `Library`, validating that there are no key conflicts between the
     /// two instances

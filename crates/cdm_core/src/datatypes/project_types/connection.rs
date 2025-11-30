@@ -6,15 +6,30 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(clippy::partial_pub_fields)]
 pub struct Connection {
-    /// Dot joined IDs of one end of connection
-    pub end1: String,
-    /// root type of end1
-    pub end1_type: String,
-    /// Dot joined IDs of other end of connection
-    pub end2: String,
-    /// root type of end2
-    pub end2_type: String,
+    /// ID of one end of connection
+    pub end1: ConnectionType,
+    /// ID of other end of connection
+    pub end2: ConnectionType,
     /// datafile the struct instance was read in from
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
+}
+
+/// `ConnectionType` is an enum that defines what type of things can be connected to what other
+/// type of things
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[non_exhaustive]
+pub enum ConnectionType {
+    /// An ID of a [`Wire`]
+    Wire(String),
+    /// An ID of a [`Cable`]
+    Cable(String),
+    /// An ID of a [`TermCable`]
+    TermCable(String),
+    /// An ID of an [`Equipment`]
+    Equipment(String),
+    /// An ID of a [`TerminalStrip`]
+    TerminalStrip(String),
+    /// An ID of a [`Connector`]
+    Connector(String),
 }
