@@ -78,12 +78,12 @@ pub struct EquipFace {
 pub struct FaceConnector {
     //TODO: refcounted?
     /// Connector Type
-    connector_type: ConnectorType,
+    connector_type: String,
     /// Signal direction
     direction: Option<String>,
-    /// location of connector from left of visual representation
+    /// location of connector from left of visual representation of face
     x: u64,
-    /// location of connector from bottom of visual representation
+    /// location of connector from bottom of visual representation of face
     y: u64,
 }
 

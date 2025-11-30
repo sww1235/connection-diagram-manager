@@ -25,7 +25,7 @@ pub struct Equipment {
     /// must be in list of mounting types defined in `equip_type.mounting_type`.
     /// Validated on import
     pub mounting_type: Option<String>,
-    /// The containing `Enclosure`
+    /// The containing `Enclosure` ID
     pub enclosure: Option<String>,
     /// The ID of the `MountPoint` within the `Enclosure`
     pub mount_point: Option<String>,
