@@ -118,6 +118,44 @@ pub enum ProjectError {
         /// What data was missing from the `Project` entry
         data_missing: String,
     },
+    /// `ConnectionError` is the list of errors that result from processing connections
+    #[error(transparent)]
+    ConnectionError(#[from] ConnectionError),
+}
+/// `ConnectionError` is the list of errors that result from processing connections
+#[derive(Debug, Error)]
+#[non_exhaustive]
+pub enum ConnectionError {
+    /// Generic error for an invalid connection. Use the more specific errors listed below if
+    /// possible. Make sure that `reason` starts with an uppper case letter.
+    #[error("The connection between {end1} and {end2} in {project_file} is invalid. {reason}")]
+    Invalid {
+        /// The ID of one end of the connection
+        end1: String,
+        /// The ID of the other end of the connection
+        end2: String,
+        /// What project file this connection was found in.
+        project_file: PathBuf,
+        /// The reason the connection is invalid.
+        reason: String,
+    },
+    // The whole map_or() chain, adds a space to the beginning of `message` if there is content so
+    // there is correct spacing. That way the fmt string doesn't have to have an extra space in it
+    // all the time.
+    /// Error produced if both ends of the connection are the same type and not valid to connect.
+    /// make sure that `message` starts with an uppper case letter.
+    #[error("The connection between {end1} and {end2} in {project_file} is invalid because they are both the same type.\
+    {}", message.clone().map_or(String::new(), |mut v| {v.insert_str(0, ""); v}))]
+    SameType {
+        /// The ID of one end of the connection
+        end1: String,
+        /// The ID of the other end of the connection
+        end2: String,
+        /// What project file this connection was found in.
+        project_file: PathBuf,
+        /// An optional message with more information for the user
+        message: Option<String>,
+    },
 }
 
 /// `PDFGenerationError` is the list of errors that can occur in `pdf_generation`
