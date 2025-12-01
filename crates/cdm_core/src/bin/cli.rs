@@ -7,6 +7,7 @@
 //! Config file can live in either root project directory or src directory under root directory.
 
 use std::{
+    env,
     fs,
     io::{self, ErrorKind},
     path::{Path, PathBuf},
@@ -32,14 +33,14 @@ use cdm_core::{
 use clap::{Parser, ValueEnum};
 use figment::{
     Figment,
-    providers::{Format, Serialized, Toml},
+    providers::{Format as _, Serialized, Toml},
 };
 use log::{LevelFilter, debug, info};
 use serde::{Deserialize, Serialize};
 use simple_logger::SimpleLogger;
 
 //TODO: change some of the panics in main to printed error messages with a returned error code.
-#[expect(clippy::too_many_lines)]
+#[expect(clippy::too_many_lines, reason = "main function")]
 fn main() -> anyhow::Result<()> {
     // parse command line flags and config files
 
@@ -56,7 +57,7 @@ fn main() -> anyhow::Result<()> {
     // Once the fix in the below issue is released, re-evaluate
     // https://github.com/SergioBenitez/Figment/issues/110
 
-    let home_dir = std::env::home_dir().ok_or(io::Error::new(ErrorKind::NotFound, "Home Directory not found"))?;
+    let home_dir = env::home_dir().ok_or(io::Error::new(ErrorKind::NotFound, "Home Directory not found"))?;
     let root = Path::new("/");
     let app_config_filename = "cdm_config.toml";
     let app_config: ApplicationConfig = Figment::new()
@@ -110,6 +111,7 @@ fn main() -> anyhow::Result<()> {
     //errors manually
     logger.with_colors(true).init()?;
 
+    #[expect(clippy::print_stdout, reason = "this is intended to print to the terminal")]
     match cli.print_units {
         Some(PrintUnitCmdOption::All) => {
             println!("{:^43}", "Area Units");

@@ -4,7 +4,8 @@
 //
 // References: <https://stackoverflow.com/a/2157012/3342767>
 
-use std::{cell::RefCell, rc::Rc};
+use core::cell::RefCell;
+use std::rc::Rc;
 
 /// `Graph` is a node-centric representation of a graph
 ///
@@ -19,6 +20,7 @@ pub struct Graph {
 ///
 /// Even though the two nodes in the graph are labeled `source`/`destination`, as long as the
 /// `directed` field is set false, they will be treated identically.
+#[expect(clippy::exhaustive_structs, reason = "edges are not likely to change")]
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct Edge {
     /// implementation specific ID
@@ -32,6 +34,7 @@ pub struct Edge {
 }
 
 /// `Node` is a node/vertex in a graph
+#[expect(clippy::exhaustive_structs, reason = "edges are not likely to change")]
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct Node {
     /// `id` implementation specific ID
@@ -49,15 +52,18 @@ pub struct Node {
 impl Graph {
     /// create an empty graph
     #[must_use]
+    #[inline]
     pub fn init() -> Self {
         Self { nodes: Vec::new() }
     }
     /// insert a node into a graph
+    #[inline]
     pub fn insert_node(&mut self, node: Rc<RefCell<Node>>) {
         self.nodes.push(node);
     }
 
     /// Depth first search of graph
+    #[inline(never)]
     pub fn depth_first_search(&self) {
         // the entries in visited_list are the indexes of nodes in self.nodes
         let mut visited_list = Vec::new();
@@ -79,6 +85,7 @@ impl Graph {
 impl Node {
     /// create an empty node
     #[must_use]
+    #[inline]
     pub fn new() -> Self {
         Self {
             id: String::new(),
@@ -90,9 +97,10 @@ impl Node {
     }
 
     /// add an edge to a node
+    #[inline(never)]
     pub fn add_edge(&mut self, node: Rc<RefCell<Node>>, id: &str, directed: bool, weight: Option<u64>) {
         self.edges.push(Edge {
-            id: id.to_string(),
+            id: id.to_owned(),
             destination: node,
             directed,
             weight,
@@ -100,6 +108,7 @@ impl Node {
     }
     /// outputs the degree of the node
     #[must_use]
+    #[inline]
     pub fn degree(&self) -> usize {
         self.edges.len()
     }

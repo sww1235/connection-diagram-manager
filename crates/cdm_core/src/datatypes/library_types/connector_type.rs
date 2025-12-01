@@ -20,7 +20,7 @@ use crate::{
 /// Connector can represent more than just a metal or plastic blob on the end of a cable, it can
 /// represent a screw terminal on a piece of equipment or a hole for wire to be entered in.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::partial_pub_fields)]
+#[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct ConnectorType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -57,9 +57,11 @@ pub struct ConnectorType {
     pub(crate) contained_datafile_path: PathBuf,
 }
 impl FromFile for ConnectorType {
+    #[inline]
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
     }
+    #[inline]
     fn set_datafile(&mut self, datafile_path: &Path) {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
@@ -68,6 +70,7 @@ impl FromFile for ConnectorType {
 //TODO: store pin cross sectional area or something equivalent, also store pin type
 /// Represents an individual pin in a `ConnectorType`
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct ConnectorPin {
     /// Pin Designation
     pub designation: String,

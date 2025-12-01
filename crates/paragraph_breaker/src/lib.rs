@@ -20,7 +20,7 @@ struct ParagraphWord {
     score: Option<Length>,
 }
 
-#[expect(clippy::arithmetic_side_effects)]
+#[expect(clippy::arithmetic_side_effects, reason = "not really a better way to do this")]
 /// A simplified implementation of the Knuth-Plass algorithm, as found
 /// [here](https://github.com/jaroslov/knuth-plass-thoughts/blob/master/plass.cpp)
 /// and converted into rust.
@@ -93,9 +93,8 @@ pub fn to_lines(
     )?;
     Ok((to_lines_internal(&words, text), glyph_buffer))
 }
-#[expect(clippy::too_many_arguments)]
-#[expect(clippy::arithmetic_side_effects)]
-#[expect(clippy::shadow_unrelated)]
+#[expect(clippy::arithmetic_side_effects, reason = "not really a better way to do this")]
+//#[expect(clippy::shadow_unrelated)]
 /// `lineBreakInternal` scores each `ParagraphWord` for breaking possibilities
 fn line_break_internal(
     words: &mut [ParagraphWord],

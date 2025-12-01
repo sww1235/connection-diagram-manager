@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
-#[expect(clippy::wildcard_imports)]
-use uom::si::{Unit, area::*, rational64};
+#[expect(
+    clippy::wildcard_imports,
+    reason = "using wildcard imports here, as there are so many units from UOM and we want all of them"
+)]
+use uom::si::{Unit as _, area::*, rational64};
 
 use super::IntermediateUnit;
 use crate::error::UnitParsingError;
@@ -8,6 +11,7 @@ use crate::error::UnitParsingError;
 /// Struct representing `Area` values
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(try_from = "IntermediateUnit")]
+#[non_exhaustive]
 pub struct Area {
     /// contained uom Unit
     pub value: rational64::Area,
@@ -19,7 +23,8 @@ impl Area {
     /// outputs all usable `Area` units allowed in configuration files in the form of `<unit name>:
     /// <unit abbreviation>`
     #[must_use]
-    #[expect(clippy::string_add)]
+    #[expect(clippy::string_add, reason = "easier and cleaner than one massive format string")]
+    #[inline]
     pub fn output_units() -> String {
         // need to do this hack AFAIK so the spacing is the same
         let string1 = "Unit Name";
@@ -164,7 +169,13 @@ impl Area {
 //TODO: return a different error if the unit is of the wrong type rather than just unknown unit
 impl TryFrom<IntermediateUnit> for Area {
     type Error = UnitParsingError;
-    #[expect(clippy::too_many_lines, clippy::match_same_arms)]
+    #[expect(
+        clippy::too_many_lines,
+        clippy::match_same_arms,
+        reason = "match same arms due to issues with underlying datatype for now, too many lines, thats the amount of units we \
+                  have"
+    )]
+    #[inline]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
         match item.original_unit.as_str() {
             //"Ym²" | "square yottameter" => Ok(Self {
@@ -174,7 +185,7 @@ impl TryFrom<IntermediateUnit> for Area {
             // Unit unsupported due to iliekturtles/uom#60
             "Ym²" | "square yottameter" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Area".to_string(),
+                quantity_type: "Area".to_owned(),
             }),
             //"Zm²" | "square zettameter" => Ok(Self {
             //    value: rational64::Area::new::<square_zettameter>(item.value),
@@ -183,7 +194,7 @@ impl TryFrom<IntermediateUnit> for Area {
             // Unit unsupported due to iliekturtles/uom#60
             "Zm²" | "square zettameter" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Area".to_string(),
+                quantity_type: "Area".to_owned(),
             }),
             //"Em²" | "square exameter" => Ok(Self {
             //    value: rational64::Area::new::<square_exameter>(item.value),
@@ -192,7 +203,7 @@ impl TryFrom<IntermediateUnit> for Area {
             // Unit unsupported due to iliekturtles/uom#60
             "Em²" | "square exameter" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Area".to_string(),
+                quantity_type: "Area".to_owned(),
             }),
             //"Pm²" | "square petameter" => Ok(Self {
             //    value: rational64::Area::new::<square_petameter>(item.value),
@@ -201,7 +212,7 @@ impl TryFrom<IntermediateUnit> for Area {
             // Unit unsupported due to iliekturtles/uom#60
             "Pm²" | "square petameter" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Area".to_string(),
+                quantity_type: "Area".to_owned(),
             }),
             //"Tm²" | "square terameter" => Ok(Self {
             //    value: rational64::Area::new::<square_terameter>(item.value),
@@ -210,7 +221,7 @@ impl TryFrom<IntermediateUnit> for Area {
             // Unit unsupported due to iliekturtles/uom#60
             "Tm²" | "square terameter" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Area".to_string(),
+                quantity_type: "Area".to_owned(),
             }),
             "Gm²" | "square gigameter" => Ok(Self {
                 value: rational64::Area::new::<square_gigameter>(item.value),
@@ -263,7 +274,7 @@ impl TryFrom<IntermediateUnit> for Area {
             // Unit unsupported due to iliekturtles/uom#60
             "pm²" | "square picometer" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Area".to_string(),
+                quantity_type: "Area".to_owned(),
             }),
             //"fm²" | "square femtometer" => Ok(Self {
             //    value: rational64::Area::new::<square_femtometer>(item.value),
@@ -272,7 +283,7 @@ impl TryFrom<IntermediateUnit> for Area {
             // Unit unsupported due to iliekturtles/uom#60
             "fm²" | "square femtometer" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Area".to_string(),
+                quantity_type: "Area".to_owned(),
             }),
             //"am²" | "square attometer" => Ok(Self {
             //    value: rational64::Area::new::<square_attometer>(item.value),
@@ -281,7 +292,7 @@ impl TryFrom<IntermediateUnit> for Area {
             // Unit unsupported due to iliekturtles/uom#60
             "am²" | "square attometer" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Area".to_string(),
+                quantity_type: "Area".to_owned(),
             }),
             //"zm²" | "square zeptometer" => Ok(Self {
             //    value: rational64::Area::new::<square_zeptometer>(item.value),
@@ -290,7 +301,7 @@ impl TryFrom<IntermediateUnit> for Area {
             // Unit unsupported due to iliekturtles/uom#60
             "zm²" | "square zeptometer" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Area".to_string(),
+                quantity_type: "Area".to_owned(),
             }),
             //"ym²" | "square yoctometer" => Ok(Self {
             //    value: rational64::Area::new::<square_yoctometer>(item.value),
@@ -299,7 +310,7 @@ impl TryFrom<IntermediateUnit> for Area {
             // Unit unsupported due to iliekturtles/uom#60
             "ym²" | "square yoctometer" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Area".to_string(),
+                quantity_type: "Area".to_owned(),
             }),
             "ac" | "acre" => Ok(Self {
                 value: rational64::Area::new::<acre>(item.value),
@@ -338,8 +349,8 @@ impl TryFrom<IntermediateUnit> for Area {
                 original_unit: item.original_unit,
             }),
             x => Err(UnitParsingError::UnknownUnit {
-                unit_string: x.to_string(),
-                quantity_type: "Area".to_string(),
+                unit_string: x.to_owned(),
+                quantity_type: "Area".to_owned(),
             }),
         }
     }

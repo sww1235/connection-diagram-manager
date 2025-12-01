@@ -15,7 +15,7 @@ use crate::{
 /// `TermCable` represents a particular instance of a `TermCableType`.
 /// It represents a physical item.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::partial_pub_fields)]
+#[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct TermCable {
     /// The `TermCableType` of this instance
     pub term_cable_type: String,
@@ -41,13 +41,14 @@ impl TermCable {
     /// # Errors
     ///
     /// Will error if `term_cable_type` id not found in provided library
+    #[inline(never)]
     pub fn len(&self, library: &Library) -> Result<Length, LibraryError> {
         let term_cable_type = library
             .term_cable_types
             .get(&self.term_cable_type)
             .ok_or(LibraryError::ValueNotFound {
                 id: self.term_cable_type.clone(),
-                library_type: "Term Cable Type".to_string(),
+                library_type: "Term Cable Type".to_owned(),
             })?;
 
         Ok(term_cable_type
@@ -57,9 +58,11 @@ impl TermCable {
     }
 }
 impl FromFile for TermCable {
+    #[inline]
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
     }
+    #[inline]
     fn set_datafile(&mut self, datafile_path: &Path) {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }

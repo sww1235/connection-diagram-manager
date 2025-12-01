@@ -1,10 +1,11 @@
 //! test
 
 use uom::{
-    num::Zero,
+    num::Zero as _,
     si::{length::millimeter, rational64::Length},
 };
 
+#[expect(clippy::print_stdout, reason = "test binary")]
 fn main() {
     let test = Length::zero();
 

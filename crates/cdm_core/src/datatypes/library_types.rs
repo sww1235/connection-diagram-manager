@@ -24,11 +24,12 @@ use std::{collections::BTreeMap, path::Path};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{error::Error, traits::FromFile, util_functions};
+use crate::{error::Error, traits::FromFile as _, util_functions};
 
 /// `Library` represents all library data used in program
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
+#[non_exhaustive]
 pub struct Library {
     /// contains all cable types read in from file, and/or added in via program logic
     pub cable_types: BTreeMap<String, cable_type::CableType>,
@@ -69,6 +70,7 @@ impl Library {
     /// # Errors
     ///
     /// Will error if there are duplicate keys found in `other` map
+    #[inline(never)]
     pub fn merge(&mut self, test_map: Library, test_file: &Path) -> Result<(), Error> {
         util_functions::merge_btreemaps(&mut self.cable_types, test_map.cable_types, test_file)?;
         util_functions::merge_btreemaps(&mut self.connector_types, test_map.connector_types, test_file)?;
@@ -98,6 +100,7 @@ impl Library {
     }
 
     /// Inserts datafile path into all structs in the called library
+    #[inline(never)]
     pub fn add_datafile_paths(&mut self, datafile_path: &Path) {
         // Cable Types
         if !self.cable_types.is_empty() {

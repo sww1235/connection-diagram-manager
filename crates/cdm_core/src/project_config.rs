@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 /// Per Project configuration options
 #[derive(Debug, Default, Clone)]
+#[non_exhaustive]
 pub struct ProjectConfiguration {
     /// Name of Project used for display and drawings
     pub project_name: String,

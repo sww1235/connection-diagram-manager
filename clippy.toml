@@ -7,3 +7,5 @@ allowed-duplicate-crates = ["windows-targets", "windows_aarch64_gnullvm", "windo
 doc-valid-idents = ["PostgreSQL", "RPMale","RPFemale", ".."]
 
 allow-unwrap-in-tests = true
+
+too-many-arguments-threshold = 10

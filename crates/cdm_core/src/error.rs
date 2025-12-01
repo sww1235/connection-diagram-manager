@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{io, path::PathBuf};
 
 use paragraph_breaker::Error as ParagraphError;
 use pdf_helper::Error as PDFError;
@@ -32,7 +32,7 @@ pub enum Error {
     ParagraphBreaking(#[from] ParagraphError),
     /// Errors relating to input / output
     #[error(transparent)]
-    IOError(#[from] std::io::Error),
+    IOError(#[from] io::Error),
     /// Errors relating to PDF creation and export
     #[error(transparent)]
     PDFError(#[from] PDFError),
@@ -51,6 +51,7 @@ pub enum Error {
 /// especially during parsing
 #[derive(Debug, Error)]
 #[non_exhaustive]
+#[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
 pub enum LibraryError {
     /// This error is used when a lookup is made in the library and the ID is not found
     #[error("The ID {id} of type {library_type} not found in library")]
@@ -83,6 +84,7 @@ pub enum LibraryError {
 /// `WireTypeError` are errors resulting from functions specific to `WireType`s.
 #[derive(Debug, Error)]
 #[non_exhaustive]
+#[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
 pub enum WireTypeError {
     /// This error is used when failing to calculate Overall Cross Sectional Area
     #[error("Overall Cross Seectional Area calculation failed due to {0}")]
@@ -93,6 +95,7 @@ pub enum WireTypeError {
 /// especially during parsing
 #[derive(Debug, Error)]
 #[non_exhaustive]
+#[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
 pub enum ProjectError {
     /// This error is used when a lookup is made in the project and the ID is not found
     #[error("The ID {id} of type {project_type} not found in project")]
@@ -125,6 +128,7 @@ pub enum ProjectError {
 /// `ConnectionError` is the list of errors that result from processing connections
 #[derive(Debug, Error)]
 #[non_exhaustive]
+#[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
 pub enum ConnectionError {
     /// Generic error for an invalid connection. Use the more specific errors listed below if
     /// possible. Make sure that `reason` starts with an uppper case letter.
@@ -145,7 +149,7 @@ pub enum ConnectionError {
     /// Error produced if both ends of the connection are the same type and not valid to connect.
     /// make sure that `message` starts with an uppper case letter.
     #[error("The connection between {end1} and {end2} in {project_file} is invalid because they are both the same type.\
-    {}", message.clone().map_or(String::new(), |mut v| {v.insert_str(0, ""); v}))]
+    {}", message.clone().map_or(String::new(), |mut value| {value.insert_str(0, ""); value}))]
     SameType {
         /// The ID of one end of the connection
         end1: String,
@@ -161,6 +165,7 @@ pub enum ConnectionError {
 /// `PDFGenerationError` is the list of errors that can occur in `pdf_generation`
 #[derive(Debug, Error)]
 #[non_exhaustive]
+#[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
 pub enum PDFGenerationError {
     /// Error resulting from layout or rendering
     #[error("Layout Error: {0}")]
@@ -173,6 +178,7 @@ pub enum PDFGenerationError {
 /// `UnitParsingError` is the list of errors that can occur during Deserialization of units
 #[derive(Debug, Error)]
 #[non_exhaustive]
+#[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
 pub enum UnitParsingError {
     #[error("Unknown unit string {unit_string} for quantity type {quantity_type}")]
     /// Error resulting from an unknown unit string

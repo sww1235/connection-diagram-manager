@@ -22,8 +22,8 @@ where
         return Ok(());
     }
     for (key, value) in test_map {
-        if let Entry::Vacant(e) = origin_map.entry(key.clone()) {
-            e.insert(value);
+        if let Entry::Vacant(entry) = origin_map.entry(key.clone()) {
+            entry.insert(value);
         } else {
             return Err(Error::DuplicateKey {
                 key: key.clone().to_string(),

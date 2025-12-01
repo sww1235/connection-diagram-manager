@@ -17,7 +17,7 @@ use crate::{
 
 /// `MountingRail` represents an individual mounting rail in a project
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::partial_pub_fields)]
+#[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct MountingRail {
     /// ID of type of mounting rail
     pub mounting_rail_type: String,
@@ -35,9 +35,11 @@ pub struct MountingRail {
 }
 
 impl FromFile for MountingRail {
+    #[inline]
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
     }
+    #[inline]
     fn set_datafile(&mut self, datafile_path: &Path) {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
@@ -51,7 +53,11 @@ impl MountingRail {
     /// # Errors
     ///
     /// Will error if `mounting_rail_type` not found in library
-    #[expect(clippy::format_push_string)]
+    #[expect(
+        clippy::format_push_string,
+        reason = "not worried about the additional allocation in this case."
+    )]
+    #[inline(never)]
     pub fn vis_rep(&self, library: &Library) -> Result<Svg, Error> {
         // because usvg is a read only parsing library, I can't build the SVG programatically and
         // instead have to bastardize creation of it via string concatenation and parsing
@@ -61,7 +67,7 @@ impl MountingRail {
             .get(&self.mounting_rail_type)
             .ok_or(LibraryError::ValueNotFound {
                 id: self.mounting_rail_type.clone(),
-                library_type: "Mounting Rail Type".to_string(),
+                library_type: "Mounting Rail Type".to_owned(),
             })?;
         let mut svg_string = String::new();
 
@@ -101,13 +107,14 @@ impl MountingRail {
     /// # Errors
     ///
     /// Will error if `mounting_rail_type` is not found in library
+    #[inline(never)]
     pub fn is_standard_length(&self, library: &Library) -> Result<bool, LibraryError> {
         let rail_type = library
             .mounting_rail_types
             .get(&self.mounting_rail_type)
             .ok_or(LibraryError::ValueNotFound {
                 id: self.mounting_rail_type.clone(),
-                library_type: "Mounting Rail Type".to_string(),
+                library_type: "Mounting Rail Type".to_owned(),
             })?;
         Ok(rail_type.standard_rail_length.value == self.length.value)
     }

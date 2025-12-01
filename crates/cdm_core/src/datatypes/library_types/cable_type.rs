@@ -28,7 +28,7 @@ use crate::{
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has
 /// one core, then it is a wire, not a cable.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::partial_pub_fields)]
+#[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct CableType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -56,9 +56,11 @@ pub struct CableType {
 }
 
 impl FromFile for CableType {
+    #[inline]
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
     }
+    #[inline]
     fn set_datafile(&mut self, datafile_path: &Path) {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
@@ -68,7 +70,7 @@ impl FromFile for CableType {
 
 /// `CableCore` represents an individual conductor, strength member or optical fiber in a cable.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::exhaustive_enums)]
+#[expect(clippy::exhaustive_enums, reason = "only two options make sense")]
 pub enum CableCore {
     /// `WireType`
     WireType(String),
@@ -85,6 +87,7 @@ pub enum CableCore {
 //TODO: add minimum temperature rating
 /// `CableLayer` represents an insulation or shield layer of the entire cable
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct CableLayer {
     /// layer number, counted from inside to outside of cable, 1 indexed
     pub layer_number: u64,

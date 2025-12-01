@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
-#[expect(clippy::wildcard_imports)]
-use uom::si::{Unit, rational64, temperature_interval::*};
+#[expect(
+    clippy::wildcard_imports,
+    reason = "using wildcard imports here, as there are so many units from UOM and we want all of them"
+)]
+use uom::si::{Unit as _, rational64, temperature_interval::*};
 
 use super::IntermediateUnit;
 use crate::error::UnitParsingError;
@@ -8,6 +11,7 @@ use crate::error::UnitParsingError;
 /// Struct representing `TemperatureInterval` values
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(try_from = "IntermediateUnit")]
+#[non_exhaustive]
 pub struct TemperatureInterval {
     /// contained uom Unit
     pub value: rational64::TemperatureInterval,
@@ -19,7 +23,8 @@ impl TemperatureInterval {
     /// outputs all usable `TemperatureInterval` units allowed in configuration files in the form of
     /// `<unit name>: <unit abbreviation>`
     #[must_use]
-    #[expect(clippy::string_add)]
+    #[expect(clippy::string_add, reason = "easier and cleaner than one massive format string")]
+    #[inline]
     pub fn output_units() -> String {
         let string1 = "Unit Name";
         let string2 = "Abbreviation";
@@ -62,7 +67,13 @@ impl TemperatureInterval {
 //TODO: return a different error if the unit is of the wrong type rather than just unknown unit
 impl TryFrom<IntermediateUnit> for TemperatureInterval {
     type Error = UnitParsingError;
-    #[expect(clippy::too_many_lines, clippy::match_same_arms)]
+    #[expect(
+        clippy::too_many_lines,
+        clippy::match_same_arms,
+        reason = "match same arms due to issues with underlying datatype for now, too many lines, thats the amount of units we \
+                  have"
+    )]
+    #[inline]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
         match item.original_unit.as_str() {
             //"YK" | "yottakelvin" => Ok(Self {
@@ -72,7 +83,7 @@ impl TryFrom<IntermediateUnit> for TemperatureInterval {
             // Unit unsupported due to iliekturtles/uom#60
             "YK" | "yottakelvin" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Temperature Interval".to_string(),
+                quantity_type: "Temperature Interval".to_owned(),
             }),
             //"ZK" | "zettakelvin" => Ok(Self {
             //    value: rational64::TemperatureInterval::new::<zettakelvin>(item.value),
@@ -81,7 +92,7 @@ impl TryFrom<IntermediateUnit> for TemperatureInterval {
             // Unit unsupported due to iliekturtles/uom#60
             "ZK" | "zettakelvin" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Temperature Interval".to_string(),
+                quantity_type: "Temperature Interval".to_owned(),
             }),
             "EK" | "exakelvin" => Ok(Self {
                 value: rational64::TemperatureInterval::new::<exakelvin>(item.value),
@@ -158,7 +169,7 @@ impl TryFrom<IntermediateUnit> for TemperatureInterval {
             // Unit unsupported due to iliekturtles/uom#60
             "zK" | "zeptokelvin" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Temperature Interval".to_string(),
+                quantity_type: "Temperature Interval".to_owned(),
             }),
             //"yK" | "yoctokelvin" => Ok(Self {
             //    value: rational64::TemperatureInterval::new::<yoctokelvin>(item.value),
@@ -167,7 +178,7 @@ impl TryFrom<IntermediateUnit> for TemperatureInterval {
             // Unit unsupported due to iliekturtles/uom#60
             "yK" | "yoctokelvin" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Temperature Interval".to_string(),
+                quantity_type: "Temperature Interval".to_owned(),
             }),
             "°C" | "degree Celsius" => Ok(Self {
                 value: rational64::TemperatureInterval::new::<degree_celsius>(item.value),
@@ -183,8 +194,8 @@ impl TryFrom<IntermediateUnit> for TemperatureInterval {
             }),
 
             x => Err(UnitParsingError::UnknownUnit {
-                unit_string: x.to_string(),
-                quantity_type: "Temperature Interval".to_string(),
+                unit_string: x.to_owned(),
+                quantity_type: "Temperature Interval".to_owned(),
             }),
         }
     }

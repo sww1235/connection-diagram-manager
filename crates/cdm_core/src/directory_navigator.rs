@@ -10,6 +10,7 @@ use std::{
 ///
 /// Will error if provided path is not a directory or if there are IO errors encountered when
 /// reading the directory
+#[inline]
 pub fn files_in_dir<T>(dir: T, extension: Option<&str>, follow_symlinks: bool) -> Result<Vec<PathBuf>>
 where T: AsRef<Path> {
     if !dir.as_ref().is_dir() {
@@ -31,6 +32,7 @@ fn files_in_dir_inner<T>(dir: T, paths: &mut Vec<PathBuf>, extension: Option<&st
 where T: AsRef<Path> {
     if dir.as_ref().is_dir() {
         for entry in fs::read_dir(dir)? {
+            #[expect(clippy::shadow_reuse, reason = "unwrapping value")]
             let entry = entry?;
             let path = entry.path();
             if path.is_dir() {

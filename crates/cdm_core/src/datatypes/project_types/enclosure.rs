@@ -16,7 +16,7 @@ use crate::{
 /// `Location` represents a physical instance of a locationType
 /// TODO: add page/sheet number for pdf generation and printing
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::partial_pub_fields)]
+#[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct Enclosure {
     /// Type of location
     pub enclosure_type: String,
@@ -71,9 +71,11 @@ pub enum MountPoint {
 }
 
 impl FromFile for Enclosure {
+    #[inline]
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
     }
+    #[inline]
     fn set_datafile(&mut self, datafile_path: &Path) {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }

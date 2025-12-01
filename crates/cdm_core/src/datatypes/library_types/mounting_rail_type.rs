@@ -15,7 +15,7 @@ use crate::{
 /// `MountingRailType`s are defined in a horizontal orientation for consistency. Any of the
 /// provided SVG files must be defined to accomodate this.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::partial_pub_fields)]
+#[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct MountingRailType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -66,18 +66,20 @@ pub struct MountingRailType {
     /// the start, middle and end images should not have lines where they join
     /// so when the images are placed together, there is no overlap.
     pub start_image: Option<Svg>,
-    #[expect(missing_docs)]
+    #[expect(missing_docs, reason = "documented above")]
     pub middle_image: Option<Svg>,
-    #[expect(missing_docs)]
+    #[expect(missing_docs, reason = "documented above")]
     pub end_image: Option<Svg>,
     /// datafile the struct instance was read in from
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 impl FromFile for MountingRailType {
+    #[inline]
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
     }
+    #[inline]
     fn set_datafile(&mut self, datafile_path: &Path) {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }

@@ -24,7 +24,7 @@ use crate::{
 /// functional (model/part number/manufacturer part number
 /// may all be equivalent in some cases)
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::partial_pub_fields)]
+#[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct WireType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -69,9 +69,11 @@ pub struct WireType {
     pub(crate) contained_datafile_path: PathBuf,
 }
 impl FromFile for WireType {
+    #[inline]
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
     }
+    #[inline]
     fn set_datafile(&mut self, datafile_path: &Path) {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }

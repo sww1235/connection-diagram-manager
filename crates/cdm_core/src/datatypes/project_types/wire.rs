@@ -13,7 +13,7 @@ use crate::{
 /// `Wire` represents a particular instance of a `WireType`.
 /// It represents a physical item.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::partial_pub_fields)]
+#[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct Wire {
     /// The `WireType` of this instance
     pub wire_type: String,
@@ -41,9 +41,11 @@ pub struct Wire {
 }
 
 impl FromFile for Wire {
+    #[inline]
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
     }
+    #[inline]
     fn set_datafile(&mut self, datafile_path: &Path) {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }

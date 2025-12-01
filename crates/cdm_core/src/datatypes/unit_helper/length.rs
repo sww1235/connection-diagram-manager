@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
-#[expect(clippy::wildcard_imports)]
-use uom::si::{Unit, length::*, rational64};
+#[expect(
+    clippy::wildcard_imports,
+    reason = "using wildcard imports here, as there are so many units from UOM and we want all of them"
+)]
+use uom::si::{Unit as _, length::*, rational64};
 
 use super::IntermediateUnit;
 use crate::error::UnitParsingError;
@@ -8,6 +11,7 @@ use crate::error::UnitParsingError;
 /// Struct representing `Length` values
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(try_from = "IntermediateUnit")]
+#[non_exhaustive]
 pub struct Length {
     /// contained uom Unit
     pub value: rational64::Length,
@@ -19,7 +23,8 @@ impl Length {
     /// outputs all usable `Length` units allowed in configuration files in the form of `<unit
     /// name>: <unit abbreviation>`
     #[must_use]
-    #[expect(clippy::string_add)]
+    #[expect(clippy::string_add, reason = "easier and cleaner than one massive format string")]
+    #[inline]
     pub fn output_units() -> String {
         let string1 = "Unit Name";
         let string2 = "Abbreviation";
@@ -87,7 +92,13 @@ impl Length {
 //TODO: return a different error if the unit is of the wrong type rather than just unknown unit
 impl TryFrom<IntermediateUnit> for Length {
     type Error = UnitParsingError;
-    #[expect(clippy::too_many_lines, clippy::match_same_arms)]
+    #[expect(
+        clippy::too_many_lines,
+        clippy::match_same_arms,
+        reason = "match same arms due to issues with underlying datatype for now, too many lines, thats the amount of units we \
+                  have"
+    )]
+    #[inline]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
         match item.original_unit.as_str() {
             //"Ym" | "yottameter" => Ok(Self {
@@ -97,7 +108,7 @@ impl TryFrom<IntermediateUnit> for Length {
             // Unit unsupported due to iliekturtles/uom#60
             "Ym" | "yottameter" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Length".to_string(),
+                quantity_type: "Length".to_owned(),
             }),
             //"Zm" | "zettameter" => Ok(Self {
             //    value: rational64::Length::new::<zettameter>(item.value),
@@ -106,7 +117,7 @@ impl TryFrom<IntermediateUnit> for Length {
             // Unit unsupported due to iliekturtles/uom#60
             "Zm" | "zettameter" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Length".to_string(),
+                quantity_type: "Length".to_owned(),
             }),
             "Em" | "exameter" => Ok(Self {
                 value: rational64::Length::new::<exameter>(item.value),
@@ -183,7 +194,7 @@ impl TryFrom<IntermediateUnit> for Length {
             // Unit unsupported due to iliekturtles/uom#60
             "zm" | "zeptometer" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Length".to_string(),
+                quantity_type: "Length".to_owned(),
             }),
             //"ym" | "yoctometer" => Ok(Self {
             //    value: rational64::Length::new::<yoctometer>(item.value),
@@ -192,7 +203,7 @@ impl TryFrom<IntermediateUnit> for Length {
             // Unit unsupported due to iliekturtles/uom#60
             "ym" | "yoctometer" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Length".to_string(),
+                quantity_type: "Length".to_owned(),
             }),
             "Å" | "ångström" => Ok(Self {
                 value: rational64::Length::new::<angstrom>(item.value),
@@ -294,8 +305,8 @@ impl TryFrom<IntermediateUnit> for Length {
             }),
 
             x => Err(UnitParsingError::UnknownUnit {
-                unit_string: x.to_string(),
-                quantity_type: "Length".to_string(),
+                unit_string: x.to_owned(),
+                quantity_type: "Length".to_owned(),
             }),
         }
     }

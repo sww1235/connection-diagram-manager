@@ -15,7 +15,7 @@ use crate::{
 /// `Equipment` represents a particular instance of an `EquipmentType`.
 /// This is the physical unit you would hold in your hand
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::partial_pub_fields)]
+#[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct Equipment {
     /// The type of equipment of the instance
     pub equipment_type: String,
@@ -45,40 +45,50 @@ pub struct Equipment {
 }
 
 impl FromFile for Equipment {
+    #[inline]
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
     }
+    #[inline]
     fn set_datafile(&mut self, datafile_path: &Path) {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
 
+impl Equipment {
+    //TODO: Figure out better way of storing and referring to connectors on equipment
+    //pub fn connector_list(&self, library: &Library) -> Result<BTreeMap<String, FaceConnector>,
+    // LibraryError> {
+    //
+    //}
+}
 
 impl SchematicRepresentation for Equipment {
+    #[inline(never)]
     fn schematic_symbol(&self, library: &Library, symbol_selector: Option<usize>) -> Result<Svg, LibraryError> {
         let equipment_type = library
             .equipment_types
             .get(&self.equipment_type)
             .ok_or(LibraryError::ValueNotFound {
-                id: self.equipment_type,
-                library_type: "Equipment Type".to_string(),
+                id: self.equipment_type.clone(),
+                library_type: "Equipment Type".to_owned(),
             })?;
-        let schematic_symbol_type_id = equipment_type
-            .schematic_symbols
-            .ok_or(LibraryError::DataMissing {
-                id: self.equipment_type,
-                library_type: "Equipment Type".to_string(),
-                data_missing: "Schematic Symbols".to_owned(),
-            })?
-            .get(symbol_selector.unwrap_or(0));
+        let equipment_schematic_symbols = equipment_type.schematic_symbols.clone().ok_or(LibraryError::DataMissing {
+            id: self.equipment_type.clone(),
+            library_type: "Equipment Type".to_owned(),
+            data_missing: "Schematic Symbols".to_owned(),
+        })?;
+
+        let schematic_symbol_type_id = equipment_schematic_symbols.get(symbol_selector.unwrap_or(0)).expect("");
         let schematic_symbol = library
             .schematic_symbol_types
-            .get(&schematic_symbol_type_id)
+            .get(schematic_symbol_type_id)
             .ok_or(LibraryError::ValueNotFound {
                 id: schematic_symbol_type_id.clone(),
-                library_type: "Schematic Symbol".to_string(),
+                library_type: "Schematic Symbol".to_owned(),
             })?
-            .visual_representation;
+            .visual_representation
+            .clone();
 
         Ok(schematic_symbol)
     }

@@ -1,4 +1,4 @@
-use num_traits::ToPrimitive;
+use num_traits::ToPrimitive as _;
 use serde::{Deserialize, Serialize};
 
 use super::IntermediateUnit;
@@ -8,6 +8,7 @@ use crate::error::UnitParsingError;
 /// `CrossSectionalArea`
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(try_from = "IntermediateUnit")]
+#[non_exhaustive]
 pub struct NominalWireSize {
     /// contained uom Unit
     pub value: NominalWireUnit,
@@ -29,6 +30,7 @@ pub enum NominalWireUnit {
 }
 
 impl Default for NominalWireUnit {
+    #[inline]
     fn default() -> Self {
         Self::Mm2(f64::default())
     }
@@ -38,7 +40,8 @@ impl NominalWireSize {
     /// outputs all usable `NominalWireSize` units allowed in configuration files in the form of
     /// `<unit name>: <unit abbreviation>`
     #[must_use]
-    #[expect(clippy::string_add)]
+    #[expect(clippy::string_add, reason = "easier and cleaner than one massive format string")]
+    #[inline]
     pub fn output_units() -> String {
         // need to do this hack AFAIK so the spacing is the same
         let string1 = "Unit Name";
@@ -55,42 +58,43 @@ impl NominalWireSize {
 
 impl TryFrom<IntermediateUnit> for NominalWireSize {
     type Error = UnitParsingError;
+    #[inline]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
         match item.original_unit.to_uppercase().as_str() {
             "AWG" | "American Wire Gauge" => Ok(Self {
                 value: NominalWireUnit::Awg(item.value.to_f64().ok_or(UnitParsingError::ValueError {
-                    quantity_type: "Nominal Wire Size".to_string(),
-                    data_type: "f64".to_string(),
+                    quantity_type: "Nominal Wire Size".to_owned(),
+                    data_type: "f64".to_owned(),
                 })?),
                 original_unit: item.original_unit,
             }),
             "MM²" => Ok(Self {
                 value: NominalWireUnit::Mm2(item.value.to_f64().ok_or(UnitParsingError::ValueError {
-                    quantity_type: "Nominal Wire Size".to_string(),
-                    data_type: "f64".to_string(),
+                    quantity_type: "Nominal Wire Size".to_owned(),
+                    data_type: "f64".to_owned(),
                 })?),
                 original_unit: item.original_unit,
             }),
             "CMIL" => Ok(Self {
                 value: NominalWireUnit::Cmil(item.value.to_f64().ok_or(UnitParsingError::ValueError {
-                    quantity_type: "Nominal Wire Size".to_string(),
-                    data_type: "f64".to_string(),
+                    quantity_type: "Nominal Wire Size".to_owned(),
+                    data_type: "f64".to_owned(),
                 })?),
                 original_unit: item.original_unit,
             }),
             "KCMIL" | "MCM" => Ok(Self {
                 value: NominalWireUnit::Cmil(
                     item.value.to_f64().ok_or(UnitParsingError::ValueError {
-                        quantity_type: "Nominal Wire Size".to_string(),
-                        data_type: "f64".to_string(),
+                        quantity_type: "Nominal Wire Size".to_owned(),
+                        data_type: "f64".to_owned(),
                     })? / 1000.0,
                 ),
                 original_unit: item.original_unit,
             }),
 
             x => Err(UnitParsingError::UnknownUnit {
-                unit_string: x.to_string(),
-                quantity_type: "Nominal Wire Size".to_string(),
+                unit_string: x.to_owned(),
+                quantity_type: "Nominal Wire Size".to_owned(),
             }),
         }
     }

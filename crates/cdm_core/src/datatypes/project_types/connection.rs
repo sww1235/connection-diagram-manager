@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 /// `Connection` represents a connection between two different elements.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::partial_pub_fields)]
+#[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct Connection {
     /// ID of one end of connection
     pub end1: ConnectionType,

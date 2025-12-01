@@ -18,7 +18,7 @@ use crate::{
 ///
 /// Anything from a rackmount piece of gear to an outlet or terminal block
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::partial_pub_fields)]
+#[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct EquipmentType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -49,9 +49,11 @@ pub struct EquipmentType {
     pub(crate) contained_datafile_path: PathBuf,
 }
 impl FromFile for EquipmentType {
+    #[inline]
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
     }
+    #[inline]
     fn set_datafile(&mut self, datafile_path: &Path) {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
@@ -65,6 +67,7 @@ impl FromFile for EquipmentType {
 /// SVGs should be layed out for a horizontal orientation when defined.
 /// instances can be rotated when defined in project.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct EquipFace {
     /// visual representation of equipment face, without connectors
     pub visual_representation: Option<Svg>,
@@ -84,17 +87,6 @@ pub struct FaceConnector {
     x: u64,
     /// location of connector from bottom of visual representation of face
     y: u64,
-}
-
-impl EquipmentType {
-    /// Returns representative svg representation of `EquipmentType`
-    #[must_use]
-    pub fn visual_rep(&self) -> Svg {
-        match &self.faces {
-            Some(faces) => faces["Front"].visual_representation.clone().unwrap_or_default().clone(),
-            None => self.visual_representation.clone().unwrap_or_default().clone(),
-        }
-    }
 }
 
 impl LibraryData for EquipmentType {}

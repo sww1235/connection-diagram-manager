@@ -13,7 +13,7 @@ use crate::{
 /// `Cable` represents a particular instance of a `CableType`
 /// It represents a physical item.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::partial_pub_fields)]
+#[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct Cable {
     /// The `CableType` key of this instance
     pub cable_type: String,
@@ -37,9 +37,11 @@ pub struct Cable {
 }
 
 impl FromFile for Cable {
+    #[inline]
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
     }
+    #[inline]
     fn set_datafile(&mut self, datafile_path: &Path) {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }

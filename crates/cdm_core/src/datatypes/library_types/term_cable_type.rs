@@ -17,7 +17,7 @@ use crate::{
 
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::partial_pub_fields)]
+#[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct TermCableType {
     /// Catalog information
     pub catalog: Option<Catalog>,
@@ -38,9 +38,11 @@ pub struct TermCableType {
     pub(crate) contained_datafile_path: PathBuf,
 }
 impl FromFile for TermCableType {
+    #[inline]
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
     }
+    #[inline]
     fn set_datafile(&mut self, datafile_path: &Path) {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
@@ -48,7 +50,7 @@ impl FromFile for TermCableType {
 
 /// `WireCable` allows either a `WireType` or `CableType` to be the root of a `TermCableType`
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::exhaustive_enums)]
+#[expect(clippy::exhaustive_enums, reason = "Only these two options make sense in this enum")]
 pub enum WireCable {
     /// `CableType`
     CableType(String),
@@ -59,6 +61,7 @@ pub enum WireCable {
 /// `TermCableConnectorTermination` represents the connections between a pin of an individual
 /// `TermCableConnector` and the individual core of the cable.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct Termination {
     /// `Core` represents which individual wire inside a cable this pin is connected to
     pub core: String,
@@ -68,6 +71,7 @@ pub struct Termination {
 
 /// `TermCableConnector` represents a connector on one end of a `TermCable`
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct Connector {
     /// `connector_type` represents the connector type that is on the end of a `TermCable`
     pub connector_type: String,
@@ -76,16 +80,17 @@ pub struct Connector {
 }
 
 impl ConnectorTrait for Connector {
-    #[expect(clippy::unwrap_in_result)]
+    #[expect(clippy::unwrap_in_result, reason = "I want the panic on a 128bit architecture")]
+    #[inline(never)]
     fn pin_count(&self, library: &Library) -> Result<u64, LibraryError> {
         let connector_type = library
             .connector_types
             .get(&self.connector_type)
             .ok_or(LibraryError::ValueNotFound {
                 id: self.connector_type.clone(),
-                library_type: "Connector Type".to_string(),
+                library_type: "Connector Type".to_owned(),
             })?;
-        #[expect(clippy::unwrap_used)]
+        #[expect(clippy::unwrap_used, reason = "I want the panic on a 128bit architecture")]
         // allowing unwrap as I want a panic here if this application
         // is used on a 128 bit architecture
         Ok(u64::try_from(connector_type.pins.len()).unwrap())

@@ -4,7 +4,11 @@ use serde::{Deserialize, Serialize};
 
 /// `Config` represents configuration options for the various cdm binary programs
 #[derive(Serialize, Deserialize, Debug)]
-#[expect(clippy::struct_excessive_bools)]
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "this is a configuration struct with lots of boolean options"
+)]
+#[non_exhaustive]
 pub struct ApplicationConfig {
     /// `default_library_locations` contains paths to search for TOML library files to read into the
     /// main [`Library`](crate::datatypes::internal_types::Library)
@@ -44,16 +48,17 @@ pub struct ApplicationConfig {
 }
 
 impl Default for ApplicationConfig {
+    #[inline]
     fn default() -> Self {
         Self {
             default_library_locations: Vec::new(),
             enable_post_gres: false,
             post_gres_dsn: String::new(),
-            default_area_unit: "mm²".to_string(),
-            default_length_unit: "mm".to_string(),
-            default_cross_section_area_unit: "mm²".to_string(),
-            default_electrical_potential_unit: "V".to_string(),
-            default_temperature_interval_unit: "°C".to_string(),
+            default_area_unit: "mm²".to_owned(),
+            default_length_unit: "mm".to_owned(),
+            default_cross_section_area_unit: "mm²".to_owned(),
+            default_electrical_potential_unit: "V".to_owned(),
+            default_temperature_interval_unit: "°C".to_owned(),
             use_awg: false,
             use_usa_customary_units: false,
             use_engineering_prefixes: true,

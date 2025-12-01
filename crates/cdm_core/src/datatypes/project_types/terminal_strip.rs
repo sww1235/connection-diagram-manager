@@ -11,7 +11,7 @@ use crate::{
 ///
 /// A `TerminalStrip` is a collection or group of 1 or more terminal blocks
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::partial_pub_fields)]
+#[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct TerminalStrip {
     /// structured identifier of terminal strip
     pub identifier: Option<String>,
@@ -39,6 +39,7 @@ pub struct TerminalStrip {
 /// `Terminal` represents one element of a terminal strip, be it terminal block or
 /// accessory.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct Terminal {
     ///Terminal Number. Used for ordering and identification
     ///If not specified, defaults to its index in the terminals Vec, one indexed.
@@ -49,12 +50,14 @@ pub struct Terminal {
     pub label: Option<String>,
     /// Accessories like component holders, fuses, etc for this terminal
     pub accessories: Option<Vec<String>>,
+    /// Optional styling data for schematic symbol
+    pub symbol_style: Option<SymbolStyle>,
 }
 
 /// Enum allowing storage of either `TerminalType` or `TerminalStripAccessoryType` in `Terminal`
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
-#[expect(missing_docs)]
+#[expect(missing_docs, reason = "self documenting enum")]
 pub enum TermAccy {
     Terminal(String),
     Accessory(String),
@@ -62,6 +65,7 @@ pub enum TermAccy {
 
 /// `Jumper` represents a jumper instance within a terminal strip
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct Jumper {
     /// Type of jumper
     pub jumper_type: String,
@@ -71,13 +75,16 @@ pub struct Jumper {
     pub label: Option<String>,
     /// Array of `terminal_number`s that this jumper makes connections to
     pub jumper_connections: Vec<u64>,
+    /// Optional styling data for schematic symbol
     pub symbol_style: Option<SymbolStyle>,
 }
 
 impl FromFile for TerminalStrip {
+    #[inline]
     fn datafile(&self) -> PathBuf {
         self.contained_datafile_path.clone()
     }
+    #[inline]
     fn set_datafile(&mut self, datafile_path: &Path) {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }

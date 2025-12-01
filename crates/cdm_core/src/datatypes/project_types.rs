@@ -28,13 +28,14 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
-use crate::{error::Error, traits::FromFile, util_functions};
+use crate::{error::Error, traits::FromFile as _, util_functions};
 
 //TODO: implement validation function for all datatypes
 
 /// `Project` represents all project specific data used in program
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
+#[non_exhaustive]
 pub struct Project {
     /// contains all cables read in from files, and/or added in via program logic
     pub cables: BTreeMap<String, cable::Cable>,
@@ -66,6 +67,7 @@ impl Project {
     /// # Errors
     ///
     /// Will error if there are duplicate keys found in `other` map
+    #[inline(never)]
     pub fn merge(&mut self, test_map: Project, test_file: &Path) -> Result<(), Error> {
         util_functions::merge_btreemaps(&mut self.cables, test_map.cables, test_file)?;
         self.connections.extend(test_map.connections);
@@ -81,6 +83,7 @@ impl Project {
         Ok(())
     }
     /// Inserts datafile path into all structs in the called project
+    #[inline(never)]
     pub fn add_datafile_paths(&mut self, datafile_path: &Path) {
         // Cables
         if !self.cables.is_empty() {
@@ -148,6 +151,7 @@ impl Project {
 
 /// Config contains project specific configuration information
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct Config {
     /// Name of project
     pub project_name: String,

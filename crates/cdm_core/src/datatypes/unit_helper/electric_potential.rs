@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
-#[expect(clippy::wildcard_imports)]
-use uom::si::{Unit, electric_potential::*, rational64};
+#[expect(
+    clippy::wildcard_imports,
+    reason = "using wildcard imports here, as there are so many units from UOM and we want all of them"
+)]
+use uom::si::{Unit as _, electric_potential::*, rational64};
 
 use super::IntermediateUnit;
 use crate::error::UnitParsingError;
@@ -8,6 +11,7 @@ use crate::error::UnitParsingError;
 /// Struct representing `Electric Potential` values
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(try_from = "IntermediateUnit")]
+#[non_exhaustive]
 pub struct ElectricPotential {
     /// contained uom Unit
     pub value: rational64::ElectricPotential,
@@ -19,7 +23,8 @@ impl ElectricPotential {
     /// outputs all usable `ElectricPotential` units allowed in configuration files in the form of
     /// `<unit name>: <unit abbreviation>`
     #[must_use]
-    #[expect(clippy::string_add)]
+    #[expect(clippy::string_add, reason = "easier and cleaner than one massive format string")]
+    #[inline]
     pub fn output_units() -> String {
         let string1 = "Unit Name";
         let string2 = "Abbreviation";
@@ -56,7 +61,11 @@ impl ElectricPotential {
 //TODO: return a different error if the unit is of the wrong type rather than just unknown unit
 impl TryFrom<IntermediateUnit> for ElectricPotential {
     type Error = UnitParsingError;
-    #[expect(clippy::match_same_arms)]
+    #[expect(
+        clippy::match_same_arms,
+        reason = "match same arms due to issues with underlying datatype for now"
+    )]
+    #[inline]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
         match item.original_unit.as_str() {
             //"YV" | "yottavolt" => Ok(Self {
@@ -66,7 +75,7 @@ impl TryFrom<IntermediateUnit> for ElectricPotential {
             // Unit unsupported due to iliekturtles/uom#60
             "YV" | "yottavolt" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Electric Potential".to_string(),
+                quantity_type: "Electric Potential".to_owned(),
             }),
             //"ZV" | "zettavolt" => Ok(Self {
             //    value: rational64::ElectricPotential::new::<zettavolt>(item.value),
@@ -75,7 +84,7 @@ impl TryFrom<IntermediateUnit> for ElectricPotential {
             // Unit unsupported due to iliekturtles/uom#60
             "ZV" | "zettavolt" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Electric Potential".to_string(),
+                quantity_type: "Electric Potential".to_owned(),
             }),
             "EV" | "exavolt" => Ok(Self {
                 value: rational64::ElectricPotential::new::<exavolt>(item.value),
@@ -152,7 +161,7 @@ impl TryFrom<IntermediateUnit> for ElectricPotential {
             // Unit unsupported due to iliekturtles/uom#60
             "zV" | "zeptovolt" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Electric Potential".to_string(),
+                quantity_type: "Electric Potential".to_owned(),
             }),
             //"yV" | "yoctovolt" => Ok(Self {
             //    value: rational64::ElectricPotential::new::<yoctovolt>(item.value),
@@ -161,7 +170,7 @@ impl TryFrom<IntermediateUnit> for ElectricPotential {
             // Unit unsupported due to iliekturtles/uom#60
             "yV" | "yoctovolt" => Err(UnitParsingError::UnsupportedUnit {
                 unit_string: item.original_unit,
-                quantity_type: "Electric Potential".to_string(),
+                quantity_type: "Electric Potential".to_owned(),
             }),
             "abV" | "abvolt" => Ok(Self {
                 value: rational64::ElectricPotential::new::<abvolt>(item.value),
@@ -173,8 +182,8 @@ impl TryFrom<IntermediateUnit> for ElectricPotential {
             }),
 
             x => Err(UnitParsingError::UnknownUnit {
-                unit_string: x.to_string(),
-                quantity_type: "Electric Potential".to_string(),
+                unit_string: x.to_owned(),
+                quantity_type: "Electric Potential".to_owned(),
             }),
         }
     }
