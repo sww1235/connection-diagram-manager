@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     datatypes::{library_types::Library, util_types::SymbolStyle},
     error::LibraryError,
-    traits,
+    traits::{self, ProjectData},
 };
 
 /// `Connector` is an instance of a [`ConnectorType`](super::connector_type::ConnectorType)
@@ -32,3 +32,4 @@ impl traits::Connector for Connector {
         Ok(u64::try_from(connector_type.pins.len()).unwrap())
     }
 }
+impl ProjectData for Connector {}

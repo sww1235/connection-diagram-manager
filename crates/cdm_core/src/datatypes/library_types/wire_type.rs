@@ -14,7 +14,7 @@ use crate::{
         },
         util_types::{Catalog, LineStyle},
     },
-    traits::FromFile,
+    traits::{FromFile, LibraryData},
 };
 
 /// `WireType` represents a particular type of wire
@@ -110,3 +110,4 @@ impl WireType {
     //
     //}
 }
+impl LibraryData for WireType {}

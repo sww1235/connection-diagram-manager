@@ -16,7 +16,7 @@ use crate::{
         },
         util_types::{Catalog, CrossSection, Dimension, LineStyle},
     },
-    traits::FromFile,
+    traits::{FromFile, LibraryData},
 };
 
 //TODO: add validation to check that Figure8 cable cross sections only have 2 cores
@@ -130,3 +130,5 @@ pub enum LayerType {
     /// to outer jackets and insulation. Common materials are water swellable tape or gel.
     WaterBlocking,
 }
+
+impl LibraryData for CableType {}

@@ -11,7 +11,7 @@ use crate::{
         svg::Svg,
         util_types::{Catalog, Dimension},
     },
-    traits::FromFile,
+    traits::{FromFile, LibraryData},
 };
 
 //TODO: Make some of these fields enums
@@ -84,3 +84,5 @@ pub struct ConnectorPin {
     /// Rating information of pin, not parsed.
     pub rating: Option<String>,
 }
+
+impl LibraryData for ConnectorType {}

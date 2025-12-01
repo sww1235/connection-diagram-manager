@@ -7,7 +7,7 @@ use crate::{
         unit_helper::length::Length,
         util_types::{IECCodes, PhysicalLocation, UserFields},
     },
-    traits::FromFile,
+    traits::{FromFile, ProjectData},
 };
 
 /// `Wire` represents a particular instance of a `WireType`.
@@ -48,3 +48,5 @@ impl FromFile for Wire {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
+
+impl ProjectData for Wire {}

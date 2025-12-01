@@ -7,7 +7,7 @@ use crate::{
         unit_helper::length::Length,
         util_types::{IECCodes, PhysicalLocation, UserFields},
     },
-    traits::FromFile,
+    traits::{FromFile, ProjectData},
 };
 
 /// `Pathway` represents a physical instance of a pathway
@@ -41,3 +41,5 @@ impl FromFile for Pathway {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
+
+impl ProjectData for Pathway {}

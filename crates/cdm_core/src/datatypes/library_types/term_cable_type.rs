@@ -12,7 +12,7 @@ use crate::{
         util_types::{Catalog, LineStyle},
     },
     error::LibraryError,
-    traits::{Connector as ConnectorTrait, FromFile},
+    traits::{Connector as ConnectorTrait, FromFile, LibraryData},
 };
 
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
@@ -91,3 +91,4 @@ impl ConnectorTrait for Connector {
         Ok(u64::try_from(connector_type.pins.len()).unwrap())
     }
 }
+impl LibraryData for TermCableType {}

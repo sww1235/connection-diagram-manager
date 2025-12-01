@@ -12,7 +12,7 @@ use crate::{
         util_types::{IECCodes, PhysicalLocation, UserFields},
     },
     error::{Error, LibraryError},
-    traits::FromFile,
+    traits::{FromFile, ProjectData},
 };
 
 /// `MountingRail` represents an individual mounting rail in a project
@@ -112,3 +112,4 @@ impl MountingRail {
         Ok(rail_type.standard_rail_length.value == self.length.value)
     }
 }
+impl ProjectData for MountingRail {}

@@ -9,7 +9,7 @@ use crate::{
         util_types::{IECCodes, PhysicalLocation, SymbolStyle, UserFields},
     },
     error::LibraryError,
-    traits::{FromFile, SchematicRepresentation},
+    traits::{FromFile, ProjectData, SchematicRepresentation},
 };
 
 /// `Equipment` represents a particular instance of an `EquipmentType`.
@@ -83,3 +83,5 @@ impl SchematicRepresentation for Equipment {
         Ok(schematic_symbol)
     }
 }
+
+impl ProjectData for Equipment {}

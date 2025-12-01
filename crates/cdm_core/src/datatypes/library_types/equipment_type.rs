@@ -7,11 +7,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
-        library_types::connector_type::ConnectorType,
         svg::Svg,
         util_types::{Catalog, Dimension},
     },
-    traits::FromFile,
+    traits::{FromFile, LibraryData},
 };
 
 //TODO: Make some of these fields enums
@@ -97,3 +96,5 @@ impl EquipmentType {
         }
     }
 }
+
+impl LibraryData for EquipmentType {}

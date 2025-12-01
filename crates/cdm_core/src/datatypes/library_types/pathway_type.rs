@@ -9,7 +9,7 @@ use crate::{
         unit_helper::cross_sectional_area::CrossSectionalArea,
         util_types::{Catalog, Dimension, LineStyle},
     },
-    traits::FromFile,
+    traits::{FromFile, LibraryData},
 };
 
 /// `PathwayType` represents a route for wires and cables to take from one
@@ -57,3 +57,4 @@ impl FromFile for PathwayType {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
+impl LibraryData for PathwayType {}

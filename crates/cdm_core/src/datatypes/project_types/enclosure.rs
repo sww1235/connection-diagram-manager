@@ -10,7 +10,7 @@ use crate::{
         unit_helper::length::Length,
         util_types::{IECCodes, PhysicalLocation, UserFields},
     },
-    traits::FromFile,
+    traits::{FromFile, ProjectData},
 };
 
 /// `Location` represents a physical instance of a locationType
@@ -78,3 +78,5 @@ impl FromFile for Enclosure {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
+
+impl ProjectData for Enclosure {}

@@ -9,7 +9,7 @@ use crate::{
         unit_helper::length::Length,
         util_types::{Catalog, Dimension},
     },
-    traits::FromFile,
+    traits::{FromFile, LibraryData},
 };
 
 //TODO: create physical location stuff
@@ -51,3 +51,5 @@ impl FromFile for EnclosureType {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
+
+impl LibraryData for EnclosureType {}

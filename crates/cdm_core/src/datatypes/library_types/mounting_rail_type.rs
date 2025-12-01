@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{svg::Svg, unit_helper::length::Length, util_types::Catalog},
-    traits::FromFile,
+    traits::{FromFile, LibraryData},
 };
 
 /// `MountingRailType` represent types or profiles of mounting rail
@@ -82,3 +82,5 @@ impl FromFile for MountingRailType {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
+
+impl LibraryData for MountingRailType {}

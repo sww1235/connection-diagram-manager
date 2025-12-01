@@ -2,7 +2,10 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{datatypes::svg::Svg, traits::FromFile};
+use crate::{
+    datatypes::svg::Svg,
+    traits::{FromFile, LibraryData},
+};
 
 /// `SchematicSymbolType` represents a schematic symbol type
 /// used in schematics to represent components
@@ -31,3 +34,5 @@ impl FromFile for SchematicSymbolType {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
+
+impl LibraryData for SchematicSymbolType {}

@@ -41,3 +41,8 @@ pub trait SchematicRepresentation {
     /// implementation specific errors
     fn schematic_symbol(&self, library: &Library, symbol_selector: Option<usize>) -> Result<Svg, LibraryError>;
 }
+/// Marker trait for Project data
+pub trait ProjectData {}
+
+/// Marker trait for Library data
+pub trait LibraryData {}

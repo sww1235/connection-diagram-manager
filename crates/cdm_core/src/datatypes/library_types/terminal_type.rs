@@ -12,7 +12,7 @@ use crate::{
         unit_helper::cross_sectional_area::CrossSectionalArea,
         util_types::{Catalog, Dimension},
     },
-    traits::FromFile,
+    traits::{FromFile, LibraryData},
 };
 
 //TODO:
@@ -306,3 +306,8 @@ impl FromFile for TerminalStripAccessoryType {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
+
+impl LibraryData for TerminalType {}
+impl LibraryData for TerminalStripAccessoryType {}
+impl LibraryData for TerminalAccessoryType {}
+impl LibraryData for TerminalStripJumperType {}

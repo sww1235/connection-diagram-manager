@@ -9,7 +9,7 @@ use crate::{
         util_types::{IECCodes, PhysicalLocation, UserFields},
     },
     error::LibraryError,
-    traits::FromFile,
+    traits::{FromFile, ProjectData},
 };
 
 /// `TermCable` represents a particular instance of a `TermCableType`.
@@ -64,3 +64,4 @@ impl FromFile for TermCable {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
+impl ProjectData for TermCable {}

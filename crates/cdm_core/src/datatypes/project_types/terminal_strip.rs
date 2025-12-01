@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::util_types::{IECCodes, PhysicalLocation, SymbolStyle, UserFields},
-    traits::FromFile,
+    traits::{FromFile, ProjectData},
 };
 
 /// `TerminalStrip` represents an individual terminal strip in a project.
@@ -82,3 +82,5 @@ impl FromFile for TerminalStrip {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
 }
+
+impl ProjectData for TerminalStrip {}
