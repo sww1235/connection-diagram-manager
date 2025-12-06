@@ -27,6 +27,11 @@ pub trait FromFile {
     fn set_datafile(&mut self, datafile_path: &Path);
 }
 
+/// `VisualRepresentation` provides a SVG image of the entity for use in rendering
+pub trait VisualRepresentation {
+    /// returns a standard or representative representation of the entity in SVG format
+    fn visual_rep(&self, library: &Library) -> Svg;
+}
 /// `SchematicRepresentation` provides a SVG symbol used for drawing schematic diagrams
 pub trait SchematicRepresentation {
     /// returns a SVG schematic symbol of the entity.
