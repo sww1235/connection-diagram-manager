@@ -16,7 +16,7 @@ license.workspace = true
 workspace = true
 
 [dependencies]
-clap = { version = "~4", features = ["derive", "unicode", "wrap_help"], optional = true }
+clap = { version = "~4", features = ["derive", "unicode", "wrap_help"]}
 log.workspace = true
 rustybuzz.workspace = true
 serde.workspace = true
@@ -32,6 +32,9 @@ pdf_helper.workspace = true
 paragraph_breaker.workspace = true
 figment.workspace = true
 anyhow.workspace = true
+miniquad = { version = "~0.4", optional = true}
+egui-miniquad = { version = "~0.16", optional = true}
+egui = { version = "~0.33", optional = true}
 
 [dev-dependencies]
 pretty_assertions.workspace = true
@@ -39,8 +42,8 @@ toml.workspace = true
 
 [features]
 default = ["cli"]
-cli = ["clap"]
-gui = ["clap" ]
+cli = []
+gui = ["dep:miniquad", "dep:egui-miniquad", "dep:egui" ]
 
 [lib]
 name = "cdm_core"
