@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use miniquad::conf::Conf as mqConf;
 use serde::{Deserialize, Serialize};
 
 /// `Config` represents configuration options for the various cdm binary programs
@@ -46,6 +47,9 @@ pub struct ApplicationConfig {
     /// so there is no more than 3 digits before the decimal place
     /// If it is not set, will display all units in their default units only
     pub use_engineering_prefixes: bool,
+    #[cfg(feature = "gui")]
+    /// Graphics configuration options
+    pub graphics_config: Option<GraphicsConfig>,
 }
 
 impl Default for ApplicationConfig {
@@ -63,6 +67,43 @@ impl Default for ApplicationConfig {
             use_awg: false,
             use_usa_customary_units: false,
             use_engineering_prefixes: true,
+            graphics_config: None,
+        }
+    }
+}
+
+#[cfg(feature = "gui")]
+#[derive(Serialize, Deserialize, Debug)]
+#[expect(clippy::module_name_repetitions, reason = "Specialized config struct")]
+/// Graphics configuration options
+pub struct GraphicsConfig {
+    /// Starting window height
+    window_height: i32,
+    /// Starting window width
+    window_width: i32,
+    /// Enable high DPI features
+    high_dpi: bool,
+}
+
+impl Default for GraphicsConfig {
+    #[inline]
+    fn default() -> Self {
+        Self {
+            window_height: 1024,
+            window_width: 1024,
+            high_dpi: true,
+        }
+    }
+}
+
+impl From<GraphicsConfig> for mqConf {
+    #[inline]
+    fn from(input: GraphicsConfig) -> Self {
+        Self {
+            window_height: input.window_height,
+            window_width: input.window_width,
+            high_dpi: input.high_dpi,
+            ..Default::default()
         }
     }
 }

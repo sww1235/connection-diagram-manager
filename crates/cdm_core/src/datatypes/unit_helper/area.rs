@@ -392,7 +392,6 @@ impl TryFrom<IntermediateUnit> for Area {
     }
 }
 
-
 // https://stackoverflow.com/a/69769813
 // where this custom Serde hack came from
 /// Units enum for selecting type of unit. This is a hack until UOM gets proper support for

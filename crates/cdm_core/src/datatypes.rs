@@ -94,6 +94,7 @@ pub fn parse_datafiles(cli: &Cli) -> Result<(ProjectConfig, Library, Project), E
         Err(io::Error::other(
             "Project Directory not specified when it should have been. This should be impossible if Clap's logic is working \
              correctly",
-        ).into())
+        )
+        .into())
     }
 }
