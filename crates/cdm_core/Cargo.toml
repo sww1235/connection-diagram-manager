@@ -34,16 +34,16 @@ figment.workspace = true
 anyhow.workspace = true
 miniquad = { version = "~0.4", optional = true}
 egui-miniquad = { version = "~0.16", optional = true}
-egui = { version = "~0.33", optional = true}
+egui = { version = "0.31.1", optional = true}
 
 [dev-dependencies]
 pretty_assertions.workspace = true
-toml.workspace = true 
+toml.workspace = true
 
 [features]
-default = ["cli"]
+default = ["cli", "gui"]
 cli = []
-gui = ["dep:miniquad", "dep:egui-miniquad", "dep:egui" ]
+gui = ["dep:miniquad", "dep:egui-miniquad", "dep:egui"]
 
 [lib]
 name = "cdm_core"
@@ -56,5 +56,5 @@ required-features = ["cli"]
 
 [[bin]]
 name = "gui"
-path = "src/bin/gui.rs"
+path = "src/bin/gui/main.rs"
 required-features = ["gui"]
