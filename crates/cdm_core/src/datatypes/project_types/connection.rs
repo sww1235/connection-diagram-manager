@@ -7,9 +7,9 @@ use serde::{Deserialize, Serialize};
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct Connection {
     /// ID of one end of connection
-    pub end1: ConnectionType,
+    pub end1: Type,
     /// ID of other end of connection
-    pub end2: ConnectionType,
+    pub end2: Type,
     /// datafile the struct instance was read in from
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
@@ -19,7 +19,7 @@ pub struct Connection {
 /// type of things
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
-pub enum ConnectionType {
+pub enum Type {
     /// An ID of a [`Wire`]
     Wire(String),
     /// An ID of a [`Cable`]

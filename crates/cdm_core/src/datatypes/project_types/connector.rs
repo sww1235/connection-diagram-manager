@@ -10,6 +10,7 @@ use crate::{
 
 /// `Connector` is an instance of a [`ConnectorType`](super::connector_type::ConnectorType)
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct Connector {
     /// The type of this connector instance
     pub connector_type: String,

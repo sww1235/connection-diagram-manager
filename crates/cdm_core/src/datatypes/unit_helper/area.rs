@@ -164,6 +164,42 @@ impl Area {
             + format!("{:^21}|{:^21}\n", square_mile::singular(), square_mile::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", square_yard::singular(), square_yard::abbreviation()).as_str()
     }
+    //TODO: actual error type
+    //    fn check_type(self, type_: AreaUnit) -> Result<Self, String> {
+    //        match (type_, self) {
+    //
+    //            (AreaUnit::SquareYottameter, unit) => {Ok, }
+    //            (AreaUnit::SquareZettameter, unit)
+    //            (AreaUnit::SquareExameter, unit)
+    //            (AreaUnit::SquarePetameter, unit)
+    //            (AreaUnit::SquareTerameter, unit)
+    //            (AreaUnit::SquareGigameter, unit)
+    //            (AreaUnit::SquareMegameter, unit)
+    //            (AreaUnit::SquareKilometer, unit)
+    //            (AreaUnit::SquareHectometer, unit)
+    //            (AreaUnit::SquareDecameter, unit)
+    //            (AreaUnit::SquareMeter, unit)
+    //            (AreaUnit::SquareDecimeter, unit)
+    //            (AreaUnit::SquareCentimeter, unit)
+    //            (AreaUnit::SquareMillimeter, unit)
+    //            (AreaUnit::SquareMicrometer, unit)
+    //            (AreaUnit::SquareNanometer, unit)
+    //            (AreaUnit::SquarePicometer, unit)
+    //            (AreaUnit::SquareFemtometer, unit)
+    //            (AreaUnit::SquareAttometer, unit)
+    //            (AreaUnit::SquareZeptometer, unit)
+    //            (AreaUnit::SquareYoctometer, unit)
+    //            (AreaUnit::Acre, unit)
+    //            (AreaUnit::Are, unit)
+    //            (AreaUnit::Barn, unit)
+    //            (AreaUnit::CircularMil, unit)
+    //            (AreaUnit::Hectare, unit)
+    //            (AreaUnit::SquareFoot, unit)
+    //            (AreaUnit::SquareInch, unit)
+    //            (AreaUnit::SquareMile, unit)
+    //            (AreaUnit::SquareYard, unit)
+    //        }
+    //    }
 }
 
 //TODO: return a different error if the unit is of the wrong type rather than just unknown unit
@@ -356,53 +392,15 @@ impl TryFrom<IntermediateUnit> for Area {
     }
 }
 
-impl Area {
-    //TODO: actual error type
-    //    fn check_type(self, type_: AreaUnit) -> Result<Self, String> {
-    //        match (type_, self) {
-    //
-    //            (AreaUnit::SquareYottameter, unit) => {Ok, }
-    //            (AreaUnit::SquareZettameter, unit)
-    //            (AreaUnit::SquareExameter, unit)
-    //            (AreaUnit::SquarePetameter, unit)
-    //            (AreaUnit::SquareTerameter, unit)
-    //            (AreaUnit::SquareGigameter, unit)
-    //            (AreaUnit::SquareMegameter, unit)
-    //            (AreaUnit::SquareKilometer, unit)
-    //            (AreaUnit::SquareHectometer, unit)
-    //            (AreaUnit::SquareDecameter, unit)
-    //            (AreaUnit::SquareMeter, unit)
-    //            (AreaUnit::SquareDecimeter, unit)
-    //            (AreaUnit::SquareCentimeter, unit)
-    //            (AreaUnit::SquareMillimeter, unit)
-    //            (AreaUnit::SquareMicrometer, unit)
-    //            (AreaUnit::SquareNanometer, unit)
-    //            (AreaUnit::SquarePicometer, unit)
-    //            (AreaUnit::SquareFemtometer, unit)
-    //            (AreaUnit::SquareAttometer, unit)
-    //            (AreaUnit::SquareZeptometer, unit)
-    //            (AreaUnit::SquareYoctometer, unit)
-    //            (AreaUnit::Acre, unit)
-    //            (AreaUnit::Are, unit)
-    //            (AreaUnit::Barn, unit)
-    //            (AreaUnit::CircularMil, unit)
-    //            (AreaUnit::Hectare, unit)
-    //            (AreaUnit::SquareFoot, unit)
-    //            (AreaUnit::SquareInch, unit)
-    //            (AreaUnit::SquareMile, unit)
-    //            (AreaUnit::SquareYard, unit)
-    //        }
-    //    }
-}
 
 // https://stackoverflow.com/a/69769813
 // where this custom Serde hack came from
 /// Units enum for selecting type of unit. This is a hack until UOM gets proper support for
 /// selecting units when serializing and de-serializing
 #[derive(Debug, Clone, Copy, Default, PartialEq, Serialize, Deserialize)]
-#[expect(missing_docs)]
+#[expect(missing_docs, reason = "self documenting enum")]
 #[non_exhaustive]
-pub enum AreaUnit {
+pub enum Unit {
     SquareYottameter,
     SquareZettameter,
     SquareExameter,

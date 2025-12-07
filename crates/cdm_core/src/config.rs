@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
     clippy::struct_excessive_bools,
     reason = "this is a configuration struct with lots of boolean options"
 )]
+#[expect(clippy::module_name_repetitions, reason = "Distinquish from other config structs")]
 #[non_exhaustive]
 pub struct ApplicationConfig {
     /// `default_library_locations` contains paths to search for TOML library files to read into the

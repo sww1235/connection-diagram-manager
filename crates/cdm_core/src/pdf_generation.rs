@@ -9,11 +9,11 @@ use crate::{
         library_types::Library,
         project_types::{
             Project,
-            connection::ConnectionType,
+            connection::Type as ConnectionType,
             enclosure::{Enclosure, MountPoint},
         },
     },
-    error::{ConnectionError, Error, LibraryError, PDFGenerationError, ProjectError},
+    error::{ConnectionError, Error, LibraryError, PDFError, ProjectError},
 };
 
 //TODO: add page templates with proper borders and titleblocks
@@ -62,6 +62,7 @@ pub fn pdf_one_enclosure(
 ) -> Result<(), Error> {
     let mut pdf = PDFDocument::new(page_size, config_font_paths)?;
     pdf.push_page(None, margins);
+    #[expect(clippy::indexing_slicing, reason = "We are inserting a page the previous line")]
     render_enclosure(project, library, enclosure, scale, &mut pdf.pages[0], render_connections)?;
     Ok(())
 }
@@ -94,6 +95,7 @@ pub fn pdf_one_enclosure(
 //TODO: revisit the lint below
 #[expect(clippy::pattern_type_mismatch, reason = "revisit this")]
 #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
+#[expect(unused_variables, reason = "function not finished yet")]
 #[inline(never)]
 pub fn render_enclosure(
     project: &Project,
@@ -106,7 +108,7 @@ pub fn render_enclosure(
     // layout all equipment in location
 
     if project.equipment.is_empty() {
-        return Err(PDFGenerationError::PDFCreationError("no equipment in location".to_owned()).into());
+        return Err(PDFError::PDFCreationError("no equipment in location".to_owned()).into());
     }
     let page_width = pdf_page.page_size.size().0;
     let page_height = pdf_page.page_size.size().1;
@@ -147,7 +149,7 @@ pub fn render_enclosure(
     } else if enclosure_scale_fit {
         trace!("location fits within page at {scale} scale");
     } else {
-        return Err(PDFGenerationError::LayoutError(format!(
+        return Err(PDFError::LayoutError(format!(
             "Enclosure {} did not fit on Page Size {} at scale: {}",
             enclosure_id, pdf_page.page_size, scale,
         ))
@@ -710,6 +712,7 @@ pub fn render_enclosure(
 #[expect(clippy::pattern_type_mismatch, reason = "revisit this")]
 #[inline(never)]
 #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
+#[expect(unused_variables, reason = "function not finished yet")]
 pub fn render_enclosure_schematic_ladder(
     project: &Project,
     library: &Library,
@@ -721,7 +724,7 @@ pub fn render_enclosure_schematic_ladder(
     // layout all equipment in location
 
     if project.equipment.is_empty() {
-        return Err(PDFGenerationError::PDFCreationError("no equipment in location".to_owned()).into());
+        return Err(PDFError::PDFCreationError("no equipment in location".to_owned()).into());
     }
     let page_width = pdf_page.page_size.size().0;
     let page_height = pdf_page.page_size.size().1;
@@ -762,7 +765,7 @@ pub fn render_enclosure_schematic_ladder(
     } else if enclosure_scale_fit {
         trace!("location fits within page at {scale} scale");
     } else {
-        return Err(PDFGenerationError::LayoutError(format!(
+        return Err(PDFError::LayoutError(format!(
             "Enclosure {} did not fit on Page Size {} at scale: {}",
             enclosure_id, pdf_page.page_size, scale,
         ))
@@ -1321,6 +1324,7 @@ pub fn render_enclosure_schematic_ladder(
 ///
 /// Will panic if key is not found for value in enclosures hashmap.
 #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
+#[expect(unused_variables, reason = "function not finished yet")]
 #[inline(never)]
 pub fn render_schematic_ladder(
     project: &Project,
@@ -1456,7 +1460,7 @@ pub fn render_schematic_ladder(
     //                ConnectionType::Wire(outer_wire_id) if project.wires.contains_key(outer_wire_id)
     // => match &connection.end2 {                    ConnectionType::Wire(inner_wire_id) if
     // project.wires.contains_key(inner_wire_id) => {                        return
-    // Err(Error::from(ProjectError::from(ConnectionError::SameType {                            
+    // Err(Error::from(ProjectError::from(ConnectionError::SameType {
     // end1: outer_wire_id.clone(),                            end2: inner_wire_id.clone(),
     //                            project_file: connection.contained_datafile_path.clone(),
     //                            message: Some(
@@ -1466,7 +1470,7 @@ pub fn render_schematic_ladder(
     //                    }
     //                    ConnectionType::Cable(inner_cable_id) if
     // project.cables.contains_key(inner_cable_id) => {                        return
-    // Err(Error::from(ProjectError::from(ConnectionError::Invalid {                            
+    // Err(Error::from(ProjectError::from(ConnectionError::Invalid {
     // end1: outer_wire_id.clone(),                            end2: inner_cable_id.clone(),
     //                            project_file: connection.contained_datafile_path.clone(),
     //                            reason: "Wires and cables cannot be directly connected. Use an
@@ -1476,7 +1480,7 @@ pub fn render_schematic_ladder(
     //                    }
     //                    ConnectionType::TermCable(inner_term_cable_id) if
     // project.term_cables.contains_key(inner_term_cable_id) => {                        return
-    // Err(Error::from(ProjectError::from(ConnectionError::Invalid {                            
+    // Err(Error::from(ProjectError::from(ConnectionError::Invalid {
     // end1: outer_wire_id.clone(),                            end2: inner_term_cable_id.clone(),
     //                            project_file: connection.contained_datafile_path.clone(),
     //                            reason: "Wires and term cables cannot be directly connected. use an
@@ -1498,7 +1502,7 @@ pub fn render_schematic_ladder(
     //                    ConnectionType::TerminalStrip(inner_terminal_strip_id)
     //                        if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
     //                    ConnectionType::Connector(inner_connector_id) if
-    // project.connectors.contains_key(inner_connector_id) => {}                    
+    // project.connectors.contains_key(inner_connector_id) => {}
     // ConnectionType::Wire(inner_wire_id) => {                        return
     // Err(Error::from(ProjectError::ValueNotFound {                            id:
     // inner_wire_id.clone(),                            project_type: "Wire".to_owned(),
@@ -1536,11 +1540,11 @@ pub fn render_schematic_ladder(
     //                    }
     //                },
     //                ConnectionType::Cable(outer_cable_id) if
-    // project.term_cables.contains_key(outer_cable_id) => match &connection                    
+    // project.term_cables.contains_key(outer_cable_id) => match &connection
     // .end2                {
     //                    ConnectionType::Wire(inner_wire_id) if
     // project.wires.contains_key(inner_wire_id) => {                        return
-    // Err(Error::from(ProjectError::from(ConnectionError::Invalid {                            
+    // Err(Error::from(ProjectError::from(ConnectionError::Invalid {
     // end1: outer_cable_id.clone(),                            end2: inner_wire_id.clone(),
     //                            project_file: connection.contained_datafile_path.clone(),
     //                            reason: "Wires and cables cannot be directly connected. Use an
@@ -1550,7 +1554,7 @@ pub fn render_schematic_ladder(
     //                    }
     //                    ConnectionType::Cable(inner_cable_id) if
     // project.cables.contains_key(inner_cable_id) => {                        return
-    // Err(Error::from(ProjectError::from(ConnectionError::SameType {                            
+    // Err(Error::from(ProjectError::from(ConnectionError::SameType {
     // end1: outer_cable_id.clone(),                            end2: inner_cable_id.clone(),
     //                            project_file: connection.contained_datafile_path.clone(),
     //                            message: Some(
@@ -1560,7 +1564,7 @@ pub fn render_schematic_ladder(
     //                    }
     //                    ConnectionType::TermCable(inner_term_cable_id) if
     // project.term_cables.contains_key(inner_term_cable_id) => {                        return
-    // Err(Error::from(ProjectError::from(ConnectionError::Invalid {                            
+    // Err(Error::from(ProjectError::from(ConnectionError::Invalid {
     // end1: outer_cable_id.clone(),                            end2: inner_term_cable_id.clone(),
     //                            project_file: connection.contained_datafile_path.clone(),
     //                            reason: "Cables and term cables cannot be directly connected. use an
@@ -1568,11 +1572,11 @@ pub fn render_schematic_ladder(
     //                        })));
     //                    }
     //                    ConnectionType::Equipment(inner_equipment_id) if
-    // project.equipment.contains_key(inner_equipment_id) => {}                    
+    // project.equipment.contains_key(inner_equipment_id) => {}
     // ConnectionType::TerminalStrip(inner_terminal_strip_id)                        if
-    // project.terminal_strips.contains_key(inner_terminal_strip_id) => {}                    
+    // project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
     // ConnectionType::Connector(inner_connector_id) if
-    // project.connectors.contains_key(inner_connector_id) => {}                    
+    // project.connectors.contains_key(inner_connector_id) => {}
     // ConnectionType::Wire(inner_wire_id) => {                        return
     // Err(Error::from(ProjectError::ValueNotFound {                            id:
     // inner_wire_id.clone(),                            project_type: "Wire".to_owned(),
@@ -1613,30 +1617,30 @@ pub fn render_schematic_ladder(
     // project.term_cables.contains_key(outer_term_cable_id) => {                    match
     // &connection.end2 {                        ConnectionType::Wire(inner_wire_id) if
     // project.wires.contains_key(inner_wire_id) => {                            return
-    // Err(Error::from(ProjectError::from(ConnectionError::Invalid {                                
+    // Err(Error::from(ProjectError::from(ConnectionError::Invalid {
     // end1: outer_term_cable_id.clone(),                                end2:
     // inner_wire_id.clone(),                                project_file:
     // connection.contained_datafile_path.clone(),                                reason: "Wires and
-    // term cables cannot be directly connected. use an interposing connector"                      
+    // term cables cannot be directly connected. use an interposing connector"
     // .to_owned(),                            })));
     //                        }
     //                        ConnectionType::Cable(inner_cable_id) if
     // project.cables.contains_key(inner_cable_id) => {                            return
-    // Err(Error::from(ProjectError::from(ConnectionError::Invalid {                                
+    // Err(Error::from(ProjectError::from(ConnectionError::Invalid {
     // end1: outer_term_cable_id.clone(),                                end2:
     // inner_cable_id.clone(),                                project_file:
     // connection.contained_datafile_path.clone(),                                reason: "Cables
-    // and term cables cannot be directly connected. use an interposing connector"                  
+    // and term cables cannot be directly connected. use an interposing connector"
     // .to_owned(),                            })));
     //                        }
     //                        ConnectionType::TermCable(inner_term_cable_id)
     //                            if project.term_cables.contains_key(inner_term_cable_id) => {}
     //                        ConnectionType::Equipment(inner_equipment_id) if
-    // project.equipment.contains_key(inner_equipment_id) => {}                        
+    // project.equipment.contains_key(inner_equipment_id) => {}
     // ConnectionType::TerminalStrip(inner_terminal_strip_id)                            if
-    // project.terminal_strips.contains_key(inner_terminal_strip_id) => {}                        
+    // project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
     // ConnectionType::Connector(inner_connector_id) if
-    // project.connectors.contains_key(inner_connector_id) => {}                        
+    // project.connectors.contains_key(inner_connector_id) => {}
     // ConnectionType::Wire(inner_wire_id) => {                            return
     // Err(Error::from(ProjectError::ValueNotFound {                                id:
     // inner_wire_id.clone(),                                project_type: "Wire".to_owned(),
@@ -1677,13 +1681,13 @@ pub fn render_schematic_ladder(
     //                ConnectionType::Equipment(outer_equipment_id) if
     // project.equipment.contains_key(outer_equipment_id) => {                    match
     // &connection.end2 {                        ConnectionType::Wire(inner_wire_id) if
-    // project.wires.contains_key(inner_wire_id) => {}                        
+    // project.wires.contains_key(inner_wire_id) => {}
     // ConnectionType::Cable(inner_cable_id) if project.cables.contains_key(inner_cable_id) => {}
     //                        ConnectionType::TermCable(inner_term_cable_id)
     //                            if project.term_cables.contains_key(inner_term_cable_id) => {}
     //                        ConnectionType::Equipment(inner_equipment_id) if
     // project.equipment.contains_key(inner_equipment_id) => {                            return
-    // Err(Error::from(ProjectError::from(ConnectionError::SameType {                               
+    // Err(Error::from(ProjectError::from(ConnectionError::SameType {
     // end1: outer_equipment_id.clone(),                                end2:
     // inner_equipment_id.clone(),                                project_file:
     // connection.contained_datafile_path.clone(),                                message: Some(
@@ -1705,7 +1709,7 @@ pub fn render_schematic_ladder(
     //                            })));
     //                        }
     //                        ConnectionType::Connector(inner_connector_id) if
-    // project.connectors.contains_key(inner_connector_id) => {}                        
+    // project.connectors.contains_key(inner_connector_id) => {}
     // ConnectionType::Wire(inner_wire_id) => {                            return
     // Err(Error::from(ProjectError::ValueNotFound {                                id:
     // inner_wire_id.clone(),                                project_type: "Wire".to_owned(),
@@ -1748,17 +1752,17 @@ pub fn render_schematic_ladder(
     //                {
     //                    match &connection.end2 {
     //                        ConnectionType::Wire(inner_wire_id) if
-    // project.wires.contains_key(inner_wire_id) => {}                        
+    // project.wires.contains_key(inner_wire_id) => {}
     // ConnectionType::Cable(inner_cable_id) if project.cables.contains_key(inner_cable_id) => {}
     //                        ConnectionType::TermCable(inner_term_cable_id)
     //                            if project.term_cables.contains_key(inner_term_cable_id) => {}
     //                        ConnectionType::Equipment(inner_equipment_id) if
     // project.equipment.contains_key(inner_equipment_id) => {                            return
-    // Err(Error::from(ProjectError::from(ConnectionError::Invalid {                                
+    // Err(Error::from(ProjectError::from(ConnectionError::Invalid {
     // end1: outer_terminal_strip_id.clone(),                                end2:
     // inner_equipment_id.clone(),                                project_file:
     // connection.contained_datafile_path.clone(),                                reason: "Equipment
-    // and Terminal Strips cannot be directly connected. use an wire, cable or term \               
+    // and Terminal Strips cannot be directly connected. use an wire, cable or term \
     // cable"                                    .to_owned(),
     //                            })));
     //                        }
@@ -1776,7 +1780,7 @@ pub fn render_schematic_ladder(
     //                            })));
     //                        }
     //                        ConnectionType::Connector(inner_connector_id) if
-    // project.connectors.contains_key(inner_connector_id) => {}                        
+    // project.connectors.contains_key(inner_connector_id) => {}
     // ConnectionType::Wire(inner_wire_id) => {                            return
     // Err(Error::from(ProjectError::ValueNotFound {                                id:
     // inner_wire_id.clone(),                                project_type: "Wire".to_owned(),
@@ -1817,16 +1821,16 @@ pub fn render_schematic_ladder(
     //                ConnectionType::Connector(outer_connector_id) if
     // project.connectors.contains_key(outer_connector_id) => {                    match
     // &connection.end2 {                        ConnectionType::Wire(inner_wire_id) if
-    // project.wires.contains_key(inner_wire_id) => {}                        
+    // project.wires.contains_key(inner_wire_id) => {}
     // ConnectionType::Cable(inner_cable_id) if project.cables.contains_key(inner_cable_id) => {}
     //                        ConnectionType::TermCable(inner_term_cable_id)
     //                            if project.term_cables.contains_key(inner_term_cable_id) => {}
     //                        ConnectionType::Equipment(inner_equipment_id) if
-    // project.equipment.contains_key(inner_equipment_id) => {}                        
+    // project.equipment.contains_key(inner_equipment_id) => {}
     // ConnectionType::TerminalStrip(inner_terminal_strip_id)                            if
-    // project.terminal_strips.contains_key(inner_terminal_strip_id) => {}                        
+    // project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
     // ConnectionType::Connector(inner_connector_id) if
-    // project.connectors.contains_key(inner_connector_id) => {}                        
+    // project.connectors.contains_key(inner_connector_id) => {}
     // ConnectionType::Wire(inner_wire_id) => {                            return
     // Err(Error::from(ProjectError::ValueNotFound {                                id:
     // inner_wire_id.clone(),                                project_type: "Wire".to_owned(),

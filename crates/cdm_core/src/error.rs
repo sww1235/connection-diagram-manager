@@ -1,13 +1,12 @@
 use std::{io, path::PathBuf};
 
-use paragraph_breaker::Error as ParagraphError;
-use pdf_helper::Error as PDFError;
 use thiserror::Error;
-use usvg::Error as USVGError;
 
 //TODO: flesh this out more
 #[derive(Error, Debug)]
 #[non_exhaustive]
+#[expect(clippy::error_impl_error, reason = "main error type for library")]
+#[expect(clippy::absolute_paths, reason = "keeping all sub-error types as absolute paths")]
 /// `Error` is the list of errors and error types that can occur in the `cdm_core` library
 pub enum Error {
     /// This error is used when duplicate keys are found in `Project` or `Library` structs during
@@ -29,19 +28,19 @@ pub enum Error {
     ProjectError(#[from] ProjectError),
     /// Errors relating to linebreaking
     #[error(transparent)]
-    ParagraphBreaking(#[from] ParagraphError),
+    ParagraphBreaking(#[from] paragraph_breaker::Error),
     /// Errors relating to input / output
     #[error(transparent)]
     IOError(#[from] io::Error),
     /// Errors relating to PDF creation and export
     #[error(transparent)]
-    PDFError(#[from] PDFError),
+    PDFError(#[from] pdf_helper::Error),
     /// Errors resulting from the USVG library
     #[error(transparent)]
-    USVGError(#[from] USVGError),
+    USVGError(#[from] usvg::Error),
     /// Errors resulting from PDF generation
     #[error(transparent)]
-    PDFGenerationError(#[from] PDFGenerationError),
+    PDFGenerationError(#[from] PDFError),
     /// Errors resulting from parsing unit name strings during Deserialize
     #[error(transparent)]
     UnitParsingError(#[from] UnitParsingError),
@@ -172,13 +171,16 @@ pub enum ConnectionError {
 #[derive(Debug, Error)]
 #[non_exhaustive]
 #[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
-pub enum PDFGenerationError {
+pub enum PDFError {
     /// Error resulting from layout or rendering
     #[error("Layout Error: {0}")]
     LayoutError(String),
+    /// Error resulting during PDF Creation
     #[error("PDF Creation Error: {0}")]
-    /// Error resulting durin PDF Creation
     PDFCreationError(String),
+    /// If a pdf page isn't found when indexing
+    #[error("PDF Page not found")]
+    PDFPageNotFound,
 }
 
 /// `UnitParsingError` is the list of errors that can occur during Deserialization of units

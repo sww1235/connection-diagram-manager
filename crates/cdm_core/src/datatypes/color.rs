@@ -43,7 +43,7 @@ impl Color {
     #[must_use]
     #[inline]
     pub fn abbreviation(&self) -> String {
-        match &self {
+        match self {
             Self::Red => "RED".to_owned(),
             Self::Orange => "ORN".to_owned(),
             Self::Yellow => "YEL".to_owned(),

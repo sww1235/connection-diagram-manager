@@ -16,7 +16,7 @@ fn main() -> anyhow::Result<()> {
 
     debug!("{app_config:#?}");
 
-    let logger = bin_logic::logger_configuration(&cli).init()?;
+    bin_logic::logger_configuration(&cli).init()?;
 
     if cli.print_units.is_some() {
         bin_logic::print_file_units(&cli);
