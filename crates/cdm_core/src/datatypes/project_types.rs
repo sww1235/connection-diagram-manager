@@ -68,6 +68,7 @@ impl Project {
     ///
     /// Will error if there are duplicate keys found in `other` map
     #[inline(never)]
+    #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
     pub fn merge(&mut self, test_map: Project, test_file: &Path) -> Result<(), Error> {
         util_functions::merge_btreemaps(&mut self.cables, test_map.cables, test_file)?;
         self.connections.extend(test_map.connections);

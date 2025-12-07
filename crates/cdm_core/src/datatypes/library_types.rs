@@ -70,6 +70,7 @@ impl Library {
     /// # Errors
     ///
     /// Will error if there are duplicate keys found in `other` map
+    #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
     #[inline(never)]
     pub fn merge(&mut self, test_map: Library, test_file: &Path) -> Result<(), Error> {
         util_functions::merge_btreemaps(&mut self.cable_types, test_map.cable_types, test_file)?;

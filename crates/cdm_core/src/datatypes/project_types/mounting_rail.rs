@@ -58,6 +58,7 @@ impl MountingRail {
         reason = "not worried about the additional allocation in this case."
     )]
     #[inline(never)]
+    #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
     pub fn vis_rep(&self, library: &Library) -> Result<Svg, Error> {
         // because usvg is a read only parsing library, I can't build the SVG programatically and
         // instead have to bastardize creation of it via string concatenation and parsing

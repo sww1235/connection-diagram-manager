@@ -49,6 +49,7 @@ pub fn pdf_all_the_things(project: &Project, library: &Library, page_size: Paper
 ///
 /// will Error if the enclosure doesn't fit on page at specified scale
 #[inline(never)]
+#[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
 pub fn pdf_one_enclosure(
     project: &Project,
     library: &Library,
@@ -92,6 +93,7 @@ pub fn pdf_one_enclosure(
 #[expect(clippy::too_many_lines, reason = "hard to split up this function")]
 //TODO: revisit the lint below
 #[expect(clippy::pattern_type_mismatch, reason = "revisit this")]
+#[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
 #[inline(never)]
 pub fn render_enclosure(
     project: &Project,
@@ -707,6 +709,7 @@ pub fn render_enclosure(
 //TODO: revisit the lint below
 #[expect(clippy::pattern_type_mismatch, reason = "revisit this")]
 #[inline(never)]
+#[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
 pub fn render_enclosure_schematic_ladder(
     project: &Project,
     library: &Library,
@@ -1317,9 +1320,7 @@ pub fn render_enclosure_schematic_ladder(
 /// # Panics
 ///
 /// Will panic if key is not found for value in enclosures hashmap.
-#[expect(clippy::too_many_lines, reason = "hard to split up this function")]
-//TODO: revisit the lint below
-#[expect(clippy::pattern_type_mismatch, reason = "revisit this")]
+#[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
 #[inline(never)]
 pub fn render_schematic_ladder(
     project: &Project,

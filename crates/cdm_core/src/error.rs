@@ -45,6 +45,12 @@ pub enum Error {
     /// Errors resulting from parsing unit name strings during Deserialize
     #[error(transparent)]
     UnitParsingError(#[from] UnitParsingError),
+    /// Errors resulting from parsing config files
+    #[error(transparent)]
+    ConfigParsingError(#[from] figment::Error),
+    /// Errors resulting from TOML file parsing
+    #[error(transparent)]
+    TomlError(#[from] toml::de::Error),
 }
 
 /// `LibraryError` is the list of errors that can occur within code related to `Library` data,

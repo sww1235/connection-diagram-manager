@@ -12,6 +12,7 @@ use crate::{error::Error, traits::FromFile};
 /// # Errors
 ///
 /// Will error if there are duplicate keys found in `test_map`
+#[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
 pub fn merge_btreemaps<U, V>(origin_map: &mut BTreeMap<U, V>, test_map: BTreeMap<U, V>, test_file: &Path) -> Result<(), Error>
 where
     U: Ord + Clone + ToString,

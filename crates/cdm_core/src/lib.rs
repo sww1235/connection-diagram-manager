@@ -2,6 +2,8 @@
 //! and logic that are used by the binary implementations
 //! of the program
 
+/// shared logic between GUI and CLI binaries
+pub mod bin_logic;
 /// `config` contains configuration structs that are used for
 /// the application binaries
 pub mod config;
