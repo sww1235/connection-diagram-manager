@@ -30,6 +30,7 @@ use crate::{
     },
     directory_navigator,
     error::Error,
+    path_utils::is_hidden,
 };
 
 //TODO: investigate local structs instead of tuples
@@ -67,8 +68,53 @@ pub fn parse_datafiles(cli: &Cli) -> Result<(ProjectConfig, Library, Project), E
         let project_config: ProjectConfig = toml::from_str(&project_config_contents)?;
         debug!("{project_config:#?}");
 
-        let library_files = directory_navigator::files_in_dir(project_directory.join("lib"), Some(".toml"), false)?;
-        let project_files = directory_navigator::files_in_dir(project_directory.join("src"), Some(".toml"), false)?;
+        let mut library_files = Vec::new();
+        let mut project_files = Vec::new();
+
+        //TODO: load default library locations from app config
+        //
+        //TODO; decide if there are hard coded libraries included with project (via read-bytes
+        //during compile) or if the app_config.default_library_locations should be set to a
+        //sensible default
+        if project_config.load_default_libraries {}
+
+        if let Some(lib_paths) = &project_config.library_paths {
+            for path in lib_paths {
+                if is_hidden(path)? {
+                    debug!("skipping hidden path {}", path.display());
+                } else if path.is_dir() {
+                    library_files.append(&mut directory_navigator::files_in_dir(path, Some(".toml"), false)?);
+                } else {
+                    library_files.push(path.canonicalize()?);
+                }
+            }
+        } else {
+            debug!("no library paths specified in project config, using default value of `lib`");
+            library_files.append(&mut directory_navigator::files_in_dir(
+                project_directory.join("lib"),
+                Some(".toml"),
+                false,
+            )?);
+        }
+
+        if let Some(project_paths) = &project_config.source_paths {
+            for path in project_paths {
+                if is_hidden(path)? {
+                    debug!("skipping hidden path {}", path.display());
+                } else if path.is_dir() {
+                    project_files.append(&mut directory_navigator::files_in_dir(path, Some(".toml"), false)?);
+                } else {
+                    project_files.push(path.canonicalize()?);
+                }
+            }
+        } else {
+            debug!("no project paths specified in project config, using default value of `src`");
+            project_files.append(&mut directory_navigator::files_in_dir(
+                project_directory.join("src"),
+                Some(".toml"),
+                false,
+            )?);
+        }
 
         let mut library_data = Library::default();
         let mut project_data = Project::default();

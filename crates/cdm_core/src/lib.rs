@@ -17,6 +17,8 @@ pub mod datatypes;
 pub mod directory_navigator;
 /// contains error types for application
 pub mod error;
+/// utility functions for working with `Path`s and `PathBuf`s
+pub(crate) mod path_utils;
 /// `pdf_generation` contains the functions used to generate a PDF
 /// of `Projects`
 pub mod pdf_generation;

@@ -35,10 +35,10 @@ where T: AsRef<Path> {
             #[expect(clippy::shadow_reuse, reason = "unwrapping value")]
             let entry = entry?;
             let path = entry.path();
+            if path.is_symlink() && !follow_symlinks {
+                continue;
+            }
             if path.is_dir() {
-                if path.is_symlink() && !follow_symlinks {
-                    continue;
-                }
                 files_in_dir_inner(path, paths, extension, follow_symlinks)?;
             } else if let Some(test_extension) = extension
                 && let Some(file_extension) = path.extension()
@@ -47,8 +47,13 @@ where T: AsRef<Path> {
                 paths.push(path.canonicalize()?);
             } else if extension.is_none() {
                 paths.push(path.canonicalize()?);
+            } else {
+                // allowing clippy::needless_else with this comment
+                //
             }
         }
+        Ok(())
+    } else {
+        Err(Error::from(ErrorKind::NotADirectory))
     }
-    Ok(())
 }
