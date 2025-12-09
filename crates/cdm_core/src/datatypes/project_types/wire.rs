@@ -32,9 +32,9 @@ pub struct Wire {
     /// Pathway containing instance
     pub pathway: Option<String>,
     /// One end of `Wire` / Cable.
-    pub end1_connector_type: String,
+    pub end1_connector_type: Option<String>,
     /// The other end of `Wire`
-    pub end2_connector_type: String,
+    pub end2_connector_type: Option<String>,
     /// datafile the struct instance was read in from
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,

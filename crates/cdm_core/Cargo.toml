@@ -32,9 +32,11 @@ pdf_helper.workspace = true
 paragraph_breaker.workspace = true
 figment.workspace = true
 anyhow.workspace = true
+# need to keep all 4 of these crates in sync version wise
 miniquad = { version = "~0.4", optional = true}
 egui-miniquad = { version = "~0.16", optional = true}
 egui = { version = "0.31.1", optional = true}
+egui_extras = { version = "0.31.1", optional = true, features = ["gif", "svg"]}
 
 [dev-dependencies]
 pretty_assertions.workspace = true
@@ -43,7 +45,7 @@ toml.workspace = true
 [features]
 default = ["cli", "gui"]
 cli = []
-gui = ["dep:miniquad", "dep:egui-miniquad", "dep:egui"]
+gui = ["dep:miniquad", "dep:egui-miniquad", "dep:egui", "dep:egui_extras"]
 
 [lib]
 name = "cdm_core"

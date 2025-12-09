@@ -1,0 +1,9 @@
+[wire_types]
+[wire_types.12THHN]
+wire_type_code = "THHN"
+nominal_cross_section =  {Awg = 12.0} # PLACEHOLDER
+material = "Copper"
+insulated = true
+stranded = bool
+num_strands = 19
+

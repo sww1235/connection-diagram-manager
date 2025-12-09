@@ -1,5 +1,7 @@
 use miniquad::{self as mq, TouchPhase};
 
+mod main_window;
+
 /// Main GUI app
 pub struct Cdm {
     /// Egui Miniquad bindings
@@ -10,6 +12,7 @@ pub struct Cdm {
 }
 
 impl Cdm {
+    pub const QUIT_CMD: egui::KeyboardShortcut = egui::KeyboardShortcut {modifiers: egui::Modifiers {alt: false, ctrl: false, shift: false, mac_cmd: false, command: true}, logical_key: egui::Key::Q};
     /// Create new app
     pub fn new() -> Self {
         let mut mq_ctx = mq::window::new_rendering_backend();
@@ -33,10 +36,21 @@ impl mq::EventHandler for Cdm {
 
         // This is where all the egui code goes
         self.egui_mq.run(&mut *self.mq_ctx, |_mq_ctx, egui_ctx| {
+            egui_extras::install_image_loaders(egui_ctx);
             egui::Window::new("Main Window").show(egui_ctx, |ui| {
                 egui::widgets::global_theme_preference_switch(ui);
+                ui.image(egui::include_image!("/home/toxicsauce/myprojects/connection-diagram-manager/resources/test/testproject/lib/SPST-Switch.svg"));
+            });
+            // test exit function
+            egui_ctx.input_mut(|input| {
+               if input.consume_shortcut(&Self::QUIT_CMD) {
+                   std::process::exit(0);
+               }
             });
         });
+
+        self.egui_mq.draw(&mut *self.mq_ctx);
+        self.mq_ctx.commit_frame();
     }
     fn mouse_motion_event(&mut self, x: f32, y: f32) {
         self.egui_mq.mouse_motion_event(x, y);

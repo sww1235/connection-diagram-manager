@@ -1514,7 +1514,7 @@ insulation_thickness =  {value = [0,0], original_unit = "PLACEHOLDER"}
 conductor_cross_sect_area =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # Nominal cross section of wire
-conductor_cross_sect_area =  {value = [0,0], original_unit = "PLACEHOLDER"}
+nominal_cross_section =  {Awg = 12.0} # PLACEHOLDER
 
 # including insulation
 overall_cross_sect_area =  {value = [0,0], original_unit = "PLACEHOLDER"}
