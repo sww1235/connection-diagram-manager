@@ -167,6 +167,11 @@ use_usa_customary_units = true # PLACEHOLDER
 # and adjust the displayed unit prefix appropriately,
 # or display all values in their default units only.
 use_engineering_prefixes = true # PLACEHOLDER
+
+[graphics_config]
+window_height = 0 # PLACEHOLDER
+window_width = 0 # PLACEHOLDER
+high_dpi = true # PLACEHOLDER
 ```
 
 #### Application Configuration Defaults
@@ -188,6 +193,10 @@ default_temperature_interval_unit = "°C"
 use_awg = false
 use_usa_customary_units = false
 use_engineering_prefixes = true
+[graphics_config]
+window_height = 1024
+window_width = 1024
+high_dpi = true
 ```
 
 ### Project Definition File
