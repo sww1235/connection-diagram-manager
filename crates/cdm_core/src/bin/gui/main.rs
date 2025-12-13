@@ -10,7 +10,6 @@ use miniquad::{self as mq, conf::Conf as mqConf};
 /// Main GUI app
 mod app;
 
-//https://stackoverflow.com/questions/66799905/how-to-make-some-structs-fields-mandatory-to-fill-and-others-optional-in-rust
 fn main() -> anyhow::Result<()> {
     let (app_config, cli) = bin_logic::read_config_files_cli()?;
 
@@ -28,7 +27,9 @@ fn main() -> anyhow::Result<()> {
 
     gui_conf.window_resizable = true;
     gui_conf.window_title = "Connection Diagram Manager".to_owned();
-    mq::start(gui_conf, || Box::new(app::Cdm::new()));
+    mq::start(gui_conf, || {
+        Box::new(app::App::new(project_config, project_data, library_data))
+    });
 
     Ok(())
 }
