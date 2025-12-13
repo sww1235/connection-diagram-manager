@@ -4,7 +4,7 @@ use miniquad::conf::Conf as mqConf;
 use serde::{Deserialize, Serialize};
 
 /// `Config` represents configuration options for the various cdm binary programs
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[expect(
     clippy::struct_excessive_bools,
     reason = "this is a configuration struct with lots of boolean options"
@@ -73,16 +73,17 @@ impl Default for ApplicationConfig {
 }
 
 #[cfg(feature = "gui")]
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[expect(clippy::module_name_repetitions, reason = "Specialized config struct")]
+#[non_exhaustive]
 /// Graphics configuration options
 pub struct GraphicsConfig {
     /// Starting window height
-    window_height: i32,
+    pub window_height: i32,
     /// Starting window width
-    window_width: i32,
+    pub window_width: i32,
     /// Enable high DPI features
-    high_dpi: bool,
+    pub high_dpi: bool,
 }
 
 impl Default for GraphicsConfig {

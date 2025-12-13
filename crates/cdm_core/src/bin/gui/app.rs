@@ -1,9 +1,14 @@
-use cdm_core::datatypes::{
-    library_types::Library,
-    project_types::{Config as ProjectConfig, Project},
+use cdm_core::{
+    config::ApplicationConfig,
+    datatypes::{
+        library_types::Library,
+        project_types::{Config as ProjectConfig, Project},
+    },
 };
+use log::debug;
 use miniquad::{self as mq, TouchPhase, window as mqWindow};
 
+/// Main window of application
 mod main_window;
 
 /// Main GUI app struct
@@ -23,6 +28,8 @@ pub struct App {
     library_data: Library,
     /// Project configuration
     project_config: ProjectConfig,
+    /// Global Application configuration
+    app_config: ApplicationConfig,
 }
 
 impl App {
@@ -38,7 +45,12 @@ impl App {
         logical_key: egui::Key::Q,
     };
     /// Create new app
-    pub fn new(project_config: ProjectConfig, project_data: Project, library_data: Library) -> Self {
+    pub fn new(
+        app_config: ApplicationConfig,
+        project_config: ProjectConfig,
+        project_data: Project,
+        library_data: Library,
+    ) -> Self {
         let mut mq_ctx = mqWindow::new_rendering_backend();
         Self {
             egui_mq: egui_miniquad::EguiMq::new(&mut *mq_ctx),
@@ -48,6 +60,7 @@ impl App {
             project_data,
             library_data,
             project_config,
+            app_config,
         }
     }
 }
@@ -70,20 +83,24 @@ impl mq::EventHandler for App {
         // This is where all the egui code goes
         self.egui_mq.run(&mut *self.mq_ctx, |_mq_ctx, egui_ctx| {
             egui_extras::install_image_loaders(egui_ctx);
-            Window::new("Main Window")
-                .open(&mut self.main_window_state)
-                .show(egui_ctx, |ui| {
-                    widgets::global_theme_preference_switch(ui);
-                    ui.image(egui::include_image!(
-                        "/home/toxicsauce/myprojects/connection-diagram-manager/resources/test/testproject/lib/SPST-Switch.svg"
-                    ));
-                });
+            main_window::main_window(egui_ctx, &mut self.main_window_state, &self.app_config);
             // input handler
+            egui_ctx.input(|input_state| {
+                // TODO: figure out why this isn't working
+                let window_quit_request = input_state.viewport().close_requested();
+                debug! {"close button clicked: {window_quit_request}"};
+                //self.quit_requested = keyboard_quit_request | window_quit_request;
+                if window_quit_request {
+                    self.quit_requested = true;
+                }
+            });
             egui_ctx.input_mut(|input_state| {
                 let keyboard_quit_request = input_state.consume_shortcut(&Self::QUIT_CMD);
-                let window_quit_request = input_state.viewport().close_requested();
-                self.quit_requested = keyboard_quit_request || window_quit_request;
+                if keyboard_quit_request {
+                    self.quit_requested = true;
+                }
             });
+            debug! {"quit requested: {}", self.quit_requested};
 
             // TODO: figure out a better way of exiting the app.
             // Investigate the code of egui_miniquad and minquad more to

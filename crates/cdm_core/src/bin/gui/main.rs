@@ -23,12 +23,12 @@ fn main() -> anyhow::Result<()> {
     }
     let (project_config, library_data, project_data) = datatypes::parse_datafiles(&cli)?;
 
-    let mut gui_conf: mqConf = app_config.graphics_config.unwrap_or_default().into();
+    let mut gui_conf: mqConf = app_config.clone().graphics_config.unwrap_or_default().into();
 
     gui_conf.window_resizable = true;
     gui_conf.window_title = "Connection Diagram Manager".to_owned();
     mq::start(gui_conf, || {
-        Box::new(app::App::new(project_config, project_data, library_data))
+        Box::new(app::App::new(app_config, project_config, project_data, library_data))
     });
 
     Ok(())
