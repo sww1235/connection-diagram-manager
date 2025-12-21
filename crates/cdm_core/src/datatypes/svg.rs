@@ -12,7 +12,10 @@ use usvg::{Options as ParseOptions, Tree, WriteOptions};
 
 /// Svg represents a full SVG image
 #[derive(Debug, Clone)]
-pub struct Svg(Tree);
+pub struct Svg {
+    /// Tree is a `[usvg::Tree]` used for easy interpretation of SVG
+    tree: Tree,
+}
 
 impl Svg {
     #[must_use]
@@ -31,13 +34,13 @@ impl Svg {
     #[inline]
     /// Gets the underlying `[usvg::Tree]` in `Svg`
     pub fn get_tree(self) -> Tree {
-        self.0
+        self.tree
     }
     #[must_use]
     #[inline]
     /// Create a `Svg` from a `[usvg::Tree]`
     pub fn from_tree(tree: Tree) -> Self {
-        Self(tree)
+        Self { tree }
     }
 }
 
@@ -46,7 +49,7 @@ impl Serialize for Svg {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where S: Serializer {
         let write_options = WriteOptions::default();
-        serializer.serialize_str(self.0.to_string(&write_options).as_str())
+        serializer.serialize_str(self.tree.to_string(&write_options).as_str())
     }
 }
 
@@ -77,7 +80,7 @@ impl Visitor<'_> for SvgVisitor {
             Err(err) => return Err(E::custom(format!("SVG parsing error {err}"))),
         };
 
-        Ok(Svg(tree))
+        Ok(Svg { tree })
     }
 }
 
@@ -92,7 +95,9 @@ impl Default for Svg {
 
         let options = ParseOptions::default();
         #[expect(clippy::unwrap_used, reason = "a known SVG string should never fail to parse")]
-        Svg(Tree::from_str(default_svg_string, &options).unwrap())
+        Svg {
+            tree: Tree::from_str(default_svg_string, &options).unwrap(),
+        }
     }
 }
 
@@ -101,6 +106,6 @@ impl Default for Svg {
 impl PartialEq for Svg {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
-        self.0.to_string(&Self::write_options()) == other.0.to_string(&Self::write_options())
+        self.tree.to_string(&Self::write_options()) == other.tree.to_string(&Self::write_options())
     }
 }

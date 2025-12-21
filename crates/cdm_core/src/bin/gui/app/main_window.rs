@@ -5,6 +5,8 @@ use egui::{Window, widgets};
 use num_traits::cast::FromPrimitive as _;
 use url::Url;
 
+use usvg::{Options as ParseOptions, Tree, WriteOptions};
+
 /// Main window rendering code
 pub fn main_window(egui_ctx: &egui::Context, open: &mut bool, app_config: &ApplicationConfig) {
     //
@@ -14,7 +16,7 @@ pub fn main_window(egui_ctx: &egui::Context, open: &mut bool, app_config: &Appli
         .default_height(f32::from_i32(app_config.graphics_config.clone().unwrap_or_default().window_height).unwrap_or(600.0))
         .show(egui_ctx, |ui| {
             widgets::global_theme_preference_switch(ui);
-            load_svg(
+            load_svg_from_path(
                 ui,
                 Path::new(
                     "/home/toxicsauce/myprojects/connection-diagram-manager/resources/test/testproject/lib/SPST-Switch.svg",
@@ -24,11 +26,15 @@ pub fn main_window(egui_ctx: &egui::Context, open: &mut bool, app_config: &Appli
 }
 //https://github.com/emilk/egui/pull/5732/files
 /// load SVG image
-fn load_svg(ui: &mut egui::Ui, path: &Path) {
+fn load_svg_from_path(ui: &mut egui::Ui, path: &Path) {
     //TODO: fix error handling here
-    let image_uri = Url::from_file_path(path.canonicalize().unwrap().to_str().unwrap()).unwrap();
-    println!("{}", image_uri);
-    let image = egui::widgets::Image::from_uri(image_uri.as_str());
+        let options = ParseOptions::default();
+        let write_options = WriteOptions::default();
+    let image_bytes = std::fs::read(path.canonicalize().expect("unable to canonicalize path")).expect("unable to read svg file");
+    let tree = Tree::from_str(str::from_utf8(&image_bytes).expect("unable to parse iamge_bytes into valid utf8 str"), &options).expect("unable to parse utf str into usvg::Tree");
+    let mut uri = "bytes://".to_owned();
+        uri.push_str(path.to_str().expect("unable to convert path to string"));
+    let image = egui::widgets::Image::from_bytes(uri, tree.to_string(&write_options).into_bytes());
 
     ui.add(image);
 }

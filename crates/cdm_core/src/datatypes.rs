@@ -33,6 +33,8 @@ use crate::{
     path_utils::is_hidden,
 };
 
+//TODO: Add flag to load images into byte vectors or not.
+
 //TODO: investigate local structs instead of tuples
 //https://stackoverflow.com/questions/39008880/is-it-possible-to-declare-local-anonymous-structs-in-rust
 /// Parse datafiles and return data structs
