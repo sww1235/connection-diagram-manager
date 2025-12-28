@@ -2,3 +2,7 @@
 [wires.wire1]
 wire_type = "12THHN"
 length =  {value = [5,1], original_unit = "meter"}
+
+[equipment]
+[equipment.switch1]
+equipment_type = "spst_toggle_switch"

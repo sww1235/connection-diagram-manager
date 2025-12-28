@@ -4,6 +4,8 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use log::trace;
+
 /// Recursively walk the provided directory and return paths to all files contained within.
 ///
 /// # Errors
@@ -35,19 +37,24 @@ where T: AsRef<Path> {
             #[expect(clippy::shadow_reuse, reason = "unwrapping value")]
             let entry = entry?;
             let path = entry.path();
+            trace! {"{}", path.display()};
             if path.is_symlink() && !follow_symlinks {
                 continue;
             }
+            trace! {"test_extension: {extension:?}"}
+            trace! {"file_extension: {:?}", path.extension()}
             if path.is_dir() {
                 files_in_dir_inner(path, paths, extension, follow_symlinks)?;
             } else if let Some(test_extension) = extension
                 && let Some(file_extension) = path.extension()
                 && test_extension == file_extension
             {
+                trace! {"pushing path: {}", path.display()};
                 paths.push(path.canonicalize()?);
             } else if extension.is_none() {
                 paths.push(path.canonicalize()?);
             } else {
+                trace! {"not pushing path: {}", path.display()};
                 // allowing clippy::needless_else with this comment
                 //
             }

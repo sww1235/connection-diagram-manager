@@ -1,9 +1,21 @@
 [wire_types]
 [wire_types.12THHN]
 wire_type_code = "THHN"
-nominal_cross_section =  {Awg = 12.0} # PLACEHOLDER
+nominal_cross_section =  {value = [12,1], original_unit = "AWG"} # PLACEHOLDER
 material = "Copper"
 insulated = true
-stranded = bool
+stranded = true
 num_strands = 19
 
+[equipment_types]
+[equipment_types.TOGGLE_SWITCH]
+supertype = "Switch"
+mount_types = ["panel"]
+component_designator = "S"
+schematic_symbols = ["spst_toggle_switch"]
+
+[schematic_symbol_types]
+[schematic_symbol_types.spst_toggle_switch]
+visual_representation = "resources/test/testproject/lib/SPST-Switch.svg"
+name = "SPST toggle switch"
+supports_links = false

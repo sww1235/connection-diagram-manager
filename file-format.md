@@ -635,10 +635,9 @@ supplier_part_number = "PLACEHOLDER"
 # Most keys in a equipment_types sub-table are optional
 [equipment_types."PLACEHOLDER"]
 
-# optional
 # (19" rack, 23" rack, 1/2 19" rack, DIN rail,
 # surface wall mount, inset wall mount, panel, custom)
-mounting_type = ["PLACEHOLDER"]
+mount_types = ["PLACEHOLDER"]
 
 # optional
 # (audio, video, mix, lighting, networking, patch panel, power)
@@ -978,7 +977,7 @@ description = "PLACEHOLDER"
 # for special tags that indicate where dashed link lines
 # will connect.
 # this is used for things like relays and contactors
-# supports_links = true # PLACEHOLDER
+supports_links = true # PLACEHOLDER
 ```
 
 #### Term Cable Types
@@ -1514,7 +1513,7 @@ insulation_thickness =  {value = [0,0], original_unit = "PLACEHOLDER"}
 conductor_cross_sect_area =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # Nominal cross section of wire
-nominal_cross_section =  {Awg = 12.0} # PLACEHOLDER
+nominal_cross_section =  {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # including insulation
 overall_cross_sect_area =  {value = [0,0], original_unit = "PLACEHOLDER"}

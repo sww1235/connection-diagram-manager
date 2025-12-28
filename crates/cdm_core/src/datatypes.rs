@@ -20,8 +20,7 @@ use std::{
     io::{self, ErrorKind},
 };
 
-use log::debug;
-use log::trace;
+use log::{debug, trace};
 
 use crate::{
     bin_logic::Cli,
@@ -125,15 +124,15 @@ pub fn parse_datafiles(cli: &Cli) -> Result<(ProjectConfig, Library, Project), E
         //
         //TODO: add prefix to all string keys read in from file (maybe file_name or something) to
         //avoid unintended duplicate keys in multiple files
-        trace!{"library files: {library_files:?}"}
+        trace! {"library files: {library_files:?}"}
         for file in library_files {
-            trace!{"{}", file.display()};
+            trace! {"{}", file.display()};
             let library_file_contents = fs::read_to_string(&file)?;
             let library_file: Library = toml::from_str(&library_file_contents)?;
             library_data.merge(library_file, &file)?;
         }
         for file in project_files {
-            trace!{"{}", file.display()};
+            trace! {"{}", file.display()};
             let project_file_contents = fs::read_to_string(&file)?;
             let project_file: Project = toml::from_str(&project_file_contents)?;
             project_data.merge(project_file, &file)?;
