@@ -1,5 +1,7 @@
-use std::fmt;
+use core::str::FromStr as _;
+use std::{fmt, path::PathBuf};
 
+use log::trace;
 use serde::{
     de::{self, Deserialize, Deserializer, Visitor},
     ser::{Serialize, Serializer},
@@ -15,6 +17,8 @@ use usvg::{Options as ParseOptions, Tree, WriteOptions};
 pub struct Svg {
     /// Tree is a `[usvg::Tree]` used for easy interpretation of SVG
     tree: Tree,
+    /// If provided string is a filepath to a SVG file stored elsewhere
+    filepath: Option<PathBuf>,
 }
 
 impl Svg {
@@ -40,7 +44,7 @@ impl Svg {
     #[inline]
     /// Create a `Svg` from a `[usvg::Tree]`
     pub fn from_tree(tree: Tree) -> Self {
-        Self { tree }
+        Self { tree, filepath: None }
     }
 }
 
@@ -75,12 +79,49 @@ impl Visitor<'_> for SvgVisitor {
     fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
     where E: de::Error {
         let options = ParseOptions::default();
-        let tree = match Tree::from_str(v, &options) {
-            Ok(tree) => tree,
-            Err(err) => return Err(E::custom(format!("SVG parsing error {err}"))),
+        // try to parse and validate a filepath, then load SVG from that
+        // If that fails, attempt to parse SVG from string directly.
+        // If both fail, return error
+        trace! {"{}", std::env::current_dir().unwrap().display()}
+        #[expect(clippy::unwrap_used, reason = "Infallible")]
+        let svg: Svg = match PathBuf::from_str(v).unwrap().canonicalize() {
+            Ok(path) => {
+                let path = path
+                    .canonicalize()
+                    .map_err(|e| E::custom(format!("failed to canonicalize filepath: {e}")))?;
+                let image_bytes = std::fs::read(&path).map_err(|e| E::custom(format!("failed to read file: {e}")))?;
+                let image_str = str::from_utf8(&image_bytes)
+                    .map_err(|e| E::custom(format!("failed to parse image bytes into UTF8 string: {e}")))?;
+                let tree = match Tree::from_str(image_str, &options) {
+                    Ok(tree) => tree,
+                    Err(tree_err) => {
+                        return Err(E::custom(format!(
+                            "Failed to parse data in {} as SVG data. {tree_err}",
+                            path.display()
+                        )));
+                    }
+                };
+
+                Svg {
+                    tree,
+                    filepath: Some(path),
+                }
+            }
+            Err(path_err) => {
+                trace! {"failed to parse {v} as path"};
+
+                match Tree::from_str(v, &options) {
+                    Ok(tree) => Svg { tree, filepath: None },
+                    Err(tree_err) => {
+                        return Err(E::custom(format!(
+                            "Failed to parse provided SVG data as either path {path_err} or SVG tree {tree_err}"
+                        )));
+                    }
+                }
+            }
         };
 
-        Ok(Svg { tree })
+        Ok(svg)
     }
 }
 
@@ -97,6 +138,7 @@ impl Default for Svg {
         #[expect(clippy::unwrap_used, reason = "a known SVG string should never fail to parse")]
         Svg {
             tree: Tree::from_str(default_svg_string, &options).unwrap(),
+            filepath: None,
         }
     }
 }
@@ -107,5 +149,6 @@ impl PartialEq for Svg {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
         self.tree.to_string(&Self::write_options()) == other.tree.to_string(&Self::write_options())
+            && self.filepath == other.filepath
     }
 }
