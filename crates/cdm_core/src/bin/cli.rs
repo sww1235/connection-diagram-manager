@@ -7,7 +7,7 @@
 //! Config file can live in either root project directory or src directory under root directory.
 
 use cdm_core::{bin_logic, datatypes};
-use log::{debug, info};
+use log::{debug};
 
 //TODO: change some of the panics in main to printed error messages with a returned error code.
 //#[expect(clippy::too_many_lines, reason = "main function")]
@@ -22,9 +22,10 @@ fn main() -> anyhow::Result<()> {
         bin_logic::print_file_units(&cli);
         return Ok(());
     }
-    let (project_config, library_data, project_data) = datatypes::parse_datafiles(&cli)?;
-
-    if cli.export_pdf {}
+    // prefixing these with _ for now to silence clippy warnings. TODO: do something here
+    let (_project_config, _library_data, _project_data) = datatypes::parse_datafiles(&cli)?;
+    //TODO add this functionality
+    //if cli.export_pdf {}
 
     Ok(())
 }
