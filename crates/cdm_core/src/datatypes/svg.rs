@@ -1,5 +1,5 @@
 use core::str::FromStr as _;
-use std::{fmt, path::PathBuf};
+use std::{env, fmt, fs, path::PathBuf};
 
 use log::trace;
 use serde::{
@@ -46,6 +46,14 @@ impl Svg {
     pub fn from_tree(tree: Tree) -> Self {
         Self { tree, filepath: None }
     }
+
+    #[must_use]
+    #[inline]
+    /// Create a byte vector from a `[Svg]`
+    pub fn into_bytes(&self) -> Vec<u8> {
+        let write_options = WriteOptions::default();
+        self.tree.to_string(&write_options).into_bytes()
+    }
 }
 
 impl Serialize for Svg {
@@ -53,6 +61,7 @@ impl Serialize for Svg {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where S: Serializer {
         let write_options = WriteOptions::default();
+        //TODO: handle filepaths
         serializer.serialize_str(self.tree.to_string(&write_options).as_str())
     }
 }
@@ -74,7 +83,7 @@ impl Visitor<'_> for SvgVisitor {
     type Value = Svg;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("a SVG in string format")
+        formatter.write_str("a SVG in string format or a filepath")
     }
     fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
     where E: de::Error {
@@ -82,31 +91,31 @@ impl Visitor<'_> for SvgVisitor {
         // try to parse and validate a filepath, then load SVG from that
         // If that fails, attempt to parse SVG from string directly.
         // If both fail, return error
-        trace! {"{}", std::env::current_dir().unwrap().display()}
-        #[expect(clippy::unwrap_used, reason = "Infallible")]
-        let svg: Svg = match PathBuf::from_str(v).unwrap().canonicalize() {
+        trace! {"{}", env::current_dir().map_err(|err| E::custom(format!("failed to find current directory. Something went seriously wrong. {err}")))?.display()};
+        let svg: Svg = match PathBuf::from_str(v) {
             Ok(path) => {
-                let path = path
+                let canonical_path = path
                     .canonicalize()
-                    .map_err(|e| E::custom(format!("failed to canonicalize filepath: {e}")))?;
-                let image_bytes = std::fs::read(&path).map_err(|e| E::custom(format!("failed to read file: {e}")))?;
+                    .map_err(|err| E::custom(format!("failed to canonicalize filepath: {err}")))?;
+                let image_bytes = fs::read(&canonical_path).map_err(|err| E::custom(format!("failed to read file: {err}")))?;
                 let image_str = str::from_utf8(&image_bytes)
-                    .map_err(|e| E::custom(format!("failed to parse image bytes into UTF8 string: {e}")))?;
+                    .map_err(|err| E::custom(format!("failed to parse image bytes into UTF8 string: {err}")))?;
                 let tree = match Tree::from_str(image_str, &options) {
                     Ok(tree) => tree,
                     Err(tree_err) => {
                         return Err(E::custom(format!(
                             "Failed to parse data in {} as SVG data. {tree_err}",
-                            path.display()
+                            canonical_path.display()
                         )));
                     }
                 };
 
                 Svg {
                     tree,
-                    filepath: Some(path),
+                    filepath: Some(canonical_path),
                 }
             }
+            //Not sure if this Err branch will ever run...
             Err(path_err) => {
                 trace! {"failed to parse {v} as path"};
 
