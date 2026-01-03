@@ -49,7 +49,8 @@ pub struct MountingRailType {
     /// will be ignored.
     pub minimum_rail_length: Option<Length>,
     /// extend rail so there are no partial holes
-    pub no_partial_holes: Option<bool>,
+    #[serde(default)]
+    pub no_partial_holes: bool,
     /// distance between top `center_line` and origin
     pub top_rail_center_height: Option<Length>,
     /// distance between bottom `center_line` and origin

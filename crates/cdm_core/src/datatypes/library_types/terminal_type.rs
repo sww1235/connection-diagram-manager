@@ -75,7 +75,8 @@ pub struct TerminalType {
     pub visual_representation: Option<Svg>,
     /// Vector of schematic symbols that can represent this terminal.
     /// values must be the id of the `symbol_type`
-    pub schematic_symbols: Option<Vec<String>>,
+    #[serde(default)]
+    pub schematic_symbols: Vec<String>,
     /// `BTreeMap` defining terminal layers
     /// at least 1 layer is required for a terminal
     pub layers: BTreeMap<String, Layer>,
@@ -217,7 +218,7 @@ pub struct TerminalStripJumperType {
     /// Dimensional information of jumper
     pub dimensions: Option<Dimension>,
     /// Vector of `TerminalType` IDs
-    pub compatible_terminal_type: Vec<String>,
+    pub compatible_terminal_types: Vec<String>,
     /// Number of terminal positions
     pub number_of_positions: u64,
     /// color of jumper
@@ -226,10 +227,13 @@ pub struct TerminalStripJumperType {
     pub visual_representation: Option<Svg>,
     /// Vector of schematic symbols that can represent this terminal strip jumper type.
     /// values must be the id of the `symbol_type`
-    pub schematic_symbols: Option<Vec<String>>,
+    #[serde(default)]
+    pub schematic_symbols: Vec<String>,
     /// per pin compatible `terminal_block_type`s
     /// specify an array of `terminal_block_type`s per pin
-    pub pin_compatible_terminal_types: Option<Vec<Vec<String>>>,
+    /// outer array is pin numbers
+    #[serde(default)]
+    pub pin_compatible_terminal_types: Vec<Vec<String>>,
     /// datafile the struct instance was read in from
     #[serde(skip)]
     pub(super) contained_datafile_path: PathBuf,
@@ -255,7 +259,7 @@ pub struct TerminalAccessoryType {
     /// Dimensional information of accessory
     pub dimensions: Option<Dimension>,
     /// Compatible terminal type ids
-    pub compatible_terminal_type: Vec<String>,
+    pub compatible_terminal_types: Vec<String>,
     /// Accessory supertype:
     ///
     /// Fuse, component carrier, disconect blade, etc
@@ -264,7 +268,8 @@ pub struct TerminalAccessoryType {
     pub visual_representation: Option<Svg>,
     /// Vector of schematic symbols that can represent this terminal accessory type.
     /// values must be the id of the `symbol_type`
-    pub schematic_symbols: Option<Vec<String>>,
+    #[serde(default)]
+    pub schematic_symbols: Vec<String>,
     /// color of accessory
     pub color: Option<Color>,
     /// datafile the struct instance was read in from
@@ -295,7 +300,7 @@ pub struct TerminalStripAccessoryType {
     /// Dimensional information of accessory
     pub dimensions: Option<Dimension>,
     /// Compatible terminal type ids
-    pub compatible_terminal_type: Vec<String>,
+    pub compatible_terminal_types: Vec<String>,
     /// Accessory supertype:
     ///
     /// Fuse, component carrier, disconect blade, etc
@@ -304,7 +309,8 @@ pub struct TerminalStripAccessoryType {
     pub visual_representation: Option<Svg>,
     /// Vector of schematic symbols that can represent this terminal strip accessory type.
     /// values must be the id of the `symbol_type`
-    pub schematic_symbols: Option<Vec<String>>,
+    #[serde(default)]
+    pub schematic_symbols: Vec<String>,
     /// color of accessory
     pub color: Option<Color>,
     /// datafile the struct instance was read in from

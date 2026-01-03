@@ -24,7 +24,12 @@ use std::{collections::BTreeMap, path::Path};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{error::Error, traits::FromFile as _, util_functions};
+use crate::{
+    datatypes::library_types::{cable_type::CableCore, mounting_rail_type::MountingRailType, term_cable_type::WireCable},
+    error::{Error, LibraryError},
+    traits::FromFile as _,
+    util_functions,
+};
 
 /// `Library` represents all library data used in program
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
@@ -60,8 +65,6 @@ pub struct Library {
     /// contains all wire types read in from file, and/or added in via program logic
     pub wire_types: BTreeMap<String, wire_type::WireType>,
 }
-
-//TODO: implement validation function for all datatypes
 
 impl Library {
     /// Merges two instances of `Library`, validating that there are no key conflicts between the
@@ -181,6 +184,308 @@ impl Library {
                 wire_type.set_datafile(datafile_path);
             }
         }
+    }
+
+    /// Validates that all lookup values in library data are present in library
+    ///
+    /// Only run this function after reading in all datafiles into master library.
+    ///
+    /// # Errors
+    ///
+    /// Will error if library data referenced in `Library` is not found in the
+    /// referenced `Library`.
+    #[inline(never)]
+    #[expect(clippy::too_many_lines, reason = "its the length it needs to be")]
+    pub fn validate(&self) -> Result<(), Vec<LibraryError>> {
+        let mut errors: Vec<LibraryError> = Vec::new();
+
+        // Cable Types
+        if !self.cable_types.is_empty() {
+            for cable_type in self.cable_types.values() {
+                for core in cable_type.cores.values() {
+                    match core {
+                        CableCore::WireType(wire_type_inner) => {
+                            if !self.wire_types.contains_key(wire_type_inner) {
+                                errors.push(LibraryError::ValueNotFound {
+                                    id: wire_type_inner.clone(),
+                                    library_type: "WireType".to_owned(),
+                                });
+                            }
+                        }
+                        CableCore::CableType(cable_type_inner) => {
+                            if !self.cable_types.contains_key(cable_type_inner) {
+                                errors.push(LibraryError::ValueNotFound {
+                                    id: cable_type_inner.clone(),
+                                    library_type: "CableType".to_owned(),
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // Connector Types
+        // No validation currently needed
+        //if !self.connector_types.is_empty() {
+        //    for connector_type in self.connector_types.values() {
+        //    }
+        //}
+        // Enclosure Types
+        // No validation currently needed
+        //if !self.enclosure_types.is_empty() {
+        //    for enclosure_type in self.enclosure_types.values() {
+        //    }
+        //}
+        // Equipment Types
+        if !self.equipment_types.is_empty() {
+            for equipment_type in self.equipment_types.values() {
+                for symbol in &equipment_type.schematic_symbols {
+                    if !self.schematic_symbol_types.contains_key(symbol) {
+                        errors.push(LibraryError::ValueNotFound {
+                            id: symbol.clone(),
+                            library_type: "SchematicSymbolType".to_owned(),
+                        });
+                    }
+                }
+            }
+        }
+        // Mounting Rail Types
+        if !self.mounting_rail_types.is_empty() {
+            for (id, mounting_rail_type) in &self.mounting_rail_types {
+                if mounting_rail_type.slots
+                    && (mounting_rail_type.first_slot_center.is_none()
+                        || mounting_rail_type.slot_center_to_center.is_none()
+                        || mounting_rail_type.slot_length.is_none()
+                        || mounting_rail_type.slot_height.is_none())
+                {
+                    errors.push(LibraryError::DataMissing {
+                        id: id.to_owned(),
+                        library_type: "MountingRailType".to_owned(),
+                        data_missing: "missing slot dimensions when rail is slotted".to_owned(),
+                    });
+                }
+
+                match mounting_rail_type {
+                    // Individual checks
+                    MountingRailType {
+                        start_image: Some(_),
+                        middle_image: None,
+                        end_image: None,
+                        ..
+                    } => errors.push(LibraryError::DataMissing {
+                        id: id.to_owned(),
+                        library_type: "MountingRailType".to_owned(),
+                        data_missing: "middle_image and end_image are required when start_image is specified".to_owned(),
+                    }),
+                    MountingRailType {
+                        start_image: None,
+                        middle_image: Some(_),
+                        end_image: None,
+                        ..
+                    } => errors.push(LibraryError::DataMissing {
+                        id: id.to_owned(),
+                        library_type: "MountingRailType".to_owned(),
+                        data_missing: "start_image and end_image are required when middle_image is specified".to_owned(),
+                    }),
+                    MountingRailType {
+                        start_image: None,
+                        middle_image: None,
+                        end_image: Some(_),
+                        ..
+                    } => errors.push(LibraryError::DataMissing {
+                        id: id.to_owned(),
+                        library_type: "MountingRailType".to_owned(),
+                        data_missing: "start_image and middle_image are required when end_image is specified".to_owned(),
+                    }),
+                    // Multiple checks
+                    MountingRailType {
+                        start_image: Some(_),
+                        middle_image: Some(_),
+                        end_image: None,
+                        ..
+                    } => errors.push(LibraryError::DataMissing {
+                        id: id.to_owned(),
+                        library_type: "MountingRailType".to_owned(),
+                        data_missing: "end_image is required when start_image and middle_image are specified".to_owned(),
+                    }),
+                    MountingRailType {
+                        start_image: Some(_),
+                        middle_image: None,
+                        end_image: Some(_),
+                        ..
+                    } => errors.push(LibraryError::DataMissing {
+                        id: id.to_owned(),
+                        library_type: "MountingRailType".to_owned(),
+                        data_missing: "middle_image is required when start_image and end_image are specified".to_owned(),
+                    }),
+                    MountingRailType {
+                        start_image: None,
+                        middle_image: Some(_),
+                        end_image: Some(_),
+                        ..
+                    } => errors.push(LibraryError::DataMissing {
+                        id: id.to_owned(),
+                        library_type: "MountingRailType".to_owned(),
+                        data_missing: "start_image is required when middle_image and end_image are specified".to_owned(),
+                    }),
+                    // Good cases
+                    MountingRailType {
+                        start_image: Some(_),
+                        middle_image: Some(_),
+                        end_image: Some(_),
+                        ..
+                    } |
+                    MountingRailType {
+                        start_image: None,
+                        middle_image: None,
+                        end_image: None,
+                        ..
+                    } => {}
+                }
+            }
+        }
+        // Pathway Types
+        // No validation currently needed
+        //if !self.pathway_types.is_empty() {
+        //    for pathway_type in self.pathway_types.values() {}
+        //}
+        // Schematic Symbol Types
+        // No validation currently needed
+        //if !self.schematic_symbol_types.is_empty() {
+        //    for schematic_symbol_type in self.schematic_symbol_types.values() {}
+        //}
+        // Term Cable Types
+        // TODO: validate termination as well
+        if !self.term_cable_types.is_empty() {
+            for term_cable_type in self.term_cable_types.values() {
+                match &term_cable_type.wire_cable {
+                    WireCable::WireType(wire_type_inner) => {
+                        if !self.wire_types.contains_key(wire_type_inner) {
+                            errors.push(LibraryError::ValueNotFound {
+                                id: wire_type_inner.clone(),
+                                library_type: "WireType".to_owned(),
+                            });
+                        }
+                    }
+                    WireCable::CableType(cable_type_inner) => {
+                        if !self.cable_types.contains_key(cable_type_inner) {
+                            errors.push(LibraryError::ValueNotFound {
+                                id: cable_type_inner.clone(),
+                                library_type: "CableType".to_owned(),
+                            });
+                        }
+                    }
+                }
+                for connector in term_cable_type.end1.values() {
+                    if !self.connector_types.contains_key(&connector.connector_type) {
+                        errors.push(LibraryError::ValueNotFound {
+                            id: connector.connector_type.clone(),
+                            library_type: "ConnectorType".to_owned(),
+                        });
+                    }
+                }
+                for connector in term_cable_type.end2.values() {
+                    if !self.connector_types.contains_key(&connector.connector_type) {
+                        errors.push(LibraryError::ValueNotFound {
+                            id: connector.connector_type.clone(),
+                            library_type: "ConnectorType".to_owned(),
+                        });
+                    }
+                }
+            }
+        }
+        // Terminal Types
+        if !self.terminal_types.is_empty() {
+            for terminal_type in self.terminal_types.values() {
+                for symbol in &terminal_type.schematic_symbols {
+                    if !self.schematic_symbol_types.contains_key(symbol) {
+                        errors.push(LibraryError::ValueNotFound {
+                            id: symbol.clone(),
+                            library_type: "SchematicSymbolType".to_owned(),
+                        });
+                    }
+                }
+            }
+        }
+        // Terminal Strip Jumper Types
+        if !self.terminal_strip_jumper_types.is_empty() {
+            for terminal_strip_jumper_type in self.terminal_strip_jumper_types.values(){
+                for symbol in &terminal_strip_jumper_type.schematic_symbols {
+                    if !self.schematic_symbol_types.contains_key(symbol) {
+                        errors.push(LibraryError::ValueNotFound {
+                            id: symbol.clone(),
+                            library_type: "SchematicSymbolType".to_owned(),
+                        });
+                    }
+                }
+                for terminal_type in &terminal_strip_jumper_type.compatible_terminal_types {
+                    if !self.terminal_types.contains_key(terminal_type) {
+                        errors.push(LibraryError::ValueNotFound {
+                            id: terminal_type.clone(),
+                            library_type: "TerminalType".to_owned(),
+                        });
+                    }
+                }
+                for pin in &terminal_strip_jumper_type.pin_compatible_terminal_types {
+                    for terminal_type in pin {
+                        if !self.terminal_types.contains_key(terminal_type) {
+                            errors.push(LibraryError::ValueNotFound {
+                                id: terminal_type.clone(),
+                                library_type: "TerminalType".to_owned(),
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        // Terminal Accessory Types
+        if !self.terminal_accessory_types.is_empty() {
+            for terminal_accessory_type in self.terminal_accessory_types.values() {
+                for symbol in &terminal_accessory_type.schematic_symbols {
+                    if !self.schematic_symbol_types.contains_key(symbol) {
+                        errors.push(LibraryError::ValueNotFound {
+                            id: symbol.clone(),
+                            library_type: "SchematicSymbolType".to_owned(),
+                        });
+                    }
+                }
+                for terminal_type in &terminal_accessory_type.compatible_terminal_types {
+                    if !self.terminal_types.contains_key(terminal_type) {
+                        errors.push(LibraryError::ValueNotFound {
+                            id: terminal_type.clone(),
+                            library_type: "TerminalType".to_owned(),
+                        });
+                    }
+                }
+            }
+        }
+        // Terminal Strip Accessory Types
+        if !self.terminal_strip_accessory_types.is_empty() {
+            for terminal_strip_accessory_type in self.terminal_strip_accessory_types.values() {
+                for symbol in &terminal_strip_accessory_type.schematic_symbols {
+                    if !self.schematic_symbol_types.contains_key(symbol) {
+                        errors.push(LibraryError::ValueNotFound {
+                            id: symbol.clone(),
+                            library_type: "SchematicSymbolType".to_owned(),
+                        });
+                    }
+                }
+                for terminal_type in &terminal_strip_accessory_type.compatible_terminal_types {
+                    if !self.terminal_types.contains_key(terminal_type) {
+                        errors.push(LibraryError::ValueNotFound {
+                            id: terminal_type.clone(),
+                            library_type: "TerminalType".to_owned(),
+                        });
+                    }
+                }
+            }
+        }
+        // Wire Types
+        // No validation currently needed
+        //if !self.wire_types.is_empty() {
+        //    for wire_type in self.wire_types.values() {}
+        //}
+        if errors.is_empty() { Ok(()) } else { Err(errors) }
     }
 }
 

@@ -69,7 +69,7 @@ pub struct Termination {
     pub pin: String,
 }
 
-/// `TermCableConnector` represents a connector on one end of a `TermCable`
+/// `Connector` represents a connector on one end of a `TermCable`
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct Connector {

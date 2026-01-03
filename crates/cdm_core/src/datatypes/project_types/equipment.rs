@@ -73,13 +73,23 @@ impl SchematicRepresentation for Equipment {
                 id: self.equipment_type.clone(),
                 library_type: "Equipment Type".to_owned(),
             })?;
-        let equipment_schematic_symbols = equipment_type.schematic_symbols.clone().ok_or(LibraryError::DataMissing {
-            id: self.equipment_type.clone(),
-            library_type: "Equipment Type".to_owned(),
-            data_missing: "Schematic Symbols".to_owned(),
-        })?;
+        let equipment_schematic_symbols = equipment_type.schematic_symbols.clone();
+        if equipment_schematic_symbols.is_empty() {
+            return Err(LibraryError::DataMissing {
+                id: self.equipment_type.clone(),
+                library_type: "Equipment Type".to_owned(),
+                data_missing: "Schematic Symbols".to_owned(),
+            });
+        }
 
-        let schematic_symbol_type_id = equipment_schematic_symbols.get(symbol_selector.unwrap_or(0)).expect("");
+        let schematic_symbol_type_id =
+            equipment_schematic_symbols
+                .get(symbol_selector.unwrap_or(0))
+                .ok_or(LibraryError::DataMissing {
+                    id: self.equipment_type.clone(),
+                    library_type: "Equipment Type".to_owned(),
+                    data_missing: "At least one schematic symbol needs to be specified".to_owned(),
+                })?;
         let schematic_symbol = library
             .schematic_symbol_types
             .get(schematic_symbol_type_id)

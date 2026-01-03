@@ -28,7 +28,7 @@ pub struct TerminalStrip {
     /// User defined fields
     pub user_fields: Option<UserFields>,
     /// terminals and accessories defined in terminal strip.
-    pub terminals: Vec<Terminal>,
+    pub elements: Vec<Element>,
     /// Jumpers in terminal strip
     pub jumpers: Vec<Jumper>,
     /// datafile the struct instance was read in from
@@ -36,13 +36,13 @@ pub struct TerminalStrip {
     pub(crate) contained_datafile_path: PathBuf,
 }
 
-/// `Terminal` represents one element of a terminal strip, be it terminal block or
+/// `Element` represents one element of a terminal strip, be it terminal block or
 /// accessory.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
-pub struct Terminal {
+pub struct Element {
     ///Terminal Number. Used for ordering and identification
-    ///If not specified, defaults to its index in the terminals Vec, one indexed.
+    ///If not specified, defaults to its index in the terminals Vec, plus 1.
     pub terminal_number: Option<u64>,
     /// structured identifier of terminal
     pub identifier: Option<String>,
@@ -52,6 +52,8 @@ pub struct Terminal {
     pub accessories: Option<Vec<String>>,
     /// Optional styling data for schematic symbol
     pub symbol_style: Option<SymbolStyle>,
+    /// What the type of `Element` actually is
+    pub contained_type: TermAccy,
 }
 
 /// Enum allowing storage of either `TerminalType` or `TerminalStripAccessoryType` in `Terminal`

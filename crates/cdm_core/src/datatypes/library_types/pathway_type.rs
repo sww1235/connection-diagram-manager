@@ -32,7 +32,7 @@ pub struct PathwayType {
     /// mainly used for things like panduit or wireway mounted to panel directly
     pub visual_representation: Option<Svg>,
     /// Inner cross sectional area of pathway
-    pub cross_sect_area: CrossSectionalArea,
+    pub cross_sect_area: Option<CrossSectionalArea>,
     /// Main material of pathway
     pub material: Option<String>,
     /// Primary color of pathway
