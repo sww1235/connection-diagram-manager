@@ -334,8 +334,8 @@ impl Library {
                         middle_image: Some(_),
                         end_image: Some(_),
                         ..
-                    } |
-                    MountingRailType {
+                    }
+                    | MountingRailType {
                         start_image: None,
                         middle_image: None,
                         end_image: None,
@@ -409,7 +409,7 @@ impl Library {
         }
         // Terminal Strip Jumper Types
         if !self.terminal_strip_jumper_types.is_empty() {
-            for terminal_strip_jumper_type in self.terminal_strip_jumper_types.values(){
+            for terminal_strip_jumper_type in self.terminal_strip_jumper_types.values() {
                 for symbol in &terminal_strip_jumper_type.schematic_symbols {
                     if !self.schematic_symbol_types.contains_key(symbol) {
                         errors.push(LibraryError::ValueNotFound {

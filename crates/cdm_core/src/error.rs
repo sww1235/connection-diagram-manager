@@ -105,7 +105,7 @@ pub enum ProjectError {
     /// This error is used when a lookup is made in the project and the ID is not found
     #[error("The ID {id} of type {project_type} not found in project")]
     ValueNotFound {
-        /// The ID of the the `Library` entry
+        /// The ID of the the `Project` entry
         id: String,
         //TODO: switch to using a derived enum for project_type
         /// The type of the `Project` entry

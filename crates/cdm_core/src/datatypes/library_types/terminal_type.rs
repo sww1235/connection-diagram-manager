@@ -114,17 +114,6 @@ pub struct Connection {
     /// only used as a reference in the `internal_connections` section below
     pub connection_description: String,
     /// Connection Type of connection
-    ///
-    /// Possible Values:
-    /// - `ScrewTerminal`
-    /// - `Bolt`
-    /// - `PlugIn`
-    /// - `PushIn`
-    /// - `PushInX`
-    /// - `FastConnect`
-    /// - `Spade`
-    /// - `SpringCage`
-    /// - `LeverLock`
     pub connection_type: ConnectionType,
     /// Connector entry angle
     pub entry_angle: Option<String>,
@@ -139,13 +128,6 @@ pub struct Connection {
     ///
     /// Note: This is not an actual wire/connector type but
     /// just a comparison string.
-    ///
-    /// Possible Values:
-    /// - `Solid`
-    /// - `Stranded`
-    /// - `FineStranded`
-    /// - `StrandedFerrule`
-    /// - `Spade`
     pub wire_types_accepted: Vec<AcceptedWireType>,
 }
 

@@ -7,7 +7,7 @@
 //! Config file can live in either root project directory or src directory under root directory.
 
 use cdm_core::{bin_logic, datatypes};
-use log::{debug};
+use log::debug;
 
 //TODO: change some of the panics in main to printed error messages with a returned error code.
 //#[expect(clippy::too_many_lines, reason = "main function")]

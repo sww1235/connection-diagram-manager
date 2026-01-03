@@ -42,8 +42,6 @@ impl traits::Connector for Connector {
             reason = "if somehow this library is used on a 128 bit architecture, I want a panic so people bug me and I can \
                       rearchitect the library to accomodate"
         )]
-        // allowing unwrap as I want a panic here if this application
-        // is used on a 128 bit architecture
         Ok(u64::try_from(connector_type.pins.len()).unwrap())
     }
 }
