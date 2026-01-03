@@ -5,7 +5,6 @@ use cdm_core::{
         project_types::{Config as ProjectConfig, Project},
     },
 };
-use log::debug;
 use miniquad::{self as mq, TouchPhase, window as mqWindow};
 
 /// Main window of application
@@ -29,7 +28,7 @@ pub struct App {
     /// Project configuration
     project_config: ProjectConfig,
     /// Global Application configuration
-    app_config: ApplicationConfig,
+    config: ApplicationConfig,
 }
 
 impl App {
@@ -45,12 +44,7 @@ impl App {
         logical_key: egui::Key::Q,
     };
     /// Create new app
-    pub fn new(
-        app_config: ApplicationConfig,
-        project_config: ProjectConfig,
-        project_data: Project,
-        library_data: Library,
-    ) -> Self {
+    pub fn new(config: ApplicationConfig, project_config: ProjectConfig, project_data: Project, library_data: Library) -> Self {
         let mut mq_ctx = mqWindow::new_rendering_backend();
         Self {
             egui_mq: egui_miniquad::EguiMq::new(&mut *mq_ctx),
@@ -60,7 +54,7 @@ impl App {
             project_data,
             library_data,
             project_config,
-            app_config,
+            config,
         }
     }
 }
@@ -69,8 +63,6 @@ impl mq::EventHandler for App {
     fn update(&mut self) {}
     fn draw(&mut self) {
         use std::process;
-
-        use egui::{Window, widgets};
 
         // red, green, blue, alpha, depth, stencil
         // TODO: test if I need this call
@@ -83,12 +75,18 @@ impl mq::EventHandler for App {
         // This is where all the egui code goes
         self.egui_mq.run(&mut *self.mq_ctx, |_mq_ctx, egui_ctx| {
             egui_extras::install_image_loaders(egui_ctx);
-            main_window::main_window(egui_ctx, &mut self.main_window_state, &self.app_config);
+            main_window::main_window(
+                egui_ctx,
+                &mut self.main_window_state,
+                &self.config,
+                &self.project_data,
+                &self.library_data,
+            );
             // input handler
             egui_ctx.input(|input_state| {
                 // TODO: figure out why this isn't working
                 let window_quit_request = input_state.viewport().close_requested();
-                debug! {"close button clicked: {window_quit_request}"};
+                //debug! {"close button clicked: {window_quit_request}"};
                 //self.quit_requested = keyboard_quit_request | window_quit_request;
                 if window_quit_request {
                     self.quit_requested = true;
@@ -100,7 +98,7 @@ impl mq::EventHandler for App {
                     self.quit_requested = true;
                 }
             });
-            debug! {"quit requested: {}", self.quit_requested};
+            //debug! {"quit requested: {}", self.quit_requested};
 
             // TODO: figure out a better way of exiting the app.
             // Investigate the code of egui_miniquad and minquad more to
@@ -146,12 +144,14 @@ impl mq::EventHandler for App {
 
     fn window_restored_event(&mut self) {}
 
+    #[expect(unused_variables, reason = "no implementation yet")]
     fn touch_event(&mut self, phase: TouchPhase, _id: u64, x: f32, y: f32) {}
 
     fn quit_requested_event(&mut self) {}
 
     fn files_dropped_event(&mut self) {}
 
+    #[expect(unused_variables, reason = "no implementation yet")]
     fn resize_event(&mut self, width: f32, height: f32) {}
 
     fn raw_mouse_motion(&mut self, _dx: f32, _dy: f32) {}
