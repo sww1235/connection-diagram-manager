@@ -83,6 +83,7 @@ impl Library {
         util_functions::merge_btreemaps(&mut self.equipment_types, test_map.equipment_types, test_file)?;
         util_functions::merge_btreemaps(&mut self.mounting_rail_types, test_map.mounting_rail_types, test_file)?;
         util_functions::merge_btreemaps(&mut self.pathway_types, test_map.pathway_types, test_file)?;
+        util_functions::merge_btreemaps(&mut self.schematic_symbol_types, test_map.schematic_symbol_types, test_file)?;
         util_functions::merge_btreemaps(&mut self.term_cable_types, test_map.term_cable_types, test_file)?;
         util_functions::merge_btreemaps(&mut self.terminal_types, test_map.terminal_types, test_file)?;
         util_functions::merge_btreemaps(

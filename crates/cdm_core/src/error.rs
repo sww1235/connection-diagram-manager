@@ -11,7 +11,7 @@ use thiserror::Error;
 pub enum Error {
     /// This error is used when duplicate keys are found in `Project` or `Library` structs during
     /// import
-    #[error("Duplicate key {key} found in {origin_file} and {test_file}")]
+    #[error("Duplicate key <{key}> found in {origin_file} and {test_file}")]
     DuplicateKey {
         /// key of tested hashmap
         key: String,

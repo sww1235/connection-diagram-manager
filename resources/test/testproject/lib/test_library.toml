@@ -8,7 +8,7 @@ stranded = true
 num_strands = 19
 
 [equipment_types]
-[equipment_types.TOGGLE_SWITCH]
+[equipment_types.spst_toggle_switch]
 supertype = "Switch"
 mount_types = ["panel"]
 component_designator = "S"
