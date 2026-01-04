@@ -90,65 +90,45 @@ impl Project {
     #[inline(never)]
     pub fn add_datafile_paths(&mut self, datafile_path: &Path) {
         // Cables
-        if !self.cables.is_empty() {
-            for cable in self.cables.values_mut() {
-                cable.set_datafile(datafile_path);
-            }
+        for cable in self.cables.values_mut() {
+            cable.set_datafile(datafile_path);
         }
         //TODO: finish this
         // Connections
-        //if !self.connections.is_empty() {
         //    for connection in self.connections.values_mut() {
         //        connection.set_datafile(datafile_path);
         //    }
-        //}
         // Connectors
-        //if !self.connectors.is_empty() {
         //    for connector in self.connectors.values_mut() {
         //        connector.set_datafile(datafile_path);
         //    }
-        //}
         // Enclosures
-        if !self.enclosures.is_empty() {
-            for enclosure in self.enclosures.values_mut() {
-                enclosure.set_datafile(datafile_path);
-            }
+        for enclosure in self.enclosures.values_mut() {
+            enclosure.set_datafile(datafile_path);
         }
         // Equipment
-        if !self.equipment.is_empty() {
-            for equipment in self.equipment.values_mut() {
-                equipment.set_datafile(datafile_path);
-            }
+        for equipment in self.equipment.values_mut() {
+            equipment.set_datafile(datafile_path);
         }
         // Mounting Rails
-        if !self.mounting_rails.is_empty() {
-            for mounting_rail in self.mounting_rails.values_mut() {
-                mounting_rail.set_datafile(datafile_path);
-            }
+        for mounting_rail in self.mounting_rails.values_mut() {
+            mounting_rail.set_datafile(datafile_path);
         }
         // Pathways
-        if !self.pathways.is_empty() {
-            for pathway in self.pathways.values_mut() {
-                pathway.set_datafile(datafile_path);
-            }
+        for pathway in self.pathways.values_mut() {
+            pathway.set_datafile(datafile_path);
         }
         // Term Cables
-        if !self.term_cables.is_empty() {
-            for term_cable in self.term_cables.values_mut() {
-                term_cable.set_datafile(datafile_path);
-            }
+        for term_cable in self.term_cables.values_mut() {
+            term_cable.set_datafile(datafile_path);
         }
         // Terminal Strips
-        if !self.terminal_strips.is_empty() {
-            for terminal_strip in self.terminal_strips.values_mut() {
-                terminal_strip.set_datafile(datafile_path);
-            }
+        for terminal_strip in self.terminal_strips.values_mut() {
+            terminal_strip.set_datafile(datafile_path);
         }
         // Wires
-        if !self.wires.is_empty() {
-            for wire in self.wires.values_mut() {
-                wire.set_datafile(datafile_path);
-            }
+        for wire in self.wires.values_mut() {
+            wire.set_datafile(datafile_path);
         }
     }
 
@@ -166,17 +146,15 @@ impl Project {
         let mut errors: Vec<Error> = Vec::new();
 
         // Cables
-        if !self.cables.is_empty() {
-            for cable in self.cables.values() {
-                if !library_data.cable_types.contains_key(&cable.cable_type) {
-                    errors.push(
-                        LibraryError::ValueNotFound {
-                            id: cable.cable_type.clone(),
-                            library_type: "CableType".to_owned(),
-                        }
-                        .into(),
-                    );
-                }
+        for cable in self.cables.values() {
+            if !library_data.cable_types.contains_key(&cable.cable_type) {
+                errors.push(
+                    LibraryError::ValueNotFound {
+                        id: cable.cable_type.clone(),
+                        library_type: "CableType".to_owned(),
+                    }
+                    .into(),
+                );
             }
         }
         //TODO: finish this
@@ -199,158 +177,144 @@ impl Project {
         //    }
         //}
         // Enclosures
-        if !self.enclosures.is_empty() {
-            for enclosure in self.enclosures.values() {
-                if !library_data.enclosure_types.contains_key(&enclosure.enclosure_type) {
-                    errors.push(
-                        LibraryError::ValueNotFound {
-                            id: enclosure.enclosure_type.clone(),
-                            library_type: "EnclosureType".to_owned(),
-                        }
-                        .into(),
-                    );
-                }
+        for enclosure in self.enclosures.values() {
+            if !library_data.enclosure_types.contains_key(&enclosure.enclosure_type) {
+                errors.push(
+                    LibraryError::ValueNotFound {
+                        id: enclosure.enclosure_type.clone(),
+                        library_type: "EnclosureType".to_owned(),
+                    }
+                    .into(),
+                );
             }
         }
         // Equipment
-        if !self.equipment.is_empty() {
-            for equipment in self.equipment.values() {
-                if !library_data.equipment_types.contains_key(&equipment.equipment_type) {
-                    errors.push(
-                        LibraryError::ValueNotFound {
-                            id: equipment.equipment_type.clone(),
-                            library_type: "EquipmentType".to_owned(),
-                        }
-                        .into(),
-                    );
-                }
+        for equipment in self.equipment.values() {
+            if !library_data.equipment_types.contains_key(&equipment.equipment_type) {
+                errors.push(
+                    LibraryError::ValueNotFound {
+                        id: equipment.equipment_type.clone(),
+                        library_type: "EquipmentType".to_owned(),
+                    }
+                    .into(),
+                );
             }
         }
         // Mounting Rails
-        if !self.mounting_rails.is_empty() {
-            for mounting_rail in self.mounting_rails.values() {
-                if !library_data
-                    .mounting_rail_types
-                    .contains_key(&mounting_rail.mounting_rail_type)
-                {
-                    errors.push(
-                        LibraryError::ValueNotFound {
-                            id: mounting_rail.mounting_rail_type.clone(),
-                            library_type: "MountingRailType".to_owned(),
-                        }
-                        .into(),
-                    );
-                }
+        for mounting_rail in self.mounting_rails.values() {
+            if !library_data
+                .mounting_rail_types
+                .contains_key(&mounting_rail.mounting_rail_type)
+            {
+                errors.push(
+                    LibraryError::ValueNotFound {
+                        id: mounting_rail.mounting_rail_type.clone(),
+                        library_type: "MountingRailType".to_owned(),
+                    }
+                    .into(),
+                );
             }
         }
         // Pathways
-        if !self.pathways.is_empty() {
-            for pathway in self.pathways.values() {
-                if !library_data.pathway_types.contains_key(&pathway.path_type) {
-                    errors.push(
-                        LibraryError::ValueNotFound {
-                            id: pathway.path_type.clone(),
-                            library_type: "PathwayType".to_owned(),
-                        }
-                        .into(),
-                    );
-                }
+        for pathway in self.pathways.values() {
+            if !library_data.pathway_types.contains_key(&pathway.path_type) {
+                errors.push(
+                    LibraryError::ValueNotFound {
+                        id: pathway.path_type.clone(),
+                        library_type: "PathwayType".to_owned(),
+                    }
+                    .into(),
+                );
             }
         }
         // Term Cables
-        if !self.term_cables.is_empty() {
-            for term_cable in self.term_cables.values() {
-                if !library_data.term_cable_types.contains_key(&term_cable.term_cable_type) {
-                    errors.push(
-                        LibraryError::ValueNotFound {
-                            id: term_cable.term_cable_type.clone(),
-                            library_type: "TermCableType".to_owned(),
-                        }
-                        .into(),
-                    );
-                }
+        for term_cable in self.term_cables.values() {
+            if !library_data.term_cable_types.contains_key(&term_cable.term_cable_type) {
+                errors.push(
+                    LibraryError::ValueNotFound {
+                        id: term_cable.term_cable_type.clone(),
+                        library_type: "TermCableType".to_owned(),
+                    }
+                    .into(),
+                );
             }
         }
         // Terminal Strips
-        if !self.terminal_strips.is_empty() {
-            for terminal_strip in self.terminal_strips.values() {
-                //Only check this if it is actually defined in the terminal strip
-                if let Some(mounting_rail) = &terminal_strip.mounting_rail
-                    && !self.mounting_rails.contains_key(mounting_rail)
-                {
-                    errors.push(
-                        ProjectError::ValueNotFound {
-                            id: mounting_rail.clone(),
-                            project_type: "MountingRail".to_owned(),
+        for terminal_strip in self.terminal_strips.values() {
+            //Only check this if it is actually defined in the terminal strip
+            if let Some(mounting_rail) = &terminal_strip.mounting_rail
+                && !self.mounting_rails.contains_key(mounting_rail)
+            {
+                errors.push(
+                    ProjectError::ValueNotFound {
+                        id: mounting_rail.clone(),
+                        project_type: "MountingRail".to_owned(),
+                    }
+                    .into(),
+                );
+            }
+            if let Some(enclosure) = &terminal_strip.enclosure
+                && !self.enclosures.contains_key(enclosure)
+            {
+                errors.push(
+                    ProjectError::ValueNotFound {
+                        id: enclosure.clone(),
+                        project_type: "Enclosure".to_owned(),
+                    }
+                    .into(),
+                );
+            }
+            for element in &terminal_strip.elements {
+                //TODO: also check element.accessories once that is better defined
+                //
+                //TODO: check and see if terminal can accept accessories
+                match &element.contained_type {
+                    TermAccy::Terminal(terminal_type) => {
+                        if !library_data.terminal_types.contains_key(terminal_type) {
+                            errors.push(
+                                LibraryError::ValueNotFound {
+                                    id: terminal_type.clone(),
+                                    library_type: "TerminalType".to_owned(),
+                                }
+                                .into(),
+                            );
                         }
-                        .into(),
-                    );
-                }
-                if let Some(enclosure) = &terminal_strip.enclosure
-                    && !self.enclosures.contains_key(enclosure)
-                {
-                    errors.push(
-                        ProjectError::ValueNotFound {
-                            id: enclosure.clone(),
-                            project_type: "Enclosure".to_owned(),
-                        }
-                        .into(),
-                    );
-                }
-                for element in &terminal_strip.elements {
-                    //TODO: also check element.accessories once that is better defined
-                    //
-                    //TODO: check and see if terminal can accept accessories
-                    match &element.contained_type {
-                        TermAccy::Terminal(terminal_type) => {
-                            if !library_data.terminal_types.contains_key(terminal_type) {
-                                errors.push(
-                                    LibraryError::ValueNotFound {
-                                        id: terminal_type.clone(),
-                                        library_type: "TerminalType".to_owned(),
-                                    }
-                                    .into(),
-                                );
-                            }
-                        }
-                        TermAccy::Accessory(accessory_type) => {
-                            if !library_data.terminal_strip_accessory_types.contains_key(accessory_type) {
-                                errors.push(
-                                    LibraryError::ValueNotFound {
-                                        id: accessory_type.clone(),
-                                        library_type: "TerminalStripAccessoryType".to_owned(),
-                                    }
-                                    .into(),
-                                );
-                            }
+                    }
+                    TermAccy::Accessory(accessory_type) => {
+                        if !library_data.terminal_strip_accessory_types.contains_key(accessory_type) {
+                            errors.push(
+                                LibraryError::ValueNotFound {
+                                    id: accessory_type.clone(),
+                                    library_type: "TerminalStripAccessoryType".to_owned(),
+                                }
+                                .into(),
+                            );
                         }
                     }
                 }
-                for jumper in &terminal_strip.jumpers {
-                    if !library_data.terminal_strip_jumper_types.contains_key(&jumper.jumper_type) {
-                        errors.push(
-                            LibraryError::ValueNotFound {
-                                id: jumper.jumper_type.clone(),
-                                library_type: "TerminalStripJumperType".to_owned(),
-                            }
-                            .into(),
-                        );
-                    }
+            }
+            for jumper in &terminal_strip.jumpers {
+                if !library_data.terminal_strip_jumper_types.contains_key(&jumper.jumper_type) {
+                    errors.push(
+                        LibraryError::ValueNotFound {
+                            id: jumper.jumper_type.clone(),
+                            library_type: "TerminalStripJumperType".to_owned(),
+                        }
+                        .into(),
+                    );
                 }
             }
         }
         // Wires
-        if !self.wires.is_empty() {
-            for wire in self.wires.values() {
-                if !library_data.wire_types.contains_key(&wire.wire_type) {
-                    errors.push(
-                        LibraryError::ValueNotFound {
-                            id: wire.wire_type.clone(),
-                            library_type: "WireType".to_owned(),
-                        }
-                        .into(),
-                    );
-                }
+        for wire in self.wires.values() {
+            if !library_data.wire_types.contains_key(&wire.wire_type) {
+                errors.push(
+                    LibraryError::ValueNotFound {
+                        id: wire.wire_type.clone(),
+                        library_type: "WireType".to_owned(),
+                    }
+                    .into(),
+                );
             }
         }
         if errors.is_empty() { Ok(()) } else { Err(errors) }
