@@ -33,6 +33,7 @@ paragraph_breaker.workspace = true
 figment.workspace = true
 anyhow.workspace = true
 url.workspace = true
+itertools.workspace = true
 # need to keep all 4 of these crates in sync version wise
 miniquad = { version = "~0.4", optional = true}
 egui-miniquad = { version = "~0.16", optional = true}
