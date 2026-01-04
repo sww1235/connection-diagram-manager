@@ -25,11 +25,11 @@ pub fn main_window(
         .show(egui_ctx, |ui| {
             widgets::global_theme_preference_switch(ui);
             for (id, equipment) in &project_data.equipment {
-                //TODO: instead of expect() just load image error placeholder
-                #[expect(clippy::expect_used, reason = "Error handling is hard in GUI code")]
+                //TODO: instead of expect() just load image error placeholder and log
+                #[expect(clippy::panic, reason = "Error handling is hard in GUI code")]
                 let symbol = equipment
                     .schematic_symbol(library_data, None)
-                    .expect(format!("schematic symbol not defined in library_data for equipment {id}").as_str());
+                    .unwrap_or_else(|_| panic!("schematic symbol not defined in library_data for equipment {id}"));
                 let svg_data = symbol.into_bytes();
                 let mut uri = "bytes://".to_owned();
                 uri.push_str("equipment_type");

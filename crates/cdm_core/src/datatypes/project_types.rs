@@ -38,6 +38,7 @@ use crate::{
 /// `Project` represents all project specific data used in program
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
+#[serde(deny_unknown_fields)]
 #[non_exhaustive]
 pub struct Project {
     /// contains all cables read in from files, and/or added in via program logic
@@ -142,7 +143,8 @@ impl Project {
     /// provided `Library` or referenced `Project`
     #[inline(never)]
     #[expect(clippy::too_many_lines, reason = "its the length it needs to be")]
-    pub fn validate(&self, library_data: &Library) -> Result<(), Vec<Error>> {
+    #[expect(clippy::result_unit_err, reason = "May add actual result type in future.")]
+    pub fn validate(&self, library_data: &Library) -> Result<Vec<Error>, ()> {
         let mut errors: Vec<Error> = Vec::new();
 
         // Cables
@@ -329,7 +331,7 @@ impl Project {
                 );
             }
         }
-        if errors.is_empty() { Ok(()) } else { Err(errors) }
+        Ok(errors)
     }
 }
 

@@ -34,6 +34,7 @@ use crate::{
 /// `Library` represents all library data used in program
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
+#[serde(deny_unknown_fields)]
 #[non_exhaustive]
 pub struct Library {
     /// contains all cable types read in from file, and/or added in via program logic
@@ -170,7 +171,8 @@ impl Library {
     /// referenced `Library`.
     #[inline(never)]
     #[expect(clippy::too_many_lines, reason = "its the length it needs to be")]
-    pub fn validate(&self) -> Result<(), Vec<LibraryError>> {
+    #[expect(clippy::result_unit_err, reason = "May add actual result type in future.")]
+    pub fn validate(&self) -> Result<Vec<LibraryError>, ()> {
         let mut errors: Vec<LibraryError> = Vec::new();
 
         // Cable Types
@@ -455,7 +457,7 @@ impl Library {
         // Wire Types
         // No validation currently needed
         //    for wire_type in self.wire_types.values() {}
-        if errors.is_empty() { Ok(()) } else { Err(errors) }
+        Ok(errors)
     }
 }
 

@@ -137,8 +137,6 @@ pub fn parse_datafiles(cli: &Cli) -> Result<(ProjectConfig, Library, Project), E
             let project_file: Project = toml::from_str(&project_file_contents)?;
             project_data.merge(project_file, &file)?;
         }
-        debug! {"{library_data:?}"};
-        debug! {"{project_data:?}"};
 
         Ok((project_config, library_data, project_data))
     } else {
