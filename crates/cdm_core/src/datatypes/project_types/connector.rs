@@ -34,6 +34,8 @@ impl traits::Connector for Connector {
             .get(&self.connector_type)
             .ok_or(LibraryError::ValueNotFound {
                 id: self.connector_type.clone(),
+                //TODO: figure out how to insert the ID of the connector here
+                found_in: "connector".to_owned(),
                 library_type: "Connector Type".to_owned(),
             })?;
 

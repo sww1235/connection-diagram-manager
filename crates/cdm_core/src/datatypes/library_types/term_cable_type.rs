@@ -88,6 +88,8 @@ impl ConnectorTrait for Connector {
             .get(&self.connector_type)
             .ok_or(LibraryError::ValueNotFound {
                 id: self.connector_type.clone(),
+                //TODO: figure out how to insert the ID of the term cable connector here
+                found_in: "term cable connector".to_owned(),
                 library_type: "Connector Type".to_owned(),
             })?;
         #[expect(clippy::unwrap_used, reason = "I want the panic on a 128bit architecture")]

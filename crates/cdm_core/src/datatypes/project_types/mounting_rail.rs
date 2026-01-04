@@ -68,6 +68,8 @@ impl MountingRail {
             .get(&self.mounting_rail_type)
             .ok_or(LibraryError::ValueNotFound {
                 id: self.mounting_rail_type.clone(),
+                //TODO: figure out how to insert the ID of the mounting rail here
+                found_in: "mounting rail".to_owned(),
                 library_type: "Mounting Rail Type".to_owned(),
             })?;
         let mut svg_string = String::new();
@@ -115,6 +117,8 @@ impl MountingRail {
             .get(&self.mounting_rail_type)
             .ok_or(LibraryError::ValueNotFound {
                 id: self.mounting_rail_type.clone(),
+                //TODO: figure out how to insert the ID of the mounting rail here
+                found_in: "mounting rail".to_owned(),
                 library_type: "Mounting Rail Type".to_owned(),
             })?;
         Ok(rail_type.standard_rail_length.value == self.length.value)

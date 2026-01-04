@@ -48,6 +48,8 @@ impl TermCable {
             .get(&self.term_cable_type)
             .ok_or(LibraryError::ValueNotFound {
                 id: self.term_cable_type.clone(),
+                //TODO: figure out how to insert the ID of the term cable here
+                found_in: "term_cable".to_owned(),
                 library_type: "Term Cable Type".to_owned(),
             })?;
 

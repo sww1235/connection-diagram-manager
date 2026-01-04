@@ -59,10 +59,12 @@ pub enum Error {
 #[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
 pub enum LibraryError {
     /// This error is used when a lookup is made in the library and the ID is not found
-    #[error("The ID {id} of type {library_type} not found in library")]
+    #[error("The ID <{id}> of type <{library_type}> specified in <{found_in}> not found in library")]
     ValueNotFound {
-        /// The ID of the the `Library` entry
+        /// The ID of the the `Library` entry being looked up
         id: String,
+        /// The ID of the entry that contained `id`
+        found_in: String,
         //TODO: switch to using a derived enum for library_type
         /// The type of the `Library` entry
         library_type: String,
@@ -70,12 +72,14 @@ pub enum LibraryError {
     /// This error is used when optional data is missing from library data when required for a
     /// certain operation in the program.
     #[error(
-        "The Library entry of type {library_type} with ID {id} requires the following data to peform the operation requested: \
-         {data_missing}"
+        "The Library entry of type <{library_type}> with ID <{id}> specified in <{found_in}> requires the following data to \
+         peform the operation requested: {data_missing}"
     )]
     DataMissing {
         /// The ID of the the `Library` entry
         id: String,
+        /// The ID of the entry that contained `id`
+        found_in: String,
         //TODO: switch to using a derived enum for library_type
         /// The type of the `Library` entry
         library_type: String,
@@ -103,10 +107,12 @@ pub enum WireTypeError {
 #[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
 pub enum ProjectError {
     /// This error is used when a lookup is made in the project and the ID is not found
-    #[error("The ID {id} of type {project_type} not found in project")]
+    #[error("The ID {id} of type {project_type} specified in <{found_in}> not found in project")]
     ValueNotFound {
         /// The ID of the the `Project` entry
         id: String,
+        /// The ID of the entry that contained `id`
+        found_in: String,
         //TODO: switch to using a derived enum for project_type
         /// The type of the `Project` entry
         project_type: String,
@@ -114,12 +120,14 @@ pub enum ProjectError {
     /// This error is used when optional data is missing from project data when required for a
     /// certain operation in the program.
     #[error(
-        "The Project entry of type {project_type} with ID {id} requires the following data to peform the operation requested: \
-         {data_missing}"
+        "The Project entry of type {project_type} with ID {id} specified in <{found_in}> requires the following data to peform \
+         the operation requested: {data_missing}"
     )]
     DataMissing {
         /// The ID of the the `Project` entry
         id: String,
+        /// The ID of the entry that contained `id`
+        found_in: String,
         //TODO: switch to using a derived enum for project_type
         /// The type of the `Project` entry
         project_type: String,

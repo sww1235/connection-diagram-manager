@@ -174,13 +174,14 @@ impl Library {
         let mut errors: Vec<LibraryError> = Vec::new();
 
         // Cable Types
-        for cable_type in self.cable_types.values() {
+        for (id, cable_type) in &self.cable_types {
             for core in cable_type.cores.values() {
                 match core {
                     CableCore::WireType(wire_type_inner) => {
                         if !self.wire_types.contains_key(wire_type_inner) {
                             errors.push(LibraryError::ValueNotFound {
                                 id: wire_type_inner.clone(),
+                                found_in: id.clone(),
                                 library_type: "WireType".to_owned(),
                             });
                         }
@@ -189,6 +190,7 @@ impl Library {
                         if !self.cable_types.contains_key(cable_type_inner) {
                             errors.push(LibraryError::ValueNotFound {
                                 id: cable_type_inner.clone(),
+                                found_in: id.clone(),
                                 library_type: "CableType".to_owned(),
                             });
                         }
@@ -205,11 +207,12 @@ impl Library {
         //    for enclosure_type in self.enclosure_types.values() {
         //    }
         // Equipment Types
-        for equipment_type in self.equipment_types.values() {
+        for (id, equipment_type) in &self.equipment_types {
             for symbol in &equipment_type.schematic_symbols {
                 if !self.schematic_symbol_types.contains_key(symbol) {
                     errors.push(LibraryError::ValueNotFound {
                         id: symbol.clone(),
+                        found_in: id.clone(),
                         library_type: "SchematicSymbolType".to_owned(),
                     });
                 }
@@ -225,6 +228,7 @@ impl Library {
             {
                 errors.push(LibraryError::DataMissing {
                     id: id.to_owned(),
+                    found_in: id.clone(),
                     library_type: "MountingRailType".to_owned(),
                     data_missing: "missing slot dimensions when rail is slotted".to_owned(),
                 });
@@ -239,6 +243,7 @@ impl Library {
                     ..
                 } => errors.push(LibraryError::DataMissing {
                     id: id.to_owned(),
+                    found_in: id.clone(),
                     library_type: "MountingRailType".to_owned(),
                     data_missing: "middle_image and end_image are required when start_image is specified".to_owned(),
                 }),
@@ -249,6 +254,7 @@ impl Library {
                     ..
                 } => errors.push(LibraryError::DataMissing {
                     id: id.to_owned(),
+                    found_in: id.clone(),
                     library_type: "MountingRailType".to_owned(),
                     data_missing: "start_image and end_image are required when middle_image is specified".to_owned(),
                 }),
@@ -259,6 +265,7 @@ impl Library {
                     ..
                 } => errors.push(LibraryError::DataMissing {
                     id: id.to_owned(),
+                    found_in: id.clone(),
                     library_type: "MountingRailType".to_owned(),
                     data_missing: "start_image and middle_image are required when end_image is specified".to_owned(),
                 }),
@@ -270,6 +277,7 @@ impl Library {
                     ..
                 } => errors.push(LibraryError::DataMissing {
                     id: id.to_owned(),
+                    found_in: id.clone(),
                     library_type: "MountingRailType".to_owned(),
                     data_missing: "end_image is required when start_image and middle_image are specified".to_owned(),
                 }),
@@ -280,6 +288,7 @@ impl Library {
                     ..
                 } => errors.push(LibraryError::DataMissing {
                     id: id.to_owned(),
+                    found_in: id.clone(),
                     library_type: "MountingRailType".to_owned(),
                     data_missing: "middle_image is required when start_image and end_image are specified".to_owned(),
                 }),
@@ -290,6 +299,7 @@ impl Library {
                     ..
                 } => errors.push(LibraryError::DataMissing {
                     id: id.to_owned(),
+                    found_in: id.clone(),
                     library_type: "MountingRailType".to_owned(),
                     data_missing: "start_image is required when middle_image and end_image are specified".to_owned(),
                 }),
@@ -316,12 +326,13 @@ impl Library {
         //    for schematic_symbol_type in self.schematic_symbol_types.values() {}
         // Term Cable Types
         // TODO: validate termination as well
-        for term_cable_type in self.term_cable_types.values() {
+        for (id, term_cable_type) in &self.term_cable_types {
             match &term_cable_type.wire_cable {
                 WireCable::WireType(wire_type_inner) => {
                     if !self.wire_types.contains_key(wire_type_inner) {
                         errors.push(LibraryError::ValueNotFound {
                             id: wire_type_inner.clone(),
+                            found_in: id.clone(),
                             library_type: "WireType".to_owned(),
                         });
                     }
@@ -330,6 +341,7 @@ impl Library {
                     if !self.cable_types.contains_key(cable_type_inner) {
                         errors.push(LibraryError::ValueNotFound {
                             id: cable_type_inner.clone(),
+                            found_in: id.clone(),
                             library_type: "CableType".to_owned(),
                         });
                     }
@@ -339,6 +351,7 @@ impl Library {
                 if !self.connector_types.contains_key(&connector.connector_type) {
                     errors.push(LibraryError::ValueNotFound {
                         id: connector.connector_type.clone(),
+                        found_in: id.clone(),
                         library_type: "ConnectorType".to_owned(),
                     });
                 }
@@ -347,28 +360,31 @@ impl Library {
                 if !self.connector_types.contains_key(&connector.connector_type) {
                     errors.push(LibraryError::ValueNotFound {
                         id: connector.connector_type.clone(),
+                        found_in: id.clone(),
                         library_type: "ConnectorType".to_owned(),
                     });
                 }
             }
         }
         // Terminal Types
-        for terminal_type in self.terminal_types.values() {
+        for (id, terminal_type) in &self.terminal_types {
             for symbol in &terminal_type.schematic_symbols {
                 if !self.schematic_symbol_types.contains_key(symbol) {
                     errors.push(LibraryError::ValueNotFound {
                         id: symbol.clone(),
+                        found_in: id.clone(),
                         library_type: "SchematicSymbolType".to_owned(),
                     });
                 }
             }
         }
         // Terminal Strip Jumper Types
-        for terminal_strip_jumper_type in self.terminal_strip_jumper_types.values() {
+        for (id, terminal_strip_jumper_type) in &self.terminal_strip_jumper_types {
             for symbol in &terminal_strip_jumper_type.schematic_symbols {
                 if !self.schematic_symbol_types.contains_key(symbol) {
                     errors.push(LibraryError::ValueNotFound {
                         id: symbol.clone(),
+                        found_in: id.clone(),
                         library_type: "SchematicSymbolType".to_owned(),
                     });
                 }
@@ -377,6 +393,7 @@ impl Library {
                 if !self.terminal_types.contains_key(terminal_type) {
                     errors.push(LibraryError::ValueNotFound {
                         id: terminal_type.clone(),
+                        found_in: id.clone(),
                         library_type: "TerminalType".to_owned(),
                     });
                 }
@@ -386,6 +403,7 @@ impl Library {
                     if !self.terminal_types.contains_key(terminal_type) {
                         errors.push(LibraryError::ValueNotFound {
                             id: terminal_type.clone(),
+                            found_in: id.clone(),
                             library_type: "TerminalType".to_owned(),
                         });
                     }
@@ -398,6 +416,7 @@ impl Library {
                 if !self.schematic_symbol_types.contains_key(symbol) {
                     errors.push(LibraryError::ValueNotFound {
                         id: symbol.clone(),
+                        found_in: id.clone(),
                         library_type: "SchematicSymbolType".to_owned(),
                     });
                 }
@@ -406,6 +425,7 @@ impl Library {
                 if !self.terminal_types.contains_key(terminal_type) {
                     errors.push(LibraryError::ValueNotFound {
                         id: terminal_type.clone(),
+                        found_in: id.clone(),
                         library_type: "TerminalType".to_owned(),
                     });
                 }
@@ -417,6 +437,7 @@ impl Library {
                 if !self.schematic_symbol_types.contains_key(symbol) {
                     errors.push(LibraryError::ValueNotFound {
                         id: symbol.clone(),
+                        found_in: id.clone(),
                         library_type: "SchematicSymbolType".to_owned(),
                     });
                 }
@@ -425,6 +446,7 @@ impl Library {
                 if !self.terminal_types.contains_key(terminal_type) {
                     errors.push(LibraryError::ValueNotFound {
                         id: terminal_type.clone(),
+                        found_in: id.clone(),
                         library_type: "TerminalType".to_owned(),
                     });
                 }

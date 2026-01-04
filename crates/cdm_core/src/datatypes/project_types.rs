@@ -146,11 +146,12 @@ impl Project {
         let mut errors: Vec<Error> = Vec::new();
 
         // Cables
-        for cable in self.cables.values() {
+        for (id, cable) in &self.cables {
             if !library_data.cable_types.contains_key(&cable.cable_type) {
                 errors.push(
                     LibraryError::ValueNotFound {
                         id: cable.cable_type.clone(),
+                        found_in: id.clone(),
                         library_type: "CableType".to_owned(),
                     }
                     .into(),
@@ -177,11 +178,12 @@ impl Project {
         //    }
         //}
         // Enclosures
-        for enclosure in self.enclosures.values() {
+        for (id, enclosure) in &self.enclosures {
             if !library_data.enclosure_types.contains_key(&enclosure.enclosure_type) {
                 errors.push(
                     LibraryError::ValueNotFound {
                         id: enclosure.enclosure_type.clone(),
+                        found_in: id.clone(),
                         library_type: "EnclosureType".to_owned(),
                     }
                     .into(),
@@ -189,11 +191,12 @@ impl Project {
             }
         }
         // Equipment
-        for equipment in self.equipment.values() {
+        for (id, equipment) in &self.equipment {
             if !library_data.equipment_types.contains_key(&equipment.equipment_type) {
                 errors.push(
                     LibraryError::ValueNotFound {
                         id: equipment.equipment_type.clone(),
+                        found_in: id.clone(),
                         library_type: "EquipmentType".to_owned(),
                     }
                     .into(),
@@ -201,7 +204,7 @@ impl Project {
             }
         }
         // Mounting Rails
-        for mounting_rail in self.mounting_rails.values() {
+        for (id, mounting_rail) in &self.mounting_rails {
             if !library_data
                 .mounting_rail_types
                 .contains_key(&mounting_rail.mounting_rail_type)
@@ -209,6 +212,7 @@ impl Project {
                 errors.push(
                     LibraryError::ValueNotFound {
                         id: mounting_rail.mounting_rail_type.clone(),
+                        found_in: id.clone(),
                         library_type: "MountingRailType".to_owned(),
                     }
                     .into(),
@@ -216,11 +220,12 @@ impl Project {
             }
         }
         // Pathways
-        for pathway in self.pathways.values() {
+        for (id, pathway) in &self.pathways {
             if !library_data.pathway_types.contains_key(&pathway.path_type) {
                 errors.push(
                     LibraryError::ValueNotFound {
                         id: pathway.path_type.clone(),
+                        found_in: id.clone(),
                         library_type: "PathwayType".to_owned(),
                     }
                     .into(),
@@ -228,11 +233,12 @@ impl Project {
             }
         }
         // Term Cables
-        for term_cable in self.term_cables.values() {
+        for (id, term_cable) in &self.term_cables {
             if !library_data.term_cable_types.contains_key(&term_cable.term_cable_type) {
                 errors.push(
                     LibraryError::ValueNotFound {
                         id: term_cable.term_cable_type.clone(),
+                        found_in: id.clone(),
                         library_type: "TermCableType".to_owned(),
                     }
                     .into(),
@@ -240,7 +246,7 @@ impl Project {
             }
         }
         // Terminal Strips
-        for terminal_strip in self.terminal_strips.values() {
+        for (id, terminal_strip) in &self.terminal_strips {
             //Only check this if it is actually defined in the terminal strip
             if let Some(mounting_rail) = &terminal_strip.mounting_rail
                 && !self.mounting_rails.contains_key(mounting_rail)
@@ -248,6 +254,7 @@ impl Project {
                 errors.push(
                     ProjectError::ValueNotFound {
                         id: mounting_rail.clone(),
+                        found_in: id.clone(),
                         project_type: "MountingRail".to_owned(),
                     }
                     .into(),
@@ -259,6 +266,7 @@ impl Project {
                 errors.push(
                     ProjectError::ValueNotFound {
                         id: enclosure.clone(),
+                        found_in: id.clone(),
                         project_type: "Enclosure".to_owned(),
                     }
                     .into(),
@@ -274,6 +282,7 @@ impl Project {
                             errors.push(
                                 LibraryError::ValueNotFound {
                                     id: terminal_type.clone(),
+                                    found_in: id.clone(),
                                     library_type: "TerminalType".to_owned(),
                                 }
                                 .into(),
@@ -285,6 +294,7 @@ impl Project {
                             errors.push(
                                 LibraryError::ValueNotFound {
                                     id: accessory_type.clone(),
+                                    found_in: id.clone(),
                                     library_type: "TerminalStripAccessoryType".to_owned(),
                                 }
                                 .into(),
@@ -298,6 +308,7 @@ impl Project {
                     errors.push(
                         LibraryError::ValueNotFound {
                             id: jumper.jumper_type.clone(),
+                            found_in: id.clone(),
                             library_type: "TerminalStripJumperType".to_owned(),
                         }
                         .into(),
@@ -306,11 +317,12 @@ impl Project {
             }
         }
         // Wires
-        for wire in self.wires.values() {
+        for (id, wire) in &self.wires {
             if !library_data.wire_types.contains_key(&wire.wire_type) {
                 errors.push(
                     LibraryError::ValueNotFound {
                         id: wire.wire_type.clone(),
+                        found_in: id.clone(),
                         library_type: "WireType".to_owned(),
                     }
                     .into(),

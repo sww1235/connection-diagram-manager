@@ -71,12 +71,16 @@ impl SchematicRepresentation for Equipment {
             .get(&self.equipment_type)
             .ok_or(LibraryError::ValueNotFound {
                 id: self.equipment_type.clone(),
+                //TODO: figure out how to insert the ID of the equipment here
+                found_in: "equipment".to_owned(),
                 library_type: "Equipment Type".to_owned(),
             })?;
         let equipment_schematic_symbols = equipment_type.schematic_symbols.clone();
         if equipment_schematic_symbols.is_empty() {
             return Err(LibraryError::DataMissing {
                 id: self.equipment_type.clone(),
+                //TODO: figure out how to insert the ID of the equipment here
+                found_in: "equipment".to_owned(),
                 library_type: "Equipment Type".to_owned(),
                 data_missing: "Schematic Symbols".to_owned(),
             });
@@ -87,6 +91,8 @@ impl SchematicRepresentation for Equipment {
                 .get(symbol_selector.unwrap_or(0))
                 .ok_or(LibraryError::DataMissing {
                     id: self.equipment_type.clone(),
+                    //TODO: figure out how to insert the ID of the equipment here
+                    found_in: "equipment".to_owned(),
                     library_type: "Equipment Type".to_owned(),
                     data_missing: "At least one schematic symbol needs to be specified".to_owned(),
                 })?;
@@ -95,6 +101,8 @@ impl SchematicRepresentation for Equipment {
             .get(schematic_symbol_type_id)
             .ok_or(LibraryError::ValueNotFound {
                 id: schematic_symbol_type_id.clone(),
+                //TODO: figure out how to insert the ID of the equipment here
+                found_in: "equipment".to_owned(),
                 library_type: "Schematic Symbol".to_owned(),
             })?
             .visual_representation
