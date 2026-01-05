@@ -389,7 +389,7 @@ impl fmt::Display for PaperSize {
             }
             PaperSize::Custom(x, y) => {
                 if f.alternate() {
-                    //writeln!(f, "{}×{}", x, y)?;
+                    writeln!(f, "{:?}×{:?}", x, y)?;
                 } else {
                     writeln!(f, "CUSTOM")?;
                 }

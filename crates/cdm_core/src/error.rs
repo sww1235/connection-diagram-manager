@@ -1,3 +1,4 @@
+#![expect(clippy::absolute_paths, reason = "keeping all sub-error types as absolute paths")]
 use std::{io, path::PathBuf};
 
 use thiserror::Error;
@@ -6,7 +7,6 @@ use thiserror::Error;
 #[derive(Error, Debug)]
 #[non_exhaustive]
 #[expect(clippy::error_impl_error, reason = "main error type for library")]
-#[expect(clippy::absolute_paths, reason = "keeping all sub-error types as absolute paths")]
 /// `Error` is the list of errors and error types that can occur in the `cdm_core` library
 pub enum Error {
     /// This error is used when duplicate keys are found in `Project` or `Library` structs during

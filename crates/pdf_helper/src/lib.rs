@@ -133,7 +133,7 @@ impl PDFPage {
         text: String,
         font_size: u32,
         font: &PDFFont,
-        line_spacing: u32,
+        _line_spacing: u32,
         text_width: Length,
         x_pos: Length,
         y_pos: Length,
@@ -142,7 +142,7 @@ impl PDFPage {
         text_render_mode: &PDFTextRenderMode,
     ) -> Result<(), Error> {
         use paragraph_breaker::to_lines;
-        let (lines, glyphs) = to_lines(&text, &font.font_face, font_size, text_width, text_direction, text_language)?;
+        let (lines, _glyphs) = to_lines(&text, &font.font_face, font_size, text_width, text_direction, text_language)?;
 
         let num_lines = lines.len();
 

@@ -106,7 +106,7 @@ fn line_break_internal(
     ideal_width: Length,
     max_width: Length,
 ) -> Result<(), Error> {
-    let glyph_infos = shaped_text.glyph_infos();
+    let _glyph_infos = shaped_text.glyph_infos();
     let glyph_positions = shaped_text.glyph_positions();
 
     let mut next_word_index = current_word_index + 1;
@@ -258,6 +258,7 @@ fn to_lines_internal(words: &[ParagraphWord], text: &str) -> Vec<String> {
 }
 
 #[expect(clippy::arithmetic_side_effects)]
+#[expect(unused, reason = "not fully implemented")]
 /// `greedy_break`
 fn greedy_break(
     words: &mut [ParagraphWord],
