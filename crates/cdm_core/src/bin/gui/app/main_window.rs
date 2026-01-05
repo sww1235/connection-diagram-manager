@@ -27,12 +27,10 @@ pub fn main_window(
             for (id, equipment) in &project_data.equipment {
                 //TODO: instead of expect() just load image error placeholder and log
                 #[expect(clippy::panic, reason = "Error handling is hard in GUI code")]
-                let symbol = equipment
+                let (symbol, uri) = equipment
                     .schematic_symbol(library_data, None)
                     .unwrap_or_else(|_| panic!("schematic symbol not defined in library_data for equipment {id}"));
                 let svg_data = symbol.into_bytes();
-                let mut uri = "bytes://".to_owned();
-                uri.push_str("equipment_type");
                 let image = egui::widgets::Image::from_bytes(uri, svg_data);
                 ui.add(image);
             }

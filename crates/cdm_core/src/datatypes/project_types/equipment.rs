@@ -65,7 +65,7 @@ impl Equipment {
 
 impl SchematicRepresentation for Equipment {
     #[inline(never)]
-    fn schematic_symbol(&self, library: &Library, symbol_selector: Option<usize>) -> Result<Svg, LibraryError> {
+    fn schematic_symbol(&self, library: &Library, symbol_selector: Option<usize>) -> Result<(Svg, String), LibraryError> {
         let equipment_type = library
             .equipment_types
             .get(&self.equipment_type)
@@ -75,7 +75,9 @@ impl SchematicRepresentation for Equipment {
                 found_in: "equipment".to_owned(),
                 library_type: "Equipment Type".to_owned(),
             })?;
+
         let equipment_schematic_symbols = equipment_type.schematic_symbols.clone();
+
         if equipment_schematic_symbols.is_empty() {
             return Err(LibraryError::DataMissing {
                 id: self.equipment_type.clone(),
@@ -96,6 +98,7 @@ impl SchematicRepresentation for Equipment {
                     library_type: "Equipment Type".to_owned(),
                     data_missing: "At least one schematic symbol needs to be specified".to_owned(),
                 })?;
+
         let schematic_symbol = library
             .schematic_symbol_types
             .get(schematic_symbol_type_id)
@@ -108,7 +111,9 @@ impl SchematicRepresentation for Equipment {
             .visual_representation
             .clone();
 
-        Ok(schematic_symbol)
+        let uri = format!("bytes://{schematic_symbol_type_id}.svg").to_string();
+
+        Ok((schematic_symbol, uri))
     }
 }
 

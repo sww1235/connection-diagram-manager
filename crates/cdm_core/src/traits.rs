@@ -34,7 +34,8 @@ pub trait VisualRepresentation {
 }
 /// `SchematicRepresentation` provides a SVG symbol used for drawing schematic diagrams
 pub trait SchematicRepresentation {
-    /// returns a SVG schematic symbol of the entity.
+    //TODO: somehow make URI an element of SVG rather than being built in the trait method.
+    /// returns a SVG schematic symbol of the entity and a URI used in rendering code.
     ///
     /// `symbol_selector` selects an alternate symbol for a specific entity. If the variable is
     /// `None` or larger than `vec.len()-1`, the recommended implementation is to return the SVG at
@@ -42,9 +43,9 @@ pub trait SchematicRepresentation {
     ///
     /// # Errors
     ///
-    /// Will error if the id of `&self.entity_type` is not found in the provided library or other
+    /// Shall error if the id of `&self.entity_type` is not found in the provided library or other
     /// implementation specific errors
-    fn schematic_symbol(&self, library: &Library, symbol_selector: Option<usize>) -> Result<Svg, LibraryError>;
+    fn schematic_symbol(&self, library: &Library, symbol_selector: Option<usize>) -> Result<(Svg, String), LibraryError>;
 }
 /// Marker trait for Project data
 pub trait ProjectData {}
