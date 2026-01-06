@@ -5,7 +5,7 @@ use cdm_core::{
     datatypes::{library_types::Library, project_types::Project},
     traits::SchematicRepresentation as _,
 };
-use egui::{Window, widgets};
+use egui::{Area, Id, Sense, Window, widgets};
 use num_traits::cast::FromPrimitive as _;
 //use usvg::{Options as ParseOptions, Tree, WriteOptions};
 
@@ -22,6 +22,8 @@ pub fn main_window(
         .open(open)
         .default_width(f32::from_i32(app_config.graphics_config.clone().unwrap_or_default().window_width).unwrap_or(800.0))
         .default_height(f32::from_i32(app_config.graphics_config.clone().unwrap_or_default().window_height).unwrap_or(600.0))
+        .min_width(1800.0_f32)
+        .min_height(1800.0_f32)
         .show(egui_ctx, |ui| {
             widgets::global_theme_preference_switch(ui);
             for (id, equipment) in &project_data.equipment {
@@ -31,9 +33,18 @@ pub fn main_window(
                     .schematic_symbol(library_data, None)
                     .unwrap_or_else(|_| panic!("schematic symbol not defined in library_data for equipment {id}"));
                 let svg_data = symbol.into_bytes();
-                let image = egui::widgets::Image::from_bytes(uri, svg_data);
-                ui.add(image);
+                let sense_settings = Sense::DRAG & Sense::FOCUSABLE;
+                let max_height: f32 = 200.0;
+                let max_width: f32 = 200.0;
+                let image = egui::widgets::Image::from_bytes(uri, svg_data)
+                    .sense(sense_settings)
+                    .max_height(max_height)
+                    .max_width(max_width);
+                Area::new(Id::new(id)).movable(true).show(egui_ctx, |ui| {
+                    ui.add(image);
+                });
             }
+            ui.allocate_space(ui.available_size());
         });
 }
 //https://github.com/emilk/egui/pull/5732/files

@@ -39,10 +39,10 @@ pub fn read_config_files_cli() -> Result<(ApplicationConfig, Cli), Error> {
     // check for config file in various locations first
 
     // {NAME_SCREAMING_SNAKE_CASE}_CONFIG envitonment variable
-    // ~/.config/{name}/config.toml
-    // /etc/{name}/config.toml
-    // /usr/local/etc/{name}/config.toml
-    // ~/Library/Preferences/{name}/config.toml
+    // ~/.config/ConnectionDiagramManager/cdm_config.toml
+    // /etc/ConnectionDiagramManager/cdm_config.toml
+    // /usr/local/etc/ConnectionDiagramManager/cdm_config.toml
+    // ~/Library/Preferences/ConnectionDiagramManager/cdm_config.toml
 
     // Doesn't work on windows
     // Figment will silently ignore missing files
