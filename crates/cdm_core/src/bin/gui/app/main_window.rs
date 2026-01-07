@@ -5,10 +5,11 @@ use cdm_core::{
     datatypes::{library_types::Library, project_types::Project},
     traits::SchematicRepresentation as _,
 };
-use egui::{Area, Id, Sense, Window, widgets};
+use egui::{Area, Id, Sense, Window, layers::Order, widgets};
 use num_traits::cast::FromPrimitive as _;
 //use usvg::{Options as ParseOptions, Tree, WriteOptions};
 
+#[expect(clippy::shadow_unrelated, reason = "ui and other variables keep getting passed into closures")]
 /// Main window rendering code
 pub fn main_window(
     egui_ctx: &egui::Context,
@@ -17,15 +18,20 @@ pub fn main_window(
     project_data: &Project,
     library_data: &Library,
 ) {
-    //
+    let main_window_id = Id::new("root");
     Window::new("Main Window")
+        .id(main_window_id)
         .open(open)
         .default_width(f32::from_i32(app_config.graphics_config.clone().unwrap_or_default().window_width).unwrap_or(800.0))
         .default_height(f32::from_i32(app_config.graphics_config.clone().unwrap_or_default().window_height).unwrap_or(600.0))
-        .min_width(1800.0_f32)
-        .min_height(1800.0_f32)
+        //.min_width(800.0_f32)
+        //.min_height(800.0_f32)
+        .resizable(true)
         .show(egui_ctx, |ui| {
             widgets::global_theme_preference_switch(ui);
+            //FIXME: area_rect() is not filtering out title bar. 
+            //https://github.com/emilk/egui/issues/7836
+            if let Some(rect) = ui.memory(|memory| memory.area_rect(main_window_id)) {
             for (id, equipment) in &project_data.equipment {
                 //TODO: instead of expect() just load image error placeholder and log
                 #[expect(clippy::panic, reason = "Error handling is hard in GUI code")]
@@ -40,12 +46,16 @@ pub fn main_window(
                     .sense(sense_settings)
                     .max_height(max_height)
                     .max_width(max_width);
-                Area::new(Id::new(id)).movable(true).show(egui_ctx, |ui| {
+                Area::new(Id::new(id)).movable(true).order(Order::Foreground).constrain_to(rect).show(egui_ctx, |ui| {
                     ui.add(image);
                 });
-            }
+            }}
             ui.allocate_space(ui.available_size());
         });
+}
+
+fn main_menu(ui: &mut egui::Ui) {
+    //egui::MenuBar::new()
 }
 //https://github.com/emilk/egui/pull/5732/files
 ///// load SVG image
