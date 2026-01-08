@@ -110,6 +110,7 @@ exceptions = [
     { allow = ["Zlib"], crate = "slotmap" },
     { allow = ["Unicode-3.0"], crate = "unicode-ident"},
     { allow = ["BSL-1.0"], crate = "clipboard-win"},
+    { allow = ["BSL-1.0"], crate = "error-code"},
     { allow = ["OFL-1.1", "Ubuntu-font-1.0"], crate = "epaint_default_fonts"},
     { allow = ["ISC"], crate = "libloading"},
 ]
