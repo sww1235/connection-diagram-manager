@@ -109,6 +109,9 @@ exceptions = [
     # list
     { allow = ["Zlib"], crate = "slotmap" },
     { allow = ["Unicode-3.0"], crate = "unicode-ident"},
+    { allow = ["BSL-1.0"], crate = "clipboard-win"},
+    { allow = ["OFL-1.1", "Ubuntu-font-1.0"], crate = "epaint_default_fonts"},
+    { allow = ["ISC"], crate = "libloading"},
 ]
 
 # Some crates don't have (easily) machine readable licensing information,
@@ -211,7 +214,7 @@ skip = [
 # dependencies starting at the specified crate, up to a certain depth, which is
 # by default infinite.
 skip-tree = [
-    "windows-sys<=0.52" # several crates use the outdated 0.42 and 0.48 versions
+    #"windows-sys<=0.52" # several crates use the outdated 0.42 and 0.48 versions
     #"ansi_term@0.11.0", # will be skipped along with _all_ of its direct and transitive dependencies
     #{ crate = "ansi_term@0.11.0", depth = 20 },
 ]
