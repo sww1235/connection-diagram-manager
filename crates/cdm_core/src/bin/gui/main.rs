@@ -52,12 +52,12 @@ fn main() -> anyhow::Result<()> {
         anyhow::bail!(project_validation_string);
     }
 
-    let mut gui_conf: mqConf = app_config.clone().graphics_config.unwrap_or_default().into();
+    let mut gui_conf: mqConf = app_config.clone().graphics_config.into();
 
     gui_conf.window_resizable = true;
     gui_conf.window_title = "Connection Diagram Manager".to_owned();
-    mq::start(gui_conf, || {
-        Box::new(app::App::new(app_config, project_config, project_data, library_data))
+    mq::start(gui_conf, move || {
+        Box::new(app::App::new(&app_config, project_config, project_data, library_data))
     });
 
     Ok(())

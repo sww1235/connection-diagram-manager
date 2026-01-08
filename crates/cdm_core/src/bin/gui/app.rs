@@ -6,6 +6,7 @@ use cdm_core::{
     },
 };
 use miniquad::{self as mq, TouchPhase, window as mqWindow};
+use num_traits::cast::FromPrimitive as _;
 
 /// Main window of application
 mod main_window;
@@ -17,10 +18,6 @@ pub struct App {
     /// rendering context
     // TODO: try to remove box and dyn here
     mq_ctx: Box<dyn mq::RenderingBackend>,
-    /// if main window is closed
-    main_window_state: bool,
-    /// if application has requested to quit
-    quit_requested: bool,
     /// project data
     project_data: Project,
     /// library data
@@ -29,6 +26,20 @@ pub struct App {
     project_config: ProjectConfig,
     /// Global Application configuration
     config: ApplicationConfig,
+    /// State of running application
+    state: AppState,
+}
+
+/// `AppState` contains state information for app while it is running.
+struct AppState {
+    /// current height of `SchematicSymbol`s
+    schematic_symbol_height: f32,
+    /// current width of `SchematicSymbol`s
+    schematic_symbol_width: f32,
+    /// if main window is closed
+    main_window_state: bool,
+    /// if application has requested to quit
+    quit_requested: bool,
 }
 
 impl App {
@@ -44,17 +55,21 @@ impl App {
         logical_key: egui::Key::Q,
     };
     /// Create new app
-    pub fn new(config: ApplicationConfig, project_config: ProjectConfig, project_data: Project, library_data: Library) -> Self {
+    pub fn new(config: &ApplicationConfig, project_config: ProjectConfig, project_data: Project, library_data: Library) -> Self {
         let mut mq_ctx = mqWindow::new_rendering_backend();
         Self {
             egui_mq: egui_miniquad::EguiMq::new(&mut *mq_ctx),
             mq_ctx,
-            main_window_state: true,
-            quit_requested: false,
             project_data,
             library_data,
             project_config,
-            config,
+            config: config.clone(),
+            state: AppState {
+                schematic_symbol_height: f32::from_i32(config.graphics_config.starting_schematic_symbol_height).unwrap_or(100.0),
+                schematic_symbol_width: f32::from_i32(config.graphics_config.starting_schematic_symbol_width).unwrap_or(100.0),
+                main_window_state: true,
+                quit_requested: false,
+            },
         }
     }
 }
@@ -77,8 +92,8 @@ impl mq::EventHandler for App {
             egui_extras::install_image_loaders(egui_ctx);
             main_window::main_window(
                 egui_ctx,
-                &mut self.main_window_state,
                 &self.config,
+                &mut self.state,
                 &self.project_data,
                 &self.library_data,
             );
@@ -89,13 +104,13 @@ impl mq::EventHandler for App {
                 //debug! {"close button clicked: {window_quit_request}"};
                 //self.quit_requested = keyboard_quit_request | window_quit_request;
                 if window_quit_request {
-                    self.quit_requested = true;
+                    self.state.quit_requested = true;
                 }
             });
             egui_ctx.input_mut(|input_state| {
                 let keyboard_quit_request = input_state.consume_shortcut(&Self::QUIT_CMD);
                 if keyboard_quit_request {
-                    self.quit_requested = true;
+                    self.state.quit_requested = true;
                 }
             });
             //debug! {"quit requested: {}", self.quit_requested};
@@ -103,7 +118,7 @@ impl mq::EventHandler for App {
             // TODO: figure out a better way of exiting the app.
             // Investigate the code of egui_miniquad and minquad more to
             // see if things can be improved
-            if self.quit_requested {
+            if self.state.quit_requested {
                 //TODO: add checks here for unsaved files, prompt user if they want to close, etc
                 process::exit(0);
             }

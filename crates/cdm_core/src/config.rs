@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 
 /// `Config` represents configuration options for the various cdm binary programs
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
+#[serde(default)]
 #[expect(
     clippy::struct_excessive_bools,
     reason = "this is a configuration struct with lots of boolean options"
@@ -49,7 +51,7 @@ pub struct ApplicationConfig {
     pub use_engineering_prefixes: bool,
     #[cfg(feature = "gui")]
     /// Graphics configuration options
-    pub graphics_config: Option<GraphicsConfig>,
+    pub graphics_config: GraphicsConfig,
 }
 
 impl Default for ApplicationConfig {
@@ -67,32 +69,40 @@ impl Default for ApplicationConfig {
             use_awg: false,
             use_usa_customary_units: false,
             use_engineering_prefixes: true,
-            graphics_config: None,
+            graphics_config: GraphicsConfig::default(),
         }
     }
 }
 
 #[cfg(feature = "gui")]
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
+#[serde(default)]
 #[expect(clippy::module_name_repetitions, reason = "Specialized config struct")]
 #[non_exhaustive]
 /// Graphics configuration options
 pub struct GraphicsConfig {
     /// Starting window height
-    pub window_height: i32,
+    pub starting_window_height: i32,
     /// Starting window width
-    pub window_width: i32,
+    pub starting_window_width: i32,
     /// Enable high DPI features
     pub high_dpi: bool,
+    /// Default height for SVGs rendered as `SchematicSymbol`s
+    pub starting_schematic_symbol_height: i32,
+    /// Default width for SVGs rendered as `SchematicSymbol`s
+    pub starting_schematic_symbol_width: i32,
 }
 
 impl Default for GraphicsConfig {
     #[inline]
     fn default() -> Self {
         Self {
-            window_height: 1024,
-            window_width: 1024,
+            starting_window_height: 1024,
+            starting_window_width: 1024,
             high_dpi: true,
+            starting_schematic_symbol_height: 100,
+            starting_schematic_symbol_width: 100,
         }
     }
 }
@@ -101,8 +111,8 @@ impl From<GraphicsConfig> for mqConf {
     #[inline]
     fn from(input: GraphicsConfig) -> Self {
         Self {
-            window_height: input.window_height,
-            window_width: input.window_width,
+            window_height: input.starting_window_height,
+            window_width: input.starting_window_width,
             high_dpi: input.high_dpi,
             ..Default::default()
         }
