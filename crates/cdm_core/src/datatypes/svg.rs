@@ -8,6 +8,8 @@ use serde::{
 };
 use usvg::{Options as ParseOptions, Tree, WriteOptions};
 
+mod rwxmltree;
+
 //TODO: implement svg validation rules here
 //
 //TODO: provide a method of specifying the units of the SVG file
