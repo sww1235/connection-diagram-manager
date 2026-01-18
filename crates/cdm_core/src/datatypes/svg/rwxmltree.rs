@@ -16,7 +16,7 @@ application into symbols.
 
 use core::fmt;
 use core::ops::Range;
-use core::num::NonZeroU32;
+use core::num::NonZeroUsize;
 use core::cmp::Ordering;
 use core::hash::{Hash, Hasher};
 
@@ -32,6 +32,7 @@ pub const NS_XMLNS_URI: &str = "http://www.w3.org/2000/xmlns/";
 const XMLNS: &str = "xmlns";
 
 /// An XML tree
+#[derive(Clone)]
 pub struct Tree {
     text: String,
     nodes: Vec<NodeData>,
@@ -256,7 +257,7 @@ pub struct PI {
 /// A short range.
 ///
 /// Just like Range, but only for `u32` and copyable.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct ShortRange {
     start: u32,
     end: u32,
@@ -283,57 +284,57 @@ impl ShortRange {
     }
 }
 
-/// A node ID stored as `u32`.
+/// A node ID stored as `usize`.
 ///
 /// An index into a `Tree`-internal `Vec`.
 ///
-/// Note that this value should be used with care since `roxmltree` doesn't
+/// Note that this value should be used with care since `rwxmltree` doesn't
 /// check that `NodeId` actually belongs to a selected `Tree`.
 /// So you can end up in a situation, when `NodeId` produced by one `Tree`
 /// is used to select a node in another `Tree`.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
-pub struct NodeId(NonZeroU32);
+pub struct NodeId(NonZeroUsize);
 
 impl NodeId {
     /// Construct a new `NodeId` from a `u32`.
     #[inline]
-    pub fn new(id: u32) -> Self {
-        debug_assert!(id < u32::MAX);
+    pub fn new(id: NonZeroUsize) -> Self {
+        debug_assert!(id.get() < usize::MAX);
 
-        // We are using `NonZeroU32` to reduce overhead of `Option<NodeId>`.
-        NodeId(NonZeroU32::new(id + 1).unwrap())
-    }
-
-    /// Returns the `u32` representation of the `NodeId`.
-    #[inline]
-    pub fn get(self) -> u32 {
-        self.0.get() - 1
+        // We are using `NonZeroUsize` to reduce overhead of `Option<NodeId>`.
+        NodeId(id)
     }
 
     /// Returns the `usize` representation of the `NodeId`.
     #[inline]
-    pub fn get_usize(self) -> usize {
-        self.get() as usize
+    pub fn get(self) -> usize {
+        self.0.get() - 1
     }
 }
 
-impl From<u32> for NodeId {
+//TODO: change to try_from
+impl TryFrom<u32> for NodeId {
+    type Error = core::num::TryFromIntError;
     #[inline]
-    fn from(id: u32) -> Self {
-        NodeId::new(id)
+    fn try_from(id: u32) -> Result<Self, Self::Error> {
+        let id = NonZeroUsize::try_from(id)?;
+        Ok(NodeId::new(id))
     }
 }
 
-impl From<usize> for NodeId {
+//TODO: change to try_from
+impl TryFrom<usize> for NodeId {
+    type Error = core::num::TryFromIntError;
     #[inline]
-    fn from(id: usize) -> Self {
+    fn try_from(id: usize) -> Result<Self, Self::Error> {
         // We already checked that `id` is limited by u32::MAX.
-        debug_assert!(id <= u32::MAX as usize);
-        NodeId::new(id as u32)
+        debug_assert!(id < usize::MAX);
+        let id = NonZeroUsize::try_from(id)?;
+        Ok(NodeId::new(id))
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 enum NodeKind {
     Root,
     Element {
@@ -346,7 +347,7 @@ enum NodeKind {
     Text(String),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct NodeData {
     parent: Option<NodeId>,
     prev_sibling: Option<NodeId>,
