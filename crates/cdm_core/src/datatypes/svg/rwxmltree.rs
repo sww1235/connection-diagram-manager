@@ -1601,3 +1601,307 @@ impl fmt::Display for TextPos {
         write!(f, "{}:{}", self.row, self.col)
     }
 }
+
+/// A list of all possible errors.
+#[derive(Clone, PartialEq, Eq, Hash, Debug)]
+pub enum Error {
+    /// The `xmlns:xml` attribute must have an <http://www.w3.org/XML/1998/namespace> URI.
+    InvalidXmlPrefixUri(TextPos),
+
+    /// Only the `xmlns:xml` attribute can have the <http://www.w3.org/XML/1998/namespace> URI.
+    UnexpectedXmlUri(TextPos),
+
+    /// The <http://www.w3.org/2000/xmlns/> URI must not be declared.
+    UnexpectedXmlnsUri(TextPos),
+
+    /// `xmlns` can't be used as an element prefix.
+    InvalidElementNamePrefix(TextPos),
+
+    /// A namespace was already defined on this element.
+    DuplicatedNamespace(String, TextPos),
+
+    /// An unknown namespace.
+    ///
+    /// Indicates that an element or an attribute has an unknown qualified name prefix.
+    ///
+    /// The first value is a prefix.
+    UnknownNamespace(String, TextPos),
+
+    /// Incorrect tree structure.
+    ///
+    /// expected, actual, position
+    UnexpectedCloseTag(String, String, TextPos),
+
+    /// Entity value starts with a close tag.
+    ///
+    /// Example:
+    /// ```xml
+    /// <!DOCTYPE test [ <!ENTITY p '</p>'> ]>
+    /// <root>&p;</root>
+    /// ```
+    UnexpectedEntityCloseTag(TextPos),
+
+    /// A reference to an entity that was not defined in the DTD.
+    UnknownEntityReference(String, TextPos),
+
+    /// A malformed entity reference.
+    ///
+    /// A `&` character inside an attribute value or text indicates an entity reference.
+    /// Otherwise, the document is not well-formed.
+    MalformedEntityReference(TextPos),
+
+    /// A possible entity reference loop.
+    ///
+    /// The current depth limit is 10. The max number of references per reference is 255.
+    EntityReferenceLoop(TextPos),
+
+    /// Attribute value cannot have a `<` character.
+    InvalidAttributeValue(TextPos),
+
+    /// An element has a duplicated attributes.
+    ///
+    /// This also includes namespaces resolving.
+    /// So an element like this will lead to an error.
+    /// ```xml
+    /// <e xmlns:n1='http://www.w3.org' xmlns:n2='http://www.w3.org' n1:a='b1' n2:a='b2'/>
+    /// ```
+    DuplicatedAttribute(String, TextPos),
+
+    /// The XML document must have at least one element.
+    NoRootNode,
+
+    /// The root node was opened but never closed.
+    UnclosedRootNode,
+
+    /// An XML document can have only one XML declaration
+    /// and it must be at the start of the document.
+    UnexpectedDeclaration(TextPos),
+
+    /// An XML with DTD detected.
+    ///
+    /// This error will be emitted only when `ParsingOptions::allow_dtd` is set to `false`.
+    DtdDetected,
+
+    /// Indicates that the [`ParsingOptions::nodes_limit`] was reached.
+    NodesLimitReached,
+
+    /// Indicates that too many attributes were parsed.
+    AttributesLimitReached,
+
+    /// Indicates that too many namespaces were parsed.
+    NamespacesLimitReached,
+
+    /// An invalid name.
+    InvalidName(TextPos),
+
+    /// A non-XML character has occurred.
+    ///
+    /// Valid characters are: <https://www.w3.org/TR/xml/#char32>
+    NonXmlChar(char, TextPos),
+
+    /// An invalid/unexpected character.
+    ///
+    /// expected, actual, position
+    InvalidChar(u8, u8, TextPos),
+
+    /// An invalid/unexpected character.
+    ///
+    /// expected, actual, position
+    InvalidChar2(&'static str, u8, TextPos),
+
+    /// An unexpected string.
+    ///
+    /// Contains what string was expected.
+    InvalidString(&'static str, TextPos),
+
+    /// An invalid ExternalID in the DTD.
+    InvalidExternalID(TextPos),
+
+    /// The given entity resolved yielded an errror.
+    EntityResolver(TextPos, String),
+
+    /// A comment cannot contain `--` or end with `-`.
+    InvalidComment(TextPos),
+
+    /// A Character Data node contains an invalid data.
+    ///
+    /// Currently, only `]]>` is not allowed.
+    InvalidCharacterData(TextPos),
+
+    /// An unknown token.
+    UnknownToken(TextPos),
+
+    /// The steam ended earlier than we expected.
+    ///
+    /// Should only appear on invalid input data.
+    UnexpectedEndOfStream,
+}
+
+impl Error {
+    /// Returns the error position.
+    pub fn pos(&self) -> TextPos {
+        match *self {
+            Error::InvalidXmlPrefixUri(pos) => pos,
+            Error::UnexpectedXmlUri(pos) => pos,
+            Error::UnexpectedXmlnsUri(pos) => pos,
+            Error::InvalidElementNamePrefix(pos) => pos,
+            Error::DuplicatedNamespace(_, pos) => pos,
+            Error::UnknownNamespace(_, pos) => pos,
+            Error::UnexpectedCloseTag(_, _, pos) => pos,
+            Error::UnexpectedEntityCloseTag(pos) => pos,
+            Error::UnknownEntityReference(_, pos) => pos,
+            Error::MalformedEntityReference(pos) => pos,
+            Error::EntityReferenceLoop(pos) => pos,
+            Error::InvalidAttributeValue(pos) => pos,
+            Error::DuplicatedAttribute(_, pos) => pos,
+            Error::NoRootNode => TextPos::new(1, 1),
+            Error::UnclosedRootNode => TextPos::new(1, 1),
+            Error::UnexpectedDeclaration(pos) => pos,
+            Error::DtdDetected => TextPos::new(1, 1),
+            Error::NodesLimitReached => TextPos::new(1, 1),
+            Error::AttributesLimitReached => TextPos::new(1, 1),
+            Error::NamespacesLimitReached => TextPos::new(1, 1),
+            Error::InvalidName(pos) => pos,
+            Error::NonXmlChar(_, pos) => pos,
+            Error::InvalidChar(_, _, pos) => pos,
+            Error::InvalidChar2(_, _, pos) => pos,
+            Error::InvalidString(_, pos) => pos,
+            Error::InvalidExternalID(pos) => pos,
+            Error::EntityResolver(pos, _) => pos,
+            Error::InvalidComment(pos) => pos,
+            Error::InvalidCharacterData(pos) => pos,
+            Error::UnknownToken(pos) => pos,
+            Error::UnexpectedEndOfStream => TextPos::new(1, 1),
+        }
+    }
+}
+
+impl core::fmt::Display for Error {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        match self {
+            Error::InvalidXmlPrefixUri(pos) => {
+                write!(f, "'xml' namespace prefix mapped to wrong URI at {}", pos)
+            }
+            Error::UnexpectedXmlUri(pos) => {
+                write!(
+                    f,
+                    "the 'xml' namespace URI is used for not 'xml' prefix at {}",
+                    pos
+                )
+            }
+            Error::UnexpectedXmlnsUri(pos) => {
+                write!(
+                    f,
+                    "the 'xmlns' URI is used at {}, but it must not be declared",
+                    pos
+                )
+            }
+            Error::InvalidElementNamePrefix(pos) => {
+                write!(
+                    f,
+                    "the 'xmlns' prefix is used at {}, but it must not be",
+                    pos
+                )
+            }
+            Error::DuplicatedNamespace( name, pos) => {
+                write!(f, "namespace '{}' at {} is already defined", name, pos)
+            }
+            Error::UnknownNamespace( name, pos) => {
+                write!(f, "an unknown namespace prefix '{}' at {}", name, pos)
+            }
+            Error::UnexpectedCloseTag( expected,  actual, pos) => {
+                write!(
+                    f,
+                    "expected '{}' tag, not '{}' at {}",
+                    expected, actual, pos
+                )
+            }
+            Error::UnexpectedEntityCloseTag(pos) => {
+                write!(f, "unexpected close tag at {}", pos)
+            }
+            Error::MalformedEntityReference(pos) => {
+                write!(f, "malformed entity reference at {}", pos)
+            }
+            Error::UnknownEntityReference( name, pos) => {
+                write!(f, "unknown entity reference '{}' at {}", name, pos)
+            }
+            Error::EntityReferenceLoop(pos) => {
+                write!(f, "a possible entity reference loop is detected at {}", pos)
+            }
+            Error::InvalidAttributeValue(pos) => {
+                write!(f, "unescaped '<' found at {}", pos)
+            }
+            Error::DuplicatedAttribute( name, pos) => {
+                write!(f, "attribute '{}' at {} is already defined", name, pos)
+            }
+            Error::NoRootNode => {
+                write!(f, "the document does not have a root node")
+            }
+            Error::UnclosedRootNode => {
+                write!(f, "the root node was opened but never closed")
+            }
+            Error::UnexpectedDeclaration(pos) => {
+                write!(f, "unexpected XML declaration at {}", pos)
+            }
+            Error::DtdDetected => {
+                write!(f, "XML with DTD detected")
+            }
+            Error::NodesLimitReached => {
+                write!(f, "nodes limit reached")
+            }
+            Error::AttributesLimitReached => {
+                write!(f, "more than 2^32 attributes were parsed")
+            }
+            Error::NamespacesLimitReached => {
+                write!(f, "more than 2^16 unique namespaces were parsed")
+            }
+            Error::InvalidName(pos) => {
+                write!(f, "invalid name token at {}", pos)
+            }
+            Error::NonXmlChar(c, pos) => {
+                write!(f, "a non-XML character {:?} found at {}", c, pos)
+            }
+            Error::InvalidChar(expected, actual, pos) => {
+                write!(
+                    f,
+                    "expected '{}' not '{}' at {}",
+                    *expected as char, *actual as char, pos
+                )
+            }
+            Error::InvalidChar2(expected, actual, pos) => {
+                write!(
+                    f,
+                    "expected {} not '{}' at {}",
+                    expected, *actual as char, pos
+                )
+            }
+            Error::InvalidString(expected, pos) => {
+                write!(f, "expected '{}' at {}", expected, pos)
+            }
+            Error::InvalidExternalID(pos) => {
+                write!(f, "invalid ExternalID at {}", pos)
+            }
+            Error::EntityResolver(pos, msg) => {
+                write!(f, "entity resolver failed at {}: {}", pos, msg)
+            }
+            Error::InvalidComment(pos) => {
+                write!(f, "comment at {} contains '--'", pos)
+            }
+            Error::InvalidCharacterData(pos) => {
+                write!(f, "']]>' at {} is not allowed inside a character data", pos)
+            }
+            Error::UnknownToken(pos) => {
+                write!(f, "unknown token at {}", pos)
+            }
+            Error::UnexpectedEndOfStream => {
+                write!(f, "unexpected end of stream")
+            }
+        }
+    }
+}
+
+impl std::error::Error for Error {
+    fn description(&self) -> &str {
+        "an XML parsing error"
+    }
+}
