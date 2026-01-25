@@ -17,8 +17,8 @@ application into symbols.
 use core::fmt;
 use core::ops::Range;
 use core::num::NonZeroUsize;
-use core::cmp::Ordering;
-use core::hash::{Hash, Hasher};
+//use core::cmp::Ordering;
+//use core::hash::{Hash, Hasher};
 
 
 /// The <http://www.w3.org/XML/1998/namespace> URI.
@@ -32,7 +32,7 @@ pub const NS_XMLNS_URI: &str = "http://www.w3.org/2000/xmlns/";
 const XMLNS: &str = "xmlns";
 
 /// An XML tree
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Tree {
     text: String,
     nodes: Vec<NodeData>,
@@ -54,8 +54,8 @@ impl Tree {
     pub fn root(&self) -> Node {
         Node {
             id: NodeId::new(0),
-            d: self.nodes[0],
-            tree: self,
+            d: self.nodes[0].clone(),
+            //tree: self.to_owned(),
         }
     }
 
@@ -82,8 +82,8 @@ impl Tree {
     pub fn get_node(& self, id: NodeId) -> Option<Node> {
         self.nodes.get(id.get_usize()).map(|data| Node {
             id,
-            d: data,
-            tree: self,
+            d: data.to_owned(),
+            //tree: self.to_owned(),
         })
     }
 
@@ -100,42 +100,43 @@ impl Tree {
     /// assert!(tree.root_element().has_tag_name("e"));
     /// ```
     #[inline]
-    pub fn root_element(&self) -> Node {
+    pub fn root_element(&self) -> NodeData {
         // `expect` is safe, because the `Tree` is guarantee to have at least one element.
         self.root()
-            .first_element_child()
+            .first_element_child(self)
             .expect("XML trees must contain a root element")
     }
 
-    /// Returns an iterator over tree's descendant nodes.
-    ///
-    /// Shorthand for `tree.root().descendants()`.
-    #[inline]
-    pub fn descendants(&self) -> Descendants {
-        self.root().descendants()
-    }
+    ///// Returns an iterator over tree's descendant nodes.
+    /////
+    ///// Shorthand for `tree.root().descendants()`.
+    //#[inline]
+    //pub fn descendants(&self) -> Descendants {
+    //    self.root().descendants(self)
+    //}
 
-    /// Calculates `TextPos` in the original tree from position in bytes.
-    ///
-    /// **Note:** this operation is expensive.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use roxmltree::*;
-    ///
-    /// let tree = Tree::parse("\
-    /// <!-- comment -->
-    /// <e/>"
-    /// ).unwrap();
-    ///
-    /// assert_eq!(tree.text_pos_at(10), TextPos::new(1, 11));
-    /// assert_eq!(tree.text_pos_at(9999), TextPos::new(2, 5));
-    /// ```
-    #[inline]
-    pub fn text_pos_at(&self, pos: usize) -> TextPos {
-        tokenizer::Stream::new(self.text).gen_text_pos_from(pos)
-    }
+    //TODO: decide if this method is needed here, or if we can inherit from roxmltree directly
+    ///// Calculates `TextPos` in the original tree from position in bytes.
+    /////
+    ///// **Note:** this operation is expensive.
+    /////
+    ///// # Examples
+    /////
+    ///// ```
+    ///// use roxmltree::*;
+    /////
+    ///// let tree = Tree::parse("\
+    ///// <!-- comment -->
+    ///// <e/>"
+    ///// ).unwrap();
+    /////
+    ///// assert_eq!(tree.text_pos_at(10), TextPos::new(1, 11));
+    ///// assert_eq!(tree.text_pos_at(9999), TextPos::new(2, 5));
+    ///// ```
+    //#[inline]
+    //pub fn text_pos_at(&self, pos: usize) -> TextPos {
+    //    tokenizer::Stream::new(self.text).gen_text_pos_from(pos)
+    //}
 
     /// Returns the input text of the original tree.
     ///
@@ -312,25 +313,20 @@ impl NodeId {
     }
 }
 
-//TODO: change to try_from
-impl TryFrom<u32> for NodeId {
-    type Error = core::num::TryFromIntError;
-    #[inline]
-    fn try_from(id: u32) -> Result<Self, Self::Error> {
-        let id = NonZeroUsize::try_from(id)?;
-        Ok(NodeId::new(id))
-    }
-}
+//impl From<u32> for NodeId {
+//    #[inline]
+//    fn from(id: u32) -> Self {
+//        #[expect(clippy::unwrap_used, reason = "If someone tries to use this function on a 8 or 16 bit architecture, then PANIC!")]
+//        NodeId::new(usize::try_from(id).unwrap())
+//    }
+//}
 
-//TODO: change to try_from
-impl TryFrom<usize> for NodeId {
-    type Error = core::num::TryFromIntError;
+impl From<usize> for NodeId {
     #[inline]
-    fn try_from(id: usize) -> Result<Self, Self::Error> {
+    fn from(id: usize) -> Self {
         // We already checked that `id` is limited by u32::MAX.
         debug_assert!(id < usize::MAX);
-        let id = NonZeroUsize::try_from(id)?;
-        Ok(NodeId::new(id))
+        NodeId::new(id)
     }
 }
 
@@ -354,23 +350,25 @@ struct NodeData {
     next_subtree: Option<NodeId>,
     last_child: Option<NodeId>,
     kind: NodeKind,
-    range: Range<usize>,
 }
+
+//impl Ord for NodeData {
+//    fn cmp(&self, other: &Self) -> Ordering {
+//       self.parent 
+//    }
+//}
+
 
 
 #[derive(Clone, Debug)]
 struct AttributeData {
     name: ExpandedNameIndexed,
     value: String,
-    range: Range<usize>,
-    qname_len: u16,
-    eq_len: u8, // includes any surrounding spaces
 }
 
 /// An attribute.
 #[derive(Clone)]
 pub struct Attribute {
-    //TODO: is this even needed?
     tree: Tree,
     data: AttributeData,
 }
@@ -435,53 +433,6 @@ impl Attribute {
         self.data.value.clone()
     }
 
-    /// Returns attribute's range in bytes in the original tree.
-    ///
-    /// You can calculate a human-readable text position via [Tree::text_pos_at].
-    ///
-    /// ```text
-    /// <e n:attr='value'/>
-    ///    ^^^^^^^^^^^^^^
-    /// ```
-    #[inline]
-    pub fn range(&self) -> Range<usize> {
-        self.data.range.clone()
-    }
-
-    /// Returns attribute's qname's range in bytes in the original tree.
-    ///
-    /// ```text
-    /// <e n:attr='value'/>
-    ///    ^^^^^^
-    /// ```
-    ///
-    /// To reduce memory usage the qname length is limited by u16::MAX.
-    /// If the attribute exceeds that limit then the end of the returned range will be incorrect.
-    #[inline]
-    pub fn range_qname(&self) -> Range<usize> {
-        let end = self.data.range.start + usize::from(self.data.qname_len);
-        self.data.range.start..end
-    }
-
-    /// Returns attribute's value's range in bytes in the original tree, excluding the surrounding quotes.
-    ///
-    /// If the attribute's value is an empty string then the `start` and `end` of this `Range` are equal, and indicate the closing quote.
-    ///
-    /// ```text
-    /// <e n:attr='value'/>
-    ///            ^^^^^
-    /// ```
-    ///
-    /// To reduce memory usage the qname length is limited by u16::MAX,
-    /// and the number of spaces around the equal sign is limited by u8::MAX.
-    /// If the attribute exceeds those limits then the start of the returned range will be incorrect.
-    #[inline]
-    pub fn range_value(&self) -> Range<usize> {
-        // +1 on start and -1 on end are to exclude the quotes around the value (all valid quotes are 1 byte)
-        let start = self.data.range.start + usize::from(self.data.qname_len) + usize::from(self.data.eq_len) + 1;
-        let end = self.data.range.end - 1;
-        start..end
-    }
 }
 
 impl PartialEq for Attribute {
@@ -706,881 +657,865 @@ impl From<(&str, &str)> for ExpandedName {
     #[inline]
     fn from(v: (&str, &str)) -> Self {
         ExpandedName {
-            uri: Some(v.0),
-            name: v.1,
+            uri: Some(v.0.to_owned()),
+            name: v.1.to_owned(),
         }
     }
 }
 
-/// A node in a tree.
-///
-/// # Tree Order
-///
-/// The implementation of the `Ord` traits for `Node` is based on the concept of *tree-order*.
-/// In layman's terms, tree-order is the order in which one would see each element if
-/// one opened a tree in a text editor or web browser and scrolled down.
-/// Tree-order convention is followed in XPath, CSS Counters, and DOM selectors API
-/// to ensure consistent results from selection.
-/// One difference in `roxmltree` is that there is the notion of more than one tree
-/// in existence at a time. While Nodes within the same tree are in tree-order,
-/// Nodes in different trees will be grouped together, but not in any particular
-/// order.
-///
-/// As an example, if we have a Tree `a` with Nodes `[a0, a1, a2]` and a
-/// Tree `b` with Nodes `[b0, b1]`, these Nodes in order could be either
-/// `[a0, a1, a2, b0, b1]` or `[b0, b1, a0, a1, a2]` and roxmltree makes no
-/// guarantee which it will be.
-///
-/// Tree-order is defined here in the
-/// [W3C XPath Recommendation](https://www.w3.org/TR/xpath-3/#id-tree-order)
-/// The use of tree-order in DOM Selectors is described here in the
-/// [W3C Selectors API Level 1](https://www.w3.org/TR/selectors-api/#the-apis)
-#[derive(Clone)]
-pub struct Node {
-    /// Node's ID.
-    id: NodeId,
-
-    //TODO: don't think we need this here with some rearchitecting
-    /// The tree containing the node.
-    tree: Tree,
-
-    /// Node's data.
-    d: NodeData,
-}
-
-impl Eq for Node {}
-
-impl PartialEq for Node {
-    #[inline]
-    fn eq(&self, other: &Self) -> bool {
-        (self.id, self.tree as *const _) == (other.id, other.tree as *const _)
-    }
-}
-
-impl PartialOrd for Node {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for Node {
-    fn cmp(&self, other: &Self) -> Ordering {
-        (self.id.0, self.tree as *const _).cmp(&(other.id.0, other.tree as *const _))
-    }
-}
-
-impl Hash for Node {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.id.0.hash(state);
-        (self.tree as *const Tree).hash(state);
-        (self.d as *const NodeData).hash(state);
-    }
-}
-
-impl Node {
-    /// Returns node's type.
-    #[inline]
-    pub fn node_type(&self) -> NodeType {
-        match self.d.kind {
-            NodeKind::Root => NodeType::Root,
-            NodeKind::Element { .. } => NodeType::Element,
-            NodeKind::PI { .. } => NodeType::PI,
-            NodeKind::Comment(_) => NodeType::Comment,
-            NodeKind::Text(_) => NodeType::Text,
-        }
-    }
-
-    /// Checks that node is a root node.
-    #[inline]
-    pub fn is_root(&self) -> bool {
-        self.node_type() == NodeType::Root
-    }
-
-    /// Checks that node is an element node.
-    #[inline]
-    pub fn is_element(&self) -> bool {
-        self.node_type() == NodeType::Element
-    }
-
-    /// Checks that node is a processing instruction node.
-    #[inline]
-    pub fn is_pi(&self) -> bool {
-        self.node_type() == NodeType::PI
-    }
-
-    /// Checks that node is a comment node.
-    #[inline]
-    pub fn is_comment(&self) -> bool {
-        self.node_type() == NodeType::Comment
-    }
-
-    /// Checks that node is a text node.
-    #[inline]
-    pub fn is_text(&self) -> bool {
-        self.node_type() == NodeType::Text
-    }
-
-    /// Returns node's tree.
-    #[inline]
-    pub fn tree(&self) -> Tree {
-        self.tree
-    }
-
-    /// Returns node's tag name.
-    ///
-    /// Returns an empty name with no namespace if the current node is not an element.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let tree = roxmltree::Tree::parse("<e xmlns='http://www.w3.org'/>").unwrap();
-    ///
-    /// assert_eq!(tree.root_element().tag_name().namespace(), Some("http://www.w3.org"));
-    /// assert_eq!(tree.root_element().tag_name().name(), "e");
-    /// ```
-    #[inline]
-    pub fn tag_name(&self) -> ExpandedName {
-        match self.d.kind {
-            NodeKind::Element { ref tag_name, .. } => tag_name.as_expanded_name(self.tree),
-            _ => "".into(),
-        }
-    }
-
-    /// Checks that node has a specified tag name.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let tree = roxmltree::Tree::parse("<e xmlns='http://www.w3.org'/>").unwrap();
-    ///
-    /// assert!(tree.root_element().has_tag_name("e"));
-    /// assert!(tree.root_element().has_tag_name(("http://www.w3.org", "e")));
-    ///
-    /// assert!(!tree.root_element().has_tag_name("b"));
-    /// assert!(!tree.root_element().has_tag_name(("http://www.w4.org", "e")));
-    /// ```
-    pub fn has_tag_name<N>(&self, name: N) -> bool
-    where
-        N: Into<ExpandedName>,
-    {
-        let name = name.into();
-
-        match self.d.kind {
-            NodeKind::Element { ref tag_name, .. } => match name.namespace() {
-                Some(_) => tag_name.as_expanded_name(self.tree) == name,
-                None => tag_name.local_name == name.name,
-            },
-            _ => false,
-        }
-    }
-
-    /// Returns node's default namespace URI.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let tree = roxmltree::Tree::parse("<e xmlns='http://www.w3.org'/>").unwrap();
-    ///
-    /// assert_eq!(tree.root_element().default_namespace(), Some("http://www.w3.org"));
-    /// ```
-    ///
-    /// ```
-    /// let tree = roxmltree::Tree::parse("<e xmlns:n='http://www.w3.org'/>").unwrap();
-    ///
-    /// assert_eq!(tree.root_element().default_namespace(), None);
-    /// ```
-    pub fn default_namespace(&self) -> Option<String> {
-        self.namespaces()
-            .find(|ns| ns.name.is_none())
-            .map(|v| v.uri.as_ref())
-    }
-
-    /// Returns a prefix for a given namespace URI.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let tree = roxmltree::Tree::parse("<e xmlns:n='http://www.w3.org'/>").unwrap();
-    ///
-    /// assert_eq!(tree.root_element().lookup_prefix("http://www.w3.org"), Some("n"));
-    /// ```
-    ///
-    /// ```
-    /// let tree = roxmltree::Tree::parse("<e xmlns:n=''/>").unwrap();
-    ///
-    /// assert_eq!(tree.root_element().lookup_prefix(""), Some("n"));
-    /// ```
-    pub fn lookup_prefix(&self, uri: &str) -> Option<String> {
-        if uri == NS_XML_URI {
-            return Some(NS_XML_PREFIX);
-        }
-
-        self.namespaces()
-            .find(|ns| &*ns.uri == uri)
-            .map(|v| v.name)
-            .unwrap_or(None)
-    }
-
-    /// Returns an URI for a given prefix.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let tree = roxmltree::Tree::parse("<e xmlns:n='http://www.w3.org'/>").unwrap();
-    ///
-    /// assert_eq!(tree.root_element().lookup_namespace_uri(Some("n")), Some("http://www.w3.org"));
-    /// ```
-    ///
-    /// ```
-    /// let tree = roxmltree::Tree::parse("<e xmlns='http://www.w3.org'/>").unwrap();
-    ///
-    /// assert_eq!(tree.root_element().lookup_namespace_uri(None), Some("http://www.w3.org"));
-    /// ```
-    pub fn lookup_namespace_uri(&self, prefix: Option<&str>) -> Option<&String> {
-        self.namespaces()
-            .find(|ns| ns.name == prefix)
-            .map(|v| v.uri.as_ref())
-    }
-
-    /// Returns element's attribute value.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let tree = roxmltree::Tree::parse("<e a='b'/>").unwrap();
-    ///
-    /// assert_eq!(tree.root_element().attribute("a"), Some("b"));
-    /// ```
-    ///
-    /// ```
-    /// let tree = roxmltree::Tree::parse(
-    ///     "<e xmlns:n='http://www.w3.org' a='b' n:a='c'/>"
-    /// ).unwrap();
-    ///
-    /// assert_eq!(tree.root_element().attribute("a"), Some("b"));
-    /// assert_eq!(tree.root_element().attribute(("http://www.w3.org", "a")), Some("c"));
-    /// ```
-    pub fn attribute<N>(&self, name: N) -> Option<String>
-    where
-        N: Into<ExpandedName>,
-    {
-        self.attribute_node(name).map(|a| a.value())
-    }
-
-    /// Returns element's attribute object.
-    ///
-    /// The same as [`attribute()`], but returns the `Attribute` itself instead of a value string.
-    ///
-    /// [`attribute()`]: struct.Node.html#method.attribute
-    pub fn attribute_node<N>(&self, name: N) -> Option<Attribute>
-    where
-        N: Into<ExpandedName>,
-    {
-        let name = name.into();
-
-        match name.namespace() {
-            Some(_) => self.attributes().find(|a| a.data.name.as_expanded_name(self.tree) == name),
-            None => self.attributes().find(|a| a.data.name.local_name == name.name),
-        }
-    }
-
-    /// Checks that element has a specified attribute.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let tree = roxmltree::Tree::parse(
-    ///     "<e xmlns:n='http://www.w3.org' a='b' n:a='c'/>"
-    /// ).unwrap();
-    ///
-    /// assert!(tree.root_element().has_attribute("a"));
-    /// assert!(tree.root_element().has_attribute(("http://www.w3.org", "a")));
-    ///
-    /// assert!(!tree.root_element().has_attribute("b"));
-    /// assert!(!tree.root_element().has_attribute(("http://www.w4.org", "a")));
-    /// ```
-    pub fn has_attribute<N>(&self, name: N) -> bool
-    where
-        N: Into<ExpandedName>,
-    {
-        self.attribute_node(name).is_some()
-    }
-
-    /// Returns element's attributes.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let tree = roxmltree::Tree::parse(
-    ///     "<e xmlns:n='http://www.w3.org' a='b' n:a='c'/>"
-    /// ).unwrap();
-    ///
-    /// assert_eq!(tree.root_element().attributes().len(), 2);
-    /// ```
-    #[inline]
-    pub fn attributes(&self) -> Attributes {
-        Attributes::new(self)
-    }
-
-    /// Returns element's namespaces.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let tree = roxmltree::Tree::parse(
-    ///     "<e xmlns:n='http://www.w3.org'/>"
-    /// ).unwrap();
-    ///
-    /// assert_eq!(tree.root_element().namespaces().len(), 1);
-    /// ```
-    #[inline]
-    pub fn namespaces(&self) -> NamespaceIter {
-        let namespaces = match self.d.kind {
-            NodeKind::Element { ref namespaces, .. } => {
-                &self.tree.namespaces.tree_order[namespaces.to_urange()]
-            }
-            _ => &[],
-        };
-
-        NamespaceIter {
-            tree: self.tree,
-            namespaces: namespaces.iter(),
-        }
-    }
-
-    /// Returns node's text.
-    ///
-    /// - for an element will return a first text child
-    /// - for a comment will return a self text
-    /// - for a text node will return a self text
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let tree = roxmltree::Tree::parse("\
-    /// <p>
-    ///     text
-    /// </p>
-    /// ").unwrap();
-    ///
-    /// assert_eq!(tree.root_element().text(),
-    ///            Some("\n    text\n"));
-    /// assert_eq!(tree.root_element().first_child().unwrap().text(),
-    ///            Some("\n    text\n"));
-    /// ```
-    ///
-    /// ```
-    /// let tree = roxmltree::Tree::parse("<!-- comment --><e/>").unwrap();
-    ///
-    /// assert_eq!(tree.root().first_child().unwrap().text(), Some(" comment "));
-    /// ```
-    #[inline]
-    pub fn text(&self) -> Option<String> {
-        self.text_storage().map(|s| s.as_str())
-    }
-
-    /// Returns node's text storage.
-    ///
-    /// Useful when you need a more low-level access to an allocated string.
-    pub fn text_storage(&self) -> Option<String> {
-        match self.d.kind {
-            NodeKind::Element { .. } => match self.first_child() {
-                Some(child) if child.is_text() => match self.tree.nodes[child.id.get_usize()].kind {
-                    NodeKind::Text(ref text) => Some(text),
-                    _ => None,
-                },
-                _ => None,
-            },
-            NodeKind::Comment(ref text) => Some(text),
-            NodeKind::Text(ref text) => Some(text),
-            _ => None,
-        }
-    }
-
-    /// Returns element's tail text.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let tree = roxmltree::Tree::parse("\
-    /// <root>
-    ///     text1
-    ///     <p/>
-    ///     text2
-    /// </root>
-    /// ").unwrap();
-    ///
-    /// let p = tree.descendants().find(|n| n.has_tag_name("p")).unwrap();
-    /// assert_eq!(p.tail(), Some("\n    text2\n"));
-    /// ```
-    #[inline]
-    pub fn tail(&self) -> Option<String> {
-        self.tail_storage().map(|s| s.as_str())
-    }
-
-    /// Returns element's tail text storage.
-    ///
-    /// Useful when you need a more low-level access to an allocated string.
-    pub fn tail_storage(&self) -> Option<String> {
-        if !self.is_element() {
-            return None;
-        }
-
-        match self.next_sibling().map(|n| n.id) {
-            Some(id) => match self.tree.nodes[id.get_usize()].kind {
-                NodeKind::Text(ref text) => Some(text),
-                _ => None,
-            },
-            None => None,
-        }
-    }
-
-    /// Returns node as Processing Instruction.
-    #[inline]
-    pub fn pi(&self) -> Option<PI> {
-        match self.d.kind {
-            NodeKind::PI(pi) => Some(pi),
-            _ => None,
-        }
-    }
-
-    /// Returns the parent of this node.
-    #[inline]
-    pub fn parent(&self) -> Option<Self> {
-        self.d.parent.map(|id| self.tree.get_node(id).unwrap())
-    }
-
-    /// Returns the parent element of this node.
-    pub fn parent_element(&self) -> Option<Self> {
-        self.ancestors().skip(1).find(|n| n.is_element())
-    }
-
-    /// Returns the previous sibling of this node.
-    #[inline]
-    pub fn prev_sibling(&self) -> Option<Self> {
-        self.d.prev_sibling.map(|id| self.tree.get_node(id).unwrap())
-    }
-
-    /// Returns the previous sibling element of this node.
-    pub fn prev_sibling_element(&self) -> Option<Self> {
-        self.prev_siblings().skip(1).find(|n| n.is_element())
-    }
-
-    /// Returns the next sibling of this node.
-    #[inline]
-    pub fn next_sibling(&self) -> Option<Self> {
-        self.d
-            .next_subtree
-            .map(|id| self.tree.get_node(id).unwrap())
-            .and_then(|node| {
-                let possibly_self = node
-                    .d
-                    .prev_sibling
-                    .expect("next_subtree will always have a previous sibling");
-                if possibly_self == self.id {
-                    Some(node)
-                } else {
-                    None
-                }
-            })
-    }
-
-    /// Returns the next sibling element of this node.
-    pub fn next_sibling_element(&self) -> Option<Self> {
-        self.next_siblings().skip(1).find(|n| n.is_element())
-    }
-
-    /// Returns the first child of this node.
-    #[inline]
-    pub fn first_child(&self) -> Option<Self> {
-        self.d
-            .last_child
-            .map(|_| self.tree.get_node(NodeId::new(self.id.get() + 1)).unwrap())
-    }
-
-    /// Returns the first element child of this node.
-    pub fn first_element_child(&self) -> Option<Self> {
-        self.children().find(|n| n.is_element())
-    }
-
-    /// Returns the last child of this node.
-    #[inline]
-    pub fn last_child(&self) -> Option<Self> {
-        self.d.last_child.map(|id| self.tree.get_node(id).unwrap())
-    }
-
-    /// Returns the last element child of this node.
-    pub fn last_element_child(&self) -> Option<Self> {
-        self.children().filter(|n| n.is_element()).next_back()
-    }
-
-    /// Returns true if this node has siblings.
-    #[inline]
-    pub fn has_siblings(&self) -> bool {
-        self.d.prev_sibling.is_some() || self.next_sibling().is_some()
-    }
-
-    /// Returns true if this node has children.
-    #[inline]
-    pub fn has_children(&self) -> bool {
-        self.d.last_child.is_some()
-    }
-
-    /// Returns an iterator over ancestor nodes starting at this node.
-    #[inline]
-    pub fn ancestors(&self) -> AxisIter {
-        AxisIter {
-            node: Some(*self),
-            next: Node::parent,
-        }
-    }
-
-    /// Returns an iterator over previous sibling nodes starting at this node.
-    #[inline]
-    pub fn prev_siblings(&self) -> AxisIter {
-        AxisIter {
-            node: Some(*self),
-            next: Node::prev_sibling,
-        }
-    }
-
-    /// Returns an iterator over next sibling nodes starting at this node.
-    #[inline]
-    pub fn next_siblings(&self) -> AxisIter {
-        AxisIter {
-            node: Some(*self),
-            next: Node::next_sibling,
-        }
-    }
-
-    /// Returns an iterator over first children nodes starting at this node.
-    #[inline]
-    pub fn first_children(&self) -> AxisIter {
-        AxisIter {
-            node: Some(*self),
-            next: Node::first_child,
-        }
-    }
-
-    /// Returns an iterator over last children nodes starting at this node.
-    #[inline]
-    pub fn last_children(&self) -> AxisIter {
-        AxisIter {
-            node: Some(*self),
-            next: Node::last_child,
-        }
-    }
-
-    /// Returns an iterator over children nodes.
-    #[inline]
-    pub fn children(&self) -> Children {
-        Children {
-            front: self.first_child(),
-            back: self.last_child(),
-        }
-    }
-
-    /// Returns an iterator over this node and its descendants.
-    #[inline]
-    pub fn descendants(&self) -> Descendants {
-        Descendants::new(*self)
-    }
-
-    /// Returns node's range in bytes in the original tree.
-    #[inline]
-    pub fn range(&self) -> Range<usize> {
-        self.d.range.clone()
-    }
-
-    /// Returns node's NodeId
-    #[inline]
-    pub fn id(&self) -> NodeId {
-        self.id
-    }
-}
-
-impl fmt::Debug for Node {
-    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        match self.d.kind {
-            NodeKind::Root => write!(f, "Root"),
-            NodeKind::Element { .. } => {
-                write!(
-                    f,
-                    "Element {{ tag_name: {:?}, attributes: {:?}, namespaces: {:?} }}",
-                    self.tag_name(),
-                    self.attributes(),
-                    self.namespaces()
-                )
-            }
-            NodeKind::PI(pi) => {
-                write!(f, "PI {{ target: {:?}, value: {:?} }}", pi.target, pi.value)
-            }
-            NodeKind::Comment(ref text) => write!(f, "Comment({:?})", text.as_str()),
-            NodeKind::Text(ref text) => write!(f, "Text({:?})", text.as_str()),
-        }
-    }
-}
-
-/// Iterator over a node's attributes
-#[derive(Clone)]
-pub struct Attributes {
-    tree: &Tree,
-    attrs: core::slice::Iter<AttributeData>,
-}
-
-impl Attributes {
-    #[inline]
-    fn new(node: &Node) -> Attributes {
-        let attrs = match node.d.kind {
-            NodeKind::Element { ref attributes, .. } => {
-                &node.tree.attributes[attributes.to_urange()]
-            }
-            _ => &[],
-        };
-        Attributes {
-            tree: node.tree,
-            attrs: attrs.iter(),
-        }
-    }
-}
-
-impl Iterator for Attributes {
-    type Item = Attribute;
-
-    #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        self.attrs.next().map(|attr| Attribute {
-            tree: self.tree,
-            data: attr,
-        })
-    }
-
-    #[inline]
-    fn nth(&mut self, n: usize) -> Option<Self::Item> {
-        self.attrs.nth(n).map(|attr| Attribute {
-            tree: self.tree,
-            data: attr,
-        })
-    }
-
-    #[inline]
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        self.attrs.size_hint()
-    }
-}
-
-impl DoubleEndedIterator for Attributes {
-    #[inline]
-    fn next_back(&mut self) -> Option<Self::Item> {
-        self.attrs.next_back().map(|attr| Attribute {
-            tree: self.tree,
-            data: attr,
-        })
-    }
-}
-
-impl ExactSizeIterator for Attributes {}
-
-impl fmt::Debug for Attributes {
-    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        f.debug_struct("Attributes")
-            .field("attrs", &self.attrs)
-            .finish()
-    }
-}
-
-/// Iterator over specified axis.
-#[derive(Clone)]
-pub struct AxisIter {
-    node: Option<Node>,
-    next: fn(&Node) -> Option<Node>,
-}
-
-impl Iterator for AxisIter {
-    type Item = Node;
-
-    #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        let node = self.node.take();
-        self.node = node.as_ref().and_then(self.next);
-        node
-    }
-}
-
-impl fmt::Debug for AxisIter {
-    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        f.debug_struct("AxisIter")
-            .field("node", &self.node)
-            .field("next", &"fn()")
-            .finish()
-    }
-}
-
-/// Iterator over children.
-#[derive(Clone, Debug)]
-pub struct Children {
-    front: Option<Node>,
-    back: Option<Node>,
-}
-
-impl Iterator for Children {
-    type Item = Node;
-
-    #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.front == self.back {
-            let node = self.front.take();
-            self.back = None;
-            node
-        } else {
-            let node = self.front.take();
-            self.front = node.as_ref().and_then(Node::next_sibling);
-            node
-        }
-    }
-}
-
-impl DoubleEndedIterator for Children {
-    #[inline]
-    fn next_back(&mut self) -> Option<Self::Item> {
-        if self.back == self.front {
-            let node = self.back.take();
-            self.front = None;
-            node
-        } else {
-            let node = self.back.take();
-            self.back = node.as_ref().and_then(Node::prev_sibling);
-            node
-        }
-    }
-}
-
-/// Iterator over a node and its descendants.
-#[derive(Clone)]
-pub struct Descendants {
-    tree: Tree,
-    nodes: core::iter::Enumerate<core::slice::Iter<NodeData>>,
-    from: usize,
-}
-
-impl Descendants {
-    #[inline]
-    fn new(start: Node) -> Self {
-        let from = start.id.get_usize();
-
-        let until = start
-            .d
-            .next_subtree
-            .map(NodeId::get_usize)
-            .unwrap_or(start.tree.nodes.len());
-
-        let nodes = start.tree.nodes[from..until].iter().enumerate();
-
-        Self {
-            tree: start.tree,
-            nodes,
-            from,
-        }
-    }
-}
-
-impl Iterator for Descendants {
-    type Item = Node;
-
-    #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        self.nodes.next().map(|(idx, data)| Node {
-            id: NodeId::from(self.from + idx),
-            d: data,
-            tree: self.tree,
-        })
-    }
-
-    #[inline]
-    fn nth(&mut self, n: usize) -> Option<Self::Item> {
-        self.nodes.nth(n).map(|(idx, data)| Node {
-            id: NodeId::from(self.from + idx),
-            d: data,
-            tree: self.tree,
-        })
-    }
-
-    #[inline]
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        self.nodes.size_hint()
-    }
-}
-
-impl DoubleEndedIterator for Descendants {
-    #[inline]
-    fn next_back(&mut self) -> Option<Self::Item> {
-        self.nodes.next_back().map(|(idx, data)| Node {
-            id: NodeId::from(self.from + idx),
-            d: data,
-            tree: self.tree,
-        })
-    }
-}
-
-impl ExactSizeIterator for Descendants {}
-
-impl fmt::Debug for Descendants {
-    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        f.debug_struct("Descendants")
-            .field("nodes", &self.nodes)
-            .field("from", &self.from)
-            .finish()
-    }
-}
-
-/// Iterator over the namespaces attached to a node.
-#[derive(Clone)]
-pub struct NamespaceIter {
-    tree: Tree,
-    namespaces: core::slice::Iter<NamespaceIdx>,
-}
-
-impl Iterator for NamespaceIter {
-    type Item = Namespace;
-
-    #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        self.namespaces
-            .next()
-            .map(|idx| self.tree.namespaces.get(*idx))
-    }
-
-    #[inline]
-    fn nth(&mut self, n: usize) -> Option<Self::Item> {
-        self.namespaces
-            .nth(n)
-            .map(|idx| self.tree.namespaces.get(*idx))
-    }
-
-    #[inline]
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        self.namespaces.size_hint()
-    }
-}
-
-impl DoubleEndedIterator for NamespaceIter {
-    #[inline]
-    fn next_back(&mut self) -> Option<Self::Item> {
-        self.namespaces
-            .next()
-            .map(|idx| self.tree.namespaces.get(*idx))
-    }
-}
-
-impl ExactSizeIterator for NamespaceIter {}
-
-impl fmt::Debug for NamespaceIter {
-    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-        f.debug_struct("NamespaceIter")
-            .field("namespaces", &self.namespaces)
-            .finish()
-    }
-}
+///// A node in a tree.
+/////
+///// # Tree Order
+/////
+///// The implementation of the `Ord` traits for `Node` is based on the concept of *tree-order*.
+///// In layman's terms, tree-order is the order in which one would see each element if
+///// one opened a tree in a text editor or web browser and scrolled down.
+///// Tree-order convention is followed in XPath, CSS Counters, and DOM selectors API
+///// to ensure consistent results from selection.
+///// One difference in `roxmltree` is that there is the notion of more than one tree
+///// in existence at a time. While Nodes within the same tree are in tree-order,
+///// Nodes in different trees will be grouped together, but not in any particular
+///// order.
+/////
+///// As an example, if we have a Tree `a` with Nodes `[a0, a1, a2]` and a
+///// Tree `b` with Nodes `[b0, b1]`, these Nodes in order could be either
+///// `[a0, a1, a2, b0, b1]` or `[b0, b1, a0, a1, a2]` and roxmltree makes no
+///// guarantee which it will be.
+/////
+///// Tree-order is defined here in the
+///// [W3C XPath Recommendation](https://www.w3.org/TR/xpath-3/#id-tree-order)
+///// The use of tree-order in DOM Selectors is described here in the
+///// [W3C Selectors API Level 1](https://www.w3.org/TR/selectors-api/#the-apis)
+//#[derive(Clone, PartialEq, Eq, PartialOrd)]
+//pub struct Node {
+//    /// Node's ID.
+//    id: NodeId,
+//
+//    //TODO: don't think we need this here with some rearchitecting
+//    /// The tree containing the node.
+//    //tree: Tree,
+//
+//    /// Node's data.
+//    d: NodeData,
+//}
+//
+//
+//
+//impl Ord for Node {
+//    fn cmp(&self, other: &Self) -> Ordering {
+//        //(self.id.0, self.tree.to_owned()).cmp(&(other.id.0, other.tree.to_owned()))
+//        self.id.0.cmp(&other.id.0)
+//    }
+//}
+//
+//impl Hash for Node {
+//    fn hash<H: Hasher>(&self, state: &mut H) {
+//        self.id.0.hash(state);
+//        //(self.tree).hash(state);
+//        (self.d).hash(state);
+//    }
+//}
+
+//impl Node {
+//    /// Returns node's type.
+//    #[inline]
+//    pub fn node_type(&self) -> NodeType {
+//        match self.d.kind {
+//            NodeKind::Root => NodeType::Root,
+//            NodeKind::Element { .. } => NodeType::Element,
+//            NodeKind::PI { .. } => NodeType::PI,
+//            NodeKind::Comment(_) => NodeType::Comment,
+//            NodeKind::Text(_) => NodeType::Text,
+//        }
+//    }
+//
+//    /// Checks that node is a root node.
+//    #[inline]
+//    pub fn is_root(&self) -> bool {
+//        self.node_type() == NodeType::Root
+//    }
+//
+//    /// Checks that node is an element node.
+//    #[inline]
+//    pub fn is_element(&self) -> bool {
+//        self.node_type() == NodeType::Element
+//    }
+//
+//    /// Checks that node is a processing instruction node.
+//    #[inline]
+//    pub fn is_pi(&self) -> bool {
+//        self.node_type() == NodeType::PI
+//    }
+//
+//    /// Checks that node is a comment node.
+//    #[inline]
+//    pub fn is_comment(&self) -> bool {
+//        self.node_type() == NodeType::Comment
+//    }
+//
+//    /// Checks that node is a text node.
+//    #[inline]
+//    pub fn is_text(&self) -> bool {
+//        self.node_type() == NodeType::Text
+//    }
+//
+//    ///// Returns node's tree.
+//    //#[inline]
+//    //pub fn tree(&self) -> Tree {
+//    //    self.tree.to_owned()
+//    //}
+//
+//    /// Returns node's tag name.
+//    ///
+//    /// Returns an empty name with no namespace if the current node is not an element.
+//    ///
+//    /// # Examples
+//    ///
+//    /// ```
+//    /// let tree = roxmltree::Tree::parse("<e xmlns='http://www.w3.org'/>").unwrap();
+//    ///
+//    /// assert_eq!(tree.root_element().tag_name().namespace(), Some("http://www.w3.org"));
+//    /// assert_eq!(tree.root_element().tag_name().name(), "e");
+//    /// ```
+//    #[inline]
+//    pub fn tag_name(&self, tree: &Tree) -> ExpandedName {
+//        match &self.d.kind {
+//            NodeKind::Element { tag_name, .. } => tag_name.as_expanded_name(&tree),
+//            _ => "".into(),
+//        }
+//    }
+//
+//    /// Checks that node has a specified tag name.
+//    ///
+//    /// # Examples
+//    ///
+//    /// ```
+//    /// let tree = roxmltree::Tree::parse("<e xmlns='http://www.w3.org'/>").unwrap();
+//    ///
+//    /// assert!(tree.root_element().has_tag_name("e"));
+//    /// assert!(tree.root_element().has_tag_name(("http://www.w3.org", "e")));
+//    ///
+//    /// assert!(!tree.root_element().has_tag_name("b"));
+//    /// assert!(!tree.root_element().has_tag_name(("http://www.w4.org", "e")));
+//    /// ```
+//    pub fn has_tag_name<N>(&self, name: N, tree: &Tree) -> bool
+//    where
+//        N: Into<ExpandedName>,
+//    {
+//        let name = name.into();
+//
+//        match &self.d.kind {
+//            NodeKind::Element { tag_name, .. } => match name.namespace() {
+//                Some(_) => tag_name.as_expanded_name(&tree) == name,
+//                None => tag_name.local_name == name.name,
+//            },
+//            _ => false,
+//        }
+//    }
+//
+//    /// Returns node's default namespace URI.
+//    ///
+//    /// # Examples
+//    ///
+//    /// ```
+//    /// let tree = roxmltree::Tree::parse("<e xmlns='http://www.w3.org'/>").unwrap();
+//    ///
+//    /// assert_eq!(tree.root_element().default_namespace(), Some("http://www.w3.org"));
+//    /// ```
+//    ///
+//    /// ```
+//    /// let tree = roxmltree::Tree::parse("<e xmlns:n='http://www.w3.org'/>").unwrap();
+//    ///
+//    /// assert_eq!(tree.root_element().default_namespace(), None);
+//    /// ```
+//    pub fn default_namespace(&self, tree: &Tree) -> Option<String> {
+//        self.namespaces(tree)
+//            .find(|ns| ns.name.is_none())
+//            .map(|v| v.uri)
+//    }
+//
+//    /// Returns a prefix for a given namespace URI.
+//    ///
+//    /// # Examples
+//    ///
+//    /// ```
+//    /// let tree = roxmltree::Tree::parse("<e xmlns:n='http://www.w3.org'/>").unwrap();
+//    ///
+//    /// assert_eq!(tree.root_element().lookup_prefix("http://www.w3.org"), Some("n"));
+//    /// ```
+//    ///
+//    /// ```
+//    /// let tree = roxmltree::Tree::parse("<e xmlns:n=''/>").unwrap();
+//    ///
+//    /// assert_eq!(tree.root_element().lookup_prefix(""), Some("n"));
+//    /// ```
+//    pub fn lookup_prefix(&self, uri: &str, tree: &Tree) -> Option<String> {
+//        if uri == NS_XML_URI {
+//            return Some(NS_XML_PREFIX.to_owned());
+//        }
+//
+//        self.namespaces(tree)
+//            .find(|ns| &*ns.uri == uri)
+//            .map(|v| v.name)
+//            .unwrap_or(None)
+//    }
+//
+//    /// Returns an URI for a given prefix.
+//    ///
+//    /// # Examples
+//    ///
+//    /// ```
+//    /// let tree = roxmltree::Tree::parse("<e xmlns:n='http://www.w3.org'/>").unwrap();
+//    ///
+//    /// assert_eq!(tree.root_element().lookup_namespace_uri(Some("n")), Some("http://www.w3.org"));
+//    /// ```
+//    ///
+//    /// ```
+//    /// let tree = roxmltree::Tree::parse("<e xmlns='http://www.w3.org'/>").unwrap();
+//    ///
+//    /// assert_eq!(tree.root_element().lookup_namespace_uri(None), Some("http://www.w3.org"));
+//    /// ```
+//    pub fn lookup_namespace_uri(&self, prefix: Option<&str>, tree: &Tree) -> Option<String> {
+//        self.namespaces(tree)
+//            .find(|ns| ns.name == prefix.map(|x| x.to_owned()))
+//            .map(|v| v.uri)
+//    }
+//
+//    /// Returns element's attribute value.
+//    ///
+//    /// # Examples
+//    ///
+//    /// ```
+//    /// let tree = roxmltree::Tree::parse("<e a='b'/>").unwrap();
+//    ///
+//    /// assert_eq!(tree.root_element().attribute("a"), Some("b"));
+//    /// ```
+//    ///
+//    /// ```
+//    /// let tree = roxmltree::Tree::parse(
+//    ///     "<e xmlns:n='http://www.w3.org' a='b' n:a='c'/>"
+//    /// ).unwrap();
+//    ///
+//    /// assert_eq!(tree.root_element().attribute("a"), Some("b"));
+//    /// assert_eq!(tree.root_element().attribute(("http://www.w3.org", "a")), Some("c"));
+//    /// ```
+//    pub fn attribute<N>(&self, name: N, tree: &Tree) -> Option<String>
+//    where
+//        N: Into<ExpandedName>,
+//    {
+//        self.attribute_node(name, &tree).map(|a| a.value())
+//    }
+//
+//    /// Returns element's attribute object.
+//    ///
+//    /// The same as [`attribute()`], but returns the `Attribute` itself instead of a value string.
+//    ///
+//    /// [`attribute()`]: struct.Node.html#method.attribute
+//    pub fn attribute_node<N>(&self, name: N, tree: &Tree) -> Option<Attribute>
+//    where
+//        N: Into<ExpandedName>,
+//    {
+//        let name = name.into();
+//
+//        match name.namespace() {
+//            Some(_) => self.attributes(tree).find(|a| a.data.name.as_expanded_name(&tree) == name),
+//            None => self.attributes(tree).find(|a| a.data.name.local_name == name.name),
+//        }
+//    }
+//
+//    /// Checks that element has a specified attribute.
+//    ///
+//    /// # Examples
+//    ///
+//    /// ```
+//    /// let tree = roxmltree::Tree::parse(
+//    ///     "<e xmlns:n='http://www.w3.org' a='b' n:a='c'/>"
+//    /// ).unwrap();
+//    ///
+//    /// assert!(tree.root_element().has_attribute("a"));
+//    /// assert!(tree.root_element().has_attribute(("http://www.w3.org", "a")));
+//    ///
+//    /// assert!(!tree.root_element().has_attribute("b"));
+//    /// assert!(!tree.root_element().has_attribute(("http://www.w4.org", "a")));
+//    /// ```
+//    pub fn has_attribute<N>(&self, name: N, tree: &Tree) -> bool
+//    where
+//        N: Into<ExpandedName>,
+//    {
+//        self.attribute_node(name, &tree).is_some()
+//    }
+//
+//    /// Returns element's attributes.
+//    ///
+//    /// # Examples
+//    ///
+//    /// ```
+//    /// let tree = roxmltree::Tree::parse(
+//    ///     "<e xmlns:n='http://www.w3.org' a='b' n:a='c'/>"
+//    /// ).unwrap();
+//    ///
+//    /// assert_eq!(tree.root_element().attributes().len(), 2);
+//    /// ```
+//    #[inline]
+//    pub fn attributes(&self, tree: &Tree) -> Attributes {
+//        Attributes::new(self, tree)
+//    }
+//
+//    /// Returns element's namespaces.
+//    ///
+//    /// # Examples
+//    ///
+//    /// ```
+//    /// let tree = roxmltree::Tree::parse(
+//    ///     "<e xmlns:n='http://www.w3.org'/>"
+//    /// ).unwrap();
+//    ///
+//    /// assert_eq!(tree.root_element().namespaces().len(), 1);
+//    /// ```
+//    #[inline]
+//    pub fn namespaces(&self, tree: &Tree) -> NamespaceIter {
+//        let namespaces = match self.d.kind {
+//            NodeKind::Element { namespaces, .. } => {
+//                &tree.namespaces.tree_order[namespaces.to_urange()]
+//            }
+//            _ => &[],
+//        };
+//
+//        NamespaceIter {
+//            tree: tree.to_owned(),
+//            namespaces: namespaces.iter(),
+//        }
+//    }
+//
+//    /// Returns node's text.
+//    ///
+//    /// - for an element will return a first text child
+//    /// - for a comment will return a self text
+//    /// - for a text node will return a self text
+//    ///
+//    /// # Examples
+//    ///
+//    /// ```
+//    /// let tree = roxmltree::Tree::parse("\
+//    /// <p>
+//    ///     text
+//    /// </p>
+//    /// ").unwrap();
+//    ///
+//    /// assert_eq!(tree.root_element().text(),
+//    ///            Some("\n    text\n"));
+//    /// assert_eq!(tree.root_element().first_child().unwrap().text(),
+//    ///            Some("\n    text\n"));
+//    /// ```
+//    ///
+//    /// ```
+//    /// let tree = roxmltree::Tree::parse("<!-- comment --><e/>").unwrap();
+//    ///
+//    /// assert_eq!(tree.root().first_child().unwrap().text(), Some(" comment "));
+//    /// ```
+//    #[inline]
+//    pub fn text(&self, tree: &Tree) -> Option<String> {
+//        //TODO: do we need this method, since TextStorage isn't actually a thing now
+//        self.text_storage(tree)
+//    }
+//
+//    /// Returns node's text storage.
+//    ///
+//    /// Useful when you need a more low-level access to an allocated string.
+//    pub fn text_storage(&self, tree: &Tree) -> Option<String> {
+//        match &self.d.kind {
+//            NodeKind::Element { .. } => match self.first_child(tree) {
+//                Some(child) if child.is_text() => match &tree.nodes[child.id.get()].kind {
+//                    NodeKind::Text(text) => Some(text.to_owned()),
+//                    _ => None,
+//                },
+//                _ => None,
+//            },
+//            NodeKind::Comment(text) => Some(text.to_owned()),
+//            NodeKind::Text(text) => Some(text.to_owned()),
+//            _ => None,
+//        }
+//    }
+//
+//    /// Returns element's tail text.
+//    ///
+//    /// # Examples
+//    ///
+//    /// ```
+//    /// let tree = roxmltree::Tree::parse("\
+//    /// <root>
+//    ///     text1
+//    ///     <p/>
+//    ///     text2
+//    /// </root>
+//    /// ").unwrap();
+//    ///
+//    /// let p = tree.descendants().find(|n| n.has_tag_name("p")).unwrap();
+//    /// assert_eq!(p.tail(), Some("\n    text2\n"));
+//    /// ```
+//    #[inline]
+//    pub fn tail(&self, tree: &Tree) -> Option<String> {
+//        //TODO: do we need this method, since TextStorage isn't actually a thing now
+//        self.tail_storage(tree)
+//    }
+//
+//    /// Returns element's tail text storage.
+//    ///
+//    /// Useful when you need a more low-level access to an allocated string.
+//    pub fn tail_storage(&self, tree: &Tree) -> Option<String> {
+//        if !self.is_element() {
+//            return None;
+//        }
+//
+//        match self.next_sibling(tree).map(|n| n.id) {
+//            Some(id) => match &tree.nodes[id.get()].kind {
+//                NodeKind::Text(text) => Some(text.to_owned()),
+//                _ => None,
+//            },
+//            None => None,
+//        }
+//    }
+//
+//    /// Returns node as Processing Instruction.
+//    #[inline]
+//    pub fn pi(&self) -> Option<PI> {
+//        match &self.d.kind {
+//            NodeKind::PI(pi) => Some(pi.to_owned()),
+//            _ => None,
+//        }
+//    }
+//
+//    /// Returns the parent of this node.
+//    #[inline]
+//    pub fn parent(&self, tree: &Tree) -> Option<Self> {
+//        self.d.parent.map(|id| tree.get_node(id).unwrap())
+//    }
+//
+//    /// Returns the parent element of this node.
+//    pub fn parent_element(&self) -> Option<Self> {
+//        self.ancestors().skip(1).find(|n| n.is_element())
+//    }
+//
+//    /// Returns the previous sibling of this node.
+//    #[inline]
+//    pub fn prev_sibling(&self, tree: &Tree) -> Option<Self> {
+//        self.d.prev_sibling.map(|id| tree.get_node(id).unwrap())
+//    }
+//
+//    /// Returns the previous sibling element of this node.
+//    pub fn prev_sibling_element(&self) -> Option<Self> {
+//        self.prev_siblings().skip(1).find(|n| n.is_element())
+//    }
+//
+//    /// Returns the next sibling of this node.
+//    #[inline]
+//    pub fn next_sibling(&self, tree: &Tree) -> Option<Self> {
+//        self.d
+//            .next_subtree
+//            .map(|id| tree.get_node(id).unwrap())
+//            .and_then(|node| {
+//                let possibly_self = node
+//                    .d
+//                    .prev_sibling
+//                    .expect("next_subtree will always have a previous sibling");
+//                if possibly_self == self.id {
+//                    Some(node)
+//                } else {
+//                    None
+//                }
+//            })
+//    }
+//
+//    /// Returns the next sibling element of this node.
+//    pub fn next_sibling_element(&self) -> Option<Self> {
+//        self.next_siblings().skip(1).find(|n| n.is_element())
+//    }
+//
+//    /// Returns the first child of this node.
+//    #[inline]
+//    pub fn first_child(&self, tree: &Tree) -> Option<Self> {
+//        self.d
+//            .last_child
+//            .map(|_| tree.get_node(NodeId::new(self.id.get() + 1)).unwrap())
+//    }
+//
+//    /// Returns the first element child of this node.
+//    pub fn first_element_child(&self, tree: &Tree) -> Option<Self> {
+//        self.children(tree).find(|n| n.is_element())
+//    }
+//
+//    /// Returns the last child of this node.
+//    #[inline]
+//    pub fn last_child(&self, tree: &Tree) -> Option<Self> {
+//        self.d.last_child.map(|id| tree.get_node(id).unwrap())
+//    }
+//
+//    /// Returns the last element child of this node.
+//    pub fn last_element_child(&self, tree: &Tree) -> Option<Self> {
+//        self.children(tree).filter(|n| n.is_element()).next_back()
+//    }
+//
+//    /// Returns true if this node has siblings.
+//    #[inline]
+//    pub fn has_siblings(&self, tree: &Tree) -> bool {
+//        self.d.prev_sibling.is_some() || self.next_sibling(tree).is_some()
+//    }
+//
+//    /// Returns true if this node has children.
+//    #[inline]
+//    pub fn has_children(&self) -> bool {
+//        self.d.last_child.is_some()
+//    }
+//
+//    ///// Returns an iterator over ancestor nodes starting at this node.
+//    //#[inline]
+//    //pub fn ancestors(&self, tree: &Tree) -> AxisIter {
+//    //    AxisIter {
+//    //        node: Some(self.to_owned()),
+//    //        next: Node::parent(self, tree),
+//    //    }
+//    //}
+//
+//    ///// Returns an iterator over previous sibling nodes starting at this node.
+//    //#[inline]
+//    //pub fn prev_siblings(&self) -> AxisIter {
+//    //    AxisIter {
+//    //        node: Some(self.to_owned()),
+//    //        next: Node::prev_sibling,
+//    //    }
+//    //}
+//
+//    ///// Returns an iterator over next sibling nodes starting at this node.
+//    //#[inline]
+//    //pub fn next_siblings(&self) -> AxisIter {
+//    //    AxisIter {
+//    //        node: Some(self.to_owned()),
+//    //        next: Node::next_sibling,
+//    //    }
+//    //}
+//
+//    ///// Returns an iterator over first children nodes starting at this node.
+//    //#[inline]
+//    //pub fn first_children(&self) -> AxisIter {
+//    //    AxisIter {
+//    //        node: Some(self.to_owned()),
+//    //        next: Node::first_child,
+//    //    }
+//    //}
+//
+//    ///// Returns an iterator over last children nodes starting at this node.
+//    //#[inline]
+//    //pub fn last_children(&self) -> AxisIter {
+//    //    AxisIter {
+//    //        node: Some(self.to_owned()),
+//    //        next: Node::last_child,
+//    //    }
+//    //}
+//
+//    /// Returns an iterator over children nodes.
+//    #[inline]
+//    pub fn children(&self, tree: &Tree) -> Children {
+//        Children {
+//            front: self.first_child(tree),
+//            back: self.last_child(tree),
+//        }
+//    }
+//
+//    /// Returns an iterator over this node and its descendants.
+//    #[inline]
+//    pub fn descendants(&self, tree: &Tree) -> Descendants {
+//        Descendants::new(self.to_owned(), tree)
+//    }
+//
+//    /// Returns node's NodeId
+//    #[inline]
+//    pub fn id(&self) -> NodeId {
+//        self.id
+//    }
+//}
+//
+//impl fmt::Debug for Node {
+//    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+//        match &self.d.kind {
+//            NodeKind::Root => write!(f, "Root"),
+//            NodeKind::Element { .. } => {
+//                write!(
+//                    f,
+//                    "Element {{ tag_name: {:?}, attributes: {:?}, namespaces: {:?} }}",
+//                    self.tag_name(),
+//                    self.attributes(),
+//                    self.namespaces()
+//                )
+//            }
+//            NodeKind::PI(pi) => {
+//                write!(f, "PI {{ target: {:?}, value: {:?} }}", pi.target, pi.value)
+//            }
+//            NodeKind::Comment(text) => write!(f, "Comment({:?})", text.as_str()),
+//            NodeKind::Text(text) => write!(f, "Text({:?})", text.as_str()),
+//        }
+//    }
+//}
+
+///// Iterator over a node's attributes
+//#[derive(Clone)]
+//pub struct Attributes {
+//    tree: Tree,
+//    attrs: core::slice::Iter<AttributeData>,
+//}
+//
+//impl Attributes {
+//    #[inline]
+//    fn new(node: &Node, tree: &Tree) -> Attributes {
+//        let attrs = match node.d.kind {
+//            NodeKind::Element { attributes, .. } => {
+//                &tree.attributes[attributes.to_urange()]
+//            }
+//            _ => &[],
+//        };
+//        Attributes {
+//            tree: tree.to_owned(),
+//            attrs: attrs.iter(),
+//        }
+//    }
+//}
+//
+//impl Iterator for Attributes {
+//    type Item = Attribute;
+//
+//    #[inline]
+//    fn next(&mut self) -> Option<Self::Item> {
+//        self.attrs.next().map(|attr| Attribute {
+//            tree: self.tree,
+//            data: attr,
+//        })
+//    }
+//
+//    #[inline]
+//    fn nth(&mut self, n: usize) -> Option<Self::Item> {
+//        self.attrs.nth(n).map(|attr| Attribute {
+//            tree: self.tree,
+//            data: attr,
+//        })
+//    }
+//
+//    #[inline]
+//    fn size_hint(&self) -> (usize, Option<usize>) {
+//        self.attrs.size_hint()
+//    }
+//}
+//
+//impl DoubleEndedIterator for Attributes {
+//    #[inline]
+//    fn next_back(&mut self) -> Option<Self::Item> {
+//        self.attrs.next_back().map(|attr| Attribute {
+//            tree: self.tree,
+//            data: attr,
+//        })
+//    }
+//}
+//
+//impl ExactSizeIterator for Attributes {}
+//
+//impl fmt::Debug for Attributes {
+//    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+//        f.debug_struct("Attributes")
+//            .field("attrs", &self.attrs)
+//            .finish()
+//    }
+//}
+
+///// Iterator over specified axis.
+//#[derive(Clone)]
+//pub struct AxisIter {
+//    node: Option<Node>,
+//    next: fn(&Node) -> Option<Node>,
+//}
+//
+//impl Iterator for AxisIter {
+//    type Item = Node;
+//
+//    #[inline]
+//    fn next(&mut self) -> Option<Self::Item> {
+//        let node = self.node.take();
+//        self.node = node.as_ref().and_then(self.next);
+//        node
+//    }
+//}
+//
+//impl fmt::Debug for AxisIter {
+//    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+//        f.debug_struct("AxisIter")
+//            .field("node", &self.node)
+//            .field("next", &"fn()")
+//            .finish()
+//    }
+//}
+
+///// Iterator over children.
+//#[derive(Clone, Debug)]
+//pub struct Children {
+//    front: Option<Node>,
+//    back: Option<Node>,
+//}
+//
+//impl Iterator for Children {
+//    type Item = Node;
+//
+//    #[inline]
+//    fn next(&mut self) -> Option<Self::Item> {
+//        if self.front == self.back {
+//            let node = self.front.take();
+//            self.back = None;
+//            node
+//        } else {
+//            let node = self.front.take();
+//            self.front = node.as_ref().and_then(Node::next_sibling);
+//            node
+//        }
+//    }
+//}
+//
+//impl DoubleEndedIterator for Children {
+//    #[inline]
+//    fn next_back(&mut self) -> Option<Self::Item> {
+//        if self.back == self.front {
+//            let node = self.back.take();
+//            self.front = None;
+//            node
+//        } else {
+//            let node = self.back.take();
+//            self.back = node.as_ref().and_then(Node::prev_sibling);
+//            node
+//        }
+//    }
+//}
+//
+///// Iterator over a node and its descendants.
+//#[derive(Clone)]
+//pub struct Descendants {
+//    //tree: Tree,
+//    nodes: core::iter::Enumerate<core::slice::Iter<NodeData>>,
+//    from: usize,
+//}
+//
+//impl Descendants {
+//    #[inline]
+//    fn new(start: Node, tree: &Tree) -> Self {
+//        let from = start.id.get();
+//
+//        let until = start
+//            .d
+//            .next_subtree
+//            .map(NodeId::get)
+//            .unwrap_or(tree.nodes.len());
+//
+//        let nodes = tree.nodes[from..until].iter().enumerate();
+//
+//        Self {
+//            //tree: start.tree,
+//            nodes,
+//            from,
+//        }
+//    }
+//}
+//
+//impl Iterator for Descendants {
+//    type Item = Node;
+//
+//    #[inline]
+//    fn next(&mut self) -> Option<Self::Item> {
+//        self.nodes.next().map(|(idx, data)| Node {
+//            id: NodeId::from(self.from + idx),
+//            d: data,
+//            //tree: self.tree,
+//        })
+//    }
+//
+//    #[inline]
+//    fn nth(&mut self, n: usize) -> Option<Self::Item> {
+//        self.nodes.nth(n).map(|(idx, data)| Node {
+//            id: NodeId::from(self.from + idx),
+//            d: data,
+//            //tree: self.tree,
+//        })
+//    }
+//
+//    #[inline]
+//    fn size_hint(&self) -> (usize, Option<usize>) {
+//        self.nodes.size_hint()
+//    }
+//}
+//
+//impl DoubleEndedIterator for Descendants {
+//    #[inline]
+//    fn next_back(&mut self) -> Option<Self::Item> {
+//        self.nodes.next_back().map(|(idx, data)| Node {
+//            id: NodeId::from(self.from + idx),
+//            d: data,
+//            //tree: self.tree,
+//        })
+//    }
+//}
+//
+//impl ExactSizeIterator for Descendants {}
+//
+//impl fmt::Debug for Descendants {
+//    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+//        f.debug_struct("Descendants")
+//            .field("nodes", &self.nodes)
+//            .field("from", &self.from)
+//            .finish()
+//    }
+//}
+//
+///// Iterator over the namespaces attached to a node.
+//#[derive(Clone)]
+//pub struct NamespaceIter {
+//    tree: Tree,
+//    namespaces: core::slice::Iter<NamespaceIdx>,
+//}
+//
+//impl Iterator for NamespaceIter {
+//    type Item = Namespace;
+//
+//    #[inline]
+//    fn next(&mut self) -> Option<Self::Item> {
+//        self.namespaces
+//            .next()
+//            .map(|idx| self.tree.namespaces.get(*idx))
+//    }
+//
+//    #[inline]
+//    fn nth(&mut self, n: usize) -> Option<Self::Item> {
+//        self.namespaces
+//            .nth(n)
+//            .map(|idx| self.tree.namespaces.get(*idx))
+//    }
+//
+//    #[inline]
+//    fn size_hint(&self) -> (usize, Option<usize>) {
+//        self.namespaces.size_hint()
+//    }
+//}
+//
+//impl DoubleEndedIterator for NamespaceIter {
+//    #[inline]
+//    fn next_back(&mut self) -> Option<Self::Item> {
+//        self.namespaces
+//            .next()
+//            .map(|idx| self.tree.namespaces.get(*idx))
+//    }
+//}
+//
+//impl ExactSizeIterator for NamespaceIter {}
+//
+//impl fmt::Debug for NamespaceIter {
+//    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+//        f.debug_struct("NamespaceIter")
+//            .field("namespaces", &self.namespaces)
+//            .finish()
+//    }
+//}
 /// Position in text.
 ///
 /// Position indicates a row/line and a column in the original text. Starting from 1:1.
