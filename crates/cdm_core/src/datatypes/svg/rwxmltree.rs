@@ -249,7 +249,7 @@ pub enum NodeType {
 }
 
 /// A processing instruction.
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PI {
     pub target: String,
     pub value: Option<String>,
@@ -258,7 +258,7 @@ pub struct PI {
 /// A short range.
 ///
 /// Just like Range, but only for `u32` and copyable.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 struct ShortRange {
     start: u32,
     end: u32,
@@ -293,7 +293,7 @@ impl ShortRange {
 /// check that `NodeId` actually belongs to a selected `Tree`.
 /// So you can end up in a situation, when `NodeId` produced by one `Tree`
 /// is used to select a node in another `Tree`.
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct NodeId(NonZeroUsize);
 
 impl NodeId {
@@ -360,7 +360,7 @@ struct NodeData {
 
 
 
-#[derive(Clone, Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct AttributeData {
     name: ExpandedNameIndexed,
     value: String,
@@ -457,7 +457,7 @@ impl fmt::Debug for Attribute {
 /// A namespace.
 ///
 /// Contains URI and *prefix* pair.
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Namespace {
     name: Option<String>,
     uri: String,
@@ -505,7 +505,7 @@ impl Namespace {
     }
 }
 
-#[derive(Default)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct Namespaces {
     // Deduplicated namespace values used throughout the tree
     values: Vec<Namespace>,
@@ -572,11 +572,11 @@ impl Namespaces {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 #[repr(transparent)]
 struct NamespaceIdx(u16);
 
-#[derive(Clone, Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct ExpandedNameIndexed {
     namespace_idx: Option<NamespaceIdx>,
     local_name: String,
