@@ -64,3 +64,19 @@ where T: AsRef<Path> {
         Err(Error::from(ErrorKind::NotADirectory))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::{env, fs::DirBuilder};
+
+    /// This sets up a common directory structure for testing
+    fn set_up_dir() {
+        let pwd = env::current_dir().unwrap();
+        let builder = DirBuilder::new().recursive(true);
+        let mut path_a = PathBuf::new();
+        let mut path_b = PathBuf::new();
+        let mut path_c = PathBuf::new();
+
+        //builder.create()
+    }
+}

@@ -5,10 +5,10 @@ use cdm_core::{
     datatypes::{library_types::Library, project_types::Project},
     traits::SchematicRepresentation as _,
 };
-
-use crate::app::AppState;
 use egui::{Area, Id, Sense, Window, layers::Order, widgets};
 use num_traits::cast::FromPrimitive as _;
+
+use crate::app::AppState;
 //use usvg::{Options as ParseOptions, Tree, WriteOptions};
 
 #[expect(
@@ -35,33 +35,38 @@ pub fn main_window(
             //FIXME: area_rect() is not filtering out title bar.
             //https://github.com/emilk/egui/issues/7836
             if let Some(rect) = ui.memory(|memory| memory.area_rect(main_window_id)) {
-            for (id, equipment) in &project_data.equipment {
-                //TODO: instead of expect() just load image error placeholder and log
-                #[expect(clippy::panic, reason = "Error handling is hard in GUI code")]
-                let (symbol, uri) = equipment
-                    .schematic_symbol(library_data, None)
-                    .unwrap_or_else(|_| panic!("schematic symbol not defined in library_data for equipment {id}"));
-                let svg_data = symbol.into_bytes();
-                let sense_settings = Sense::DRAG & Sense::FOCUSABLE;
-                let image = egui::widgets::Image::from_bytes(uri, svg_data)
-                    .sense(sense_settings)
-                    .max_height(app_state.schematic_symbol_height)
-                    .max_width(app_state.schematic_symbol_width);
-                Area::new(Id::new(id)).movable(true).order(Order::Foreground).constrain_to(rect).show(egui_ctx, |ui| {
-                    ui.add(image);
-                });
-            }}
+                for (id, equipment) in &project_data.equipment {
+                    //TODO: instead of expect() just load image error placeholder and log
+                    #[expect(clippy::panic, reason = "Error handling is hard in GUI code")]
+                    let (symbol, uri) = equipment
+                        .schematic_symbol(library_data, None)
+                        .unwrap_or_else(|_| panic!("schematic symbol not defined in library_data for equipment {id}"));
+                    let svg_data = symbol.into_bytes();
+                    let sense_settings = Sense::DRAG & Sense::FOCUSABLE;
+                    let image = egui::widgets::Image::from_bytes(uri, svg_data)
+                        .sense(sense_settings)
+                        .max_height(app_state.schematic_symbol_height)
+                        .max_width(app_state.schematic_symbol_width);
+                    Area::new(Id::new(id))
+                        .movable(true)
+                        .order(Order::Foreground)
+                        .constrain_to(rect)
+                        .show(egui_ctx, |ui| {
+                            ui.add(image);
+                        });
+                }
+            }
             ui.allocate_space(ui.available_size());
         });
 }
 
 //TODO: finish once not-fl3/egui-miniquad#84 is fully released
-fn main_menu(ui: &mut egui::Ui) {
-    //TODO: set style and config using .style() and .config()
-   // egui::MenuBar::new().ui(ui, |ui|{
-   //     
-   // })
-}
+//fn main_menu(ui: &mut egui::Ui) {
+//TODO: set style and config using .style() and .config()
+// egui::MenuBar::new().ui(ui, |ui|{
+//
+// })
+//}
 //https://github.com/emilk/egui/pull/5732/files
 ///// load SVG image
 //fn load_svg_from_path(ui: &mut egui::Ui, path: &Path) {
