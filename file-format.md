@@ -2148,5 +2148,154 @@ user8 = "PLACEHOLDER"
 user9 = "PLACEHOLDER"
 ```
 
+### SVG Files
+
+All SVG files should be valid SVG 1.1 files.
+
+If an SVG is representing an object with a size in the real world, the SVG
+units should be in real world units, not screen units like pixels.
+
+No custom attributes are needed for the SVGs to be displayed in the
+application, but several are detailed below that add functionality to the plain
+SVG files.
+
+All custom attributes are defined as
+[`data-`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/data-*)
+attributes for ease of use.
+
+If more than one of a attribute that has its value replaced on load, exists on
+an SVG tag, this is considered an error and will result in the file being
+rejected by the application.
+
+#### Common Attributes
+
+##### Reference Designator
+**Attribute Tag:** `data-ref-des`
+
+The reference designator (referred to as a `TAG` in other CAD
+software, is the main human facing label that is the main cross reference
+between schematic / panel / reality
+
+##### Manufacturer
+**Attribute Tag:** `data-manufacturer`
+
+Any `<text>` tags within the SVG with this attribute will have
+their contents replaced with the `<entity_type>.catalog.manufacturer` found on the entity if
+populated during rendering.
+
+##### Model
+**Attribute Tag:** `data-model`
+
+Any `<text>` tags within the SVG with this attribute will have
+their contents replaced with the `<entity_type>.catalog.model` found on the entity if
+populated during rendering.
+
+##### Description
+**Attribute Tag:** `data-description`
+
+Any `<text>` tags within the SVG with this attribute will have
+their contents replaced with the `description` found on the entity if
+populated during rendering.
+
+##### Installation
+**Attribute Tag:** `data-installation`
+
+Any `<text>` tags within the SVG with this attribute will have
+their contents replaced with the `iec_codes.installation`
+found on the entity if populated during rendering.
+
+##### Location
+**Attribute Tag:** `data-location`
+
+Any `<text>` tags within the SVG with this attribute will have
+their contents replaced with the `iec_codes.location`
+found on the entity if populated during rendering.
+
+##### Rating
+**Attribute Tag:** `data-rating`
+
+Any `<text>` tags within the SVG with this attribute will have
+their contents replaced with the `<entity_type>.rating`
+found on the entity if populated during rendering.
+
+
+##### Connection Point
+**Attribute Tag:** `data-connection-point`
+
+SVG elements with this attribute will be identified as a place for wires/cables
+to attach to. The value of the attribute is used as the connection identifier and
+should match whatever is present on the physical device.
+
+The visual location where a wire/cable will connect to the connection point
+will be the geometric center of whatever element this tag is applied to unless
+the [Connection Point Type](#connection-point-type) is also present.
+
+##### Connection Point Type
+**Attribute Tag:** `data-connection-point-type`
+
+If this attribute is present and has a value, it will affect the visual
+location of where a wire/cable will connect to a connection point. This will
+also affect the direction the wire/cable will approach the connection point
+from.
+
+If this attribute is present and has no value, it will generate a log message
+but has no other effect.
+
+Possible values are:
+
+<!-- TODO: Potentially expand this list -->
+- left
+- right
+- top
+- bottom
+
+##### Connection Point Wire Number
+**Attribute Tag:** `data-connection-point-wire-number`
+
+Any `<text>` tags within the SVG with this attribute will have their contents
+replaced with the `identifier` of the wire/cable connected to the connection
+point indicated by the value of this attribute. The value of this attribute
+should be the value of the entity with the matching `data-connection-point`
+attribute.
+
+##### Connection Point Description
+**Attribute Tag:** `data-connection-point-label`
+
+Any `<text>` tags within the SVG with this attribute will have their contents
+replaced with the `label` of the connection point indicated by the value of
+this attribute. The value of this attribute should be the value of the entity
+with the matching `data-connection-point` attribute.
+
+##### Terminal Number
+**Attribute Tag:** `data-terminal-number`
+
+Any `<text>` tags within the SVG with this attribute will have their contents
+replaced with the `identifier` of the `element` within a `TerminalStrip`  of
+the connection point indicated by the value of this attribute. The value of
+this attribute should be the value of the entity with the matching
+`data-connection-point` attribute.
+
+
+#### Schematic Symbol Attributes
+
+Schematic symbols should be made out of simple lines and shapes. They should
+correspond to national/international standards whenever possible.
+
+A library file of common schematic symbols are included with the application.
+
+Schematic symbols use the following attributes to turn plain SVGs into "smart" symbols.
+
+No attributes are currently required to be included in a Schematic Symbol SVG
+but will be used if present.
+
+#### Terminal
+**Attribute Tag:** `data-terminal`
+
+This attribute is a marker tag that identifies a symbol as a terminal symbol.
+
+
+
+#### Equipment
+
 TODO: drawings
 
