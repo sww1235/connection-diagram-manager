@@ -19,6 +19,7 @@ figment = { version = "~0.10", features = ["toml"] }
 simple_logger = { version = "~5" }
 thiserror = { version = "~2" }
 usvg = { version = "~0" }
+roxmltree = { version = "~0" }
 lopdf = { version = "~0" }
 paragraph_breaker = {path = "crates/paragraph_breaker/", version = "~0"}
 pdf_helper = {path = "crates/pdf_helper/", version = "~0"}
