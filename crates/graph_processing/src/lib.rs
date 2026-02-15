@@ -1,4 +1,4 @@
-//! `Graph Processing` is a pure rust implementation of graph processing and layout algorithms
+//! `Graph Processing` is a pure rust implementation of graph processing and layout algorithms.
 //
 // inspired by  <https://github.com/nrc/r4cppp/blob/master/graphs/>
 //
@@ -7,12 +7,12 @@
 use core::cell::RefCell;
 use std::rc::Rc;
 
-/// `Graph` is a node-centric representation of a graph
+/// `Graph` is a node-centric representation of a graph.
 ///
-/// It contains all nodes in a graph
+/// It contains all nodes in a graph.
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct Graph {
-    /// `nodes` is a list of nodes in the graph
+    /// `nodes` is a list of nodes in the graph.
     nodes: Vec<Rc<RefCell<Node>>>,
 }
 
@@ -23,46 +23,46 @@ pub struct Graph {
 #[expect(clippy::exhaustive_structs, reason = "edges are not likely to change")]
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct Edge {
-    /// implementation specific ID
+    /// implementation specific ID.
     pub id: String,
-    /// destination node of edge
+    /// destination node of edge.
     pub destination: Rc<RefCell<Node>>,
-    /// if graph is directed or undirected
+    /// if graph is directed or undirected.
     pub directed: bool,
-    /// `weight` of edge. Optional
+    /// `weight` of edge. Optional.
     pub weight: Option<u64>,
 }
 
-/// `Node` is a node/vertex in a graph
+/// `Node` is a node/vertex in a graph.
 #[expect(clippy::exhaustive_structs, reason = "edges are not likely to change")]
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct Node {
-    /// `id` implementation specific ID
+    /// `id` implementation specific ID.
     pub id: String,
-    /// X position
+    /// X position.
     pub x: Option<u64>,
-    /// Y position
+    /// Y position.
     pub y: Option<u64>,
-    /// Z position
+    /// Z position.
     pub z: Option<u64>,
-    /// list of associated edges
+    /// list of associated edges.
     pub edges: Vec<Edge>,
 }
 
 impl Graph {
-    /// create an empty graph
+    /// create an empty graph.
     #[must_use]
     #[inline]
     pub fn init() -> Self {
         Self { nodes: Vec::new() }
     }
-    /// insert a node into a graph
+    /// insert a node into a graph.
     #[inline]
     pub fn insert_node(&mut self, node: Rc<RefCell<Node>>) {
         self.nodes.push(node);
     }
 
-    /// Depth first search of graph
+    /// Depth first search of graph.
     #[inline(never)]
     pub fn depth_first_search(&self) {
         // the entries in visited_list are the indexes of nodes in self.nodes
@@ -72,7 +72,7 @@ impl Graph {
         }
     }
 
-    /// Recursive inner function in depth first search algorithm
+    /// Recursive inner function in depth first search algorithm.
     fn depth_first_search_inner(&self, node: Rc<RefCell<Node>>, visited_list: &mut Vec<Rc<RefCell<Node>>>) {
         visited_list.push(Rc::clone(&node));
         for edge in &node.borrow().edges {
@@ -83,7 +83,7 @@ impl Graph {
     }
 }
 impl Node {
-    /// create an empty node
+    /// create an empty node.
     #[must_use]
     #[inline]
     pub fn new() -> Self {
@@ -96,7 +96,7 @@ impl Node {
         }
     }
 
-    /// add an edge to a node
+    /// add an edge to a node.
     #[inline(never)]
     pub fn add_edge(&mut self, node: Rc<RefCell<Node>>, id: &str, directed: bool, weight: Option<u64>) {
         self.edges.push(Edge {
@@ -106,7 +106,7 @@ impl Node {
             weight,
         });
     }
-    /// outputs the degree of the node
+    /// outputs the degree of the node.
     #[must_use]
     #[inline]
     pub fn degree(&self) -> usize {
