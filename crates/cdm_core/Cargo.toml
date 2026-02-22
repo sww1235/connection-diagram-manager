@@ -29,6 +29,7 @@ num-traits.workspace = true
 num-integer.workspace = true
 usvg.workspace = true
 roxmltree.workspace = true
+xml.workspace = true
 pdf_helper.workspace = true
 paragraph_breaker.workspace = true
 figment.workspace = true

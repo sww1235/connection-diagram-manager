@@ -10,16 +10,17 @@ repository = "https://github.com/sww1235/connection-diagram-manager-rust"
 license = "MIT OR Apache-2.0"
 
 [workspace.dependencies]
-uom = { version = "~0.37", default-features = false, features = ["autoconvert", "std", "rational64", "bigrational", "try-from", "serde", "si"] }
+uom = { version = "~0.38", default-features = false, features = ["autoconvert", "std", "rational64", "bigrational", "try-from", "serde", "si"] }
 log = { version = "~0" }
 rustybuzz = { version = "~0" }
 serde = { version = "~1", features = ["derive"] }
-toml = { version = "~0" }
+toml = { version = "~1" }
 figment = { version = "~0.10", features = ["toml"] }
 simple_logger = { version = "~5" }
 thiserror = { version = "~2" }
 usvg = { version = "~0" }
 roxmltree = { version = "~0" }
+xml = { version = "~1" }
 lopdf = { version = "~0" }
 paragraph_breaker = {path = "crates/paragraph_breaker/", version = "~0"}
 pdf_helper = {path = "crates/pdf_helper/", version = "~0"}
