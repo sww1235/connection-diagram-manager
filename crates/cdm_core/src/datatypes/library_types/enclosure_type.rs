@@ -20,25 +20,25 @@ use crate::{
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct EnclosureType {
-    /// Catalog information
+    /// Catalog information.
     pub catalog: Option<Catalog>,
-    /// Dimensional information of enclosure
+    /// Dimensional information of enclosure.
     pub dimensions: Dimension,
-    /// Main material of Enclosure Type
+    /// Main material of `EnclosureType`.
     pub material: Option<String>,
-    /// Usable Width
+    /// Usable Width.
     pub usable_width: Length,
-    /// Usable Height
+    /// Usable Height.
     pub usable_height: Length,
-    /// Usable Depth
+    /// Usable Depth.
     pub usable_depth: Option<Length>,
-    /// Other rating information for enclosure
+    /// Other rating information for enclosure.
     pub rating: Option<String>,
-    /// Visual representation of Enclosure
+    /// Visual representation of Enclosure.
     pub visual_representation: Option<Svg>,
-    /// Primary color of enclosure
+    /// Primary color of enclosure.
     pub color: Option<Color>,
-    /// datafile the struct instance was read in from
+    /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }

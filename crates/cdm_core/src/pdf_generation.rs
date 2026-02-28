@@ -22,7 +22,7 @@ use crate::{
 //
 //TODO: add function that lays out all locations on one page
 
-/// `pdf_all_the_things` generates a pdf for the entire project
+/// `pdf_all_the_things` generates a pdf for the entire project.
 #[expect(unused_variables, reason = "function not finished yet")]
 #[inline(never)]
 pub fn pdf_all_the_things(project: &Project, library: &Library, page_size: PaperSize) {
@@ -32,7 +32,7 @@ pub fn pdf_all_the_things(project: &Project, library: &Library, page_size: Paper
     //
     // then layout all equipment in each enclosure
 }
-/// `pdf_one_enclosure` generates one PDF page with one enclosure in the project
+/// `pdf_one_enclosure` generates one PDF page with one enclosure in the project.
 ///
 /// # Arguments
 ///
@@ -43,11 +43,11 @@ pub fn pdf_all_the_things(project: &Project, library: &Library, page_size: Paper
 /// * `margins` - the margin sizes of the PDF page
 /// * `scale` - optional - specifies the scale of the rendered objects relative to their full size,
 ///   represented as a:b. For example, 1:2 would double the size of the object on the page, relative
-///   to its actual size, and 2:1 would half the size of the object
+///   to its actual size, and 2:1 would half the size of the object.
 ///
 /// # Errors
 ///
-/// will Error if the enclosure doesn't fit on page at specified scale
+/// will Error if the enclosure doesn't fit on page at specified scale.
 #[inline(never)]
 #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
 pub fn pdf_one_enclosure(
@@ -67,7 +67,7 @@ pub fn pdf_one_enclosure(
     Ok(())
 }
 //TODO: autoscale boolean?
-/// `render_enclosure` generates one PDF page with one enclosure in the project
+/// `render_enclosure` generates one PDF page with one enclosure in the project.
 ///
 /// # Arguments
 ///
@@ -731,7 +731,7 @@ pub fn render_enclosure(
 }
 
 /// `render_enclosure_schematic_ladder` generates one PDF page with the schematic for one enclosure
-/// in the project
+/// in the project.
 ///
 /// # Arguments
 ///
@@ -1395,7 +1395,7 @@ pub fn render_enclosure_schematic_ladder(
 }
 
 /// `schematic_ladder` generates the schematic of the entire project and tries to place it on
-/// pdf pages of the specified size
+/// pdf pages of the specified size.
 ///
 /// # Arguments
 ///

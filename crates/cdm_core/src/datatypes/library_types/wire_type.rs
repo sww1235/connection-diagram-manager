@@ -17,31 +17,31 @@ use crate::{
     traits::{FromFile, LibraryData},
 };
 
-/// `WireType` represents a particular type of wire
+/// `WireType` represents a particular type of wire.
 ///
 /// Not all fields have to be populated, and some are
 /// mainly provided for logical reasons rather than
 /// functional (model/part number/manufacturer part number
-/// may all be equivalent in some cases)
+/// may all be equivalent in some cases).
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct WireType {
-    /// Catalog information
+    /// Catalog information.
     pub catalog: Option<Catalog>,
-    /// The standard wire type code (THHN, XHHW, SIS, etc)
+    /// The standard wire type code (THHN, XHHW, SIS, etc).
     pub wire_type_code: Option<String>,
     /// The material the conductor or central element
-    /// of the wire is made out of
+    /// of the wire is made out of.
     pub material: String,
-    /// If the wire is insulated
+    /// If the wire is insulated.
     pub insulated: bool,
-    /// What material the wire is insulated with
+    /// What material the wire is insulated with.
     pub insulation_material: Option<String>,
-    /// Thickness of outer insulation
+    /// Thickness of outer insulation.
     pub insulation_thickness: Option<Length>,
     /// Conductor cross sectional area.
     pub conductor_cross_sect_area: Option<CrossSectionalArea>,
-    /// Nominal cross sectional area
+    /// Nominal cross sectional area.
     pub nominal_cross_section: Option<NominalWireSize>,
     /// AC Insulation voltage rating.
     pub ac_insulation_potential_rating: Option<ElectricPotential>,
@@ -50,21 +50,21 @@ pub struct WireType {
     /// Insulation temperature rating.
     pub insulation_temperature_rating: Option<TemperatureInterval>,
     /// Other insulation properties such as
-    /// Flamability or smoke generation
+    /// Flamability or smoke generation.
     pub insulation_rating: Option<String>,
-    /// Insulation Color
+    /// Insulation Color.
     pub insulation_color: Option<Color>,
-    /// Secondary Insulation Color
+    /// Secondary Insulation Color.
     pub secondary_insulation_color: Option<Color>,
-    /// appearance in schematics
+    /// Appearance in schematics.
     pub line_style: Option<LineStyle>,
-    /// If `WireType` is stranded
+    /// If `WireType` is stranded.
     pub stranded: bool,
-    /// How many strands is conductor made of
+    /// How many strands is conductor made of.
     pub num_strands: u64,
-    /// cross sectional area of individual strand.
+    /// Cross sectional area of individual strand.
     pub strand_cross_sect_area: Option<CrossSectionalArea>,
-    /// datafile the struct instance was read in from
+    /// Datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }

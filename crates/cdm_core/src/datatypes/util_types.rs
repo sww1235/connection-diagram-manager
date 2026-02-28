@@ -3,80 +3,80 @@ use serde::{Deserialize, Serialize};
 
 use crate::datatypes::{color::Color, unit_helper::length::Length};
 
-/// Cross section of wire or cable
+/// Cross section of wire or cable.
 #[non_exhaustive]
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum CrossSection {
-    /// A wire or cable with an oval or flat cross section
+    /// A wire or cable with an oval or flat cross section.
     Oval,
-    /// A wire or cable with a circular cross section
+    /// A wire or cable with a circular cross section.
     Circular,
     /// A cable consisting of 2 wires/cables bonded to each other in a figure 8 layout inside the
     /// same external jacket.
     Figure8,
 }
 
-/// Common Catalog information for Library Types
+/// Common Catalog information for Library Types.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct Catalog {
-    /// manufacturer name
+    /// manufacturer name.
     pub manufacturer: Option<String>,
-    /// connector model description
+    /// connector model description.
     pub model: Option<String>,
-    /// free text field for larger descriptions
+    /// free text field for larger descriptions.
     pub description: Option<String>,
-    /// [internal] part number
+    /// [internal] part number.
     pub part_number: Option<String>,
-    /// manufacturer part number
+    /// manufacturer part number.
     pub manufacturer_part_number: Option<String>,
-    /// supplier name
+    /// supplier name.
     pub supplier: Option<String>,
-    /// supplier part number
+    /// supplier part number.
     pub supplier_part_number: Option<String>,
 }
 
-/// Common Dimension information for Library Types
+/// Common Dimension information for Library Types.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct Dimension {
-    /// height of connector
+    /// height of connector.
     pub height: Length,
-    /// width of connector
+    /// width of connector.
     pub width: Length,
-    /// depth of connector
+    /// depth of connector.
     pub depth: Option<Length>,
-    /// diameter of circular connectors
+    /// diameter of circular connectors.
     pub diameter: Option<Length>,
 }
 
 //TODO: make defaults for these part of application and project configuration file
-/// Style information for linear items
+/// Style information for linear items.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct LineStyle {
-    /// Primary `Color` of line
+    /// Primary `Color` of line.
     pub color: Option<Color>,
-    /// Secondary `Color` of line
+    /// Secondary `Color` of line.
     pub secondary_color: Option<Color>,
-    /// Thickness or width of line
+    /// Thickness or width of line.
     pub line_thickness: Option<Length>,
     /// array of lengths/percentages of dashes and gaps
     /// uses same specification as SVG stroke-dasharray field.
     pub line_appearance: Option<Vec<u64>>,
 }
 
-/// Style information for symbols
+/// Style information for symbols.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct SymbolStyle {
-    /// Primary `Color` of line
+    /// Primary `Color` of line.
     pub color: Option<Color>,
-    /// Thickness or width of line
+    /// Thickness or width of line.
     pub line_thickness: Option<Length>,
 }
 
-/// Custom fields for user specified data. Not parsed
+/// Custom fields for user specified data. Not parsed.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(missing_docs, reason = "fields have no set definition")]
 #[non_exhaustive]
@@ -93,37 +93,38 @@ pub struct UserFields {
     pub user9: Option<String>,
 }
 
-/// Fields to support IEC coding of assets
+/// Fields to support IEC coding of assets.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct IECCodes {
-    /// Location code for IEC Coding
+    /// Location code for IEC Coding.
     pub location: Option<String>,
-    /// Installation code for IEC coding
+    /// Installation code for IEC coding.
     pub installation: Option<String>,
 }
 
-/// Representation of a physical location on a particular planet
+/// Representation of a physical location on a particular planet.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct PhysicalLocation {
     /// Most specific part of address. Should include things like apartment number etc.
     pub street_address: Option<String>,
-    /// City or town
+    /// City or town.
     pub city: Option<String>,
-    /// state or province
+    /// state or province.
     pub state: Option<String>,
-    /// machine readable code for mail sorting area
+    /// machine readable code for mail sorting area. Commonly referred to as Zip Code or Postal
+    /// Code.
     pub zip_code: Option<String>,
-    /// Latitude represented as a Rational64 value to avoid float loss of precision issues
+    /// Latitude represented as a Rational64 value to avoid float loss of precision issues.
     pub latitude: Rational64,
-    /// Longitude represented as a Rational64 value to avoid float loss of precision issues
+    /// Longitude represented as a Rational64 value to avoid float loss of precision issues.
     pub longitude: Rational64,
-    /// A user specified structured identifier
+    /// A user specified structured identifier.
     pub structured_location_id: Option<String>,
-    /// Name of the country in which this physical address resides
+    /// Name of the country in which this physical address resides.
     pub country: Option<String>,
-    /// Name of planet in which this physical address resides
+    /// Name of planet in which this physical address resides.
     pub planet: Option<String>,
     /// Name or description of building in which this physical address resides.
     pub building: Option<String>,

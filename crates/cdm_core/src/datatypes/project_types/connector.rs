@@ -8,15 +8,15 @@ use crate::{
     traits::{self, FromFile, ProjectData},
 };
 
-/// `Connector` is an instance of a [`ConnectorType`](super::connector_type::ConnectorType)
+/// `Connector` is an instance of a [`ConnectorType`](super::connector_type::ConnectorType).
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct Connector {
-    /// The type of this connector instance
+    /// The type of this connector instance.
     pub connector_type: String,
-    /// Optional styling data for schematic symbol
+    /// Optional styling data for schematic symbol.
     pub symbol_style: Option<SymbolStyle>,
-    /// datafile the struct instance was read in from
+    /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }

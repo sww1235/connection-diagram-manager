@@ -8,20 +8,20 @@ use uom::si::{Unit as _, electric_potential::*, rational64};
 use super::IntermediateUnit;
 use crate::error::UnitParsingError;
 
-/// Struct representing `Electric Potential` values
+/// Struct representing `Electric Potential` values.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(try_from = "IntermediateUnit")]
 #[non_exhaustive]
 pub struct ElectricPotential {
-    /// contained uom Unit
+    /// contained uom Unit.
     pub value: rational64::ElectricPotential,
-    /// original unit in datafile
+    /// original unit in datafile.
     pub original_unit: String,
 }
 
 impl ElectricPotential {
     /// outputs all usable `ElectricPotential` units allowed in configuration files in the form of
-    /// `<unit name>: <unit abbreviation>`
+    /// `<unit name>: <unit abbreviation>`.
     #[must_use]
     #[expect(clippy::string_add, reason = "easier and cleaner than one massive format string")]
     #[inline]

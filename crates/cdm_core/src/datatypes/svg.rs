@@ -24,7 +24,7 @@ mod rwxmltree;
 //
 //TODO: provide a method of specifying the units of the SVG file
 
-/// Svg represents a full SVG image
+/// Svg represents a full SVG image.
 #[derive(Debug, Clone)]
 pub struct Svg {
     /// a `[usvg::Tree]` used for easy interpretation of `SVG`
@@ -93,7 +93,7 @@ impl<'de> Deserialize<'de> for Svg {
     }
 }
 
-/// Visitor struct for Deserializer trait
+/// Visitor struct for Deserializer trait.
 struct SvgVisitor;
 
 #[expect(clippy::missing_trait_methods, reason = "using default impl")]

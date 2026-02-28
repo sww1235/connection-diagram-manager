@@ -1,29 +1,29 @@
 use num_rational::Rational64;
 use serde::{Deserialize, Serialize};
 
-/// Helper types and functions for `Area` units
+/// Helper types and functions for `Area` units.
 pub mod area;
-/// Helper types and functions for `Cross Sectional Area` units
+/// Helper types and functions for `Cross Sectional Area` units.
 pub mod cross_sectional_area;
-/// Helper types and functions for `Electric Potential` units
+/// Helper types and functions for `Electric Potential` units.
 pub mod electric_potential;
-/// Helper types and functions for `Length` units
+/// Helper types and functions for `Length` units.
 pub mod length;
-/// Helper types and functions for `Nominal Wire Size` units
+/// Helper types and functions for `Nominal Wire Size` units.
 pub mod nominal_wire_size;
-/// Helper types and functions for `Temperature Interval` units
+/// Helper types and functions for `Temperature Interval` units.
 pub mod temperature_interval;
 
 //TODO: implement to/from CrossSectionalArea to AWG
 //
 //TODO: implement to/from Area to CrossSectionalArea
 
-/// Intermediate unit
+/// Intermediate unit.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 struct IntermediateUnit {
-    /// raw value read in from file
+    /// raw value read in from file.
     value: Rational64,
-    /// original unit string in datafile
+    /// original unit string in datafile.
     original_unit: String,
 }
 

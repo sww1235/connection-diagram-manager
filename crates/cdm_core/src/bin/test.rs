@@ -1,4 +1,4 @@
-//! test
+//! test.
 
 use uom::{
     num::Zero as _,

@@ -8,23 +8,23 @@ use uom::si::{Unit as _, area::*, rational64};
 use super::IntermediateUnit;
 use crate::error::UnitParsingError;
 
-/// Struct representing `Cross Sectional Area` values of conductors
+/// Struct representing `Cross Sectional Area` values of conductors.
 ///
 /// `CrossSectionalArea` is broken out specifically for use with wires and cables, and so has
-/// extra methods associated with it to help with conversion between AWG and sane units
+/// extra methods associated with it to help with conversion between AWG and sane units.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(try_from = "IntermediateUnit")]
 #[non_exhaustive]
 pub struct CrossSectionalArea {
-    /// contained uom Unit
+    /// contained uom Unit.
     pub value: rational64::Area,
-    /// original unit in datafile
+    /// original unit in datafile.
     pub original_unit: String,
 }
 
 impl CrossSectionalArea {
     /// outputs all usable `CrossSectionalArea` units allowed in configuration files in the form of
-    /// `<unit name>: <unit abbreviation>`
+    /// `<unit name>: <unit abbreviation>`.
     #[must_use]
     #[expect(clippy::string_add, reason = "easier and cleaner than one massive format string")]
     #[inline]

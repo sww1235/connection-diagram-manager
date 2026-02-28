@@ -26,11 +26,11 @@ use crate::{
     error::Error,
 };
 
-/// Parse command line flags and config files
+/// Parse command line flags and config files.
 ///
 /// # Errors
 ///
-/// Will error if config file or command line parsing fails
+/// Will error if config file or command line parsing fails.
 #[inline]
 #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
 pub fn read_config_files_cli() -> Result<(ApplicationConfig, Cli), Error> {
@@ -86,62 +86,62 @@ pub fn read_config_files_cli() -> Result<(ApplicationConfig, Cli), Error> {
 
     Ok((app_config, cli))
 }
-/// `Cli` holds the defintions for command line arguments used in this binary
+/// `Cli` holds the defintions for command line arguments used in this binary.
 #[derive(Parser, Debug, Serialize)]
 #[non_exhaustive]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
-    /// Directory that project lives in
+    /// Directory that project lives in.
     #[arg(long, required = true)]
     pub project_directory: Option<PathBuf>,
-    /// Increase verbosity of program by adding more v
+    /// Increase verbosity of program by adding more v.
     #[arg(short, long, action = clap::ArgAction::Count)]
     pub verbose: u8,
-    /// Enable PostgreSQL features
+    /// Enable PostgreSQL features.
     #[arg(long)]
     pub enable_post_gres: bool,
-    /// Postgres DSN (optional)
+    /// Postgres DSN (optional).
     #[arg(long)]
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     pub post_gres_dsn: Option<String>,
     /// Only shows log messages with `Error` level. Use twice to completely eliminate output. Takes
-    /// precidence over verbose
+    /// precidence over verbose.
     #[arg(short, long, action = clap::ArgAction::Count)]
     pub quiet: u8,
-    /// Do not use default libraries included with program
+    /// Do not use default libraries included with program.
     #[arg(short, long)]
     pub no_default_libs: bool,
-    /// Export complete PDF
+    /// Export complete PDF.
     #[arg(short, long)]
     pub export_pdf: bool,
-    /// print units accepted in configuration files
+    /// print units accepted in configuration files.
     #[arg(short, long, value_enum, exclusive = true)]
     #[serde(skip_serializing_if = "::std::option::Option::is_none")]
     pub print_units: Option<PrintUnitCmdOption>,
 }
 
-/// Unit types that can be printed for use in configuration files
+/// Unit types that can be printed for use in configuration files.
 #[derive(Parser, Debug, Serialize, Clone, Copy, ValueEnum, Default)]
 #[non_exhaustive]
 pub enum PrintUnitCmdOption {
-    /// Print all unit options
+    /// Print all unit options.
     #[default]
     All,
-    /// Print `Area` unit options
+    /// Print `Area` unit options.
     Area,
-    /// Print `CrossSectionalArea` unit options
+    /// Print `CrossSectionalArea` unit options.
     CrossSectionalArea,
-    /// Print `ElectricPotential` unit options
+    /// Print `ElectricPotential` unit options.
     ElectricPotential,
-    /// Print `Length` unit options
+    /// Print `Length` unit options.
     Length,
-    /// Print `NominalWiresize` unit options
+    /// Print `NominalWiresize` unit options.
     NominalWireSize,
-    /// Print `TemperatureInterval` unit options
+    /// Print `TemperatureInterval` unit options.
     TemperatureInterval,
 }
 
-/// Set up application logging
+/// Set up application logging.
 #[inline]
 #[must_use]
 pub fn logger_configuration(cli: &Cli) -> SimpleLogger {
@@ -164,7 +164,7 @@ pub fn logger_configuration(cli: &Cli) -> SimpleLogger {
     //errors manually
     logger.with_colors(true)
 }
-/// Prints units that can be used in configuration, project and library files
+/// Prints units that can be used in configuration, project and library files.
 #[inline]
 pub fn print_file_units(cli: &Cli) {
     #[expect(clippy::print_stdout, reason = "this is intended to print to the terminal")]

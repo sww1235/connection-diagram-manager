@@ -8,20 +8,20 @@ use uom::si::{Unit as _, rational64, temperature_interval::*};
 use super::IntermediateUnit;
 use crate::error::UnitParsingError;
 
-/// Struct representing `TemperatureInterval` values
+/// Struct representing `TemperatureInterval` values.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(try_from = "IntermediateUnit")]
 #[non_exhaustive]
 pub struct TemperatureInterval {
-    /// contained uom Unit
+    /// contained uom Unit.
     pub value: rational64::TemperatureInterval,
-    /// original unit in datafile
+    /// original unit in datafile.
     pub original_unit: String,
 }
 
 impl TemperatureInterval {
     /// outputs all usable `TemperatureInterval` units allowed in configuration files in the form of
-    /// `<unit name>: <unit abbreviation>`
+    /// `<unit name>: <unit abbreviation>`.
     #[must_use]
     #[expect(clippy::string_add, reason = "easier and cleaner than one massive format string")]
     #[inline]

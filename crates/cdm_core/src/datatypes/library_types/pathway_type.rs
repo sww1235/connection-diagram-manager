@@ -15,37 +15,38 @@ use crate::{
 /// `PathwayType` represents a route for wires and cables to take from one
 /// [`LocationType`](super::location_type::LocationType) to another.
 ///
-/// Examples of Pathways include, conduit, cable tray, free air
+/// Examples of Pathways include, conduit, cable tray, free air.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct PathwayType {
-    /// Catalog information
+    /// Catalog information.
     pub catalog: Option<Catalog>,
-    /// generic type of pathway: (conduit, cable tray, etc)
+    /// generic type of pathway: (conduit, cable tray, etc).
     pub supertype: Option<String>,
-    /// actual size of pathway
+    /// actual size of pathway.
     pub size: Option<String>,
-    /// Trade Size of pathway
+    /// Trade Size of pathway.
     pub trade_size: Option<String>,
-    /// Visual representation of pathway
-    /// used to display a representation of the pathway on panel diagrams
-    /// mainly used for things like panduit or wireway mounted to panel directly
+    /// Visual representation of pathway.
+    ///
+    /// Used to display a representation of the pathway on panel diagrams.
+    /// Mainly used for things like Panduit or wireway mounted to panel directly.
     pub visual_representation: Option<Svg>,
-    /// Inner cross sectional area of pathway
+    /// Inner cross sectional area of pathway.
     pub cross_sect_area: Option<CrossSectionalArea>,
-    /// Main material of pathway
+    /// Main material of pathway.
     pub material: Option<String>,
-    /// Primary color of pathway
+    /// Primary color of pathway.
     pub color: Option<Color>,
     /// Material properties/rating. Not parsed.
     ///
     /// Voltage/Temperature/Flammability/etc.
     pub rating: Option<String>,
-    /// Dimensions of pathway
+    /// Dimensions of pathway.
     pub dimensions: Option<Dimension>,
-    /// appearance in schematics
+    /// appearance in schematics.
     pub line_style: Option<LineStyle>,
-    /// datafile the struct instance was read in from
+    /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }

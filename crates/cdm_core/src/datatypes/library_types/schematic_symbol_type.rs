@@ -13,16 +13,16 @@ use crate::{
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct SchematicSymbolType {
-    /// Short name for display. Can contain spaces/special characters
+    /// Short name for display. Can contain spaces/special characters.
     pub name: String,
-    /// What to actually display when symbol is rendered on drawing
+    /// What to actually display when symbol is rendered on drawing.
     pub visual_representation: Svg,
-    /// Optional description
+    /// Optional description.
     pub description: Option<String>,
     /// If this symbol supports links. If true, schematic symbol instances
-    /// will be allowed to define links between parent and child components
+    /// will be allowed to define links between parent and child components.
     pub supports_links: bool,
-    /// datafile the struct instance was read in from
+    /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }

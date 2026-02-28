@@ -8,42 +8,42 @@ use cdm_core::{
 use miniquad::{self as mq, TouchPhase, window as mqWindow};
 use num_traits::cast::FromPrimitive as _;
 
-/// Main window of application
+/// Main window of application.
 mod main_window;
 
-/// Main GUI app struct
+/// Main GUI app struct.
 pub struct App {
-    /// Egui Miniquad bindings
+    /// Egui Miniquad bindings.
     egui_mq: egui_miniquad::EguiMq,
-    /// rendering context
+    /// rendering context.
     // TODO: try to remove box and dyn here
     mq_ctx: Box<dyn mq::RenderingBackend>,
-    /// project data
+    /// project data.
     project_data: Project,
-    /// library data
+    /// library data.
     library_data: Library,
-    /// Project configuration
+    /// Project configuration.
     project_config: ProjectConfig,
-    /// Global Application configuration
+    /// Global Application configuration.
     config: ApplicationConfig,
-    /// State of running application
+    /// State of running application.
     state: AppState,
 }
 
 /// `AppState` contains state information for app while it is running.
 struct AppState {
-    /// current height of `SchematicSymbol`s
+    /// current height of `SchematicSymbol`s.
     schematic_symbol_height: f32,
-    /// current width of `SchematicSymbol`s
+    /// current width of `SchematicSymbol`s.
     schematic_symbol_width: f32,
-    /// if main window is closed
+    /// if main window is closed.
     main_window_state: bool,
-    /// if application has requested to quit
+    /// if application has requested to quit.
     quit_requested: bool,
 }
 
 impl App {
-    /// keyboard shortcut to quit app
+    /// keyboard shortcut to quit app.
     pub const QUIT_CMD: egui::KeyboardShortcut = egui::KeyboardShortcut {
         modifiers: egui::Modifiers {
             alt: false,
@@ -54,7 +54,7 @@ impl App {
         },
         logical_key: egui::Key::Q,
     };
-    /// Create new app
+    /// Create new app.
     pub fn new(config: &ApplicationConfig, project_config: ProjectConfig, project_data: Project, library_data: Library) -> Self {
         let mut mq_ctx = mqWindow::new_rendering_backend();
         Self {

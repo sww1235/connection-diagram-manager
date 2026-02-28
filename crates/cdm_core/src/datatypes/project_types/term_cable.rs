@@ -17,30 +17,30 @@ use crate::{
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct TermCable {
-    /// The `TermCableType` of this instance
+    /// The `TermCableType` of this instance.
     pub term_cable_type: String,
-    /// The structured name of the `TermCable` instance
+    /// The structured name of the `TermCable` instance.
     pub identifier: Option<String>,
-    /// Optional description
+    /// Optional description.
     pub description: Option<String>,
-    /// Pathway containing instance
+    /// Pathway containing instance.
     pub pathway: Option<String>,
-    /// physical location of `TermCable`
+    /// physical location of `TermCable`.
     pub physical_location: Option<PhysicalLocation>,
-    /// Fields for use with IEC project coding
+    /// Fields for use with IEC project coding.
     pub iec_codes: Option<IECCodes>,
-    /// User defined fields
+    /// User defined fields.
     pub user_fields: Option<UserFields>,
-    /// datafile the struct instance was read in from
+    /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 impl TermCable {
-    /// length of `TermCableType`
+    /// length of `TermCableType`.
     ///
     /// # Errors
     ///
-    /// Will error if `term_cable_type` id not found in provided library
+    /// Will error if `term_cable_type` id not found in provided library.
     #[inline(never)]
     pub fn len(&self, library: &Library) -> Result<Length, LibraryError> {
         let term_cable_type = library

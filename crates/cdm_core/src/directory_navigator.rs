@@ -11,7 +11,7 @@ use log::trace;
 /// # Errors
 ///
 /// Will error if provided path is not a directory or if there are IO errors encountered when
-/// reading the directory
+/// reading the directory.
 #[inline]
 pub fn files_in_dir<T>(dir: T, extension: Option<&str>, follow_symlinks: bool) -> Result<Vec<PathBuf>>
 where T: AsRef<Path> {
@@ -23,11 +23,11 @@ where T: AsRef<Path> {
     Ok(file_paths)
 }
 
-/// Inner function for recursively walking a directory
+/// Inner function for recursively walking a directory.
 ///
 /// Adds each path found to the `paths` `Vec` as canonicalized path.
 ///
-/// Can optionally filter the returned files by file extension
+/// Can optionally filter the returned files by file extension.
 ///
 /// Can filter out symlinks.
 fn files_in_dir_inner<T>(dir: T, paths: &mut Vec<PathBuf>, extension: Option<&str>, follow_symlinks: bool) -> Result<()>
@@ -69,7 +69,7 @@ where T: AsRef<Path> {
 mod tests {
     use std::{env, fs::DirBuilder};
 
-    /// This sets up a common directory structure for testing
+    /// This sets up a common directory structure for testing.
     fn set_up_dir() {
         let pwd = env::current_dir().unwrap();
         let builder = DirBuilder::new().recursive(true);

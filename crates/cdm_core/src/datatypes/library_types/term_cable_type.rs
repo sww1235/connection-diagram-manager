@@ -19,21 +19,21 @@ use crate::{
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct TermCableType {
-    /// Catalog information
+    /// Catalog information.
     pub catalog: Option<Catalog>,
-    /// Underlying wire or cable type of Terminated Cable
+    /// Underlying wire or cable type of Terminated Cable.
     pub wire_cable: WireCable,
-    /// Nominal Length of Terminated Cable
+    /// Nominal Length of Terminated Cable.
     pub nominal_length: Option<Length>,
-    /// Actual Length of Terminated Cable
+    /// Actual Length of Terminated Cable.
     pub actual_length: Option<Length>,
-    /// appearance in schematics
+    /// appearance in schematics.
     pub line_style: Option<LineStyle>,
     /// One end of Terminated Cable.
     pub end1: BTreeMap<String, Connector>,
-    /// The other end of Terminated Cable
+    /// The other end of Terminated Cable.
     pub end2: BTreeMap<String, Connector>,
-    /// datafile the struct instance was read in from
+    /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
@@ -48,13 +48,13 @@ impl FromFile for TermCableType {
     }
 }
 
-/// `WireCable` allows either a `WireType` or `CableType` to be the root of a `TermCableType`
+/// `WireCable` allows either a `WireType` or `CableType` to be the root of a `TermCableType`.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(clippy::exhaustive_enums, reason = "Only these two options make sense in this enum")]
 pub enum WireCable {
-    /// `CableType`
+    /// `CableType`.
     CableType(String),
-    /// `WireType`
+    /// `WireType`.
     WireType(String),
 }
 
@@ -63,19 +63,19 @@ pub enum WireCable {
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct Termination {
-    /// `Core` represents which individual wire inside a cable this pin is connected to
+    /// `Core` represents which individual wire inside a cable this pin is connected to.
     pub core: String,
-    /// `Pin` represents which pin in the associated connector the core is connected to
+    /// `Pin` represents which pin in the associated connector the core is connected to.
     pub pin: String,
 }
 
-/// `Connector` represents a connector on one end of a `TermCable`
+/// `Connector` represents a connector on one end of a `TermCable`.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct Connector {
-    /// `connector_type` represents the connector type that is on the end of a `TermCable`
+    /// `connector_type` represents the connector type that is on the end of a `TermCable`.
     pub connector_type: String,
-    /// `terminations` represents the pin/core mapping for this connector
+    /// `terminations` represents the pin/core mapping for this connector.
     pub terminations: Vec<Termination>,
 }
 

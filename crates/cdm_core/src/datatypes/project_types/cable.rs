@@ -15,23 +15,23 @@ use crate::{
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct Cable {
-    /// The `CableType` key of this instance
+    /// The `CableType` key of this instance.
     pub cable_type: String,
-    /// The structured name of the `Cable` instance
+    /// The structured name of the `Cable` instance.
     pub identifier: Option<String>,
-    /// Optional description
+    /// Optional description.
     pub description: Option<String>,
-    /// length of wire or cable
+    /// length of wire or cable.
     pub length: Length,
-    /// Pathway key containing instance
+    /// Pathway key containing instance.
     pub pathway: Option<String>,
-    /// physical location of Cable
+    /// physical location of Cable.
     pub physical_location: Option<PhysicalLocation>,
-    /// Fields for use with IEC project coding
+    /// Fields for use with IEC project coding.
     pub iec_codes: Option<IECCodes>,
-    /// User defined fields
+    /// User defined fields.
     pub user_fields: Option<UserFields>,
-    /// datafile the struct instance was read in from
+    /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }

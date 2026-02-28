@@ -15,21 +15,21 @@ use crate::{
     traits::{FromFile, ProjectData},
 };
 
-/// `MountingRail` represents an individual mounting rail in a project
+/// `MountingRail` represents an individual mounting rail in a project.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct MountingRail {
-    /// ID of type of mounting rail
+    /// ID of type of mounting rail.
     pub mounting_rail_type: String,
-    /// Length of mounting rail
+    /// Length of mounting rail.
     pub length: Length,
-    /// physical location of `MountingRail`
+    /// physical location of `MountingRail`.
     pub physical_location: Option<PhysicalLocation>,
-    /// Fields for use with IEC project coding
+    /// Fields for use with IEC project coding.
     pub iec_codes: Option<IECCodes>,
-    /// User defined fields
+    /// User defined fields.
     pub user_fields: Option<UserFields>,
-    /// datafile the struct instance was read in from
+    /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
@@ -48,11 +48,11 @@ impl FromFile for MountingRail {
 impl MountingRail {
     //TODO: Change this to a USVG error return
     /// Output a generated SVG either based on the parameters in `MountingRail` and
-    /// `MountingRailType` or the `start_image`, `middle_image` and `end_image` parameters
+    /// `MountingRailType` or the `start_image`, `middle_image` and `end_image` parameters.
     ///
     /// # Errors
     ///
-    /// Will error if `mounting_rail_type` not found in library
+    /// Will error if `mounting_rail_type` not found in library.
     #[expect(
         clippy::format_push_string,
         reason = "not worried about the additional allocation in this case."
@@ -105,11 +105,11 @@ impl MountingRail {
         let output = Svg::from_tree(Tree::from_str(&svg_string, &Svg::parse_options())?);
         Ok(output)
     }
-    /// If rail length is standard
+    /// If rail length is standard.
     ///
     /// # Errors
     ///
-    /// Will error if `mounting_rail_type` is not found in library
+    /// Will error if `mounting_rail_type` is not found in library.
     #[inline(never)]
     pub fn is_standard_length(&self, library: &Library) -> Result<bool, LibraryError> {
         let rail_type = library

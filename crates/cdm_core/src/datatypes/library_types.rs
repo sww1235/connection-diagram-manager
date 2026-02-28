@@ -1,23 +1,24 @@
-///`cable_type` represents a cable with multiple cores
+///`cable_type` represents a cable with multiple cores.
 pub mod cable_type;
-/// `connector_type` represents a connector
+/// `connector_type` represents a connector.
 pub mod connector_type;
-/// `enclosure_type` represents a type of enclosure
+/// `enclosure_type` represents a type of enclosure.
 pub mod enclosure_type;
-/// `equipment_type` represents a type of equipment
+/// `equipment_type` represents a type of equipment.
 pub mod equipment_type;
-/// `mounting_rail_type` represents a type of mounting rail such as DIN rail or unistrut
+/// `mounting_rail_type` represents a type of mounting rail such as DIN rail or unistrut.
 pub mod mounting_rail_type;
-/// `pathway_type` represents a type of pathway for wires or cables
+/// `pathway_type` represents a type of pathway for wires or cables.
 pub mod pathway_type;
-/// `schematic_symbol_type` represents a type of schematic symbol
+/// `schematic_symbol_type` represents a type of schematic symbol.
 pub mod schematic_symbol_type;
-/// `term_cable_type` represents a cable that has connectors assembled on to it
+/// `term_cable_type` represents a cable that has connectors assembled on to it.
 pub mod term_cable_type;
-/// `terminal_type` represents a type of terminal
-/// This module also includes related defintions including accessories and jumpers
+/// `terminal_type` represents a type of terminal.
+///
+/// This module also includes related defintions including accessories and jumpers.
 pub mod terminal_type;
-/// `wire_type` represents an individual wire with optional insulation
+/// `wire_type` represents an individual wire with optional insulation.
 pub mod wire_type;
 
 use std::{collections::BTreeMap, path::Path};
@@ -31,49 +32,49 @@ use crate::{
     util_functions,
 };
 
-/// `Library` represents all library data used in program
+/// `Library` represents all library data used in program.
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 #[serde(deny_unknown_fields)]
 #[non_exhaustive]
 pub struct Library {
-    /// contains all cable types read in from file, and/or added in via program logic
+    /// contains all cable types read in from file, and/or added in via program logic.
     pub cable_types: BTreeMap<String, cable_type::CableType>,
-    /// contains all connector types read in from file, and/or added in via program logic
+    /// contains all connector types read in from file, and/or added in via program logic.
     pub connector_types: BTreeMap<String, connector_type::ConnectorType>,
-    /// contains all enclosure types read in from file, and/or added in via program logic
+    /// contains all enclosure types read in from file, and/or added in via program logic.
     pub enclosure_types: BTreeMap<String, enclosure_type::EnclosureType>,
-    /// contains all equipment types read in from file, and/or added in via program logic
+    /// contains all equipment types read in from file, and/or added in via program logic.
     pub equipment_types: BTreeMap<String, equipment_type::EquipmentType>,
-    /// contains all mounting rail types read in from file, and/or added in via program logic
+    /// contains all mounting rail types read in from file, and/or added in via program logic.
     pub mounting_rail_types: BTreeMap<String, mounting_rail_type::MountingRailType>,
-    /// contains all pathway types read in from file, and/or added in via program logic
+    /// contains all pathway types read in from file, and/or added in via program logic.
     pub pathway_types: BTreeMap<String, pathway_type::PathwayType>,
-    /// contains all schematic symbol types read in from file and/or added in via program logic
+    /// contains all schematic symbol types read in from file and/or added in via program logic.
     pub schematic_symbol_types: BTreeMap<String, schematic_symbol_type::SchematicSymbolType>,
-    /// contains all terminated cable types read in from file, and/or added in via program logic
+    /// contains all terminated cable types read in from file, and/or added in via program logic.
     pub term_cable_types: BTreeMap<String, term_cable_type::TermCableType>,
-    /// contains all terminal types read in from file, and/or added in via program logic
+    /// contains all terminal types read in from file, and/or added in via program logic.
     pub terminal_types: BTreeMap<String, terminal_type::TerminalType>,
     /// contains all terminal strip jumper types read in from file, and/or added in via program
-    /// logic
+    /// logic.
     pub terminal_strip_jumper_types: BTreeMap<String, terminal_type::TerminalStripJumperType>,
-    /// contains all terminal accessory types read in from file, and/or added in via program logic
+    /// contains all terminal accessory types read in from file, and/or added in via program logic.
     pub terminal_accessory_types: BTreeMap<String, terminal_type::TerminalAccessoryType>,
     /// contains all terminal strip accessory types read in from file, and/or added in via program
-    /// logic
+    /// logic.
     pub terminal_strip_accessory_types: BTreeMap<String, terminal_type::TerminalStripAccessoryType>,
-    /// contains all wire types read in from file, and/or added in via program logic
+    /// contains all wire types read in from file, and/or added in via program logic.
     pub wire_types: BTreeMap<String, wire_type::WireType>,
 }
 
 impl Library {
     /// Merges two instances of `Library`, validating that there are no key conflicts between the
-    /// two instances
+    /// two instances.
     ///
     /// # Errors
     ///
-    /// Will error if there are duplicate keys found in `other` map
+    /// Will error if there are duplicate keys found in `other` map.
     #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
     #[inline(never)]
     pub fn merge(&mut self, test_map: Library, test_file: &Path) -> Result<(), Error> {
@@ -105,7 +106,7 @@ impl Library {
         Ok(())
     }
 
-    /// Inserts datafile path into all structs in the called library
+    /// Inserts datafile path into all structs in the called library.
     #[inline(never)]
     pub fn add_datafile_paths(&mut self, datafile_path: &Path) {
         // Cable Types
@@ -162,7 +163,7 @@ impl Library {
         }
     }
 
-    /// Validates that all lookup values in library data are present in library
+    /// Validates that all lookup values in library data are present in library.
     ///
     /// Only run this function after reading in all datafiles into master library.
     ///
@@ -526,9 +527,9 @@ mod tests {
     // [x] merging 2 libraries together with cables
     // [x] wires and cables in the same file
     #[test]
-    /// Test importing a realistic minimal example file
+    /// Test importing a realistic minimal example file.
     ///
-    /// No validation of string keys within library
+    /// No validation of string keys within library.
     fn read_datafile_library_cable_minimal_realistic() {
         let soow14_3 = CableType {
             cross_sect_area: CrossSectionalArea {
@@ -590,9 +591,9 @@ mod tests {
         assert_eq!(test_library, library_file);
     }
     #[test]
-    /// Test importing a cable with only required values
+    /// Test importing a cable with only required values.
     ///
-    /// No validation of string keys within library
+    /// No validation of string keys within library.
     fn read_datafile_library_cable_minimal() {
         let soow14_1 = CableType {
             cross_sect_area: CrossSectionalArea {
@@ -655,9 +656,9 @@ mod tests {
         assert_eq!(test_library, library_file);
     }
     #[test]
-    /// Test importing a cable with minimal values and multiple layers defined
+    /// Test importing a cable with minimal values and multiple layers defined.
     ///
-    /// No validation of string keys within library
+    /// No validation of string keys within library.
     fn read_datafile_library_cable_multi_layer() {
         let triax_rg11 = CableType {
             cross_sect_area: CrossSectionalArea {
@@ -778,9 +779,9 @@ mod tests {
         assert_eq!(test_library, library_file);
     }
     #[test]
-    /// Test importing a cable with all values defined
+    /// Test importing a cable with all values defined.
     ///
-    /// No validation of string keys within library
+    /// No validation of string keys within library.
     fn read_datafile_library_cable_full() {
         let soow14_3 = CableType {
             cross_sect_area: CrossSectionalArea {
@@ -894,7 +895,7 @@ mod tests {
     /// - wires and cables together in the same file
     ///
     /// this is a relatively realistic test, with a mix of filled in values, multiple items in
-    /// btreemaps, and validation of btreemap keys
+    /// btreemaps, and validation of btreemap keys.
     fn read_datafile_library_cable_multi_cable_wire() {
         let datafile_path = PathBuf::from("../../resources/test/library_tests/cable_type_test_multicore_realistic.toml")
             .canonicalize()
@@ -1597,7 +1598,7 @@ mod tests {
     /// - wires and cables together in the same file
     ///
     /// this is a relatively realistic test, with a mix of filled in values, multiple items in
-    /// btreemaps, and validation of btreemap keys
+    /// btreemaps, and validation of btreemap keys.
     fn read_datafile_library_cable_alt_cross_section() {
         let datafile_path = PathBuf::from("../../resources/test/library_tests/cable_type_test_figure8_aerial_fiber.toml")
             .canonicalize()
@@ -2225,9 +2226,9 @@ mod tests {
         assert_eq!(test_library, library_file);
     }
     #[test]
-    /// Test importing a realistic minimal example file
+    /// Test importing a realistic minimal example file.
     ///
-    /// No validation of string keys within library
+    /// No validation of string keys within library.
     fn read_datafile_library_cable_library_merging() {
         let soow14_3 = CableType {
             cross_sect_area: CrossSectionalArea {

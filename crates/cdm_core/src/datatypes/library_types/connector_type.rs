@@ -22,37 +22,37 @@ use crate::{
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct ConnectorType {
-    /// Catalog information
+    /// Catalog information.
     pub catalog: Option<Catalog>,
-    /// Dimensional information of connector
+    /// Dimensional information of connector.
     pub dimensions: Option<Dimension>,
-    /// Mounting method of connector
+    /// Mounting method of connector.
     ///
-    /// Cable, PCB through hole, PCB surface mount, panel
+    /// Cable, PCB through hole, PCB surface mount, panel.
     pub mount_type: Option<String>,
-    /// Panel Cutout of connector if it is panel mounted
+    /// Panel Cutout of connector if it is panel mounted.
     ///
-    /// D, A, etc
+    /// D, A, etc.
     pub panel_cutout: Option<String>,
-    /// Gender of connector
+    /// Gender of connector.
     ///
-    /// Male, Female, RPMale, RPFemale, Hermaphrodidic, unknown
+    /// Male, Female, RPMale, RPFemale, Hermaphrodidic, unknown.
     pub gender: Option<String>,
-    /// connector color
+    /// connector color.
     pub color: Option<Color>,
-    /// component designator
+    /// component designator.
     pub component_designator: Option<String>,
-    /// Vector of schematic symbols that can represent this `connector_type`
+    /// Vector of schematic symbols that can represent this `connector_type`.
     pub schematic_symbols: Option<Vec<String>>,
-    /// Optional list of other connector types this one can mate with
+    /// Optional list of other connector types this one can mate with.
     pub connector_type_mate: Option<Vec<String>>,
     /// pins inside connector.
     ///
     /// Pin index is not guaranteed to be the same. Use `ConnectorPin.id` for confirming equality.
     pub pins: BTreeMap<String, ConnectorPin>,
-    /// overall diagram of connector TODO: figure out what angle this should be
+    /// overall diagram of connector TODO: figure out what angle this should be.
     pub visual_representation: Option<Svg>,
-    /// datafile the struct instance was read in from
+    /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
@@ -68,21 +68,21 @@ impl FromFile for ConnectorType {
 }
 
 //TODO: store pin cross sectional area or something equivalent, also store pin type
-/// Represents an individual pin in a `ConnectorType`
+/// Represents an individual pin in a `ConnectorType`.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct ConnectorPin {
-    /// Pin Designation
+    /// Pin Designation.
     pub designation: String,
-    /// Pin label or name
+    /// Pin label or name.
     pub label: Option<String>,
-    /// Pin signal type
+    /// Pin signal type.
     pub signal_type: Option<String>,
-    /// Pin color
+    /// Pin color.
     pub color: Option<Color>,
-    /// visual representation of an individual pin
+    /// visual representation of an individual pin.
     pub visual_rep: Option<Svg>,
-    /// gender of pin
+    /// gender of pin.
     pub gender: Option<String>,
     /// Rating information of pin, not parsed.
     pub rating: Option<String>,

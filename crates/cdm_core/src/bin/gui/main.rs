@@ -1,6 +1,6 @@
 //! # Connection Diagram Manager Graphical User Interface (`cdm_gui`)
 //!
-//! `cdm_gui` is a graphical user interface for Connection Diagram Manager
+//! `cdm_gui` is a graphical user interface for Connection Diagram Manager.
 
 //#[cfg(feature = "gui")]
 use cdm_core::{bin_logic, datatypes};
@@ -8,7 +8,7 @@ use itertools::Itertools as _;
 use log::debug;
 use miniquad::{self as mq, conf::Conf as mqConf};
 
-/// Main GUI app
+/// Main GUI app.
 mod app;
 
 fn main() -> anyhow::Result<()> {

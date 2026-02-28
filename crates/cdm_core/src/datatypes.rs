@@ -1,15 +1,15 @@
-/// `color` is used to define common colors, as well as allow custom colors to be defined
+/// `color` is used to define common colors, as well as allow custom colors to be defined.
 pub mod color;
-/// `library_types` contains the types that are contained in a library
+/// `library_types` contains the types that are contained in a library.
 pub mod library_types;
-/// `project_types` contains the types that are contained in a project
+/// `project_types` contains the types that are contained in a project.
 pub mod project_types;
-/// `svg` represents a complete SVG image
+/// `svg` represents a complete SVG image.
 pub mod svg;
 /// `unit_helper` contains wrapper types around UOM units, to allow tracking what unit was defined
 /// in the data file easier.
 ///
-/// Also contains conversion helper functions
+/// Also contains conversion helper functions.
 pub mod unit_helper;
 ///`util_types` contains utility types that are used in multiple other different types and files,
 ///including generic enums.
@@ -37,11 +37,11 @@ use crate::{
 
 //TODO: investigate local structs instead of tuples
 //https://stackoverflow.com/questions/39008880/is-it-possible-to-declare-local-anonymous-structs-in-rust
-/// Parse datafiles and return data structs
+/// Parse datafiles and return data structs.
 ///
 /// # Errors
 ///
-/// Will error on IO errors or parsing errors
+/// Will error on IO errors or parsing errors.
 #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
 #[inline]
 pub fn parse_datafiles(cli: &Cli) -> Result<(ProjectConfig, Library, Project), Error> {

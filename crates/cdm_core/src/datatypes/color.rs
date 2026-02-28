@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-/// `Color` is a standardized list of colors supported in the application
+/// `Color` is a standardized list of colors supported in the application.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(
     missing_docs,
@@ -27,11 +27,11 @@ pub enum Color {
     Clear,
     Cyan,
     Aqua,
-    /// Used for custom colors. Only the `hex_code` is required
+    /// Used for custom colors. Only the `hex_code` is required.
     RGB {
-        /// 6 character HEX code. RRGGBB
+        /// 6 character HEX code. RRGGBB.
         hex_code: String,
-        /// 3 character abbreviation for the custom color
+        /// 3 character abbreviation for the custom color.
         abbreviation: String,
         /// name / color code for a color standard that this custom color represents.
         color_standard: Option<String>,
@@ -39,7 +39,7 @@ pub enum Color {
 }
 
 impl Color {
-    /// Returns a 3 character abbreviation for each color
+    /// Returns a 3 character abbreviation for each color.
     #[must_use]
     #[inline]
     pub fn abbreviation(&self) -> String {
@@ -64,7 +64,7 @@ impl Color {
             Self::RGB { abbreviation, .. } => abbreviation.clone(),
         }
     }
-    /// Returns a 6 character hex code (RRGGBB) for each color
+    /// Returns a 6 character hex code (RRGGBB) for each color.
     #[must_use]
     #[inline]
     pub fn hex_code(&self) -> String {

@@ -7,11 +7,11 @@ use crate::{error::Error, traits::FromFile};
 
 /// merge btreemaps merges two btreemaps while checking uniqueness of keys.
 ///
-/// Specialized function for merging btreemaps with data read in from datafiles
+/// Specialized function for merging btreemaps with data read in from datafiles.
 ///
 /// # Errors
 ///
-/// Will error if there are duplicate keys found in `test_map`
+/// Will error if there are duplicate keys found in `test_map`.
 #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
 pub fn merge_btreemaps<U, V>(origin_map: &mut BTreeMap<U, V>, test_map: BTreeMap<U, V>, test_file: &Path) -> Result<(), Error>
 where

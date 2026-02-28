@@ -1,24 +1,24 @@
-/// `cable` represents an instance of a `CableType`
+/// `cable` represents an instance of a `CableType`.
 pub mod cable;
-/// `connector` represents an instance of a `ConnectorType`
+/// `connector` represents an instance of a `ConnectorType`.
 pub mod connector;
-/// `enclosure` represents an instance of a `EnclosureType`
+/// `enclosure` represents an instance of a `EnclosureType`.
 pub mod enclosure;
 /// `equipment` represents an instance of an `EquipmentType`. This is a physical item
 /// you hold in your hand.
 pub mod equipment;
-/// `mounting_rail` represents an instance of a `MountingRailType`
+/// `mounting_rail` represents an instance of a `MountingRailType`.
 pub mod mounting_rail;
-/// `pathway` represents an instance of a `PathwayType`
+/// `pathway` represents an instance of a `PathwayType`.
 pub mod pathway;
-/// `term_cable` represents an instance of a `TermCableType`
+/// `term_cable` represents an instance of a `TermCableType`.
 pub mod term_cable;
-/// `terminal_strip` contains the main `terminal_strip` type and accessory types
+/// `terminal_strip` contains the main `terminal_strip` type and accessory types.
 pub mod terminal_strip;
-/// `wire` represents an instance of a `WireType`
+/// `wire` represents an instance of a `WireType`.
 pub mod wire;
 // TODO: improve this documentation
-/// `connection` represents a connection between two different elements
+/// `connection` represents a connection between two different elements.
 pub mod connection;
 
 use std::{
@@ -35,42 +35,42 @@ use crate::{
     util_functions,
 };
 
-/// `Project` represents all project specific data used in program
+/// `Project` represents all project specific data used in program.
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 #[serde(deny_unknown_fields)]
 #[non_exhaustive]
 pub struct Project {
-    /// contains all cables read in from files, and/or added in via program logic
+    /// contains all cables read in from files, and/or added in via program logic.
     pub cables: BTreeMap<String, cable::Cable>,
-    /// `connections` contains all connections between different equipment/cables/wires
+    /// `connections` contains all connections between different equipment/cables/wires.
     pub connections: Vec<connection::Connection>,
     //TODO: are connectors going to be read in separately?
-    /// contains all connectors read in from files, and/or added in via program logic
+    /// contains all connectors read in from files, and/or added in via program logic.
     pub connectors: BTreeMap<String, connector::Connector>,
-    /// contains all enclosures read in from files, and/or added in via program logic
+    /// contains all enclosures read in from files, and/or added in via program logic.
     pub enclosures: BTreeMap<String, enclosure::Enclosure>,
-    /// contains all equipment read in from files, and/or added in via program logic
+    /// contains all equipment read in from files, and/or added in via program logic.
     pub equipment: BTreeMap<String, equipment::Equipment>,
-    /// contains all mounting rails read in from files, and/or added in via program logic
+    /// contains all mounting rails read in from files, and/or added in via program logic.
     pub mounting_rails: BTreeMap<String, mounting_rail::MountingRail>,
-    /// contains all pathways read in from files and/or added in via program logic
+    /// contains all pathways read in from files and/or added in via program logic.
     pub pathways: BTreeMap<String, pathway::Pathway>,
-    /// contains all term cables read in from files, and/or added in via program logic
+    /// contains all term cables read in from files, and/or added in via program logic.
     pub term_cables: BTreeMap<String, term_cable::TermCable>,
-    /// contains all terminal strips read in from files and/or added in via program logic
+    /// contains all terminal strips read in from files and/or added in via program logic.
     pub terminal_strips: BTreeMap<String, terminal_strip::TerminalStrip>,
-    /// `wires` contains all wires read in from files, and/or added in via program logic
+    /// `wires` contains all wires read in from files, and/or added in via program logic.
     pub wires: BTreeMap<String, wire::Wire>,
 }
 
 impl Project {
     /// Merges two instances of `Project`, validating that there are no key conflicts between the
-    /// two instances
+    /// two instances.
     ///
     /// # Errors
     ///
-    /// Will error if there are duplicate keys found in `other` map
+    /// Will error if there are duplicate keys found in `other` map.
     #[inline(never)]
     #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
     pub fn merge(&mut self, test_map: Project, test_file: &Path) -> Result<(), Error> {
@@ -87,7 +87,7 @@ impl Project {
         util_functions::merge_btreemaps(&mut self.wires, test_map.wires, test_file)?;
         Ok(())
     }
-    /// Inserts datafile path into all structs in the called project
+    /// Inserts datafile path into all structs in the called project.
     #[inline(never)]
     pub fn add_datafile_paths(&mut self, datafile_path: &Path) {
         // Cables
@@ -133,14 +133,14 @@ impl Project {
         }
     }
 
-    /// Validates that all lookup values in project data are present in library or project
+    /// Validates that all lookup values in project data are present in library or project.
     ///
     /// Only run this function after reading in all datafiles into master library.
     ///
     /// # Errors
     ///
     /// Will error if library data or project data referenced in `Project` is not found in the
-    /// provided `Library` or referenced `Project`
+    /// provided `Library` or referenced `Project`.
     #[inline(never)]
     #[expect(clippy::too_many_lines, reason = "its the length it needs to be")]
     #[expect(clippy::result_unit_err, reason = "May add actual result type in future.")]
@@ -335,43 +335,43 @@ impl Project {
     }
 }
 
-/// Config contains project specific configuration information
+/// Config contains project specific configuration information.
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct Config {
-    /// Name of project
+    /// Name of project.
     pub project_name: String,
-    /// If default libraries included with the application should be loaded into project
+    /// If default libraries included with the application should be loaded into project.
     pub load_default_libraries: bool,
     /// Paths to load libraries from.
     ///
     /// If a path listed is a directory, all `.toml` files within it or subdirectories will be
-    /// included as library files. Paths can be either relative or absolute
+    /// included as library files. Paths can be either relative or absolute.
     ///
     /// Hidden files/directories are ignored.
     pub library_paths: Option<Vec<PathBuf>>,
-    /// Specific paths to load project source files from
+    /// Specific paths to load project source files from.
     ///
     /// If this is not defined, all TOML files in the directory that the cfg file is in, and
     /// sub-directories will be parsed as project files.
     ///
     ///
     /// If a path listed is a directory, all `.toml` files within it or sub-directories will be
-    /// treated as project files. Paths can be either relative or absolute
+    /// treated as project files. Paths can be either relative or absolute.
     ///
     /// If this is not defined, then all other TOML files found within the root directory or
     /// subidirectories of the project will be parsed as project files.
     ///
-    /// Hidden files/directories are ignored
+    /// Hidden files/directories are ignored.
     pub source_paths: Option<Vec<PathBuf>>,
     //TODO: switch this to an enum
     /// Code reference used for wire ampacity checks and conduit fill, etc.
     /// These are complicated enough that they are currently defined in code
     /// rather than a configuration file.
     pub electrical_code_standard: Option<String>,
-    /// IEC project code
+    /// IEC project code.
     pub project_code: Option<String>,
-    /// Optional description of project
+    /// Optional description of project.
     pub description: Option<String>,
 }
 

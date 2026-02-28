@@ -5,27 +5,27 @@ use super::IntermediateUnit;
 use crate::error::UnitParsingError;
 
 /// Struct representing Nominal wire size which may be different than its actual
-/// `CrossSectionalArea`
+/// `CrossSectionalArea`.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(try_from = "IntermediateUnit")]
 #[non_exhaustive]
 pub struct NominalWireSize {
-    /// contained uom Unit
+    /// contained uom Unit.
     pub value: NominalWireUnit,
-    /// original unit in datafile
+    /// original unit in datafile.
     pub original_unit: String,
 }
 
 //TODO: replace f64 with a fixed/decimal equivalent type
-/// Represents common nominal units for wire sizes
+/// Represents common nominal units for wire sizes.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum NominalWireUnit {
-    /// Nominal size represented in American Wire Gauge (AWG)
+    /// Nominal size represented in American Wire Gauge (AWG).
     Awg(f64),
-    /// Nominal size represented in mm²
+    /// Nominal size represented in mm².
     Mm2(f64),
-    /// Nominal size represented in Circular Mil
+    /// Nominal size represented in Circular Mil.
     Cmil(f64),
 }
 
@@ -38,7 +38,7 @@ impl Default for NominalWireUnit {
 
 impl NominalWireSize {
     /// outputs all usable `NominalWireSize` units allowed in configuration files in the form of
-    /// `<unit name>: <unit abbreviation>`
+    /// `<unit name>: <unit abbreviation>`.
     #[must_use]
     #[expect(clippy::string_add, reason = "easier and cleaner than one massive format string")]
     #[inline]

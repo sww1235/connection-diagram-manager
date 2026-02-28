@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use miniquad::conf::Conf as mqConf;
 use serde::{Deserialize, Serialize};
 
-/// `Config` represents configuration options for the various cdm binary programs
+/// `Config` represents configuration options for the various cdm binary programs.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
 #[serde(default)]
@@ -15,42 +15,44 @@ use serde::{Deserialize, Serialize};
 #[non_exhaustive]
 pub struct ApplicationConfig {
     /// `default_library_locations` contains paths to search for TOML library files to read into the
-    /// main [`Library`](crate::datatypes::internal_types::Library)
+    /// main [`Library`](crate::datatypes::internal_types::Library).
+    ///
     /// If a path is a directory, all TOML files found within the directory and its sub-directories
-    /// will be parsed as library files
-    /// Hidden paths will be ignored
+    /// will be parsed as library files.
+    ///
+    /// Hidden paths will be ignored.
     pub default_library_locations: Vec<PathBuf>,
-    /// Enable postgres database features
+    /// Enable postgres database features.
     pub enable_post_gres: bool,
-    /// `PostGres` DSN
+    /// `PostGres` DSN.
     pub post_gres_dsn: String,
-    /// Default Area unit for Display
+    /// Default Area unit for Display.
     pub default_area_unit: String,
-    /// Default Length Unit for Display
+    /// Default Length Unit for Display.
     pub default_length_unit: String,
-    /// used for cross sectional area of wires for Display
+    /// used for cross sectional area of wires for Display.
     pub default_cross_section_area_unit: String,
-    /// Default Electrical Potential Unit for Display
+    /// Default Electrical Potential Unit for Display.
     pub default_electrical_potential_unit: String,
-    /// Default Temperature Interval Unit for Display
+    /// Default Temperature Interval Unit for Display.
     pub default_temperature_interval_unit: String,
-    /// use AWG instead of `default_cross_sectional_area_unit` for Display
+    /// use AWG instead of `default_cross_sectional_area_unit` for Display.
     pub use_awg: bool,
     /// If set, will set any default display units to USA customary units
-    /// unless specifically set with other settings
+    /// unless specifically set with other settings.
     ///
-    /// Area: square inch
-    /// Length: inch
-    /// Cross Section Area: AWG/circular mils
-    /// Electrical Potential: Volt
-    /// Temperature Interval: Degree Farenheit
+    /// - Area: square inch
+    /// - Length: inch
+    /// - Cross Section Area: AWG/circular mils
+    /// - Electrical Potential: Volt
+    /// - Temperature Interval: Degree Farenheit
     pub use_usa_customary_units: bool,
     /// If this is set, adjust prefixes or units used in display
-    /// so there is no more than 3 digits before the decimal place
-    /// If it is not set, will display all units in their default units only
+    /// so there is no more than 3 digits before the decimal place.
+    /// If it is not set, will display all units in their default units only.
     pub use_engineering_prefixes: bool,
     #[cfg(feature = "gui")]
-    /// Graphics configuration options
+    /// Graphics configuration options.
     pub graphics_config: GraphicsConfig,
 }
 
@@ -80,17 +82,17 @@ impl Default for ApplicationConfig {
 #[serde(default)]
 #[expect(clippy::module_name_repetitions, reason = "Specialized config struct")]
 #[non_exhaustive]
-/// Graphics configuration options
+/// Graphics configuration options.
 pub struct GraphicsConfig {
-    /// Starting window height
+    /// Starting window height.
     pub starting_window_height: i32,
-    /// Starting window width
+    /// Starting window width.
     pub starting_window_width: i32,
-    /// Enable high DPI features
+    /// Enable high DPI features.
     pub high_dpi: bool,
-    /// Default height for SVGs rendered as `SchematicSymbol`s
+    /// Default height for SVGs rendered as `SchematicSymbol`s.
     pub starting_schematic_symbol_height: i32,
-    /// Default width for SVGs rendered as `SchematicSymbol`s
+    /// Default width for SVGs rendered as `SchematicSymbol`s.
     pub starting_schematic_symbol_width: i32,
 }
 

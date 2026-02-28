@@ -10,25 +10,25 @@ use crate::{
     traits::{FromFile, ProjectData},
 };
 
-/// `Pathway` represents a physical instance of a pathway
+/// `Pathway` represents a physical instance of a pathway.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct Pathway {
-    /// Type of pathway
+    /// Type of pathway.
     pub path_type: String,
-    /// structured identifier of pathway
+    /// structured identifier of pathway.
     pub identifier: Option<String>,
-    /// Optional description
+    /// Optional description.
     pub description: Option<String>,
-    /// length
+    /// length.
     pub length: Length,
-    /// physical location of Pathway
+    /// physical location of Pathway.
     pub physical_location: Option<PhysicalLocation>,
-    /// Fields for use with IEC project coding
+    /// Fields for use with IEC project coding.
     pub iec_codes: Option<IECCodes>,
-    /// User defined fields
+    /// User defined fields.
     pub user_fields: Option<UserFields>,
-    /// datafile the struct instance was read in from
+    /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }

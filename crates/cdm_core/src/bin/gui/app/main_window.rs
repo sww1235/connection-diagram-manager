@@ -15,7 +15,7 @@ use crate::app::AppState;
     clippy::shadow_unrelated,
     reason = "ui and other variables keep getting passed into closures"
 )]
-/// Main window rendering code
+/// Main window rendering code.
 pub fn main_window(
     egui_ctx: &egui::Context,
     app_config: &ApplicationConfig,

@@ -8,20 +8,20 @@ use uom::si::{Unit as _, area::*, rational64};
 use super::IntermediateUnit;
 use crate::error::UnitParsingError;
 
-/// Struct representing `Area` values
+/// Struct representing `Area` values.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(try_from = "IntermediateUnit")]
 #[non_exhaustive]
 pub struct Area {
-    /// contained uom Unit
+    /// contained uom Unit.
     pub value: rational64::Area,
-    /// original unit in datafile
+    /// original unit in datafile.
     pub original_unit: String,
 }
 
 impl Area {
     /// outputs all usable `Area` units allowed in configuration files in the form of `<unit name>:
-    /// <unit abbreviation>`
+    /// <unit abbreviation>`.
     #[must_use]
     #[expect(clippy::string_add, reason = "easier and cleaner than one massive format string")]
     #[inline]
@@ -395,7 +395,7 @@ impl TryFrom<IntermediateUnit> for Area {
 // https://stackoverflow.com/a/69769813
 // where this custom Serde hack came from
 /// Units enum for selecting type of unit. This is a hack until UOM gets proper support for
-/// selecting units when serializing and de-serializing
+/// selecting units when serializing and de-serializing.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Serialize, Deserialize)]
 #[expect(missing_docs, reason = "self documenting enum")]
 #[non_exhaustive]

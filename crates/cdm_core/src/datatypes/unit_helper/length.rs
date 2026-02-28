@@ -8,20 +8,20 @@ use uom::si::{Unit as _, length::*, rational64};
 use super::IntermediateUnit;
 use crate::error::UnitParsingError;
 
-/// Struct representing `Length` values
+/// Struct representing `Length` values.
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(try_from = "IntermediateUnit")]
 #[non_exhaustive]
 pub struct Length {
-    /// contained uom Unit
+    /// contained uom Unit.
     pub value: rational64::Length,
-    /// original unit in datafile
+    /// original unit in datafile.
     pub original_unit: String,
 }
 
 impl Length {
     /// outputs all usable `Length` units allowed in configuration files in the form of `<unit
-    /// name>: <unit abbreviation>`
+    /// name>: <unit abbreviation>`.
     #[must_use]
     #[expect(clippy::string_add, reason = "easier and cleaner than one massive format string")]
     #[inline]
