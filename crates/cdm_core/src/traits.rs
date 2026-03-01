@@ -2,7 +2,7 @@ use std::path::{Path, PathBuf};
 
 use crate::{
     datatypes::{library_types::Library, svg::Svg},
-    error::LibraryError,
+    error::{Error, LibraryError},
 };
 
 /// `Connector` contains common methods for various specific connector types defined in the
@@ -32,11 +32,12 @@ pub trait FromFile {
 pub trait VisualRepresentation {
     /// returns a standard or representative representation of the entity in SVG format.
     fn visual_rep(&self, library: &Library) -> Svg;
+    //TODO: add an update_data function here
 }
 /// `SchematicRepresentation` provides a SVG symbol used for drawing schematic diagrams.
 pub trait SchematicRepresentation {
     //TODO: somehow make URI an element of SVG rather than being built in the trait method.
-    /// returns a SVG schematic symbol of the entity and a URI used in rendering code.
+    /// Returns a SVG schematic symbol of the entity and a URI used in rendering code.
     ///
     /// `symbol_selector` selects an alternate symbol for a specific entity. If the variable is
     /// `None` or larger than `vec.len()-1`, the recommended implementation is to return the SVG at
@@ -47,6 +48,17 @@ pub trait SchematicRepresentation {
     /// Shall error if the id of `&self.entity_type` is not found in the provided library or other
     /// implementation specific errors.
     fn schematic_symbol(&self, library: &Library, symbol_selector: Option<usize>) -> Result<(Svg, String), LibraryError>;
+
+    /// Updates tagged attributes within the SVG file based on data from `&self` or its library
+    /// type.
+    ///
+    /// Can be called multiple times to update data if it changes.
+    ///
+    /// # Errors
+    ///
+    /// XML parsing or writing may fail.
+    #[expect(clippy::result_large_err, reason = "Using main Error type")]
+    fn update_symbol_data(&self, library: &Library, svg: &mut Svg) -> Result<(), Error>;
 }
 /// Marker trait for Project data.
 pub trait ProjectData {}

@@ -50,6 +50,15 @@ pub enum Error {
     /// Errors resulting from TOML file parsing.
     #[error(transparent)]
     TomlError(#[from] toml::de::Error),
+    /// Errors resulting from parsing XML documents.
+    #[error(transparent)]
+    XMLParseError(#[from] xml::reader::Error),
+    /// Errors resulting from writing XML documents.
+    #[error(transparent)]
+    XMLWriteError(#[from] xml::writer::Error),
+    /// Errors resulting from parsing or converting bytes into UTF8 strings.
+    #[error(transparent)]
+    UTF8Error(#[from] core::str::Utf8Error),
 }
 
 /// `LibraryError` is the list of errors that can occur within code related to `Library` data,
@@ -221,3 +230,10 @@ pub enum UnitParsingError {
         data_type: String,
     },
 }
+
+/// `SVGModificationError` are errors that result from modifying SVG files programatically, which
+/// are used to render objects within the application.
+#[derive(Debug, Error)]
+#[non_exhaustive]
+#[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
+pub enum SVGModificationError {}

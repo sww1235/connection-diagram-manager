@@ -1,24 +1,14 @@
-use core::str::FromStr as _;
-use std::{
-    env,
-    fmt,
-    fs,
-    path::{Path, PathBuf},
-};
+use core::{convert::Infallible, str::FromStr};
+use std::{env, fmt, fs, path::PathBuf};
 
 use log::trace;
 use serde::{
     de::{self, Deserialize, Deserializer, Visitor},
     ser::{Serialize, Serializer},
 };
-use usvg::{
-    Options as SvgParseOptions,
-    Tree,
-    WriteOptions as SvgWriteOptions,
-    roxmltree::{Document, ParsingOptions as XmlParseOptions},
-};
+use usvg::{Error as USvgParseError, Options as USvgParseOptions, Tree};
 
-mod rwxmltree;
+//mod rwxmltree;
 
 //TODO: implement svg validation rules here
 //
@@ -99,54 +89,26 @@ impl Visitor<'_> for SvgVisitor {
                 .map_err(|err| E::custom(format!("failed to canonicalize filepath: {err}")))?;
             let image_bytes = fs::read(&canonical_path).map_err(|err| E::custom(format!("failed to read file: {err}")))?;
             let image_str = str::from_utf8(&image_bytes)
-                .map_err(|err| E::custom(format!("failed to parse image bytes into UTF8 string: {err}")))?;
-
-            parse_xml_svg(image_str, Some(&canonical_path))?
+                .map_err(|err| E::custom(format!("failed to parse image bytes into UTF8 string: {err}")))?
+                .to_owned();
+            Svg {
+                svg_data: image_str,
+                filepath: Some(canonical_path),
+            }
         }
         //If filepath parsing fails, it should be an SVG
         else {
             trace! {"failed to parse {v} as path"};
-
-            parse_xml_svg::<E>(v, None)?
+            Svg {
+                svg_data: v.to_owned(),
+                filepath: None,
+            }
         };
 
         Ok(svg)
     }
 }
-//return Err();
 
-/// Inner XML/SVG parsing function
-///
-/// uses the returned `[roxmltree::Document]` to parse useful info out of the XML file before
-/// converting to a `[usvg::Tree]` which doesn't retain attribute info
-fn parse_xml_svg<E>(image_str: &str, filepath: Option<&Path>) -> Result<Svg, E>
-where E: de::Error {
-    let tree = match Document::parse_with_options(image_str, Svg::xml_parse_options()) {
-        Ok(doc) => {
-            // TODO: Add XML attribute parsing here. May need to change return type to Svg
-            match Tree::from_xmltree(&doc, &Svg::parse_options()) {
-                Ok(tree) => tree,
-                Err(tree_err) => {
-                    return Err(E::custom(format!(
-                        "Failed to parse data in {} as SVG data. {tree_err}",
-                        filepath.unwrap_or(Path::new("NO PATH")).display()
-                    )));
-                }
-            }
-        }
-        Err(doc_err) => {
-            return Err(E::custom(format!(
-                "Failed to parse data in {} as XML data. {doc_err}",
-                filepath.unwrap_or(Path::new("NO PATH")).display()
-            )));
-        }
-    };
-
-    Ok(Svg {
-        tree,
-        filepath: filepath.map(Path::to_path_buf),
-    })
-}
 
 impl Default for Svg {
     #[inline]
