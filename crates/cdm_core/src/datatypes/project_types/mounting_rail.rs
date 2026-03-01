@@ -1,8 +1,8 @@
+use core::str::FromStr as _;
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 use uom::si::length::millimeter;
-use usvg::Tree;
 
 use crate::{
     datatypes::{
@@ -102,7 +102,8 @@ impl MountingRail {
             }
             svg_string.push_str("</svg>");
         }
-        let output = Svg::from_tree(Tree::from_str(&svg_string, &Svg::parse_options())?);
+        #[expect(clippy::unwrap_used, reason = "function currently infallible")]
+        let output = Svg::from_str(&svg_string).unwrap();
         Ok(output)
     }
     /// If rail length is standard.

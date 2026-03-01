@@ -27,50 +27,34 @@ mod rwxmltree;
 /// Svg represents a full SVG image.
 #[derive(Debug, Clone)]
 pub struct Svg {
-    /// a `[usvg::Tree]` used for easy interpretation of `SVG`
-    tree: Tree,
-    /// If provided string is a filepath to a SVG file stored elsewhere
+    /// a raw XML doc imported and modified.
+    svg_data: String,
+    /// If provided string is a filepath to a SVG file stored elsewhere.
     filepath: Option<PathBuf>,
 }
 
 impl Svg {
-    #[must_use]
+    /// Outputs a `[usvg::Tree]` of the `svg_data` contained within the `Svg`.
+    ///
+    /// # Errors
+    ///
+    /// Will error if the conversion to `[usvg::Tree]` fails.
     #[inline]
-    /// Standard `[usvg::WriteOptions]` used when writing SVGs to strings
-    pub fn write_options() -> SvgWriteOptions {
-        SvgWriteOptions::default()
-    }
-    #[must_use]
-    #[inline]
-    /// Standard `[usvg::Options]` used when parsing SVG strings
-    pub fn parse_options() -> SvgParseOptions<'static> {
-        SvgParseOptions::default()
-    }
-    #[must_use]
-    #[inline]
-    /// Standard `[usvg::roxmltree::ParsingOptions]` used when parsing XML documents
-    fn xml_parse_options() -> XmlParseOptions {
-        XmlParseOptions::default()
-    }
-    #[must_use]
-    #[inline]
-    /// Gets the underlying `[usvg::Tree]` in `Svg`
-    pub fn get_tree(self) -> Tree {
-        self.tree
-    }
-    #[must_use]
-    #[inline]
-    /// Create a `Svg` from a `[usvg::Tree]`
-    pub fn from_tree(tree: Tree) -> Self {
-        Self { tree, filepath: None }
+    pub fn get_tree(&self) -> Result<Tree, USvgParseError> {
+        Tree::from_data(self.svg_data.as_bytes(), &USvgParseOptions::default())
     }
 
-    #[must_use]
+    /// Returns the XML data within the `Svg`.
     #[inline]
-    /// Create a byte vector from a `[Svg]`
-    pub fn into_bytes(&self) -> Vec<u8> {
-        let write_options = SvgWriteOptions::default();
-        self.tree.to_string(&write_options).into_bytes()
+    #[must_use]
+    pub fn get_data(&self) -> String {
+        self.svg_data.clone()
+    }
+
+    /// Sets the XML data witin the `Svg`.
+    #[inline]
+    pub fn set_data(&mut self, new_data: &str) {
+        self.svg_data = new_data.to_owned();
     }
 }
 
@@ -78,9 +62,8 @@ impl Serialize for Svg {
     #[inline]
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where S: Serializer {
-        let write_options = SvgWriteOptions::default();
         //TODO: handle filepaths
-        serializer.serialize_str(self.tree.to_string(&write_options).as_str())
+        serializer.serialize_str(&self.svg_data)
     }
 }
 
@@ -173,11 +156,8 @@ impl Default for Svg {
 <svg xmlns="http://www.w3.org/2000/svg" width="640" height="120">
 </svg>
         "#;
-
-        let options = SvgParseOptions::default();
-        #[expect(clippy::unwrap_used, reason = "a known SVG string should never fail to parse")]
         Svg {
-            tree: Tree::from_str(default_svg_string, &options).unwrap(),
+            svg_data: default_svg_string.to_owned(),
             filepath: None,
         }
     }
@@ -188,7 +168,21 @@ impl Default for Svg {
 impl PartialEq for Svg {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
-        self.tree.to_string(&Self::write_options()) == other.tree.to_string(&Self::write_options())
-            && self.filepath == other.filepath
+        self.svg_data == other.svg_data && self.filepath == other.filepath
+    }
+}
+
+impl FromStr for Svg {
+    type Err = Infallible;
+
+    //TODO: validation
+    /// Creates a `Svg` from a string representation of an Svg. No validation is performed
+    /// currently.
+    #[inline]
+    fn from_str(text: &str) -> Result<Self, Self::Err> {
+        Ok(Self {
+            svg_data: text.to_owned(),
+            filepath: None,
+        })
     }
 }

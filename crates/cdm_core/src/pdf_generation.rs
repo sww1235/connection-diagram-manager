@@ -173,7 +173,7 @@ pub fn render_enclosure(
                         project_type: "MountingRail".to_owned(),
                     })?
                     .vis_rep(library)?
-                    .get_tree(),
+                    .get_tree()?,
                 x.value,
                 y.value,
                 scale,
@@ -837,7 +837,7 @@ pub fn render_enclosure_schematic_ladder(
                         project_type: "MountingRail".to_owned(),
                     })?
                     .vis_rep(library)?
-                    .get_tree(),
+                    .get_tree()?,
                 x.value,
                 y.value,
                 scale,

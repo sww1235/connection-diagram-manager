@@ -41,7 +41,7 @@ pub fn main_window(
                     let (symbol, uri) = equipment
                         .schematic_symbol(library_data, None)
                         .unwrap_or_else(|_| panic!("schematic symbol not defined in library_data for equipment {id}"));
-                    let svg_data = symbol.into_bytes();
+                    let svg_data = symbol.get_data().into_bytes();
                     let sense_settings = Sense::DRAG & Sense::FOCUSABLE;
                     let image = egui::widgets::Image::from_bytes(uri, svg_data)
                         .sense(sense_settings)
