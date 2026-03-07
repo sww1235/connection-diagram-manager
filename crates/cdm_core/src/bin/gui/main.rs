@@ -3,7 +3,7 @@
 //! `cdm_gui` is a graphical user interface for Connection Diagram Manager.
 
 //#[cfg(feature = "gui")]
-use cdm_core::{bin_logic, datatypes};
+use cdm_core::{bin_logic, datatypes, traits::SchematicRepresentation as _};
 use itertools::Itertools as _;
 use log::debug;
 use miniquad::{self as mq, conf::Conf as mqConf};
@@ -22,7 +22,7 @@ fn main() -> anyhow::Result<()> {
         bin_logic::print_file_units(&cli);
         return Ok(());
     }
-    let (project_config, library_data, project_data) = datatypes::parse_datafiles(&cli)?;
+    let (project_config, library_data, mut project_data) = datatypes::parse_datafiles(&cli)?;
     debug!("{library_data:#?}");
 
     debug!("{project_data:#?}");
@@ -50,6 +50,15 @@ fn main() -> anyhow::Result<()> {
     if !project_validation.is_empty() {
         let project_validation_string: String = project_validation.iter().format("\n").to_string();
         anyhow::bail!(project_validation_string);
+    }
+
+    // Update data in schematic symbols on equipment
+    for equipment_instance in project_data.equipment.values_mut() {
+        // TODO: provide config option for symbol selector
+        equipment_instance
+            .update_schematic_symbol_from_library(&library_data, None)
+            .unwrap();
+        equipment_instance.update_symbol_data(&library_data).unwrap();
     }
 
     let mut gui_conf: mqConf = app_config.clone().graphics_config.into();

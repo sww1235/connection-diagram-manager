@@ -36,7 +36,6 @@ pub struct EquipmentType {
     pub rating: Option<String>,
     /// Vector of schematic symbols that can represent this equipment.
     /// values must be the id of the `symbol_type`.
-    #[serde(default)]
     pub schematic_symbols: Vec<String>,
     /// visual representation of the equipment.
     // TODO: figure out what angle to standardize on, or

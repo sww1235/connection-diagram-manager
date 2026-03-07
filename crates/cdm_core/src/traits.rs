@@ -35,11 +35,20 @@ pub trait VisualRepresentation {
     //TODO: add an update_data function here
 }
 /// `SchematicRepresentation` provides a SVG symbol used for drawing schematic diagrams.
-pub trait SchematicRepresentation {
+pub trait SchematicRepresentation
+where Self: ProjectData
+{
     //TODO: somehow make URI an element of SVG rather than being built in the trait method.
-    /// Returns a SVG schematic symbol of the entity and a URI used in rendering code.
+    /// Returns the SVG `schematic_symbol` of the entity and a URI used in rendering code.
     ///
-    /// `symbol_selector` selects an alternate symbol for a specific entity. If the variable is
+    /// If `schematic_symbol` is `None` then this will return a placeholder warning graphic
+    /// instead.
+    fn schematic_symbol(&self) -> (Svg, String);
+
+    //TODO: somehow make URI an element of SVG rather than being built in the trait method.
+    /// Updates the `schematic_symbol` in `Self` from the options defined in `&self.entity_type`.
+    ///
+    /// `symbol_selector` selects an alternate symbol. If the variable is
     /// `None` or larger than `vec.len()-1`, the recommended implementation is to return the SVG at
     /// index `0`.
     ///
@@ -48,10 +57,10 @@ pub trait SchematicRepresentation {
     /// Shall error if the id of `&self.entity_type` is not found in the provided library or other
     /// implementation specific errors.
     #[expect(clippy::result_large_err, reason = "Using main Error type")]
-    fn schematic_symbol(&self, library: &Library, symbol_selector: Option<usize>) -> Result<(Svg, String), Error>;
+    fn update_schematic_symbol_from_library(&mut self, library: &Library, symbol_selector: Option<usize>) -> Result<(), Error>;
 
-    /// Updates tagged attributes within the SVG file based on data from `&self` or its library
-    /// type.
+    /// Updates tagged attributes within the `schematic_symbol` defined on `&self` based on data from `&self`
+    /// or its library type.
     ///
     /// Can be called multiple times to update data if it changes.
     ///
@@ -59,7 +68,7 @@ pub trait SchematicRepresentation {
     ///
     /// XML parsing or writing may fail.
     #[expect(clippy::result_large_err, reason = "Using main Error type")]
-    fn update_symbol_data(&self, library: &Library, svg: &mut Svg) -> Result<(), Error>;
+    fn update_symbol_data(&mut self, library: &Library) -> Result<(), Error>;
 }
 /// Marker trait for Project data.
 pub trait ProjectData {}

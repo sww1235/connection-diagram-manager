@@ -247,4 +247,7 @@ pub enum SVGModificationError {
     /// are present on a text element.
     #[error("Conflicting `data-` attributes were found on a `<text>` element while attempting to update its value.")]
     ConflictingAttributes,
+    /// If SVG is undefined or field is None.
+    #[error("Attempting to update SVG data on a undefined or `None` SVG field")]
+    UpdatingUndefinedSvg,
 }

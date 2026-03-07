@@ -6,9 +6,8 @@ use cdm_core::{
     traits::SchematicRepresentation as _,
 };
 use egui::{Area, Id, Sense, Window, layers::Order, widgets};
-use num_traits::cast::FromPrimitive as _;
-
 use log::trace;
+use num_traits::cast::FromPrimitive as _;
 
 use crate::app::AppState;
 //use usvg::{Options as ParseOptions, Tree, WriteOptions};
@@ -38,16 +37,9 @@ pub fn main_window(
             //https://github.com/emilk/egui/issues/7836
             if let Some(rect) = ui.memory(|memory| memory.area_rect(main_window_id)) {
                 for (id, equipment) in &project_data.equipment {
-                    trace!{"ID: {id}, Equipment: {equipment:#?}"};
+                    trace! {"ID: {id}, Equipment: {equipment:#?}"};
                     //TODO: instead of expect() just load image error placeholder and log
-                    #[expect(clippy::panic, reason = "Error handling is hard in GUI code")]
-                    let (mut symbol, uri) = equipment
-                        .schematic_symbol(library_data, None)
-                        .unwrap_or_else(|_| panic!("schematic symbol not defined in library_data for equipment {id}"));
-                    #[expect(clippy::panic, reason = "Error handling is hard in GUI code")]
-                    equipment
-                        .update_symbol_data(library_data, &mut symbol)
-                        .unwrap_or_else(|err| panic!("Failed to update fields in schematic symbol for equipment {id}. \n {err}"));
+                    let (symbol, uri) = equipment.schematic_symbol();
                     let svg_data = symbol.get_data().into_bytes();
                     let sense_settings = Sense::DRAG & Sense::FOCUSABLE;
                     let image = egui::widgets::Image::from_bytes(uri, svg_data)

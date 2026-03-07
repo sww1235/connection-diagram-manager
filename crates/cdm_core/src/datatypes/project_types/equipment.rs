@@ -6,13 +6,7 @@ use std::{
 
 use log::trace;
 use serde::{Deserialize, Serialize};
-use xml::{
-    EventReader,
-    EventWriter,
-    attribute::OwnedAttribute,
-    reader::XmlEvent as ReaderEvent,
-    writer::XmlEvent as WriterEvent,
-};
+use xml::{EventReader, EventWriter, reader::XmlEvent as ReaderEvent, writer::XmlEvent as WriterEvent};
 
 use crate::{
     datatypes::{
@@ -27,7 +21,7 @@ use crate::{
 /// `Equipment` represents a particular instance of an `EquipmentType`.
 /// This is the physical unit you would hold in your hand.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
+#[expect(clippy::partial_pub_fields, reason = "some fields are not part of the public API")]
 pub struct Equipment {
     /// The type of equipment of the instance.
     pub equipment_type: String,
@@ -51,7 +45,16 @@ pub struct Equipment {
     /// Optional user Fields.
     pub user_fields: Option<UserFields>,
     /// Optional styling data for schematic symbol.
+    ///
+    /// Styling can also be defined in the SVG itself, but will be overrriden if this is defined.
     pub symbol_style: Option<SymbolStyle>,
+    /// Schematic symbol instance that is updated from the library and contains updated data unique
+    /// to this instance. This also has the `symbol_style` applied if `Some()`.
+    ///
+    /// This field is designed to cache the final symbol used for display so the update methods are
+    /// not running every frame.
+    #[serde(skip)]
+    schematic_symbol: Option<Svg>,
     /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
@@ -77,8 +80,15 @@ impl Equipment {
 }
 
 impl SchematicRepresentation for Equipment {
+    #[inline]
+    fn schematic_symbol(&self) -> (Svg, String) {
+        let uri = format!("bytes://{}_schematic_symbol.svg", self.identifier).to_string();
+        //TODO: don't have the warning symbol as default?
+        (self.schematic_symbol.clone().unwrap_or_default(), uri)
+    }
+
     #[inline(never)]
-    fn schematic_symbol(&self, library: &Library, symbol_selector: Option<usize>) -> Result<(Svg, String), Error> {
+    fn update_schematic_symbol_from_library(&mut self, library: &Library, symbol_selector: Option<usize>) -> Result<(), Error> {
         let equipment_type = library
             .equipment_types
             .get(&self.equipment_type)
@@ -110,7 +120,7 @@ impl SchematicRepresentation for Equipment {
                     data_missing: "At least one schematic symbol needs to be specified".to_owned(),
                 })?;
 
-        let mut schematic_symbol = library
+        let schematic_symbol = library
             .schematic_symbol_types
             .get(schematic_symbol_type_id)
             .ok_or(LibraryError::ValueNotFound {
@@ -121,18 +131,19 @@ impl SchematicRepresentation for Equipment {
             .visual_representation
             .clone();
 
-        let uri = format!("bytes://{schematic_symbol_type_id}.svg").to_string();
+        self.schematic_symbol = Some(schematic_symbol);
 
-        self.update_symbol_data(library, &mut schematic_symbol)?;
-
-        Ok((schematic_symbol, uri))
+        Ok(())
     }
 
     #[inline(never)]
     #[expect(clippy::too_many_lines, reason = "Its a long function, deal with it.")]
-    fn update_symbol_data(&self, library: &Library, svg: &mut Svg) -> Result<(), Error> {
+    fn update_symbol_data(&mut self, library: &Library) -> Result<(), Error> {
         // TODO: look at reader config
-        let svg_data = &svg.get_data();
+        let Some(schematic_symbol) = &mut self.schematic_symbol else {
+            return Err(SVGModificationError::UpdatingUndefinedSvg.into());
+        };
+        let svg_data = schematic_symbol.get_data_mut();
         let equipment_type = library
             .equipment_types
             .get(&self.equipment_type)
@@ -151,7 +162,7 @@ impl SchematicRepresentation for Equipment {
 
         while let Some(event) = reader.next() {
             #[expect(clippy::shadow_reuse, reason = "unwrapping error")]
-            let event = event?;
+            let event = event?.clone();
             // If next_event is None, this is the last element in the iterator
             // TODO: check if event = EndDocument and error if not here.
             let Some(next_event) = reader.peek() else { continue };
@@ -296,7 +307,7 @@ impl SchematicRepresentation for Equipment {
         let output_string = str::from_utf8(&out_buffer)?.to_owned();
         //trace!{"{}", output_string};
 
-        svg.set_data(&output_string);
+        schematic_symbol.set_data(&output_string);
 
         Ok(())
     }
