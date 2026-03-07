@@ -54,6 +54,19 @@ pub struct ApplicationConfig {
     #[cfg(feature = "gui")]
     /// Graphics configuration options.
     pub graphics_config: GraphicsConfig,
+    // all items below this are from CLI parsing. Ideally this would be in its own struct, but not
+    // sure how to properly embed that into the core AppConfig struct with figment.
+    /// Export complete PDF.
+    pub export_pdf: bool,
+    /// Do not use default libraries included with program.
+    pub no_default_libs: bool,
+    /// Directory that project lives in.
+    pub project_directory: Option<PathBuf>,
+    /// Increase verbosity of program by adding more v.
+    pub verbose: u8,
+    /// Only shows log messages with `Error` level. Use twice to completely eliminate output. Takes
+    /// precidence over verbose.
+    pub quiet: u8,
 }
 
 impl Default for ApplicationConfig {
@@ -72,6 +85,11 @@ impl Default for ApplicationConfig {
             use_usa_customary_units: false,
             use_engineering_prefixes: true,
             graphics_config: GraphicsConfig::default(),
+            export_pdf: false,
+            no_default_libs: false,
+            project_directory: None,
+            verbose: 0,
+            quiet: 0,
         }
     }
 }
