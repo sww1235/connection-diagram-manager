@@ -2163,9 +2163,10 @@ All custom attributes are defined as
 [`data-`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/data-*)
 attributes for ease of use.
 
-If more than one of a attribute that has its value replaced on load, exists on
-an SVG tag, this is considered an error and will result in the file being
-rejected by the application.
+If an SVG tag has duplicated attributes, where those attributes have their
+value replaced, this is considered an error and will result in the file being
+rejected by the application. An example of this would have having
+`data-ref-des` defined twice on the same `<text>` element.
 
 #### Common Attributes
 

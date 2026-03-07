@@ -114,15 +114,15 @@ impl PDFPage {
     ///
     /// * `text`: the text that will be added to the pdf page
     /// * `font`: a `PDFFont` object representing a font defined for use in a PDF document
-    /// * `font_size`: Font size specified in points. This is used internally as a multiple of the
-    ///   standard PDF user space unit size 1/72 inch
+    /// * `font_size`: Font size specified in points. This is used internally as a multiple of the standard
+    ///   PDF user space unit size 1/72 inch
     /// * `line_spacing`: text line spacing in multiples of line height
-    /// * `text width`: An optional parameter that defines the width of the text element. If `None`,
-    ///   the width of the page minus the margins is used.
-    /// * `x_pos`: horizontal starting position of text insertion, with 0 on left side of page
-    ///   inside the margin
-    /// * `y_pos`: vertical starting position of text insertion, with 0 on the bottom side of page,
-    ///   inside the margin
+    /// * `text width`: An optional parameter that defines the width of the text element. If `None`, the width
+    ///   of the page minus the margins is used.
+    /// * `x_pos`: horizontal starting position of text insertion, with 0 on left side of page inside the
+    ///   margin
+    /// * `y_pos`: vertical starting position of text insertion, with 0 on the bottom side of page, inside the
+    ///   margin
     ///
     /// # Errors
     ///

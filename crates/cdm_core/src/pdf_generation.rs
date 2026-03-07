@@ -42,8 +42,8 @@ pub fn pdf_all_the_things(project: &Project, library: &Library, page_size: Paper
 /// * `page_size` - the target page size of the PDF file
 /// * `margins` - the margin sizes of the PDF page
 /// * `scale` - optional - specifies the scale of the rendered objects relative to their full size,
-///   represented as a:b. For example, 1:2 would double the size of the object on the page, relative
-///   to its actual size, and 2:1 would half the size of the object.
+///   represented as a:b. For example, 1:2 would double the size of the object on the page, relative to its
+///   actual size, and 2:1 would half the size of the object.
 ///
 /// # Errors
 ///
@@ -75,9 +75,9 @@ pub fn pdf_one_enclosure(
 /// * `library` - the `Library` that contains reference data for this project
 /// * `enclosure` - the `Enclosure` that will be rendered as a PDF
 /// * `scale` - optional - specifies the scale of the rendered objects relative to their full size,
-///   represented as `a`:`b`. For example, 1:2 would double the size of the object on the page,
-///   relative to its actual size, and 2:1 would half the size of the object. This is equal scaling
-///   in both X and Y direction.
+///   represented as `a`:`b`. For example, 1:2 would double the size of the object on the page, relative to
+///   its actual size, and 2:1 would half the size of the object. This is equal scaling in both X and Y
+///   direction.
 /// * `pdf_page` - a particular page within a pdf that this enclosure will be rendered on.
 /// * `render_connections` - if connections with enclosure should be rendered.
 ///
@@ -739,9 +739,9 @@ pub fn render_enclosure(
 /// * `library` - the `Library` that contains reference data for this project
 /// * `enclosure` - the `Enclosure` that will be rendered as a PDF
 /// * `scale` - optional - specifies the scale of the rendered objects relative to their full size,
-///   represented as `a`:`b`. For example, 1:2 would double the size of the object on the page,
-///   relative to its actual size, and 2:1 would half the size of the object. This is equal scaling
-///   in both X and Y direction.
+///   represented as `a`:`b`. For example, 1:2 would double the size of the object on the page, relative to
+///   its actual size, and 2:1 would half the size of the object. This is equal scaling in both X and Y
+///   direction.
 /// * `pdf_page` - a particular page within a pdf that this enclosure will be rendered on.
 /// * `render_connections` - if connections with enclosure should be rendered.
 ///
@@ -1403,9 +1403,9 @@ pub fn render_enclosure_schematic_ladder(
 /// * `library` - the `Library` that contains reference data for this project
 /// * `enclosure` - the `Enclosure` that will be rendered as a PDF
 /// * `scale` - optional - specifies the scale of the rendered objects relative to their full size,
-///   represented as `a`:`b`. For example, 1:2 would double the size of the object on the page,
-///   relative to its actual size, and 2:1 would half the size of the object. This is equal scaling
-///   in both X and Y direction.
+///   represented as `a`:`b`. For example, 1:2 would double the size of the object on the page, relative to
+///   its actual size, and 2:1 would half the size of the object. This is equal scaling in both X and Y
+///   direction.
 /// * `pdf_page` - a particular page within a pdf that this enclosure will be rendered on.
 /// * `render_connections` - if connections with enclosure should be rendered.
 ///

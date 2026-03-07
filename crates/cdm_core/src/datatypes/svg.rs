@@ -81,7 +81,9 @@ impl Visitor<'_> for SvgVisitor {
         // try to parse and validate a filepath, then load SVG from that
         // If that fails, attempt to parse SVG from string directly.
         // If both fail, return error
-        trace! {"{}", env::current_dir().map_err(|err| E::custom(format!("failed to find current directory. Something went seriously wrong. {err}")))?.display()};
+        trace! {"Current Directory for SVG canonical_path: {}",
+        env::current_dir().map_err(|err| E::custom(
+                format!("failed to find current directory. Something went seriously wrong. {err}")))?.display()};
         #[expect(irrefutable_let_patterns, reason = "either this or a match statement")]
         let svg: Svg = if let Ok(path) = PathBuf::from_str(v) {
             let canonical_path = path
@@ -108,7 +110,6 @@ impl Visitor<'_> for SvgVisitor {
         Ok(svg)
     }
 }
-
 
 impl Default for Svg {
     #[inline]
