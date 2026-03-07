@@ -68,7 +68,7 @@ pub fn parse_datafiles(cli: &Cli) -> Result<(ProjectConfig, Library, Project), E
 
         let project_config_contents = fs::read_to_string(project_directory.join("cdm_project.toml"))?;
         let project_config: ProjectConfig = toml::from_str(&project_config_contents)?;
-        debug!("{project_config:#?}");
+        debug!("Project Configuration: \n{project_config:#?}");
 
         let mut library_files = Vec::new();
         let mut project_files = Vec::new();

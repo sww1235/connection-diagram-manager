@@ -47,7 +47,8 @@ pub trait SchematicRepresentation {
     ///
     /// Shall error if the id of `&self.entity_type` is not found in the provided library or other
     /// implementation specific errors.
-    fn schematic_symbol(&self, library: &Library, symbol_selector: Option<usize>) -> Result<(Svg, String), LibraryError>;
+    #[expect(clippy::result_large_err, reason = "Using main Error type")]
+    fn schematic_symbol(&self, library: &Library, symbol_selector: Option<usize>) -> Result<(Svg, String), Error>;
 
     /// Updates tagged attributes within the SVG file based on data from `&self` or its library
     /// type.

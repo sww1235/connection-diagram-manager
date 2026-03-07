@@ -3,5 +3,6 @@
     <path d="M140 66a19 19 0 1 1-38 0 19 19 0 1 1 38 0z" fill="#fff" />
     <path d="M238 221h93m-315 0h93m21-58 94 61" fill="none" stroke-linejoin="round" color="#000" overflow="visible" transform="translate(-9 -155)" />
     <path d="M228 66a19 19 0 1 1-38 0 19 19 0 1 1 38 0z" fill="#fff" />
+    <text x="10" y="50" font-size="30pt" stroke-width="1" font-weight="normal" fill="#ffffff" data-ref-des="test">test</text>
   </g>
 </svg>

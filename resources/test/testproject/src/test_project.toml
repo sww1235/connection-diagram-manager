@@ -6,6 +6,8 @@ length =  {value = [5,1], original_unit = "meter"}
 [equipment]
 [equipment.switch1]
 equipment_type = "spst_toggle_switch"
+identifier = "switch1"
 
 [equipment.switch2]
 equipment_type = "spst_toggle_switch"
+identifier = "switch2"

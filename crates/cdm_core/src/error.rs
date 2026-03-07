@@ -59,6 +59,9 @@ pub enum Error {
     /// Errors resulting from parsing or converting bytes into UTF8 strings.
     #[error(transparent)]
     UTF8Error(#[from] core::str::Utf8Error),
+    /// Errors resulting from modifying SVGs programatically to display as icons.
+    #[error(transparent)]
+    SVGModificationError(#[from] SVGModificationError),
 }
 
 /// `LibraryError` is the list of errors that can occur within code related to `Library` data,
@@ -236,4 +239,12 @@ pub enum UnitParsingError {
 #[derive(Debug, Error)]
 #[non_exhaustive]
 #[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
-pub enum SVGModificationError {}
+pub enum SVGModificationError {
+    /// If duplicate attributes are found on an SVG element.
+    #[error("Duplicate Attributes found on SVG element")]
+    DuplicateAttributes,
+    /// If more than one `data-` attribute that instructs the code to modify `<text>` element values
+    /// are present on a text element.
+    #[error("Conflicting `data-` attributes were found on a `<text>` element while attempting to update its value.")]
+    ConflictingAttributes,
+}
