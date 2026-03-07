@@ -165,7 +165,7 @@ impl SchematicRepresentation for Equipment {
             let event = event?.clone();
             // If next_event is None, this is the last element in the iterator
             // TODO: check if event = EndDocument and error if not here.
-            let Some(next_event) = reader.peek() else { continue };
+            let Some(next_event) = reader.peek() else { break };
             #[expect(clippy::shadow_reuse, reason = "unwrapping error")]
             let next_event = next_event.clone()?;
             trace! {"Event: {event:#?}"};
@@ -197,7 +197,7 @@ impl SchematicRepresentation for Equipment {
                         //
                         // https://stackoverflow.com/a/59045627
                         if mem::discriminant(&next_event) == (mem::discriminant(&ReaderEvent::Characters(String::new()))) {
-                            reader.nth(1);
+                            reader.nth(0);
                         }
                         //https://stackoverflow.com/a/37700229
                         //
@@ -284,11 +284,17 @@ impl SchematicRepresentation for Equipment {
                                 _ => {}
                             }
                         }
+                    } else {
+
+                    let Some(writer_output) = event.as_writer_event() else {
+                        continue;
+                    };
+                    writer.write(writer_output)?;
                     }
-                }
+                },
+                ReaderEvent::EndDocument => {break},
                 // EndDocument is the only Discriminent currently that is None
                 ReaderEvent::StartDocument { .. }
-                | ReaderEvent::EndDocument
                 | ReaderEvent::ProcessingInstruction { .. }
                 | ReaderEvent::EndElement { .. }
                 | ReaderEvent::Doctype { .. }
