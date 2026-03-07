@@ -29,10 +29,16 @@ impl TemperatureInterval {
         let string1 = "Unit Name";
         let string2 = "Abbreviation";
         let dash_string = "-".repeat(21);
+
+        // Moving commented out units here to fix rustfmt complaining
+        // commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+        //+ format!("{:^21}|{:^21}\n", yottakelvin::singular(), yottakelvin::abbreviation()).as_str()
+        //+ format!("{:^21}|{:^21}\n", zettakelvin::singular(), zettakelvin::abbreviation()).as_str()
+        // commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+        //+ format!("{:^21}|{:^21}\n", zeptokelvin::singular(), zeptokelvin::abbreviation()).as_str()
+        //+ format!("{:^21}|{:^21}\n", yoctokelvin::singular(), yoctokelvin::abbreviation()).as_str()
+
         format!("{string1:^21}|{string2:^21}\n{dash_string}|{dash_string}\n")
-            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
-            //+ format!("{:^21}|{:^21}\n", yottakelvin::singular(), yottakelvin::abbreviation()).as_str()
-            //+ format!("{:^21}|{:^21}\n", zettakelvin::singular(), zettakelvin::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", exakelvin::singular(), exakelvin::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", petakelvin::singular(), petakelvin::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", terakelvin::singular(), terakelvin::abbreviation()).as_str()
@@ -50,9 +56,6 @@ impl TemperatureInterval {
             + format!("{:^21}|{:^21}\n", picokelvin::singular(), picokelvin::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", femtokelvin::singular(), femtokelvin::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", attokelvin::singular(), attokelvin::abbreviation()).as_str()
-            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
-            //+ format!("{:^21}|{:^21}\n", zeptokelvin::singular(), zeptokelvin::abbreviation()).as_str()
-            //+ format!("{:^21}|{:^21}\n", yoctokelvin::singular(), yoctokelvin::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", degree_celsius::singular(), degree_celsius::abbreviation()).as_str()
             + format!(
                 "{:^21}|{:^21}\n",

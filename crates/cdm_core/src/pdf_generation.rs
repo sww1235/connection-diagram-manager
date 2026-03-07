@@ -160,8 +160,8 @@ pub fn render_enclosure(
     let mut mounting_rails_rendered = Vec::new();
     for (mount_id, mount_point) in &enclosure.mount_points {
         if let MountPoint::MountingRail { x, y, mounting_rail, .. } = mount_point
-            // only want to render each rail once
             && !mounting_rails_rendered.contains(mount_id)
+        // only want to render each rail once
         {
             pdf_page.add_svg(
                 project
@@ -824,8 +824,8 @@ pub fn render_enclosure_schematic_ladder(
     let mut mounting_rails_rendered = Vec::new();
     for (mount_id, mount_point) in &enclosure.mount_points {
         if let MountPoint::MountingRail { x, y, mounting_rail, .. } = mount_point
-            // only want to render each rail once
             && !mounting_rails_rendered.contains(mount_id)
+        // only want to render each rail once
         {
             pdf_page.add_svg(
                 project

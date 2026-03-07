@@ -29,10 +29,16 @@ impl ElectricPotential {
         let string1 = "Unit Name";
         let string2 = "Abbreviation";
         let dash_string = "-".repeat(21);
+
+        // Moving commented out units here to fix rustfmt complaining
+        // commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+        //+ format!("{:^21}|{:^21}\n", yottavolt::singular(), yottavolt::abbreviation()).as_str()
+        //+ format!("{:^21}|{:^21}\n", zettavolt::singular(), zettavolt::abbreviation()).as_str()
+        // commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+        //+ format!("{:^21}|{:^21}\n", zeptovolt::singular(), zeptovolt::abbreviation()).as_str()
+        //+ format!("{:^21}|{:^21}\n", yoctovolt::singular(), yoctovolt::abbreviation()).as_str()
+
         format!("{string1:^21}|{string2:^21}\n{dash_string}|{dash_string}\n")
-            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
-            //+ format!("{:^21}|{:^21}\n", yottavolt::singular(), yottavolt::abbreviation()).as_str()
-            //+ format!("{:^21}|{:^21}\n", zettavolt::singular(), zettavolt::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", exavolt::singular(), exavolt::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", petavolt::singular(), petavolt::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", teravolt::singular(), teravolt::abbreviation()).as_str()
@@ -50,9 +56,6 @@ impl ElectricPotential {
             + format!("{:^21}|{:^21}\n", picovolt::singular(), picovolt::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", femtovolt::singular(), femtovolt::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", attovolt::singular(), attovolt::abbreviation()).as_str()
-            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
-            //+ format!("{:^21}|{:^21}\n", zeptovolt::singular(), zeptovolt::abbreviation()).as_str()
-            //+ format!("{:^21}|{:^21}\n", yoctovolt::singular(), yoctovolt::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", abvolt::singular(), abvolt::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", statvolt::singular(), statvolt::abbreviation()).as_str()
     }

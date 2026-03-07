@@ -30,38 +30,72 @@ impl Area {
         let string1 = "Unit Name";
         let string2 = "Abbreviation";
         let dash_string = "-".repeat(21);
+
+        // Moving commented out units here to fix rustfmt complaining
+        //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+        //+ format!(
+        //    "{:^21}|{:^21}\n",
+        //    square_yottameter::singular(),
+        //    square_yottameter::abbreviation()
+        //)
+        //.as_str()
+        //+ format!(
+        //    "{:^21}|{:^21}\n",
+        //    square_zettameter::singular(),
+        //    square_zettameter::abbreviation()
+        //)
+        //.as_str()
+        //+ format!(
+        //    "{:^21}|{:^21}\n",
+        //    square_exameter::singular(),
+        //    square_exameter::abbreviation()
+        //)
+        //.as_str()
+        //+ format!(
+        //    "{:^21}|{:^21}\n",
+        //    square_petameter::singular(),
+        //    square_petameter::abbreviation()
+        //)
+        //.as_str()
+        //+ format!(
+        //    "{:^21}|{:^21}\n",
+        //    square_terameter::singular(),
+        //    square_terameter::abbreviation()
+        //)
+        //.as_str()
+        //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+        //+ format!(
+        //    "{:^21}|{:^21}\n",
+        //    square_picometer::singular(),
+        //    square_picometer::abbreviation()
+        //)
+        //.as_str()
+        //+ format!(
+        //    "{:^21}|{:^21}\n",
+        //    square_femtometer::singular(),
+        //    square_femtometer::abbreviation()
+        //)
+        //.as_str()
+        //+ format!(
+        //    "{:^21}|{:^21}\n",
+        //    square_attometer::singular(),
+        //    square_attometer::abbreviation()
+        //)
+        //.as_str()
+        //+ format!(
+        //    "{:^21}|{:^21}\n",
+        //    square_zeptometer::singular(),
+        //    square_zeptometer::abbreviation()
+        //)
+        //.as_str()
+        //+ format!(
+        //    "{:^21}|{:^21}\n",
+        //    square_yoctometer::singular(),
+        //    square_yoctometer::abbreviation()
+        //)
+        //.as_str()
+
         format!("{string1:^21}|{string2:^21}\n{dash_string}|{dash_string}\n")
-            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
-            //+ format!(
-            //    "{:^21}|{:^21}\n",
-            //    square_yottameter::singular(),
-            //    square_yottameter::abbreviation()
-            //)
-            //.as_str()
-            //+ format!(
-            //    "{:^21}|{:^21}\n",
-            //    square_zettameter::singular(),
-            //    square_zettameter::abbreviation()
-            //)
-            //.as_str()
-            //+ format!(
-            //    "{:^21}|{:^21}\n",
-            //    square_exameter::singular(),
-            //    square_exameter::abbreviation()
-            //)
-            //.as_str()
-            //+ format!(
-            //    "{:^21}|{:^21}\n",
-            //    square_petameter::singular(),
-            //    square_petameter::abbreviation()
-            //)
-            //.as_str()
-            //+ format!(
-            //    "{:^21}|{:^21}\n",
-            //    square_terameter::singular(),
-            //    square_terameter::abbreviation()
-            //)
-            //.as_str()
             + format!(
                 "{:^21}|{:^21}\n",
                 square_gigameter::singular(),
@@ -123,37 +157,6 @@ impl Area {
                 square_nanometer::abbreviation()
             )
             .as_str()
-            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
-            //+ format!(
-            //    "{:^21}|{:^21}\n",
-            //    square_picometer::singular(),
-            //    square_picometer::abbreviation()
-            //)
-            //.as_str()
-            //+ format!(
-            //    "{:^21}|{:^21}\n",
-            //    square_femtometer::singular(),
-            //    square_femtometer::abbreviation()
-            //)
-            //.as_str()
-            //+ format!(
-            //    "{:^21}|{:^21}\n",
-            //    square_attometer::singular(),
-            //    square_attometer::abbreviation()
-            //)
-            //.as_str()
-            //+ format!(
-            //    "{:^21}|{:^21}\n",
-            //    square_zeptometer::singular(),
-            //    square_zeptometer::abbreviation()
-            //)
-            //.as_str()
-            //+ format!(
-            //    "{:^21}|{:^21}\n",
-            //    square_yoctometer::singular(),
-            //    square_yoctometer::abbreviation()
-            //)
-            //.as_str()
             + format!("{:^21}|{:^21}\n", acre::singular(), acre::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", are::singular(), are::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", barn::singular(), barn::abbreviation()).as_str()

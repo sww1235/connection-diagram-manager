@@ -29,10 +29,16 @@ impl Length {
         let string1 = "Unit Name";
         let string2 = "Abbreviation";
         let dash_string = "-".repeat(21);
+
+        // Moving commented out units here to fix rustfmt complaining
+        // commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+        //+ format!("{:^21}|{:^21}\n", yottameter::singular(), yottameter::abbreviation()).as_str()
+        //+ format!("{:^21}|{:^21}\n", zettameter::singular(), zettameter::abbreviation()).as_str()
+        // commented units currently unsupported due to bug with uom. iliekturtles/uom#60
+        //+ format!("{:^21}|{:^21}\n", zeptometer::singular(), zeptometer::abbreviation()).as_str()
+        //+ format!("{:^21}|{:^21}\n", yoctometer::singular(), yoctometer::abbreviation()).as_str()
+
         format!("{string1:^21}|{string2:^21}\n{dash_string}|{dash_string}\n")
-            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
-            //+ format!("{:^21}|{:^21}\n", yottameter::singular(), yottameter::abbreviation()).as_str()
-            //+ format!("{:^21}|{:^21}\n", zettameter::singular(), zettameter::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", exameter::singular(), exameter::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", petameter::singular(), petameter::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", terameter::singular(), terameter::abbreviation()).as_str()
@@ -50,9 +56,6 @@ impl Length {
             + format!("{:^21}|{:^21}\n", picometer::singular(), picometer::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", femtometer::singular(), femtometer::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", attometer::singular(), attometer::abbreviation()).as_str()
-            //    commented units currently unsupported due to bug with uom. iliekturtles/uom#60
-            //+ format!("{:^21}|{:^21}\n", zeptometer::singular(), zeptometer::abbreviation()).as_str()
-            //+ format!("{:^21}|{:^21}\n", yoctometer::singular(), yoctometer::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", angstrom::singular(), angstrom::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", bohr_radius::singular(), bohr_radius::abbreviation()).as_str()
             + format!(
