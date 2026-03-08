@@ -97,12 +97,18 @@ impl mq::EventHandler for App {
                 &self.project_data,
                 &self.library_data,
             );
+            // This is the close button of the main window being clicked (.open())
+            //
+            // true when window open
+            // false when window is closed or close button clicked.
+            if !self.state.main_window_state {
+                self.state.quit_requested = true;
+            }
             // input handler
             egui_ctx.input(|input_state| {
-                // TODO: figure out why this isn't working
+                // This is the quit button in the menu
                 let window_quit_request = input_state.viewport().close_requested();
                 //debug! {"close button clicked: {window_quit_request}"};
-                //self.quit_requested = keyboard_quit_request | window_quit_request;
                 if window_quit_request {
                     self.state.quit_requested = true;
                 }

@@ -55,10 +55,8 @@ fn main() -> anyhow::Result<()> {
     // Update data in schematic symbols on equipment
     for equipment_instance in project_data.equipment.values_mut() {
         // TODO: provide config option for symbol selector
-        equipment_instance
-            .update_schematic_symbol_from_library(&library_data, None)
-            .unwrap();
-        equipment_instance.update_symbol_data(&library_data).unwrap();
+        equipment_instance.update_schematic_symbol_from_library(&library_data, None)?;
+        equipment_instance.update_symbol_data(&library_data)?;
     }
 
     let mut gui_conf: mqConf = app_config.clone().graphics_config.into();

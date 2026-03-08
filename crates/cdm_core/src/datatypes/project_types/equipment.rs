@@ -285,14 +285,13 @@ impl SchematicRepresentation for Equipment {
                             }
                         }
                     } else {
-
-                    let Some(writer_output) = event.as_writer_event() else {
-                        continue;
-                    };
-                    writer.write(writer_output)?;
+                        let Some(writer_output) = event.as_writer_event() else {
+                            continue;
+                        };
+                        writer.write(writer_output)?;
                     }
-                },
-                ReaderEvent::EndDocument => {break},
+                }
+                ReaderEvent::EndDocument => break,
                 // EndDocument is the only Discriminent currently that is None
                 ReaderEvent::StartDocument { .. }
                 | ReaderEvent::ProcessingInstruction { .. }
