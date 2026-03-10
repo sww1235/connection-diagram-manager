@@ -2168,6 +2168,30 @@ value replaced, this is considered an error and will result in the file being
 rejected by the application. An example of this would have having
 `data-ref-des` defined twice on the same `<text>` element.
 
+#### Schematic Symbols
+
+SVG files that are intended for use as Schematic Symbols should be as simple as
+possible, and primarily consist of `<circle>`, `<line>`, `<rectangle>` and
+`<text>` tags with `<path>` tags kept to a minimum. If `<path>` tags are used,
+the shapes they are used to draw should be kept as simple as possible, and
+should not represent shapes with gaps or spaces in them. For example, if you
+need to draw two lines, use two separate `<line>` tags, not one `<path>` tags.
+Of course, if there are complex shapes that need complex paths, you can use
+them but they may not fit in as well with other symbols, especially those from
+the standard library.
+
+The shapes in the standard library attempt to follow as closely to the following guidelines:
+
+- SVG `version="1.1"`
+- Outer `viewBox` of `0 0 200 200`
+- All shape dimensions specified in percentages.
+- All text sizes specified in `rem` units
+- `font-weight`, `fill`, `font-family` and `stroke-width` specified as
+	appropriate for the symbol.
+- All text elements should have obvious placeholder values in them for
+	debugging purposes.
+- See provided symbols in the standard library for additional inspiration.
+
 #### Common Attributes
 
 ##### Reference Designator
