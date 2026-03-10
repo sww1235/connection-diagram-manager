@@ -6,7 +6,8 @@ use cdm_core::{
     },
 };
 use miniquad::{self as mq, TouchPhase, window as mqWindow};
-use num_traits::cast::FromPrimitive as _;
+
+use log::debug;
 
 /// Main window of application.
 mod main_window;
@@ -32,14 +33,18 @@ pub struct App {
 
 /// `AppState` contains state information for app while it is running.
 struct AppState {
-    /// current height of `SchematicSymbol`s.
-    schematic_symbol_height: f32,
-    /// current width of `SchematicSymbol`s.
-    schematic_symbol_width: f32,
     /// if main window is closed.
     main_window_state: bool,
     /// if application has requested to quit.
     quit_requested: bool,
+    //from egui-miniquad demo
+    /// Record previous egui zoom factor to determine if the zoom factor is being changed via the
+    /// GUI.
+    prev_egui_zoom_factor: f32,
+    /// Current zoom factor.
+    zoom_factor: f32,
+    /// Scale of `SchematicSymbols`
+    symbol_scale_factor: f32,
 }
 
 impl App {
@@ -65,10 +70,11 @@ impl App {
             project_config,
             config: config.clone(),
             state: AppState {
-                schematic_symbol_height: f32::from_i32(config.graphics_config.starting_schematic_symbol_height).unwrap_or(100.0),
-                schematic_symbol_width: f32::from_i32(config.graphics_config.starting_schematic_symbol_width).unwrap_or(100.0),
                 main_window_state: true,
                 quit_requested: false,
+                prev_egui_zoom_factor: 1.0,
+                zoom_factor: 1.0,
+                symbol_scale_factor: 1.0,
             },
         }
     }
@@ -89,6 +95,24 @@ impl mq::EventHandler for App {
 
         // This is where all the egui code goes
         self.egui_mq.run(&mut *self.mq_ctx, |_mq_ctx, egui_ctx| {
+            // the next few lines are directly copy/pasted from the egui-miniquad demo and modified
+            // ever so slightly.
+            //
+            // zoom factor could have been changed by the user in egui using Ctrl/Cmd and -/+/0,
+            // but it could also be in the middle of being changed by us using the slider. So we
+            // only allow egui's zoom to override our zoom if the egui zoom is different from what
+            // we saw last time (meaning the user has changed it).
+            let curr_egui_zoom = egui_ctx.zoom_factor();
+            if self.state.prev_egui_zoom_factor != curr_egui_zoom {
+                self.state.zoom_factor = curr_egui_zoom;
+            }
+            self.state.prev_egui_zoom_factor = curr_egui_zoom;
+            let egui_dpi_scale = egui_ctx.pixels_per_point();
+            debug!{"window_size: {:?}", mqWindow::screen_size()};
+            debug!{"high_dpi: {}", mqWindow::high_dpi()}
+            debug!{"native dpi_scale: {dpi_scale}"}
+            debug!{"egui dpi_scale: {egui_dpi_scale}"}
+
             egui_extras::install_image_loaders(egui_ctx);
             main_window::main_window(
                 egui_ctx,

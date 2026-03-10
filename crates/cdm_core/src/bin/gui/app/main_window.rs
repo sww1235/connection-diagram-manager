@@ -42,10 +42,9 @@ pub fn main_window(
                     let (symbol, uri) = equipment.schematic_symbol();
                     let svg_data = symbol.get_data().into_bytes();
                     let sense_settings = Sense::DRAG & Sense::FOCUSABLE;
-                    let image = egui::widgets::Image::from_bytes(uri, svg_data)
+                    let image = Image::new(ImageSource::Bytes{uri: uri.into(), bytes: svg_data.into()})
                         .sense(sense_settings)
-                        .max_height(app_state.schematic_symbol_height)
-                        .max_width(app_state.schematic_symbol_width);
+                        .fit_to_original_size(5.0);
                     Area::new(Id::new(id))
                         .movable(true)
                         .order(Order::Foreground)

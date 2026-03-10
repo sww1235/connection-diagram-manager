@@ -108,10 +108,6 @@ pub struct GraphicsConfig {
     pub starting_window_width: i32,
     /// Enable high DPI features.
     pub high_dpi: bool,
-    /// Default height for SVGs rendered as `SchematicSymbol`s.
-    pub starting_schematic_symbol_height: i32,
-    /// Default width for SVGs rendered as `SchematicSymbol`s.
-    pub starting_schematic_symbol_width: i32,
 }
 
 impl Default for GraphicsConfig {
@@ -120,9 +116,7 @@ impl Default for GraphicsConfig {
         Self {
             starting_window_height: 1024,
             starting_window_width: 1024,
-            high_dpi: true,
-            starting_schematic_symbol_height: 100,
-            starting_schematic_symbol_width: 100,
+            high_dpi: false,
         }
     }
 }
