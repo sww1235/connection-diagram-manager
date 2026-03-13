@@ -42,6 +42,9 @@ pub fn main_window(
         .resizable(true)
         .show(egui_ctx, |ui| {
             widgets::global_theme_preference_switch(ui);
+
+            main_menu(ui);
+
             //FIXME: area_rect() is not filtering out title bar.
             //https://github.com/emilk/egui/issues/7836
             if let Some(rect) = ui.memory(|memory| memory.area_rect(main_window_id)) {
@@ -67,29 +70,21 @@ pub fn main_window(
         });
 }
 
-//TODO: finish once not-fl3/egui-miniquad#84 is fully released
-//fn main_menu(ui: &mut egui::Ui) {
-//TODO: set style and config using .style() and .config()
-// egui::MenuBar::new().ui(ui, |ui|{
-//
-// })
-//}
-//https://github.com/emilk/egui/pull/5732/files
-///// load SVG image
-//fn load_svg_from_path(ui: &mut egui::Ui, path: &Path) {
-//    //TODO: fix error handling here
-//    let options = ParseOptions::default();
-//    let write_options = WriteOptions::default();
-//    let image_bytes = std::fs::read(path.canonicalize().expect("unable to canonicalize
-// path")).expect("unable to read svg file");    let tree = Tree::from_str(
-//        str::from_utf8(&image_bytes).expect("unable to parse iamge_bytes into valid utf8 str"),
-//        &options,
-//    )
-//    .expect("unable to parse utf str into usvg::Tree");
-//    let mut uri = "bytes://".to_owned();
-//    uri.push_str(path.to_str().expect("unable to convert path to string"));
-//    let image = egui::widgets::Image::from_bytes(uri,
-// tree.to_string(&write_options).into_bytes());
-//
-//    ui.add(image);
-//}
+//NOTE: this relies on the changes in not-fl3/egui-miniquad#84.
+//Using git dependancy for now.
+/// `main_menu` creates the menu bar for `main_window`.
+#[expect(clippy::shadow_reuse, reason = "ui is being passed down closure chains")]
+fn main_menu(ui: &mut egui::Ui) {
+    //TODO: set style and config using .style() and .config()
+    menu::MenuBar::new().ui(ui, |ui| {
+        // menu_button is creating a submenu
+        ui.menu_button("File", |ui| {
+            // ui.button creates a button in that submenu
+            if ui.button("Quit").clicked() {
+                //TODO: fix quit button
+                debug! {"quit menu button clicked"};
+                ui.ctx().send_viewport_cmd(viewport::ViewportCommand::Close);
+            }
+        });
+    });
+}
