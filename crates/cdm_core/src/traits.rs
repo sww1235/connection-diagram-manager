@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use crate::{
-    datatypes::{library_types::Library, svg::Svg},
+    datatypes::{library_types::Library, schematic_symbol::SchematicSymbol, svg::Svg},
     error::{Error, LibraryError},
 };
 
@@ -41,9 +41,9 @@ where Self: ProjectData
     //TODO: somehow make URI an element of SVG rather than being built in the trait method.
     /// Returns the SVG `schematic_symbol` of the entity and a URI used in rendering code.
     ///
-    /// If `schematic_symbol` is `None` then this will return a placeholder warning graphic
+    /// If `schematic_symbol` is `None` then this shall return a placeholder warning graphic
     /// instead.
-    fn schematic_symbol(&self) -> (Svg, String);
+    fn schematic_symbol(&self) -> (SchematicSymbol, String);
 
     //TODO: somehow make URI an element of SVG rather than being built in the trait method.
     /// Updates the `schematic_symbol` in `Self` from the options defined in `&self.entity_type`.

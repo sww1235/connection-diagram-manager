@@ -62,6 +62,9 @@ pub enum Error {
     /// Errors resulting from modifying SVGs programatically to display as icons.
     #[error(transparent)]
     SVGModificationError(#[from] SVGModificationError),
+    /// Errors resulting from validation checks internal to the library.
+    #[error(transparent)]
+    SVGValidationError(#[from] SVGValidationError),
 }
 
 /// `LibraryError` is the list of errors that can occur within code related to `Library` data,
@@ -250,4 +253,18 @@ pub enum SVGModificationError {
     /// If SVG is undefined or field is None.
     #[error("Attempting to update SVG data on a undefined or `None` SVG field")]
     UpdatingUndefinedSvg,
+}
+
+/// `SVGValidationError` are errors that result from validating SVG files. These errors are
+/// returned when an error from `usvg` or `roxmltree` doesn't make sense.
+#[derive(Debug, Error)]
+#[non_exhaustive]
+#[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
+pub enum SVGValidationError {
+    /// A parsed `viewPort` is invalid.
+    #[error("Invalid viewPort parsed: {0}")]
+    InvalidViewPort(String),
+    /// If the parsed SVG contains an invalid number.
+    #[error("Invalid number parsed")]
+    InvalidNumber,
 }

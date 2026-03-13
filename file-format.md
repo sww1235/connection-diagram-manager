@@ -2180,10 +2180,12 @@ Of course, if there are complex shapes that need complex paths, you can use
 them but they may not fit in as well with other symbols, especially those from
 the standard library.
 
-The shapes in the standard library attempt to follow as closely to the following guidelines:
+The shapes in the standard library attempt to follow as closely to the
+following guidelines:
 
 - SVG `version="1.1"`
 - Outer `viewBox` of `0 0 200 200`
+- `width` and `height` attributes on `svg` tag set to `100%`
 - All shape dimensions specified in percentages.
 - All text sizes specified in `rem` units
 - `font-weight`, `fill`, `font-family` and `stroke-width` specified as

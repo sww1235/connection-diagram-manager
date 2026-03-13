@@ -4,6 +4,9 @@ pub mod color;
 pub mod library_types;
 /// `project_types` contains the types that are contained in a project.
 pub mod project_types;
+/// `schematic_symbol` is a specialized representation of SVG data along with extra data that allow
+/// extra functionality.
+pub mod schematic_symbol;
 /// `svg` represents a complete SVG image.
 pub mod svg;
 /// `unit_helper` contains wrapper types around UOM units, to allow tracking what unit was defined

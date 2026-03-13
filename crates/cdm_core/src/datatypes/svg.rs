@@ -7,6 +7,9 @@ use serde::{
     ser::{Serialize, Serializer},
 };
 use usvg::{Error as USvgParseError, Options as USvgParseOptions, Tree};
+use xml::{EventReader, reader::XmlEvent as ReaderEvent};
+
+use crate::error::{Error, SVGValidationError};
 
 //mod rwxmltree;
 
@@ -17,10 +20,14 @@ use usvg::{Error as USvgParseError, Options as USvgParseOptions, Tree};
 /// Svg represents a full SVG image.
 #[derive(Debug, Clone)]
 pub struct Svg {
-    /// a raw XML doc imported and modified.
-    svg_data: String,
+    /// Raw XML text data of SVG.
+    data: String,
     /// If provided string is a filepath to a SVG file stored elsewhere.
     filepath: Option<PathBuf>,
+    /// Width of `viewBox` in raw SVG.
+    original_width: Option<f64>,
+    /// Height of `viewBox` in raw SVG.
+    original_height: Option<f64>,
 }
 
 impl Svg {
@@ -31,27 +38,41 @@ impl Svg {
     /// Will error if the conversion to `[usvg::Tree]` fails.
     #[inline]
     pub fn get_tree(&self) -> Result<Tree, USvgParseError> {
-        Tree::from_data(self.svg_data.as_bytes(), &USvgParseOptions::default())
+        Tree::from_data(self.data.as_bytes(), &USvgParseOptions::default())
     }
 
     /// Returns the XML data within the `Svg`.
     #[inline]
     #[must_use]
     pub fn get_data(&self) -> String {
-        self.svg_data.clone()
+        self.data.clone()
     }
 
     /// Returns a mutable reference to the XML data within the `Svg`.
     #[inline]
     #[must_use]
     pub fn get_data_mut(&mut self) -> &mut String {
-        &mut self.svg_data
+        &mut self.data
     }
 
     /// Sets the XML data witin the `Svg`.
     #[inline]
     pub fn set_data(&mut self, new_data: &str) {
-        self.svg_data = new_data.to_owned();
+        self.data = new_data.to_owned();
+    }
+
+    /// Gets the original height of the SVG before scaling.
+    #[inline]
+    #[must_use]
+    pub fn get_original_height(&self) -> Option<f64> {
+        self.original_height
+    }
+
+    /// Gets the original width of the SVG before scaling.
+    #[inline]
+    #[must_use]
+    pub fn get_original_width(&self) -> Option<f64> {
+        self.original_width
     }
 }
 
@@ -60,7 +81,7 @@ impl Serialize for Svg {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where S: Serializer {
         //TODO: handle filepaths
-        serializer.serialize_str(&self.svg_data)
+        serializer.serialize_str(&self.data)
     }
 }
 
@@ -92,7 +113,7 @@ impl Visitor<'_> for SvgVisitor {
         env::current_dir().map_err(|err| E::custom(
                 format!("failed to find current directory. Something went seriously wrong. {err}")))?.display()};
         #[expect(irrefutable_let_patterns, reason = "either this or a match statement")]
-        let svg: Svg = if let Ok(path) = PathBuf::from_str(v) {
+        let mut svg: Svg = if let Ok(path) = PathBuf::from_str(v) {
             let canonical_path = path
                 .canonicalize()
                 .map_err(|err| E::custom(format!("failed to canonicalize filepath: {err}")))?;
@@ -101,18 +122,23 @@ impl Visitor<'_> for SvgVisitor {
                 .map_err(|err| E::custom(format!("failed to parse image bytes into UTF8 string: {err}")))?
                 .to_owned();
             Svg {
-                svg_data: image_str,
+                data: image_str,
                 filepath: Some(canonical_path),
+                original_width: None,
+                original_height: None,
             }
         }
         //If filepath parsing fails, it should be an SVG
         else {
             trace! {"failed to parse {v} as path"};
             Svg {
-                svg_data: v.to_owned(),
+                data: v.to_owned(),
                 filepath: None,
+                original_width: None,
+                original_height: None,
             }
         };
+        validate_and_update_svg(&mut svg).map_err(|err| E::custom(format!("Invalid SVG: {err}")))?;
 
         Ok(svg)
     }
@@ -135,8 +161,10 @@ impl Default for Svg {
 </svg>
         "##;
         Svg {
-            svg_data: default_svg_string.to_owned(),
+            data: default_svg_string.to_owned(),
             filepath: None,
+            original_width: Some(627.77),
+            original_height: Some(550.45),
         }
     }
 }
@@ -146,7 +174,7 @@ impl Default for Svg {
 impl PartialEq for Svg {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
-        self.svg_data == other.svg_data && self.filepath == other.filepath
+        self.data == other.data && self.filepath == other.filepath
     }
 }
 
@@ -154,13 +182,81 @@ impl FromStr for Svg {
     type Err = Infallible;
 
     //TODO: validation
+    //TODO: parse out viewBox width and height and add it here.
     /// Creates a `Svg` from a string representation of an Svg. No validation is performed
     /// currently.
     #[inline]
     fn from_str(text: &str) -> Result<Self, Self::Err> {
         Ok(Self {
-            svg_data: text.to_owned(),
+            data: text.to_owned(),
             filepath: None,
+            original_width: None,
+            original_height: None,
         })
     }
+}
+/// Validate that `Svg.data` contains valid SVG data.
+///
+/// Updates the dimension fields of an SVG from the parsed data.
+#[expect(clippy::result_large_err, reason = "Yes it is, deal with it.")]
+fn validate_and_update_svg(svg: &mut Svg) -> Result<(), Error> {
+    //Let usvg do some initial SVG validation for us.
+    //
+    //roxmltree parsing will error on duplicate attributes...
+    let _: usvg::Tree = usvg::Tree::from_str(&svg.data, &usvg::Options::default())?;
+
+    let reader = EventReader::from_str(&svg.data);
+    trace! {"updating SVG height and width."}
+
+    for event in reader {
+        #[expect(clippy::shadow_reuse, reason = "unwrapping error")]
+        let event = event?.clone();
+
+        // Using match here in case I ever need to check or update more things here.
+        match event {
+            ReaderEvent::StartElement { name, attributes, .. } if name.local_name == "svg" => {
+                for attr in attributes {
+                    // Using match here in case I ever need to check or update more things here.
+                    #[expect(clippy::single_match, reason = "Futureproofing")]
+                    #[expect(clippy::indexing_slicing, reason = "already validated in function")]
+                    match attr.name.local_name.as_str() {
+                        "viewBox" => {
+                            // I don't like that I can't chain these two into one method
+                            // call chain
+                            let temp = attr.value.replace(',', " ");
+                            let values: Vec<f64> = temp
+                                .split_whitespace()
+                                .map(|num| f64::from_str(num).unwrap_or(f64::NAN))
+                                .collect();
+                            if values.len() > 4 {
+                                return Err(SVGValidationError::InvalidViewPort(
+                                    "viewPort contained more than 4 sub-attributes".to_owned(),
+                                )
+                                .into());
+                            }
+                            if values.contains(&f64::NAN) {
+                                return Err(SVGValidationError::InvalidNumber.into());
+                            }
+                            // At this point we should have a vector of 4 "valid" f64 numbers
+                            //
+                            // Require viewport to start from top left
+                            if values[0] != 0.0_f64 || values[1] != 0.0_f64 {
+                                return Err(
+                                    SVGValidationError::InvalidViewPort("viewPort does not start at 0 0".to_owned()).into(),
+                                );
+                            }
+                            svg.original_width = Some(values[2]);
+                            svg.original_height = Some(values[3]);
+                        }
+                        // Don't care about other attributes currently
+                        _ => {}
+                    }
+                }
+            }
+            // don't care about any other events currently here
+            //#[expect(clippy::wildcard_enum_match_arm, reason = "Only care about StartElement, but using match for ergonomics")]
+            _ => {}
+        }
+    }
+    Ok(())
 }

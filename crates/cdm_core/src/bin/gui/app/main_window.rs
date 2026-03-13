@@ -47,16 +47,24 @@ pub fn main_window(
 
             //FIXME: area_rect() is not filtering out title bar.
             //https://github.com/emilk/egui/issues/7836
+
             if let Some(rect) = ui.memory(|memory| memory.area_rect(main_window_id)) {
                 for (id, equipment) in &project_data.equipment {
                     trace! {"ID: {id}, Equipment: {equipment:#?}"};
                     //TODO: instead of expect() just load image error placeholder and log
                     let (symbol, uri) = equipment.schematic_symbol();
-                    let svg_data = symbol.get_data().into_bytes();
+                    let svg_data = symbol.visual_representation.get_data().into_bytes();
                     let sense_settings = Sense::DRAG & Sense::FOCUSABLE;
-                    let image = Image::new(ImageSource::Bytes{uri: uri.into(), bytes: svg_data.into()})
-                        .sense(sense_settings)
-                        .fit_to_original_size(5.0);
+
+                    //TODO: set sensible max_height() and max_width() here (maybe the size of the
+                    //window rectangle or something?
+
+                    let image = Image::new(ImageSource::Bytes {
+                        uri: uri.into(),
+                        bytes: svg_data.into(),
+                    })
+                    .sense(sense_settings)
+                    .fit_to_original_size(app_state.symbol_scale_factor);
                     Area::new(Id::new(id))
                         .movable(true)
                         .order(Order::Foreground)

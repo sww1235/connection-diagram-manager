@@ -1,6 +1,6 @@
 use core::mem;
 use std::{
-    collections::HashSet,
+    collections::{BTreeMap, HashSet},
     path::{Path, PathBuf},
 };
 
@@ -11,7 +11,7 @@ use xml::{EventReader, EventWriter, reader::XmlEvent as ReaderEvent, writer::Xml
 use crate::{
     datatypes::{
         library_types::Library,
-        svg::Svg,
+        schematic_symbol::SchematicSymbol,
         util_types::{IECCodes, PhysicalLocation, SymbolStyle, UserFields},
     },
     error::{Error, LibraryError, SVGModificationError},
@@ -54,7 +54,7 @@ pub struct Equipment {
     /// This field is designed to cache the final symbol used for display so the update methods are
     /// not running every frame.
     #[serde(skip)]
-    schematic_symbol: Option<Svg>,
+    schematic_symbol: Option<SchematicSymbol>,
     /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
@@ -81,7 +81,7 @@ impl Equipment {
 
 impl SchematicRepresentation for Equipment {
     #[inline]
-    fn schematic_symbol(&self) -> (Svg, String) {
+    fn schematic_symbol(&self) -> (SchematicSymbol, String) {
         let uri = format!("bytes://{}_schematic_symbol.svg", self.identifier).to_string();
         //TODO: don't have the warning symbol as default?
         (self.schematic_symbol.clone().unwrap_or_default(), uri)
@@ -120,7 +120,7 @@ impl SchematicRepresentation for Equipment {
                     data_missing: "At least one schematic symbol needs to be specified".to_owned(),
                 })?;
 
-        let schematic_symbol = library
+        let schematic_symbol_svg = library
             .schematic_symbol_types
             .get(schematic_symbol_type_id)
             .ok_or(LibraryError::ValueNotFound {
@@ -130,6 +130,14 @@ impl SchematicRepresentation for Equipment {
             })?
             .visual_representation
             .clone();
+
+        //TODO: update identifier to something useful, or delete it.
+        let schematic_symbol = SchematicSymbol {
+            symbol_type: schematic_symbol_type_id.to_owned(),
+            visual_representation: schematic_symbol_svg,
+            identifier: "PLACEHOLDER".to_owned(),
+            connections: BTreeMap::new(),
+        };
 
         self.schematic_symbol = Some(schematic_symbol);
 
@@ -143,7 +151,7 @@ impl SchematicRepresentation for Equipment {
         let Some(schematic_symbol) = &mut self.schematic_symbol else {
             return Err(SVGModificationError::UpdatingUndefinedSvg.into());
         };
-        let svg_data = schematic_symbol.get_data_mut();
+        let svg_data = schematic_symbol.visual_representation.get_data_mut();
         let equipment_type = library
             .equipment_types
             .get(&self.equipment_type)
@@ -212,13 +220,21 @@ impl SchematicRepresentation for Equipment {
                         // Validate that only 1 data attribute is present that affects the
                         // value of the SVG text element
 
+                        #[expect(unused_mut, reason = "will be used in future")]
                         let mut duplicate_attr_detected = false;
+                        #[expect(unused, reason = "will be used in future")]
                         for attr in attributes {
                             if duplicate_attr_detected {
                                 return Err(SVGModificationError::ConflictingAttributes.into());
                             }
                             //TODO: validate that all data- attributes should be unique
-                            duplicate_attr_detected = attr.name.local_name.starts_with("data-");
+                            //
+                            //FIXME: This code doesn't do what it was intended to do. There can be
+                            //more than one data- attribute on an element.
+                            //roxmltree parsing will error on duplicate attributes..., so all we
+                            //have to do is make sure the SVG is validated first, which it should
+                            //be during deserialization.
+                            //duplicate_attr_detected = attr.name.local_name.starts_with("data-");
                         }
 
                         // Now finally loop through attributes and update text value where
@@ -312,7 +328,7 @@ impl SchematicRepresentation for Equipment {
         let output_string = str::from_utf8(&out_buffer)?.to_owned();
         //trace!{"{}", output_string};
 
-        schematic_symbol.set_data(&output_string);
+        schematic_symbol.visual_representation.set_data(&output_string);
 
         Ok(())
     }
