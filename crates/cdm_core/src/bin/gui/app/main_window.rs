@@ -5,12 +5,21 @@ use cdm_core::{
     datatypes::{library_types::Library, project_types::Project},
     traits::SchematicRepresentation as _,
 };
-use egui::{Area, Id, Sense, Window, layers::Order, widgets};
-use log::trace;
+use egui::{
+    Area,
+    Id,
+    Sense,
+    Window,
+    containers::menu,
+    layers::Order,
+    viewport,
+    widgets,
+    widgets::{Image, ImageSource},
+};
+use log::{debug, trace};
 use num_traits::cast::FromPrimitive as _;
 
 use crate::app::AppState;
-//use usvg::{Options as ParseOptions, Tree, WriteOptions};
 
 #[expect(
     clippy::shadow_unrelated,

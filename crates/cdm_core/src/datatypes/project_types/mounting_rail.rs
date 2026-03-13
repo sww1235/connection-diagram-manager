@@ -82,6 +82,7 @@ impl MountingRail {
             // using mm here for all units within generated SVG
             let rail_height = rail_type.rail_height.value.get::<millimeter>();
             let rail_length = self.length.value.get::<millimeter>();
+            //TODO: switch to using xml library to generate SVG text.
             svg_string.push_str("<svg version=\"1.1\"\n");
             svg_string.push_str(&format!("width=\"{rail_length}mm\" height=\"{rail_height}mm\""));
             svg_string.push_str("xmlns=\"http://www.w3.org/2000/svg\">");

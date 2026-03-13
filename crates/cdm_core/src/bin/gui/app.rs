@@ -5,9 +5,8 @@ use cdm_core::{
         project_types::{Config as ProjectConfig, Project},
     },
 };
-use miniquad::{self as mq, TouchPhase, window as mqWindow};
-
 use log::debug;
+use miniquad::{self as mq, TouchPhase, window as mqWindow};
 
 /// Main window of application.
 mod main_window;
@@ -43,7 +42,7 @@ struct AppState {
     prev_egui_zoom_factor: f32,
     /// Current zoom factor.
     zoom_factor: f32,
-    /// Scale of `SchematicSymbols`
+    /// Scale of `SchematicSymbols`.
     symbol_scale_factor: f32,
 }
 
@@ -108,10 +107,10 @@ impl mq::EventHandler for App {
             }
             self.state.prev_egui_zoom_factor = curr_egui_zoom;
             let egui_dpi_scale = egui_ctx.pixels_per_point();
-            debug!{"window_size: {:?}", mqWindow::screen_size()};
-            debug!{"high_dpi: {}", mqWindow::high_dpi()}
-            debug!{"native dpi_scale: {dpi_scale}"}
-            debug!{"egui dpi_scale: {egui_dpi_scale}"}
+            debug! {"window_size: {:?}", mqWindow::screen_size()};
+            debug! {"high_dpi: {}", mqWindow::high_dpi()}
+            debug! {"native dpi_scale: {dpi_scale}"}
+            debug! {"egui dpi_scale: {egui_dpi_scale}"}
 
             egui_extras::install_image_loaders(egui_ctx);
             main_window::main_window(
@@ -132,7 +131,8 @@ impl mq::EventHandler for App {
             egui_ctx.input(|input_state| {
                 // This is the quit button in the menu
                 let window_quit_request = input_state.viewport().close_requested();
-                //debug! {"close button clicked: {window_quit_request}"};
+                //debug! {"input_state.viewport: {:#?}", input_state.viewport()}
+                //debug! {"menu quit button clicked: {window_quit_request}"};
                 if window_quit_request {
                     self.state.quit_requested = true;
                 }
@@ -146,7 +146,7 @@ impl mq::EventHandler for App {
             //debug! {"quit requested: {}", self.quit_requested};
 
             // TODO: figure out a better way of exiting the app.
-            // Investigate the code of egui_miniquad and minquad more to
+            // Investigate the code of egui_miniquad and miniquad more to
             // see if things can be improved
             if self.state.quit_requested {
                 //TODO: add checks here for unsaved files, prompt user if they want to close, etc

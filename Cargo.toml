@@ -110,6 +110,8 @@ todo = "warn"
 try_err = "warn"
 unimplemented = "warn"
 unnecessary_self_imports = "warn"
+# want separated literal suffix
+separated_literal_suffix = "allow"
 unseparated_literal_suffix = "warn"
 unwrap_in_result = "warn"
 unwrap_used = "warn"

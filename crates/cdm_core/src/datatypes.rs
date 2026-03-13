@@ -11,8 +11,8 @@ pub mod svg;
 ///
 /// Also contains conversion helper functions.
 pub mod unit_helper;
-///`util_types` contains utility types that are used in multiple other different types and files,
-///including generic enums.
+/// `util_types` contains utility types that are used in multiple other different types and files,
+/// including generic enums.
 pub mod util_types;
 
 use std::{
@@ -42,7 +42,7 @@ use crate::{
 /// # Errors
 ///
 /// Will error on IO errors or parsing errors.
-#[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
+#[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error")]
 #[inline]
 pub fn parse_datafiles(cli: &Cli) -> Result<(ProjectConfig, Library, Project), Error> {
     // check if project_directory was specified and even exists
