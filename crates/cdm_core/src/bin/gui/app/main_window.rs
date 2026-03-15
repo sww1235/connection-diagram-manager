@@ -9,22 +9,26 @@ use egui::{
     Area,
     Id,
     Sense,
+    Theme,
     Window,
-    containers::menu,
+    containers::{
+        menu,
+        panel::{CentralPanel, SidePanel, TopBottomPanel},
+    },
     layers::Order,
-    viewport,
-    widgets,
+    style::Visuals,
     widgets::{Image, ImageSource},
 };
 use log::{debug, trace};
 use num_traits::cast::FromPrimitive as _;
 
-use crate::app::AppState;
+use crate::app::{AppState, Commands};
 
 #[expect(
     clippy::shadow_unrelated,
     reason = "ui and other variables keep getting passed into closures"
 )]
+#[expect(clippy::shadow_reuse, reason = "ui and other variables keep getting passed into closures")]
 /// Main window rendering code.
 pub fn main_window(
     egui_ctx: &egui::Context,
@@ -34,21 +38,28 @@ pub fn main_window(
     library_data: &Library,
 ) {
     let main_window_id = Id::new("root");
+    let top_menu_id = Id::new("root-top-menu");
+    let left_sidebar_id = Id::new("root-left-sidebar");
+    //let central_panel_id = Id::new("central-panel");
+
+    let main_window_is_open = &mut app_state.main_window_state.is_open;
     Window::new("Main Window")
         .id(main_window_id)
-        .open(&mut app_state.main_window_state)
+        .open(main_window_is_open)
         .default_width(f32::from_i32(app_config.graphics_config.starting_window_width).unwrap_or(1024.0))
         .default_height(f32::from_i32(app_config.graphics_config.starting_window_height).unwrap_or(1024.0))
         .resizable(true)
         .show(egui_ctx, |ui| {
-            widgets::global_theme_preference_switch(ui);
+            TopBottomPanel::top(top_menu_id).show_inside(ui, |ui| {
+                main_menu(ui, &mut app_state.commands);
+            });
 
-            main_menu(ui);
+            SidePanel::left(left_sidebar_id).show_inside(ui, |ui| {
+                ui.label("This is the sidebar");
+            });
 
-            //FIXME: area_rect() is not filtering out title bar.
-            //https://github.com/emilk/egui/issues/7836
-
-            if let Some(rect) = ui.memory(|memory| memory.area_rect(main_window_id)) {
+            CentralPanel::default().show_inside(ui, |ui| {
+                let rect = ui.max_rect();
                 for (id, equipment) in &project_data.equipment {
                     trace! {"ID: {id}, Equipment: {equipment:#?}"};
                     //TODO: instead of expect() just load image error placeholder and log
@@ -73,7 +84,7 @@ pub fn main_window(
                             ui.add(image);
                         });
                 }
-            }
+            });
             ui.allocate_space(ui.available_size());
         });
 }
@@ -82,16 +93,26 @@ pub fn main_window(
 //Using git dependancy for now.
 /// `main_menu` creates the menu bar for `main_window`.
 #[expect(clippy::shadow_reuse, reason = "ui is being passed down closure chains")]
-fn main_menu(ui: &mut egui::Ui) {
+fn main_menu(ui: &mut egui::Ui, cmds: &mut Commands) {
     //TODO: set style and config using .style() and .config()
     menu::MenuBar::new().ui(ui, |ui| {
         // menu_button is creating a submenu
+        //
+        // File menu
         ui.menu_button("File", |ui| {
             // ui.button creates a button in that submenu
             if ui.button("Quit").clicked() {
-                //TODO: fix quit button
                 debug! {"quit menu button clicked"};
-                ui.ctx().send_viewport_cmd(viewport::ViewportCommand::Close);
+                cmds.quit_clicked = true;
+            }
+        });
+        // Appearance menu
+        ui.menu_button("Appearance", |ui| {
+            if ui.button("Dark").clicked() {
+                ui.ctx().set_visuals_of(Theme::Dark, Visuals::dark());
+            }
+            if ui.button("Light").clicked() {
+                ui.ctx().set_visuals_of(Theme::Light, Visuals::light());
             }
         });
     });

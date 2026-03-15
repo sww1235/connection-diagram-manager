@@ -33,9 +33,9 @@ pub struct App {
 /// `AppState` contains state information for app while it is running.
 struct AppState {
     /// if main window is closed.
-    main_window_state: bool,
+    main_window_state: WindowState,
     /// if application has requested to quit.
-    quit_requested: bool,
+    commands: Commands,
     //from egui-miniquad demo
     /// Record previous egui zoom factor to determine if the zoom factor is being changed via the
     /// GUI.
@@ -44,6 +44,20 @@ struct AppState {
     zoom_factor: f32,
     /// Scale of `SchematicSymbols`.
     symbol_scale_factor: f32,
+}
+
+//TODO: provide methods for field access
+/// `WindowState` represents the internal state of a window.
+struct WindowState {
+    /// If the window is open.
+    is_open: bool,
+}
+
+//TODO: provide methods for field access
+/// Control commands from the UI.
+struct Commands {
+    /// If the quit button in the menu was clicked.
+    quit_clicked: bool,
 }
 
 impl App {
@@ -69,8 +83,8 @@ impl App {
             project_config,
             config: config.clone(),
             state: AppState {
-                main_window_state: true,
-                quit_requested: false,
+                main_window_state: WindowState { is_open: true },
+                commands: Commands { quit_clicked: false },
                 prev_egui_zoom_factor: 1.0,
                 zoom_factor: 1.0,
                 symbol_scale_factor: 1.0,
@@ -106,6 +120,10 @@ impl mq::EventHandler for App {
                 self.state.zoom_factor = curr_egui_zoom;
             }
             self.state.prev_egui_zoom_factor = curr_egui_zoom;
+
+            //TODO: use modified version of egui_miniquad demo code to potentially block the
+            //default egui zoom factor keyboard shortcuts
+
             let egui_dpi_scale = egui_ctx.pixels_per_point();
             debug! {"window_size: {:?}", mqWindow::screen_size()};
             debug! {"high_dpi: {}", mqWindow::high_dpi()}
@@ -124,23 +142,23 @@ impl mq::EventHandler for App {
             //
             // true when window open
             // false when window is closed or close button clicked.
-            if !self.state.main_window_state {
-                self.state.quit_requested = true;
+            if !self.state.main_window_state.is_open {
+                self.state.commands.quit_clicked = true;
             }
             // input handler
             egui_ctx.input(|input_state| {
                 // This is the quit button in the menu
                 let window_quit_request = input_state.viewport().close_requested();
-                //debug! {"input_state.viewport: {:#?}", input_state.viewport()}
-                //debug! {"menu quit button clicked: {window_quit_request}"};
+                debug! {"input_state.viewport: {:#?}", input_state.viewport()}
+                debug! {"menu quit button clicked: {window_quit_request}"};
                 if window_quit_request {
-                    self.state.quit_requested = true;
+                    self.state.commands.quit_clicked = true;
                 }
             });
             egui_ctx.input_mut(|input_state| {
                 let keyboard_quit_request = input_state.consume_shortcut(&Self::QUIT_CMD);
                 if keyboard_quit_request {
-                    self.state.quit_requested = true;
+                    self.state.commands.quit_clicked = true;
                 }
             });
             //debug! {"quit requested: {}", self.quit_requested};
@@ -148,7 +166,7 @@ impl mq::EventHandler for App {
             // TODO: figure out a better way of exiting the app.
             // Investigate the code of egui_miniquad and miniquad more to
             // see if things can be improved
-            if self.state.quit_requested {
+            if self.state.commands.quit_clicked {
                 //TODO: add checks here for unsaved files, prompt user if they want to close, etc
                 process::exit(0);
             }
