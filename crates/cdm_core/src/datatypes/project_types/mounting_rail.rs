@@ -103,7 +103,7 @@ impl MountingRail {
             }
             svg_string.push_str("</svg>");
         }
-        //#[expect(clippy::unwrap_used, reason = "this function in infalliable")]
+        #[expect(clippy::unwrap_in_result, reason = "this function in infalliable")]
         let output = Svg::from_str(&svg_string).unwrap();
         Ok(output)
     }
