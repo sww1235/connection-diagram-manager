@@ -380,6 +380,7 @@ name = "connection_diagram_manager"
 version = "0.0.1"
 dependencies = [
  "anyhow",
+ "bitflags 2.11.0",
  "clap",
  "egui",
  "egui-miniquad",

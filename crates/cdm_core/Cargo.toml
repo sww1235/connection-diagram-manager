@@ -36,6 +36,7 @@ figment.workspace = true
 anyhow.workspace = true
 url.workspace = true
 itertools.workspace = true
+bitflags.workspace = true
 # need to keep all 4 of these crates in sync version wise
 miniquad = { version = "~0.4", optional = true}
 egui-miniquad = { version = "~0.16", optional = true, git = "https://github.com/not-fl3/egui-miniquad", rev = "62c7d23ac3b2e20346cf794103646534f6fae327"}

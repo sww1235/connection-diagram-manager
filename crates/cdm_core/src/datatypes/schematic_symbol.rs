@@ -1,5 +1,7 @@
 use std::collections::BTreeMap;
 
+use bitflags::bitflags;
+
 use super::svg::Svg;
 
 /// `SchematicSymbol` represents an instance of a `SchematicSymbolType`.
@@ -40,11 +42,29 @@ pub struct SchematicSymbol {
 //}
 
 /// A connection point on a `SchematicSymbol`.
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct SymbolConnection {
     /// Distance from top left of image horizontally in percentage of full width.
     pub x: u64,
     /// Distance from top left of image vertically in percentage of full height.
     pub y: u64,
+    /// Which directions wires/cables are allowed to connect to this connection.
+    pub allowed_connection_directions: ConnectionDirection,
+}
+
+bitflags! {
+    /// `ConnectionDirection` specifies which direction(s) wires/cables are allowed to enter a
+    /// connector.
+    #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+    pub struct ConnectionDirection: u8 {
+        /// If connections are allowed from the top.
+        const TOP = 0b0000_0001;
+        /// If connections are allowed from the bottom.
+        const BOTTOM = 0b0000_0010;
+        /// If connections are allowed from the right.
+        const RIGHT = 0b0000_0100;
+        /// If connections are allowed from the left.
+        const LEFT = 0b0000_1000;
+}
 }

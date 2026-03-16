@@ -11,10 +11,10 @@ use xml::{EventReader, EventWriter, reader::XmlEvent as ReaderEvent, writer::Xml
 use crate::{
     datatypes::{
         library_types::Library,
-        schematic_symbol::SchematicSymbol,
+        schematic_symbol::{ConnectionDirection, SchematicSymbol, SymbolConnection},
         util_types::{IECCodes, PhysicalLocation, SymbolStyle, UserFields},
     },
-    error::{Error, LibraryError, SVGModificationError},
+    error::{Error, LibraryError, SVGModificationError, SVGValidationError},
     traits::{FromFile, ProjectData, SchematicRepresentation},
 };
 
@@ -188,123 +188,238 @@ impl SchematicRepresentation for Equipment {
                 } => {
                     trace! {"StartElement name: {}", name.local_name};
 
-                    // Then finally write out character data with updated values after writing
-                    // start element
-
                     // Modify tagged text elements within SVG
 
                     // first check for text element
-                    if &name.local_name == "text" {
-                        // check if next event is a character event
-                        // and skip if it is
-                        //
-                        // this should skip the current and next elements in the iterator.
-                        //
-                        // The current element is already saved via the let event = line above,
-                        // in theory.
-                        //
-                        // https://stackoverflow.com/a/59045627
-                        if mem::discriminant(&next_event) == (mem::discriminant(&ReaderEvent::Characters(String::new()))) {
-                            reader.nth(0);
-                        }
-                        //https://stackoverflow.com/a/37700229
-                        //
-                        // Checking for duplicate attributes
-                        let unique_attributes: HashSet<_> = attributes.iter().map(|attr| attr.name.local_name.as_str()).collect();
-
-                        if unique_attributes.len() < attributes.len() {
-                            //TODO: return list of duplicate attributes here as well
-                            return Err(SVGModificationError::DuplicateAttributes.into());
-                        }
-
-                        // Validate that only 1 data attribute is present that affects the
-                        // value of the SVG text element
-
-                        #[expect(unused_mut, reason = "will be used in future")]
-                        let mut duplicate_attr_detected = false;
-                        #[expect(unused, reason = "will be used in future")]
-                        for attr in attributes {
-                            if duplicate_attr_detected {
-                                return Err(SVGModificationError::ConflictingAttributes.into());
-                            }
-                            //TODO: validate that all data- attributes should be unique
+                    match name.local_name.as_str() {
+                        "text" => {
+                            // check if next event is a character event
+                            // and skip if it is
                             //
-                            //FIXME: This code doesn't do what it was intended to do. There can be
-                            //more than one data- attribute on an element.
-                            //roxmltree parsing will error on duplicate attributes..., so all we
-                            //have to do is make sure the SVG is validated first, which it should
-                            //be during deserialization.
-                            //duplicate_attr_detected = attr.name.local_name.starts_with("data-");
-                        }
+                            // this should skip the current and next elements in the iterator.
+                            //
+                            // The current element is already saved via the let event = line above,
+                            // in theory.
+                            //
+                            // https://stackoverflow.com/a/59045627
+                            if mem::discriminant(&next_event) == (mem::discriminant(&ReaderEvent::Characters(String::new()))) {
+                                // pop the next element off the reader stack.
+                                reader.nth(0);
+                            }
+                            //https://stackoverflow.com/a/37700229
+                            //
+                            // Checking for duplicate attributes
+                            let unique_attributes: HashSet<_> =
+                                attributes.iter().map(|attr| attr.name.local_name.as_str()).collect();
 
-                        // Now finally loop through attributes and update text value where
-                        // appropriate.
+                            if unique_attributes.len() < attributes.len() {
+                                //TODO: return list of duplicate attributes here as well
+                                return Err(SVGModificationError::DuplicateAttributes.into());
+                            }
 
-                        // the else path here should never happen.
-                        let Some(writer_output) = event.as_writer_event() else {
-                            continue;
-                        };
-                        writer.write(writer_output)?;
-                        for attr in attributes {
-                            match attr.name.local_name.as_str() {
-                                "data-ref-des" => {
-                                    let character_event = WriterEvent::Characters(&self.identifier);
-                                    writer.write(character_event)?;
+                            // Validate that only 1 data attribute is present that affects the
+                            // value of the SVG text element
+
+                            #[expect(unused_mut, reason = "will be used in future")]
+                            let mut duplicate_attr_detected = false;
+                            #[expect(unused, reason = "will be used in future")]
+                            for attr in attributes {
+                                if duplicate_attr_detected {
+                                    return Err(SVGModificationError::ConflictingAttributes.into());
                                 }
-                                "data-manufacturer" => {
-                                    let character_event = WriterEvent::Characters(
-                                        &equipment_type
-                                            .catalog
-                                            .as_ref()
-                                            .map_or(String::new(), |catalog| catalog.manufacturer.clone().unwrap_or_default()),
-                                    );
-                                    writer.write(character_event)?;
+                                //TODO: validate that all data- attributes should be unique
+                                //
+                                //FIXME: This code doesn't do what it was intended to do. There can be
+                                //more than one data- attribute on an element.
+                                //roxmltree parsing will error on duplicate attributes..., so all we
+                                //have to do is make sure the SVG is validated first, which it should
+                                //be during deserialization.
+                                //duplicate_attr_detected = attr.name.local_name.starts_with("data-");
+                            }
+
+                            // Write out StartElement first
+                            // the else path here should never happen.
+                            let Some(writer_output) = event.as_writer_event() else {
+                                continue;
+                            };
+                            writer.write(writer_output)?;
+                            // Now finally loop through attributes and update text value where
+                            // appropriate.
+                            for attr in attributes {
+                                match attr.name.local_name.as_str() {
+                                    "data-ref-des" => {
+                                        // Then finally write out character data with updated values after writing
+                                        // start element
+                                        let character_event = WriterEvent::Characters(&self.identifier);
+                                        writer.write(character_event)?;
+                                    }
+                                    "data-manufacturer" => {
+                                        let character_event = WriterEvent::Characters(
+                                            &equipment_type.catalog.as_ref().map_or(String::new(), |catalog| {
+                                                catalog.manufacturer.clone().unwrap_or_default()
+                                            }),
+                                        );
+                                        writer.write(character_event)?;
+                                    }
+                                    "data-model" => {
+                                        let character_event = WriterEvent::Characters(
+                                            &equipment_type
+                                                .catalog
+                                                .as_ref()
+                                                .map_or(String::new(), |catalog| catalog.model.clone().unwrap_or_default()),
+                                        );
+                                        writer.write(character_event)?;
+                                    }
+                                    "data-description" => {
+                                        let character_event =
+                                            WriterEvent::Characters(&self.description.clone().unwrap_or_default());
+                                        writer.write(character_event)?;
+                                    }
+                                    "data-installation" => {
+                                        let character_event = WriterEvent::Characters(
+                                            &self
+                                                .iec_codes
+                                                .as_ref()
+                                                .map_or(String::new(), |codes| codes.installation.clone().unwrap_or_default()),
+                                        );
+                                        writer.write(character_event)?;
+                                    }
+                                    "data-location" => {
+                                        let character_event = WriterEvent::Characters(
+                                            &self
+                                                .iec_codes
+                                                .as_ref()
+                                                .map_or(String::new(), |codes| codes.location.clone().unwrap_or_default()),
+                                        );
+                                        writer.write(character_event)?;
+                                    }
+                                    "data-rating" => {
+                                        let character_event =
+                                            WriterEvent::Characters(&equipment_type.rating.clone().unwrap_or_default());
+                                        writer.write(character_event)?;
+                                    }
+                                        "data-connection-point-wire-number" => {
+                                            //TODO:
+                                        }
+                                        "data-connection-point-label" => {
+                                            //TODO:
+                                        }
+                                        "data-terminal-number" => {
+                                            //TODO:
+                                        }
+                                    // other attributes
+                                    _ => {}
                                 }
-                                "data-model" => {
-                                    let character_event = WriterEvent::Characters(
-                                        &equipment_type
-                                            .catalog
-                                            .as_ref()
-                                            .map_or(String::new(), |catalog| catalog.model.clone().unwrap_or_default()),
-                                    );
-                                    writer.write(character_event)?;
-                                }
-                                "data-description" => {
-                                    let character_event = WriterEvent::Characters(&self.description.clone().unwrap_or_default());
-                                    writer.write(character_event)?;
-                                }
-                                "data-installation" => {
-                                    let character_event = WriterEvent::Characters(
-                                        &self
-                                            .iec_codes
-                                            .as_ref()
-                                            .map_or(String::new(), |codes| codes.installation.clone().unwrap_or_default()),
-                                    );
-                                    writer.write(character_event)?;
-                                }
-                                "data-location" => {
-                                    let character_event = WriterEvent::Characters(
-                                        &self
-                                            .iec_codes
-                                            .as_ref()
-                                            .map_or(String::new(), |codes| codes.location.clone().unwrap_or_default()),
-                                    );
-                                    writer.write(character_event)?;
-                                }
-                                "data-rating" => {
-                                    let character_event =
-                                        WriterEvent::Characters(&equipment_type.rating.clone().unwrap_or_default());
-                                    writer.write(character_event)?;
-                                }
-                                // other attributes
-                                _ => {}
                             }
                         }
-                    } else {
-                        let Some(writer_output) = event.as_writer_event() else {
-                            continue;
-                        };
-                        writer.write(writer_output)?;
+                        // which elements to match for connections
+                        //
+                        // Here, allow duplicate attributes such as data-connection-point-type
+                        "circle" | "rect" => {
+                            if attributes
+                                .iter()
+                                .any(|attr| attr.name.local_name.as_str() == "data-connection-point")
+                            {
+                                let mut connection: SymbolConnection = SymbolConnection::default();
+                                let mut connection_id = String::new();
+                                let mut connection_direction: ConnectionDirection = ConnectionDirection::default();
+
+                                for attr in attributes {
+                                    match attr.name.local_name.as_str() {
+                                        "data-connection-point" => {
+                                            connection_id = attr.value.clone();
+                                        }
+                                        "data-connection-point-type" => {
+                                            if attr.value.is_empty() {
+                                                return Err(SVGValidationError::BlankAttributeValue(
+                                                    attr.name.local_name.clone(),
+                                                )
+                                                .into());
+                                            }
+                                            match attr.value.as_str() {
+                                                "left" => {
+                                                    connection_direction |= ConnectionDirection::LEFT;
+                                                }
+                                                "right" => {
+                                                    connection_direction |= ConnectionDirection::RIGHT;
+                                                }
+                                                "top" => {
+                                                    connection_direction |= ConnectionDirection::TOP;
+                                                }
+                                                "bottom" => {
+                                                    connection_direction |= ConnectionDirection::BOTTOM;
+                                                }
+                                                "all" => {
+                                                    // NOTE: this is all defined flags, not all
+                                                    // possible u8 values.
+                                                    connection_direction |= ConnectionDirection::all();
+                                                }
+                                                x => {
+                                                    return Err(SVGValidationError::AttributeValueInvalid(
+                                                        attr.name.local_name.clone(), x.to_owned(),
+                                                    )
+                                                    .into());
+                                                }
+                                            }
+                                        }
+
+                                        "x" => {
+                                            if attr.value.is_empty() {
+                                                return Err(SVGValidationError::BlankAttributeValue(
+                                                    attr.name.local_name.clone(),
+                                                )
+                                                .into());
+                                            }
+
+                                            if !attr.value.ends_with('%') {
+                                                return Err(SVGValidationError::AttributeMustBePercentage(
+                                                    attr.name.local_name.clone(),
+                                                )
+                                                .into());
+                                            }
+                                            connection.x = attr.value.as_str().parse::<u64>()?;
+                                        }
+                                        "y" => {
+                                            if attr.value.is_empty() {
+                                                return Err(SVGValidationError::BlankAttributeValue(
+                                                    attr.name.local_name.clone(),
+                                                )
+                                                .into());
+                                            }
+
+                                            if !attr.value.ends_with('%') {
+                                                return Err(SVGValidationError::AttributeMustBePercentage(
+                                                    attr.name.local_name.clone(),
+                                                )
+                                                .into());
+                                            }
+                                            connection.y = attr.value.as_str().parse::<u64>()?;
+                                        }
+                                        // other attributes
+                                        _ => {}
+                                    }
+                                }
+                                // Making sure there is indeed a value assigned to the connection_id
+                                if connection_id == String::new() {
+                                    return Err(
+                                        SVGValidationError::BlankAttributeValue("data-connection-point".to_owned()).into()
+                                    );
+                                }
+                                schematic_symbol.connections.insert(connection_id, connection);
+                            }
+
+                            //TODO:
+                            let Some(writer_output) = event.as_writer_event() else {
+                                continue;
+                            };
+                            writer.write(writer_output)?;
+                        }
+                        _ => {
+                            let Some(writer_output) = event.as_writer_event() else {
+                                continue;
+                            };
+                            writer.write(writer_output)?;
+                        }
                     }
                 }
                 ReaderEvent::EndDocument => break,

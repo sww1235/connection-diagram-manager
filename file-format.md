@@ -2168,6 +2168,9 @@ value replaced, this is considered an error and will result in the file being
 rejected by the application. An example of this would have having
 `data-ref-des` defined twice on the same `<text>` element.
 
+Some elements that are only used as markers are allowed to be duplicated and
+are specifically indicated below. An example is `data-connection-point-type`.
+
 #### Schematic Symbols
 
 SVG files that are intended for use as Schematic Symbols should be as simple as
@@ -2268,6 +2271,8 @@ from.
 If this attribute is present and has no value, it will generate a log message
 but has no other effect.
 
+This attribute is allowed to be specified more than once, with different values.
+
 Possible values are:
 
 <!-- TODO: Potentially expand this list -->
@@ -2275,6 +2280,7 @@ Possible values are:
 - right
 - top
 - bottom
+- all
 
 ##### Connection Point Wire Number
 **Attribute Tag:** `data-connection-point-wire-number`

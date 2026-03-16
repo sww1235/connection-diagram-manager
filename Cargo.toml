@@ -31,6 +31,7 @@ anyhow = { version = "~1" }
 pretty_assertions = { version = "~1.4"}
 url = { version = "~2.5", features = ["serde"] }
 itertools = { version = "~0.14" }
+bitflags = { version = "~2.11"}
 
 
 #https://stackoverflow.com/a/74545562/3342767

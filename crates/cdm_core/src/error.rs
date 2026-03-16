@@ -65,6 +65,9 @@ pub enum Error {
     /// Errors resulting from validation checks internal to the library.
     #[error(transparent)]
     SVGValidationError(#[from] SVGValidationError),
+    /// Errors resulting from string -> number parsing.
+    #[error(transparent)]
+    ParseIntError(#[from] core::num::ParseIntError),
 }
 
 /// `LibraryError` is the list of errors that can occur within code related to `Library` data,
@@ -241,17 +244,17 @@ pub enum UnitParsingError {
 /// are used to render objects within the application.
 #[derive(Debug, Error)]
 #[non_exhaustive]
-#[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
+#[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name.")]
 pub enum SVGModificationError {
     /// If duplicate attributes are found on an SVG element.
-    #[error("Duplicate Attributes found on SVG element")]
+    #[error("Duplicate Attributes found on SVG element.")]
     DuplicateAttributes,
     /// If more than one `data-` attribute that instructs the code to modify `<text>` element values
     /// are present on a text element.
     #[error("Conflicting `data-` attributes were found on a `<text>` element while attempting to update its value.")]
     ConflictingAttributes,
     /// If SVG is undefined or field is None.
-    #[error("Attempting to update SVG data on a undefined or `None` SVG field")]
+    #[error("Attempting to update SVG data on a undefined or `None` SVG field.")]
     UpdatingUndefinedSvg,
 }
 
@@ -259,12 +262,21 @@ pub enum SVGModificationError {
 /// returned when an error from `usvg` or `roxmltree` doesn't make sense.
 #[derive(Debug, Error)]
 #[non_exhaustive]
-#[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
+#[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name.")]
 pub enum SVGValidationError {
     /// A parsed `viewPort` is invalid.
-    #[error("Invalid viewPort parsed: {0}")]
+    #[error("Invalid viewPort parsed: {0}.")]
     InvalidViewPort(String),
     /// If the parsed SVG contains an invalid number.
-    #[error("Invalid number parsed")]
+    #[error("Invalid number parsed.")]
     InvalidNumber,
+    /// If an attribute has a blank value when it should not.
+    #[error("Attribute {0} should not have an empty or blank value.")]
+    BlankAttributeValue(String),
+    /// If attributes that are numbers are required to be specified as percentages.
+    #[error("Attribute {0} must be specified using percentages.")]
+    AttributeMustBePercentage(String),
+    /// Generic invalid attribute value error.
+    #[error("Attribute {0} has an invalid value: {1}")]
+    AttributeValueInvalid(String, String),
 }
