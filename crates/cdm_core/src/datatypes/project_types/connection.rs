@@ -15,21 +15,47 @@ pub struct Connection {
     pub(crate) contained_datafile_path: PathBuf,
 }
 
-/// `ConnectionType` is an enum that defines what type of things can be connected to what other
+/// `Type` is an enum that defines what type of things can be connected to what other
 /// type of things.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum Type {
-    /// An ID of a [`Wire`].
-    Wire(String),
-    /// An ID of a [`Cable`].
-    Cable(String),
-    /// An ID of a [`TermCable`].
-    TermCable(String),
-    /// An ID of an [`Equipment`].
-    Equipment(String),
-    /// An ID of a [`TerminalStrip`].
-    TerminalStrip(String),
-    /// An ID of a [`Connector`].
-    Connector(String),
+    /// A [`Wire`].
+    Wire {
+        /// ID of [`Wire`] instance.
+        wire_id: String,
+    },
+    //TODO: which cable core?
+    /// A [`Cable`].
+    Cable {
+        /// ID of [`Cable`] instance.
+        cable_id: String,
+    },
+    //TODO: which cable core? Or should this be connector based?
+    /// A [`TermCable`].
+    TermCable {
+        /// ID of [`TermCable`] instance.
+        cable_id: String,
+    },
+    /// An [`Equipment`].
+    Equipment {
+        /// ID of [`Equipment`] instance.
+        equipment_id: String,
+        /// ID of connection point on equipment.
+        connection_point_id: String,
+    },
+    /// A [`TerminalStrip`].
+    TerminalStrip {
+        /// ID of [`TerminalStrip`].
+        term_strip_id: String,
+        /// ID or index of element within terminal strip.
+        element_id: String,
+    },
+    /// An [`Connector`].
+    Connector {
+        /// ID of [`Connector`] instance.
+        connector_id: String,
+        /// ID or index of connector pin.
+        pin_id: String,
+    },
 }
