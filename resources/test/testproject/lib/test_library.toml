@@ -1,7 +1,7 @@
 [wire_types]
 [wire_types.12THHN]
 wire_type_code = "THHN"
-nominal_cross_section =  {value = [12,1], original_unit = "AWG"} # PLACEHOLDER
+nominal_cross_section =  {value = [12,1], original_unit = "AWG"}
 material = "Copper"
 insulated = true
 stranded = true

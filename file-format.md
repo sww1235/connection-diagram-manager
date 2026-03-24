@@ -1665,15 +1665,15 @@ user9 = "PLACEHOLDER"
 # suggested that end1 be the wire/cable type and end2 be the
 # terminal/equipment/connector, etc
 
-# replace end1 and end2 with options from the following list:
-# - Wire
-# - Cable
-# - TermCable
-# - Equipment
-# - TerminalStrip
-# - Connector
+# replace Type with options from the following list:
+# - { Wire = { wire_id = PLACEHOLDER } }
+# - { Cable = { cable_id = PLACEHOLDER } }
+# - { TermCable = { cable_id = PLACEHOLDER } }
+# - { Equipment = { equipment_id = PLACEHOLDER, connection_point_id = PLACEHOLDER } }
+# - { TerminalStrip = { term_strip_id = PLACHOLDER, element_id = PLACEHOLDER } }
+# - { Connector = { connector_id = PLACEHOLDER, pin_id = PLACEHOLDER } }
 
-# The "PLACEHOLDER" text should be replaced with the ID of the entity
+# The "PLACEHOLDER" text should be replaced with a selection from the above list
 
 [[connections]]
 
@@ -2188,9 +2188,8 @@ following guidelines:
 
 - SVG `version="1.1"`
 - Outer `viewBox` of `0 0 200 200`
-- `width` and `height` attributes on `svg` tag set to `100%`
 - All shape dimensions specified in percentages.
-- All text sizes specified in `rem` units
+- All text sizes specified in `%` units
 - `font-weight`, `fill`, `font-family` and `stroke-width` specified as
 	appropriate for the symbol.
 - All text elements should have obvious placeholder values in them for
@@ -2200,6 +2199,7 @@ following guidelines:
 #### Common Attributes
 
 ##### Reference Designator
+
 **Attribute Tag:** `data-ref-des`
 
 The reference designator (referred to as a `TAG` in other CAD
@@ -2207,6 +2207,7 @@ software, is the main human facing label that is the main cross reference
 between schematic / panel / reality
 
 ##### Manufacturer
+
 **Attribute Tag:** `data-manufacturer`
 
 Any `<text>` tags within the SVG with this attribute will have
@@ -2214,6 +2215,7 @@ their contents replaced with the `<entity_type>.catalog.manufacturer` found on t
 populated during rendering.
 
 ##### Model
+
 **Attribute Tag:** `data-model`
 
 Any `<text>` tags within the SVG with this attribute will have
@@ -2221,6 +2223,7 @@ their contents replaced with the `<entity_type>.catalog.model` found on the enti
 populated during rendering.
 
 ##### Description
+
 **Attribute Tag:** `data-description`
 
 Any `<text>` tags within the SVG with this attribute will have
@@ -2228,6 +2231,7 @@ their contents replaced with the `description` found on the entity if
 populated during rendering.
 
 ##### Installation
+
 **Attribute Tag:** `data-installation`
 
 Any `<text>` tags within the SVG with this attribute will have
@@ -2235,6 +2239,7 @@ their contents replaced with the `iec_codes.installation`
 found on the entity if populated during rendering.
 
 ##### Location
+
 **Attribute Tag:** `data-location`
 
 Any `<text>` tags within the SVG with this attribute will have
@@ -2242,6 +2247,7 @@ their contents replaced with the `iec_codes.location`
 found on the entity if populated during rendering.
 
 ##### Rating
+
 **Attribute Tag:** `data-rating`
 
 Any `<text>` tags within the SVG with this attribute will have
@@ -2250,6 +2256,7 @@ found on the entity if populated during rendering.
 
 
 ##### Connection Point
+
 **Attribute Tag:** `data-connection-point`
 
 SVG elements with this attribute will be identified as a place for wires/cables
@@ -2261,6 +2268,7 @@ will be the geometric center of whatever element this tag is applied to unless
 the [Connection Point Type](#connection-point-type) is also present.
 
 ##### Connection Point Type
+
 **Attribute Tag:** `data-connection-point-type`
 
 If this attribute is present and has a value, it will affect the visual
@@ -2282,8 +2290,9 @@ Possible values are:
 - bottom
 - all
 
-##### Connection Point Wire Number
-**Attribute Tag:** `data-connection-point-wire-number`
+##### Connection Point Identifier
+
+**Attribute Tag:** `data-connection-point-identifier`
 
 Any `<text>` tags within the SVG with this attribute will have their contents
 replaced with the `identifier` of the wire/cable connected to the connection
@@ -2292,6 +2301,7 @@ should be the value of the entity with the matching `data-connection-point`
 attribute.
 
 ##### Connection Point Description
+
 **Attribute Tag:** `data-connection-point-label`
 
 Any `<text>` tags within the SVG with this attribute will have their contents
@@ -2299,8 +2309,9 @@ replaced with the `label` of the connection point indicated by the value of
 this attribute. The value of this attribute should be the value of the entity
 with the matching `data-connection-point` attribute.
 
-##### Terminal Number
-**Attribute Tag:** `data-terminal-number`
+##### Terminal Identifier
+
+**Attribute Tag:** `data-terminal-identifier`
 
 Any `<text>` tags within the SVG with this attribute will have their contents
 replaced with the `identifier` of the `element` within a `TerminalStrip`  of
@@ -2321,10 +2332,21 @@ Schematic symbols use the following attributes to turn plain SVGs into "smart" s
 No attributes are currently required to be included in a Schematic Symbol SVG
 but will be used if present.
 
-#### Terminal
+Schematic symbols can contain all attributes contained in [common attributes](#common-attributes)
+
+##### Terminal
+
 **Attribute Tag:** `data-terminal`
 
 This attribute is a marker tag that identifies a symbol as a terminal symbol.
+
+##### Link Point
+
+**Attribute Tag** `data-link-point`
+
+This attribute is a place for link lines to connect to.
+
+TODO: flesh out link line functionality
 
 
 

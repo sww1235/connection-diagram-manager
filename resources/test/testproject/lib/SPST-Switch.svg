@@ -1,10 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.0" viewBox="0 0 200 200" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 200 75">
   <g fill-rule="evenodd" stroke="black" stroke-width="4">
-    <line x1="0%" y1="50%" x2="35%" y2="50%"/>
-    <line x1="65%" y1="50%" x2="100%" y2="50%"/>
-    <line x1="65%" y1="50%" x2="35%" y2="30%"/>
-    <circle cx="35%" cy="50%" r="10" fill="white"/>
-    <circle cx="65%" cy="50%" r="10" fill="white"/>
-    <text x="50%" y="80%" font-size="2rem" stroke-width="1" text-anchor="middle" dominant-baseline="middle" font-weight="normal" fill="black" font-family="monospace" data-ref-des="">test</text>
+    <!-- left line -->
+    <line x1="2%" y1="50%" x2="35%" y2="50%"/>
+    <!-- right line -->
+    <line x1="65%" y1="50%" x2="98%" y2="50%"/>
+    <!-- angle line -->
+    <line x1="65%" y1="50%" x2="35%" y2="15%"/>
+    <!-- left circle -->
+    <circle cx="35%" cy="50%" r="6%" fill="white"/>
+    <!-- right circle -->
+    <circle cx="65%" cy="50%" r="6%" fill="white"/>
+    <!-- left connection -->
+    <circle cx="2%" cy="50%" r="1%" data-connection-point="left" data-connection-point-type="left"/>
+    <text x="5%" y="35%" font-size="120%" stroke-width="0.5%" text-anchor="middle" dominant-baseline="middle" font-weight="normal" fill="black" font-family="monospace" data-connection-point="left" data-connection-point-identifier="5">ID</text>
+    <!-- right connection-->
+    <circle cx="98%" cy="50%" r="1%" data-connection-point="right" data-connection-point-type="right"/>
+    <text x="95%" y="35%" font-size="120%" stroke-width="0.5%" text-anchor="middle" dominant-baseline="middle" font-weight="normal" fill="black" font-family="monospace" data-connection-point="right" data-connection-point-identifier="5">ID</text>
+    <!-- reference designator text -->
+    <text x="50%" y="90%" font-size="200%" stroke-width="0.75%" text-anchor="middle" dominant-baseline="middle" font-weight="normal" fill="black" font-family="monospace" data-ref-des="1a">ref-des</text>
   </g>
 </svg>

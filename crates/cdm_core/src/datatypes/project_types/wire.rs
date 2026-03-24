@@ -17,7 +17,8 @@ use crate::{
 pub struct Wire {
     /// The `WireType` of this instance.
     pub wire_type: String,
-    /// The structured name of the `Wire` instance.
+    /// The structured name of the `Wire` instance. This can be used as a wire number or other
+    /// identifier.
     pub identifier: Option<String>,
     /// Optional description.
     pub description: Option<String>,

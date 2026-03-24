@@ -96,7 +96,10 @@ pub fn pdf_one_enclosure(
 #[expect(clippy::pattern_type_mismatch, reason = "revisit this")]
 #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
 #[expect(unused_variables, reason = "function not finished yet")]
-#[expect(clippy::unneeded_field_pattern, reason = "leaving unused fields specified so I remember what fields are present")]
+#[expect(
+    clippy::unneeded_field_pattern,
+    reason = "leaving unused fields specified so I remember what fields are present"
+)]
 #[inline(never)]
 pub fn render_enclosure(
     project: &Project,
@@ -920,7 +923,10 @@ pub fn render_enclosure(
 #[inline(never)]
 #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
 #[expect(unused_variables, reason = "function not finished yet")]
-#[expect(clippy::unneeded_field_pattern, reason = "leaving unused fields specified so I remember what fields are present")]
+#[expect(
+    clippy::unneeded_field_pattern,
+    reason = "leaving unused fields specified so I remember what fields are present"
+)]
 pub fn render_enclosure_schematic_ladder(
     project: &Project,
     library: &Library,

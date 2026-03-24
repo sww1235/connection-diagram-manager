@@ -11,3 +11,12 @@ identifier = "switch1"
 [equipment.switch2]
 equipment_type = "spst_toggle_switch"
 identifier = "switch2"
+
+
+[[connections]]
+end1 = {Wire = {wire_id = "wire1"}}
+end2 = {Equipment = {equipment_id = "switch1", connection_point_id = "left"}}
+
+[[connections]]
+end1 = {Wire = {wire_id = "wire1"}}
+end2 = {Equipment = {equipment_id = "switch2", connection_point_id = "left"}}

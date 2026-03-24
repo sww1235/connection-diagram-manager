@@ -11,6 +11,7 @@ use xml::{EventReader, EventWriter, reader::XmlEvent as ReaderEvent, writer::Xml
 use crate::{
     datatypes::{
         library_types::Library,
+        project_types::{Project, connection::Type as ConnectionType},
         schematic_symbol::{ConnectionDirection, SchematicSymbol, SymbolConnection},
         util_types::{IECCodes, PhysicalLocation, SymbolStyle, UserFields},
     },
@@ -146,7 +147,7 @@ impl SchematicRepresentation for Equipment {
 
     #[inline(never)]
     #[expect(clippy::too_many_lines, reason = "Its a long function, deal with it.")]
-    fn update_symbol_data(&mut self, library: &Library) -> Result<(), Error> {
+    fn update_symbol_data(&mut self, library: &Library, project: &Project) -> Result<(), Error> {
         // TODO: look at reader config
         let Some(schematic_symbol) = &mut self.schematic_symbol else {
             return Err(SVGModificationError::UpdatingUndefinedSvg.into());
@@ -216,6 +217,14 @@ impl SchematicRepresentation for Equipment {
                                 //TODO: return list of duplicate attributes here as well
                                 return Err(SVGModificationError::DuplicateAttributes.into());
                             }
+
+                            // if this text element is linked to a connection
+                            let connection_indication_attribute = "data-connection-point";
+
+                            let connection_point_id: Option<String> = attributes
+                                .iter()
+                                .find(|attr| attr.name.local_name.as_str() == connection_indication_attribute)
+                                .map(|attr| attr.value.clone());
 
                             // Validate that only 1 data attribute is present that affects the
                             // value of the SVG text element
@@ -298,15 +307,72 @@ impl SchematicRepresentation for Equipment {
                                             WriterEvent::Characters(&equipment_type.rating.clone().unwrap_or_default());
                                         writer.write(character_event)?;
                                     }
-                                        "data-connection-point-wire-number" => {
-                                            //TODO:
+                                    //TODO: need to figure out cables here
+                                    "data-connection-point-wire-identifier" => {
+                                        let mut identifier: Option<String> = None;
+                                        if let Some(ref connection_point_id_inner) = connection_point_id {
+                                            for connection in &project.connections {
+                                                if let ConnectionType::Equipment {
+                                                    equipment_id,
+                                                    connection_point_id: equip_connection_point_id,
+                                                } = &connection.end1
+                                                    && equip_connection_point_id == connection_point_id_inner
+                                                    && let ConnectionType::Wire { wire_id } = &connection.end2
+                                                {
+                                                    identifier = project.wires.get(wire_id).unwrap().identifier.clone();
+                                                }
+
+                                                if let ConnectionType::Equipment {
+                                                    equipment_id,
+                                                    connection_point_id: equip_connection_point_id,
+                                                } = &connection.end2
+                                                    && equip_connection_point_id == connection_point_id_inner
+                                                    && let ConnectionType::Wire { wire_id } = &connection.end1
+                                                {
+                                                    identifier = project.wires.get(wire_id).unwrap().identifier.clone();
+                                                }
+                                            }
                                         }
-                                        "data-connection-point-label" => {
-                                            //TODO:
+                                        let character_event = WriterEvent::Characters(&identifier.unwrap_or_default());
+                                        writer.write(character_event)?;
+                                    }
+                                    "data-connection-point-label" => {
+                                        //TODO:
+                                    }
+                                    "data-terminal-identifier" => {
+                                        let mut identifier: Option<String> = None;
+                                        if let Some(ref connection_point_id_inner) = connection_point_id {
+                                            for connection in &project.connections {
+                                                if let ConnectionType::Equipment {
+                                                    equipment_id,
+                                                    connection_point_id: equip_connection_point_id,
+                                                } = &connection.end1
+                                                    && equip_connection_point_id == connection_point_id_inner
+                                                    && let ConnectionType::TerminalStrip {
+                                                        term_strip_id,
+                                                        element_id,
+                                                    } = &connection.end2
+                                                {
+                                                    identifier = Some(element_id.clone());
+                                                }
+
+                                                if let ConnectionType::Equipment {
+                                                    equipment_id,
+                                                    connection_point_id: equip_connection_point_id,
+                                                } = &connection.end2
+                                                    && equip_connection_point_id == connection_point_id_inner
+                                                    && let ConnectionType::TerminalStrip {
+                                                        term_strip_id,
+                                                        element_id,
+                                                    } = &connection.end1
+                                                {
+                                                    identifier = Some(element_id.clone());
+                                                }
+                                            }
                                         }
-                                        "data-terminal-number" => {
-                                            //TODO:
-                                        }
+                                        let character_event = WriterEvent::Characters(&identifier.unwrap_or_default());
+                                        writer.write(character_event)?;
+                                    }
                                     // other attributes
                                     _ => {}
                                 }
@@ -356,7 +422,8 @@ impl SchematicRepresentation for Equipment {
                                                 }
                                                 x => {
                                                     return Err(SVGValidationError::AttributeValueInvalid(
-                                                        attr.name.local_name.clone(), x.to_owned(),
+                                                        attr.name.local_name.clone(),
+                                                        x.to_owned(),
                                                     )
                                                     .into());
                                                 }

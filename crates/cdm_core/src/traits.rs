@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use crate::{
-    datatypes::{library_types::Library, schematic_symbol::SchematicSymbol, svg::Svg},
+    datatypes::{library_types::Library, project_types::Project, schematic_symbol::SchematicSymbol, svg::Svg},
     error::{Error, LibraryError},
 };
 
@@ -62,13 +62,15 @@ where Self: ProjectData
     /// Updates tagged attributes within the `schematic_symbol` defined on `&self` based on data from `&self`
     /// or its library type.
     ///
+    /// Also updates data within `self` during SVG parsing from the `library` or `project`.
+    ///
     /// Can be called multiple times to update data if it changes.
     ///
     /// # Errors
     ///
     /// XML parsing or writing may fail.
     #[expect(clippy::result_large_err, reason = "Using main Error type")]
-    fn update_symbol_data(&mut self, library: &Library) -> Result<(), Error>;
+    fn update_symbol_data(&mut self, library: &Library, project: &Project) -> Result<(), Error>;
 }
 /// Marker trait for Project data.
 pub trait ProjectData {}

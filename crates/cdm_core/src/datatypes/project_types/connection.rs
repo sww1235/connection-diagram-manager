@@ -22,38 +22,38 @@ pub struct Connection {
 pub enum Type {
     /// A [`Wire`].
     Wire {
-        /// ID of [`Wire`] instance.
+        /// ID of [`Wire`] instance in [`Project`] hashmap.
         wire_id: String,
     },
     //TODO: which cable core?
     /// A [`Cable`].
     Cable {
-        /// ID of [`Cable`] instance.
+        /// ID of [`Cable`] instance in [`Project`] hashmap.
         cable_id: String,
     },
     //TODO: which cable core? Or should this be connector based?
     /// A [`TermCable`].
     TermCable {
-        /// ID of [`TermCable`] instance.
+        /// ID of [`TermCable`] instance in [`Project`] hashmap.
         cable_id: String,
     },
     /// An [`Equipment`].
     Equipment {
-        /// ID of [`Equipment`] instance.
+        /// ID of [`Equipment`] instance in [`Project`] hashmap.
         equipment_id: String,
         /// ID of connection point on equipment.
         connection_point_id: String,
     },
     /// A [`TerminalStrip`].
     TerminalStrip {
-        /// ID of [`TerminalStrip`].
+        /// ID of [`TerminalStrip`] in [`Project`] hashmap.
         term_strip_id: String,
         /// ID or index of element within terminal strip.
         element_id: String,
     },
     /// An [`Connector`].
     Connector {
-        /// ID of [`Connector`] instance.
+        /// ID of [`Connector`] instance in [`Project`] hashmap.
         connector_id: String,
         /// ID or index of connector pin.
         pin_id: String,
