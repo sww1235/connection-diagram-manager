@@ -52,11 +52,15 @@ fn main() -> anyhow::Result<()> {
         anyhow::bail!(project_validation_string);
     }
 
+    //TODO: figure out a better way to do this. In theory it should be fine, but if other updates
+    //need to take place, then this could get messy
+    let project_data_reference = project_data.clone();
+
     // Update data in schematic symbols on equipment
     for equipment_instance in project_data.equipment.values_mut() {
         // TODO: provide config option for symbol selector
         equipment_instance.update_schematic_symbol_from_library(&library_data, None)?;
-        equipment_instance.update_symbol_data(&library_data)?;
+        equipment_instance.update_symbol_data(&library_data, &project_data_reference)?;
     }
 
     let mut gui_conf: mqConf = app_config.clone().graphics_config.into();

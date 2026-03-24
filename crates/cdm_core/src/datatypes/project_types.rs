@@ -36,7 +36,7 @@ use crate::{
 };
 
 /// `Project` represents all project specific data used in program.
-#[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(default)]
 #[serde(deny_unknown_fields)]
 #[non_exhaustive]

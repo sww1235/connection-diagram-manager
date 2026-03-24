@@ -2,12 +2,17 @@
 
 use cdm_core::{
     config::ApplicationConfig,
-    datatypes::{library_types::Library, project_types::Project},
+    datatypes::{
+        library_types::Library,
+        project_types::{Project, connection::Type},
+        schematic_symbol::SchematicSymbol,
+    },
     traits::SchematicRepresentation as _,
 };
 use egui::{
     Area,
     Id,
+    Pos2,
     Sense,
     Theme,
     Window,
@@ -55,14 +60,19 @@ pub fn main_window(
             });
 
             SidePanel::left(left_sidebar_id).show_inside(ui, |ui| {
+                //TODO: add list of locations/physical locations/enclosures? here as a tree
+                //view and make selecting them filter what objects you see.
                 ui.label("This is the sidebar");
             });
 
             CentralPanel::default().show_inside(ui, |ui| {
                 let rect = ui.max_rect();
+                //TODO: somehow update fields on either equipment or equipment.symbol with the
+                //actual screen coordinates of the connections
+                //
+                //Maybe store in appstate?
                 for (id, equipment) in &project_data.equipment {
                     trace! {"ID: {id}, Equipment: {equipment:#?}"};
-                    //TODO: instead of expect() just load image error placeholder and log
                     let (symbol, uri) = equipment.schematic_symbol();
                     let svg_data = symbol.visual_representation.get_data().into_bytes();
                     let sense_settings = Sense::DRAG & Sense::FOCUSABLE;
@@ -76,6 +86,7 @@ pub fn main_window(
                     })
                     .sense(sense_settings)
                     .fit_to_original_size(app_state.symbol_scale_factor);
+
                     Area::new(Id::new(id))
                         .movable(true)
                         .order(Order::Foreground)
@@ -83,6 +94,42 @@ pub fn main_window(
                         .show(egui_ctx, |ui| {
                             ui.add(image);
                         });
+                }
+
+                //TODO: Maintain a map of images/areas in appstate along with their IDs and the ID
+                //of the equipment.
+                for (id, wire) in &project_data.wires {
+                    let mut end1 = Pos2::ZERO;
+                    let mut end2 = Pos2::ZERO;
+                    for connection in &project_data.connections {
+                        match &connection.end1 {
+                            Type::Wire { wire_id } if wire_id == id => {
+                                match &connection.end2 {
+                                    // TODO: wire-wire, wire-cable and wire-term_cable connections
+                                    // not defined yet.
+                                    Type::Wire { .. } | Type::Cable { .. } | Type::TermCable { .. } => {
+                                        //todo!();
+                                    }
+
+                                    Type::Equipment {
+                                        equipment_id,
+                                        connection_point_id,
+                                    } => {
+                                        let equipment = project_data.equipment.get(equipment_id).unwrap();
+                                        let (_, symbol) = equipment.schematic_symbol();
+                                    }
+
+                                    _ => {}
+                                }
+                            }
+
+                            _ => {}
+                        }
+                    }
+
+                    trace! {"ID: {id}, Wire: {wire:#?}"};
+                    let panel_painter = ui.painter();
+                    egui_ctx.memory(|memory| for area in memory.areas().visible_layer_ids() {});
                 }
             });
             ui.allocate_space(ui.available_size());
