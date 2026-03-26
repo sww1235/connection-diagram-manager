@@ -42,7 +42,7 @@ jobs:
       run: cargo +${{ matrix.rust }} build --lib --verbose
     - name: Build CLI
       run: cargo +${{ matrix.rust }} build --verbose --features cli --bin cli
-    #- name: Build GUI
-    #  run: cargo +${{ matrix.rust }} build --verbose --features cli,gui  --bin gui
+    - name: Build GUI
+      run: cargo +${{ matrix.rust }} build --verbose --features gui  --bin gui
     - name: Run tests
       run: cargo test --verbose
