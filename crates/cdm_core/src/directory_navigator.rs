@@ -67,7 +67,7 @@ where T: AsRef<Path> {
 
 #[cfg(test)]
 mod tests {
-    use std::{env, fs::DirBuilder};
+    use std::{env, fs::DirBuilder, path::PathBuf};
 
     /// This sets up a common directory structure for testing.
     fn set_up_dir() {
