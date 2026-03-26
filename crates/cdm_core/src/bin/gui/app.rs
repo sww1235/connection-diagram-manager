@@ -36,6 +36,7 @@ struct AppState {
     main_window_state: WindowState,
     /// if application has requested to quit.
     commands: Commands,
+
     //from egui-miniquad demo
     /// Record previous egui zoom factor to determine if the zoom factor is being changed via the
     /// GUI.
@@ -135,7 +136,7 @@ impl mq::EventHandler for App {
                 egui_ctx,
                 &self.config,
                 &mut self.state,
-                &self.project_data,
+                &mut self.project_data,
                 &self.library_data,
             );
             // This is the close button of the main window being clicked (.open())

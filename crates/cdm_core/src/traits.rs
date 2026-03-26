@@ -1,5 +1,7 @@
 use std::path::{Path, PathBuf};
 
+use egui::Pos2;
+
 use crate::{
     datatypes::{library_types::Library, project_types::Project, schematic_symbol::SchematicSymbol, svg::Svg},
     error::{Error, LibraryError},
@@ -38,12 +40,17 @@ pub trait VisualRepresentation {
 pub trait SchematicRepresentation
 where Self: ProjectData
 {
-    //TODO: somehow make URI an element of SVG rather than being built in the trait method.
     /// Returns the SVG `schematic_symbol` of the entity and a URI used in rendering code.
     ///
     /// If `schematic_symbol` is `None` then this shall return a placeholder warning graphic
     /// instead.
-    fn schematic_symbol(&self) -> (SchematicSymbol, String);
+    fn schematic_symbol(&self) -> SchematicSymbol;
+
+    /// Update the scale parameter in the symbol.
+    fn update_symbol_scale(&mut self, scale: f32);
+
+    /// Set the symbol position in the GUI
+    fn set_symbol_position(&mut self, position: Pos2);
 
     //TODO: somehow make URI an element of SVG rather than being built in the trait method.
     /// Updates the `schematic_symbol` in `Self` from the options defined in `&self.entity_type`.
@@ -57,7 +64,12 @@ where Self: ProjectData
     /// Shall error if the id of `&self.entity_type` is not found in the provided library or other
     /// implementation specific errors.
     #[expect(clippy::result_large_err, reason = "Using main Error type")]
-    fn update_schematic_symbol_from_library(&mut self, library: &Library, symbol_selector: Option<usize>) -> Result<(), Error>;
+    fn update_schematic_symbol_from_library(
+        &mut self,
+        library: &Library,
+        symbol_selector: Option<usize>,
+        entity_id: String,
+    ) -> Result<(), Error>;
 
     /// Updates tagged attributes within the `schematic_symbol` defined on `&self` based on data from `&self`
     /// or its library type.

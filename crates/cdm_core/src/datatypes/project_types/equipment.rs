@@ -4,6 +4,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use egui::Pos2;
 use log::trace;
 use serde::{Deserialize, Serialize};
 use xml::{EventReader, EventWriter, reader::XmlEvent as ReaderEvent, writer::XmlEvent as WriterEvent};
@@ -82,14 +83,32 @@ impl Equipment {
 
 impl SchematicRepresentation for Equipment {
     #[inline]
-    fn schematic_symbol(&self) -> (SchematicSymbol, String) {
-        let uri = format!("bytes://{}_schematic_symbol.svg", self.identifier).to_string();
+    fn schematic_symbol(&self) -> SchematicSymbol {
         //TODO: don't have the warning symbol as default?
-        (self.schematic_symbol.clone().unwrap_or_default(), uri)
+        self.schematic_symbol.clone().unwrap_or_default()
+    }
+
+    #[inline]
+    fn update_symbol_scale(&mut self, scale: f32) {
+        if let Some(schematic_symbol) = &mut self.schematic_symbol {
+            schematic_symbol.scale = scale;
+        }
+    }
+
+    #[inline]
+    fn set_symbol_position(&mut self, position: Pos2) {
+        if let Some(schematic_symbol) = &mut self.schematic_symbol {
+            schematic_symbol.position = position;
+        }
     }
 
     #[inline(never)]
-    fn update_schematic_symbol_from_library(&mut self, library: &Library, symbol_selector: Option<usize>) -> Result<(), Error> {
+    fn update_schematic_symbol_from_library(
+        &mut self,
+        library: &Library,
+        symbol_selector: Option<usize>,
+        entity_id: String,
+    ) -> Result<(), Error> {
         let equipment_type = library
             .equipment_types
             .get(&self.equipment_type)
@@ -136,8 +155,11 @@ impl SchematicRepresentation for Equipment {
         let schematic_symbol = SchematicSymbol {
             symbol_type: schematic_symbol_type_id.to_owned(),
             visual_representation: schematic_symbol_svg,
-            identifier: "PLACEHOLDER".to_owned(),
+            identifier: entity_id,
             connections: BTreeMap::new(),
+            drag_delta: None,
+            position: Pos2::default(),
+            scale: 1.0,
         };
 
         self.schematic_symbol = Some(schematic_symbol);

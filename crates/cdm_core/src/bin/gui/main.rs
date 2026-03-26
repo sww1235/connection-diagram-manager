@@ -57,9 +57,9 @@ fn main() -> anyhow::Result<()> {
     let project_data_reference = project_data.clone();
 
     // Update data in schematic symbols on equipment
-    for equipment_instance in project_data.equipment.values_mut() {
+    for (id, equipment_instance) in project_data.equipment.iter_mut() {
         // TODO: provide config option for symbol selector
-        equipment_instance.update_schematic_symbol_from_library(&library_data, None)?;
+        equipment_instance.update_schematic_symbol_from_library(&library_data, None, id.clone())?;
         equipment_instance.update_symbol_data(&library_data, &project_data_reference)?;
     }
 
