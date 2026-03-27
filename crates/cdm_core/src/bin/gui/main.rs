@@ -2,6 +2,8 @@
 //!
 //! `cdm_gui` is a graphical user interface for Connection Diagram Manager.
 
+//TODO: add cfg(feature = "gui") in library where appropriate
+
 //#[cfg(feature = "gui")]
 use cdm_core::{bin_logic, datatypes, traits::SchematicRepresentation as _};
 use itertools::Itertools as _;
@@ -57,7 +59,7 @@ fn main() -> anyhow::Result<()> {
     let project_data_reference = project_data.clone();
 
     // Update data in schematic symbols on equipment
-    for (id, equipment_instance) in project_data.equipment.iter_mut() {
+    for (id, equipment_instance) in &mut project_data.equipment {
         // TODO: provide config option for symbol selector
         equipment_instance.update_schematic_symbol_from_library(&library_data, None, id.clone())?;
         equipment_instance.update_symbol_data(&library_data, &project_data_reference)?;

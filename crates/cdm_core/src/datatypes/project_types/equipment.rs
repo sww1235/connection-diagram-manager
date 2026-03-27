@@ -157,7 +157,6 @@ impl SchematicRepresentation for Equipment {
             visual_representation: schematic_symbol_svg,
             identifier: entity_id,
             connections: BTreeMap::new(),
-            drag_delta: None,
             position: Pos2::default(),
             scale: 1.0,
         };
@@ -466,7 +465,7 @@ impl SchematicRepresentation for Equipment {
                                                 )
                                                 .into());
                                             }
-                                            connection.x = attr.value.as_str().parse::<u64>()?;
+                                            connection.x = attr.value.as_str().parse::<f32>()?;
                                         }
                                         "y" => {
                                             if attr.value.is_empty() {
@@ -482,7 +481,7 @@ impl SchematicRepresentation for Equipment {
                                                 )
                                                 .into());
                                             }
-                                            connection.y = attr.value.as_str().parse::<u64>()?;
+                                            connection.y = attr.value.as_str().parse::<f32>()?;
                                         }
                                         // other attributes
                                         _ => {}

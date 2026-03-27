@@ -68,6 +68,9 @@ pub enum Error {
     /// Errors resulting from string -> number parsing.
     #[error(transparent)]
     ParseIntError(#[from] core::num::ParseIntError),
+    /// Errors resulting from string -> number parsing.
+    #[error(transparent)]
+    ParseFloatError(#[from] core::num::ParseFloatError),
 }
 
 /// `LibraryError` is the list of errors that can occur within code related to `Library` data,

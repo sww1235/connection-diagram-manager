@@ -2,7 +2,6 @@ use std::collections::BTreeMap;
 
 use bitflags::bitflags;
 use egui::{
-    CursorIcon,
     Pos2,
     Sense,
     Ui,
@@ -22,21 +21,23 @@ use super::svg::Svg;
 /// the application.
 #[derive(Debug, PartialEq, Clone, Default)]
 #[non_exhaustive]
+#[expect(clippy::partial_pub_fields, reason = "some fields are not part of the public API")]
 pub struct SchematicSymbol {
     /// ID of `SymbolType` in library.
     pub symbol_type: String,
     /// Raw SVG data.
-    pub visual_representation: Svg,
+    pub(crate) visual_representation: Svg,
     // This is updated during creation in update_schematic_symbols_from_library()
     /// Identifier of symbol.
     pub identifier: String,
     /// Map of connection points on symbol. The ID must be unique per symbol.
     pub connections: BTreeMap<String, SymbolConnection>,
-    /// How far `SchematicSymbol` has been dragged and in what direction.
-    pub drag_delta: Option<Vec2>,
     /// Position of `SchematicSymbol` on screen.
     pub position: Pos2,
-
+    /// How much to scale the symbol. A value of 1 is the dimensions specified in the original SVG.
+    /// Negative values make the image smaller, positive numbers make the image bigger.
+    ///
+    /// Due to the use of `f32` datatype, rounding may occur.
     pub scale: f32,
 }
 
@@ -44,40 +45,64 @@ impl Widget for &mut SchematicSymbol {
     #[inline]
     fn ui(self, ui: &mut Ui) -> Response {
         let sense_settings = Sense::click_and_drag();
-        let uri = format!("bytes://{}_schematic_symbol.svg", self.identifier).to_string();
+        let uri = self.uri();
 
         let svg_data = self.visual_representation.get_data().into_bytes();
         //TODO: set sensible max_height() and max_width() here (maybe the size of the
         //window rectangle or something?
+        //
+        //TODO: revisit scaling here
         let image = Image::new(ImageSource::Bytes {
             uri: uri.into(),
             bytes: svg_data.into(),
         })
         .sense(sense_settings)
         .fit_to_original_size(self.scale);
+        trace!("scale: {}", self.scale);
 
         ui.add(image)
-
-        //TODO: add optional hover text. See lines 614-621 of drag_value.rs from egui.
-        // may need to add that in the render loop in main_window.rs?
     }
 }
-//
-//impl SchematicSymbol {
-//    pub fn uri(&self) -> String {
-//
-//        format!("bytes://{}_schematic_symbol.svg", self.identifier).to_string()
-//    }
-//}
+
+impl SchematicSymbol {
+    /// Returns a standard URI for the SVG data.
+    #[must_use]
+    #[inline]
+    pub fn uri(&self) -> String {
+        format!("bytes://{}_schematic_symbol.svg", self.identifier).to_string()
+    }
+
+    /// Returns the original dimensions of the symbol.
+    #[must_use]
+    #[inline]
+    pub fn original_symbol_dimensions(&self) -> Vec2 {
+        if let Some(original_width) = self.visual_representation.get_original_width()
+            && let Some(original_height) = self.visual_representation.get_original_height()
+        {
+            Vec2::new(original_width, original_height)
+        } else {
+            //TODO: maybe return option instead?
+            Vec2::NAN
+        }
+    }
+
+    /// Returns the size of the symbol scaled by the internal symbol scale parameter.
+    #[must_use]
+    #[inline]
+    #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
+    pub fn scaled_size(&self) -> Vec2 {
+        self.original_symbol_dimensions() * self.scale
+    }
+}
 
 /// A connection point on a `SchematicSymbol`.
 #[derive(Debug, PartialEq, Clone, Default)]
 #[non_exhaustive]
 pub struct SymbolConnection {
     /// Distance from top left of image horizontally in percentage of full width.
-    pub x: u64,
+    pub x: f32,
     /// Distance from top left of image vertically in percentage of full height.
-    pub y: u64,
+    pub y: f32,
     /// Which directions wires/cables are allowed to connect to this connection.
     pub allowed_connection_directions: ConnectionDirection,
 }

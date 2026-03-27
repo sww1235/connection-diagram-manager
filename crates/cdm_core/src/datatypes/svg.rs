@@ -25,9 +25,9 @@ pub struct Svg {
     /// If provided string is a filepath to a SVG file stored elsewhere.
     filepath: Option<PathBuf>,
     /// Width of `viewBox` in raw SVG.
-    original_width: Option<f64>,
+    original_width: Option<f32>,
     /// Height of `viewBox` in raw SVG.
-    original_height: Option<f64>,
+    original_height: Option<f32>,
 }
 
 impl Svg {
@@ -64,14 +64,14 @@ impl Svg {
     /// Gets the original height of the SVG before scaling.
     #[inline]
     #[must_use]
-    pub fn get_original_height(&self) -> Option<f64> {
+    pub fn get_original_height(&self) -> Option<f32> {
         self.original_height
     }
 
     /// Gets the original width of the SVG before scaling.
     #[inline]
     #[must_use]
-    pub fn get_original_width(&self) -> Option<f64> {
+    pub fn get_original_width(&self) -> Option<f32> {
         self.original_width
     }
 }
@@ -224,9 +224,9 @@ fn validate_and_update_svg(svg: &mut Svg) -> Result<(), Error> {
                             // I don't like that I can't chain these two into one method
                             // call chain
                             let temp = attr.value.replace(',', " ");
-                            let values: Vec<f64> = temp
+                            let values: Vec<f32> = temp
                                 .split_whitespace()
-                                .map(|num| f64::from_str(num).unwrap_or(f64::NAN))
+                                .map(|num| f32::from_str(num).unwrap_or(f32::NAN))
                                 .collect();
                             if values.len() > 4 {
                                 return Err(SVGValidationError::InvalidViewPort(
@@ -234,13 +234,13 @@ fn validate_and_update_svg(svg: &mut Svg) -> Result<(), Error> {
                                 )
                                 .into());
                             }
-                            if values.contains(&f64::NAN) {
+                            if values.contains(&f32::NAN) {
                                 return Err(SVGValidationError::InvalidNumber.into());
                             }
                             // At this point we should have a vector of 4 "valid" f64 numbers
                             //
                             // Require viewport to start from top left
-                            if values[0] != 0.0_f64 || values[1] != 0.0_f64 {
+                            if values[0] != 0.0_f32 || values[1] != 0.0_f32 {
                                 return Err(
                                     SVGValidationError::InvalidViewPort("viewPort does not start at 0 0".to_owned()).into(),
                                 );

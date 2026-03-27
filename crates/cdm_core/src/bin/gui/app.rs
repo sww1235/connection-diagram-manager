@@ -12,7 +12,7 @@ use miniquad::{self as mq, TouchPhase, window as mqWindow};
 mod main_window;
 
 /// Main GUI app struct.
-pub struct App {
+pub(crate) struct App {
     /// Egui Miniquad bindings.
     egui_mq: egui_miniquad::EguiMq,
     /// rendering context.
@@ -63,7 +63,7 @@ struct Commands {
 
 impl App {
     /// keyboard shortcut to quit app.
-    pub const QUIT_CMD: egui::KeyboardShortcut = egui::KeyboardShortcut {
+    pub(crate) const QUIT_CMD: egui::KeyboardShortcut = egui::KeyboardShortcut {
         modifiers: egui::Modifiers {
             alt: false,
             ctrl: false,
@@ -74,7 +74,12 @@ impl App {
         logical_key: egui::Key::Q,
     };
     /// Create new app.
-    pub fn new(config: &ApplicationConfig, project_config: ProjectConfig, project_data: Project, library_data: Library) -> Self {
+    pub(crate) fn new(
+        config: &ApplicationConfig,
+        project_config: ProjectConfig,
+        project_data: Project,
+        library_data: Library,
+    ) -> Self {
         let mut mq_ctx = mqWindow::new_rendering_backend();
         Self {
             egui_mq: egui_miniquad::EguiMq::new(&mut *mq_ctx),

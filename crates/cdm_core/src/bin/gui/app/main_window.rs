@@ -38,7 +38,7 @@ use crate::app::{AppState, Commands};
 )]
 #[expect(clippy::shadow_reuse, reason = "ui and other variables keep getting passed into closures")]
 /// Main window rendering code.
-pub fn main_window(
+pub(crate) fn main_window(
     egui_ctx: &egui::Context,
     app_config: &ApplicationConfig,
     app_state: &mut AppState,
@@ -69,7 +69,7 @@ pub fn main_window(
             });
 
             CentralPanel::default().show_inside(ui, |ui| {
-                //let rect = ui.max_rect();
+                let panel_rect = ui.max_rect();
                 //TODO: somehow update fields on either equipment or equipment.symbol with the
                 //actual screen coordinates of the connections
                 //
@@ -77,9 +77,14 @@ pub fn main_window(
                 for (id, equipment) in &mut project_data.equipment {
                     //trace! {"ID: {id}, Equipment: {equipment:#?}"};
                     equipment.update_symbol_scale(app_state.symbol_scale_factor);
-                    //TODO: update Vec2::new() with actual current size of symbols
                     trace!("rendered position: {}", equipment.schematic_symbol().position);
-                    let rect = Rect::from_min_size(equipment.schematic_symbol().position, Vec2::new(1000.0, 1000.0));
+                    // want the larger of the two values, to be the minimum top_left corner. It is
+                    // confusing.
+                    let min_position = panel_rect.left_top().max(equipment.schematic_symbol().position);
+                    //TODO: revisit scaling here. Provide a method to return size based on scale,
+                    //instead of doing the math all over the place.
+                    let symbol_size = equipment.schematic_symbol().scaled_size();
+                    let rect = Rect::from_min_size(min_position, symbol_size);
                     trace!("rect: {rect:?}");
                     //trace!("{:?}", equipment.schematic_symbol());
                     let response = ui.place(rect, &mut equipment.schematic_symbol());
@@ -95,12 +100,14 @@ pub fn main_window(
                         // This should be CursorIcon::Grabbing but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
                         ui.output_mut(|output| output.cursor_icon = CursorIcon::Move);
                         trace!("dragged");
-                        //trace!("position before: {}", self.position);
-                        //self.position += response.drag_delta();
-                        //trace!("position after: {}", self.position);
+
+                        //TODO: add optional hover text. See lines 614-621 of drag_value.rs from egui.
 
                         //TODO: update symbol connections here as well?
-                        equipment.set_symbol_position(equipment.schematic_symbol().position + response.drag_delta());
+                        equipment.set_symbol_position(
+                            (equipment.schematic_symbol().position + response.drag_delta())
+                                .min(panel_rect.right_bottom() - symbol_size),
+                        );
                     }
                 }
 
@@ -112,6 +119,10 @@ pub fn main_window(
                     for connection in &project_data.connections {
                         match &connection.end1 {
                             Type::Wire { wire_id } if wire_id == id => {
+                                #[expect(
+                                    clippy::match_same_arms,
+                                    reason = "Separating out some match elements makes the code read clearer"
+                                )]
                                 match &connection.end2 {
                                     // TODO: wire-wire, wire-cable and wire-term_cable connections
                                     // not defined yet.
@@ -123,6 +134,7 @@ pub fn main_window(
                                         equipment_id,
                                         connection_point_id,
                                     } => {
+                                        #[expect(clippy::get_unwrap, reason = "temporary for testing")]
                                         let equipment = project_data.equipment.get(equipment_id).unwrap();
                                         //let (_, symbol) = equipment.schematic_symbol();
                                     }
