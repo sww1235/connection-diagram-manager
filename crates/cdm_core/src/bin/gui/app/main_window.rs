@@ -12,10 +12,12 @@ use cdm_core::{
     traits::SchematicRepresentation as _,
 };
 use egui::{
+    Color32,
     CursorIcon,
     Id,
     Pos2,
     Rect,
+    Stroke,
     Theme,
     Vec2,
     containers::{
@@ -31,10 +33,6 @@ use num_traits::cast::FromPrimitive as _;
 
 use crate::app::{AppState, Commands};
 
-#[expect(
-    clippy::shadow_unrelated,
-    reason = "ui and other variables keep getting passed into closures"
-)]
 #[expect(clippy::shadow_reuse, reason = "ui and other variables keep getting passed into closures")]
 #[expect(clippy::too_many_lines, reason = "Its a UI function")]
 /// Main window rendering code.
@@ -70,13 +68,11 @@ pub(crate) fn main_window(
 
             CentralPanel::default().show_inside(ui, |ui| {
                 let panel_rect = ui.max_rect();
-                //TODO: somehow update fields on either equipment or equipment.symbol with the
-                //actual screen coordinates of the connections
-                //
-                //Maybe store in appstate?
+
                 for (id, equipment) in &mut project_data.equipment {
-                    //trace! {"ID: {id}, Equipment: {equipment:#?}"};
+                    trace! {"ID: {id}, Equipment: {equipment:#?}"};
                     equipment.update_symbol_scale(app_state.symbol_scale_factor);
+                    trace! {"Equipment connections: {:?}", equipment.schematic_symbol().connections};
                     trace!("rendered position: {}", equipment.schematic_symbol().position);
                     // want the larger of the two values, to be the minimum top_left corner. It is
                     // confusing.
@@ -103,7 +99,6 @@ pub(crate) fn main_window(
 
                         //TODO: add optional hover text. See lines 614-621 of drag_value.rs from egui.
 
-                        //TODO: update symbol connections here as well?
                         #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
                         equipment.set_symbol_position(
                             (equipment.schematic_symbol().position + response.drag_delta())
@@ -113,9 +108,9 @@ pub(crate) fn main_window(
                     }
                 }
 
-                //TODO: Maintain a map of images/areas in appstate along with their IDs and the ID
-                //of the equipment.
                 for (id, wire) in &project_data.wires {
+                    //TODO: constrain end1/end2 to ui area, and to their respective endpoint
+                    //positions. Look at percentage math
                     let mut end1 = Pos2::ZERO;
                     let mut end2 = Pos2::ZERO;
                     let mut wire_connections: Vec<Connection> = Vec::new();
@@ -148,6 +143,7 @@ pub(crate) fn main_window(
                     #[expect(clippy::indexing_slicing, reason = "size of vec validated in outer match")]
                     match wire_connections.len().cmp(&2) {
                         Ordering::Equal => {
+                            //TODO: figure out how to not repeat the same code 4 times
                             #[expect(
                                 clippy::match_same_arms,
                                 reason = "Separating out some match elements makes the code read clearer"
@@ -183,8 +179,8 @@ pub(crate) fn main_window(
                                     //TODO: look at how left_top(), etc are implemented.
                                     end1 = symbol.position
                                         + Vec2::from((
-                                            symbol.scaled_size().x * connection_point.x,
-                                            symbol.scaled_size().y * connection_point.y,
+                                            symbol.scaled_size().x * connection_point.x / 100.0,
+                                            symbol.scaled_size().y * connection_point.y / 100.0,
                                         ));
                                 }
 
@@ -225,8 +221,8 @@ pub(crate) fn main_window(
                                     //TODO: look at how left_top(), etc are implemented.
                                     end1 = symbol.position
                                         + Vec2::from((
-                                            symbol.scaled_size().x * connection_point.x,
-                                            symbol.scaled_size().y * connection_point.y,
+                                            symbol.scaled_size().x * connection_point.x / 100.0,
+                                            symbol.scaled_size().y * connection_point.y / 100.0,
                                         ));
                                 }
 
@@ -267,8 +263,8 @@ pub(crate) fn main_window(
                                     //TODO: look at how left_top(), etc are implemented.
                                     end2 = symbol.position
                                         + Vec2::from((
-                                            symbol.scaled_size().x * connection_point.x,
-                                            symbol.scaled_size().y * connection_point.y,
+                                            symbol.scaled_size().x * connection_point.x / 100.0,
+                                            symbol.scaled_size().y * connection_point.y / 100.0,
                                         ));
                                 }
 
@@ -309,8 +305,8 @@ pub(crate) fn main_window(
                                     //TODO: look at how left_top(), etc are implemented.
                                     end2 = symbol.position
                                         + Vec2::from((
-                                            symbol.scaled_size().x * connection_point.x,
-                                            symbol.scaled_size().y * connection_point.y,
+                                            symbol.scaled_size().x * connection_point.x / 100.0,
+                                            symbol.scaled_size().y * connection_point.y / 100.0,
                                         ));
                                 }
 
@@ -334,6 +330,12 @@ pub(crate) fn main_window(
                     trace! {"wire: {id} end1: {end1}"};
                     trace! {"wire: {id} end2: {end2}"};
                     let panel_painter = ui.painter();
+                    let stroke = Stroke {
+                        width: 4.0,
+                        color: Color32::RED,
+                    };
+
+                    panel_painter.line_segment([end1, end2], stroke);
                 }
             });
             ui.allocate_space(ui.available_size());

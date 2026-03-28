@@ -19,4 +19,4 @@ end2 = {Equipment = {equipment_id = "switch1", connection_point_id = "left"}}
 
 [[connections]]
 end1 = {Wire = {wire_id = "wire1"}}
-end2 = {Equipment = {equipment_id = "switch2", connection_point_id = "left"}}
+end2 = {Equipment = {equipment_id = "switch2", connection_point_id = "right"}}

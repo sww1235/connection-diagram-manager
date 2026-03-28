@@ -5,7 +5,7 @@ use std::{
 };
 
 use egui::Pos2;
-use log::trace;
+use log::{trace, warn};
 use serde::{Deserialize, Serialize};
 use xml::{EventReader, EventWriter, reader::XmlEvent as ReaderEvent, writer::XmlEvent as WriterEvent};
 
@@ -151,7 +151,6 @@ impl SchematicRepresentation for Equipment {
             .visual_representation
             .clone();
 
-        //TODO: update identifier to something useful, or delete it.
         let schematic_symbol = SchematicSymbol {
             symbol_type: schematic_symbol_type_id.to_owned(),
             visual_representation: schematic_symbol_svg,
@@ -198,8 +197,8 @@ impl SchematicRepresentation for Equipment {
             let Some(next_event) = reader.peek() else { break };
             #[expect(clippy::shadow_reuse, reason = "unwrapping error")]
             let next_event = next_event.clone()?;
-            trace! {"Event: {event:#?}"};
-            trace! {"Next Event: {next_event:#?}"};
+            //trace! {"Event: {event:#?}"};
+            //trace! {"Next Event: {next_event:#?}"};
 
             match event {
                 #[expect(clippy::ref_patterns, reason = "can't get this to work otherwise")]
@@ -402,11 +401,12 @@ impl SchematicRepresentation for Equipment {
                         // which elements to match for connections
                         //
                         // Here, allow duplicate attributes such as data-connection-point-type
-                        "circle" | "rect" => {
+                        "circle" => {
                             if attributes
                                 .iter()
                                 .any(|attr| attr.name.local_name.as_str() == "data-connection-point")
                             {
+                                trace! {"found data-connection-point"};
                                 let mut connection: SymbolConnection = SymbolConnection::default();
                                 let mut connection_id = String::new();
                                 let mut connection_direction: ConnectionDirection = ConnectionDirection::default();
@@ -449,9 +449,10 @@ impl SchematicRepresentation for Equipment {
                                                     .into());
                                                 }
                                             }
+                                            trace! {"connection-point-type: {connection_direction}"};
                                         }
 
-                                        "x" => {
+                                        "cx" => {
                                             if attr.value.is_empty() {
                                                 return Err(SVGValidationError::BlankAttributeValue(
                                                     attr.name.local_name.clone(),
@@ -465,9 +466,9 @@ impl SchematicRepresentation for Equipment {
                                                 )
                                                 .into());
                                             }
-                                            connection.x = attr.value.as_str().parse::<f32>()?;
+                                            connection.x = attr.value.replace('%', "").as_str().parse::<f32>()?;
                                         }
-                                        "y" => {
+                                        "cy" => {
                                             if attr.value.is_empty() {
                                                 return Err(SVGValidationError::BlankAttributeValue(
                                                     attr.name.local_name.clone(),
@@ -481,7 +482,7 @@ impl SchematicRepresentation for Equipment {
                                                 )
                                                 .into());
                                             }
-                                            connection.y = attr.value.as_str().parse::<f32>()?;
+                                            connection.y = attr.value.replace('%', "").as_str().parse::<f32>()?;
                                         }
                                         // other attributes
                                         _ => {}
@@ -501,6 +502,12 @@ impl SchematicRepresentation for Equipment {
                                 continue;
                             };
                             writer.write(writer_output)?;
+                        }
+
+                        "rect" => {
+                            warn! {"rect connection points not implemented yet."}
+                            //TODO: copy logic for circle, but return center point based on x, y,
+                            //width, height
                         }
                         _ => {
                             let Some(writer_output) = event.as_writer_event() else {

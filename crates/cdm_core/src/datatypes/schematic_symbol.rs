@@ -1,6 +1,6 @@
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, fmt};
 
-use bitflags::bitflags;
+use bitflags::{bitflags, bitflags_match};
 use egui::{
     Pos2,
     Sense,
@@ -59,7 +59,7 @@ impl Widget for &mut SchematicSymbol {
         })
         .sense(sense_settings)
         .fit_to_original_size(self.scale);
-        trace!("scale: {}", self.scale);
+        //trace!("scale: {}", self.scale);
 
         ui.add(image)
     }
@@ -121,5 +121,26 @@ bitflags! {
         const RIGHT = 0b0000_0100;
         /// If connections are allowed from the left.
         const LEFT = 0b0000_1000;
+    }
 }
+
+impl fmt::Display for ConnectionDirection {
+    #[inline]
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+//TODO: add in combo directions
+impl ConnectionDirection {
+    /// Returns a string representation of the direction.
+    pub(crate) fn as_str(self) -> &'static str {
+        bitflags_match! (self, {
+            ConnectionDirection::TOP => "Top",
+            ConnectionDirection::BOTTOM => "Bottom",
+            ConnectionDirection::RIGHT => "Right",
+            ConnectionDirection::LEFT => "Left",
+            _ => "",
+        })
+    }
 }
