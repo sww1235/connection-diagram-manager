@@ -70,17 +70,25 @@ pub(crate) fn main_window(
                 let panel_rect = ui.max_rect();
 
                 for (id, equipment) in &mut project_data.equipment {
-                    trace! {"ID: {id}, Equipment: {equipment:#?}"};
+                    //trace! {"ID: {id}, Equipment: {equipment:#?}"};
                     equipment.update_symbol_scale(app_state.symbol_scale_factor);
-                    trace! {"Equipment connections: {:?}", equipment.schematic_symbol().connections};
-                    trace!("rendered position: {}", equipment.schematic_symbol().position);
-                    // want the larger of the two values, to be the minimum top_left corner. It is
-                    // confusing.
-                    let min_position = panel_rect.left_top().max(equipment.schematic_symbol().position).round_ui();
+                    //trace! {"Equipment connections: {:?}", equipment.schematic_symbol().connections};
+                    trace!("pre_rendered position: {}", equipment.schematic_symbol().position);
                     //TODO: revisit scaling here. Provide a method to return size based on scale,
                     //instead of doing the math all over the place.
                     let symbol_size = equipment.schematic_symbol().scaled_size();
-                    let rect = Rect::from_min_size(min_position, symbol_size);
+                    // want the larger of the two values, to be the minimum top_left corner. It is
+                    // confusing.
+                    let min_rect_position = panel_rect.left_top();
+                    #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
+                    let max_rect_position = panel_rect.right_bottom() - symbol_size;
+                    let rect_position = equipment
+                        .schematic_symbol()
+                        .position
+                        .clamp(min_rect_position, max_rect_position)
+                        .round_ui();
+                    trace! {"min_postion: {rect_position}"}
+                    let rect = Rect::from_min_size(rect_position, symbol_size);
                     trace!("rect: {rect:?}");
                     //trace!("{:?}", equipment.schematic_symbol());
                     let response = ui.place(rect, &mut equipment.schematic_symbol());
@@ -101,11 +109,12 @@ pub(crate) fn main_window(
 
                         #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
                         equipment.set_symbol_position(
-                            (equipment.schematic_symbol().position + response.drag_delta())
-                                .min(panel_rect.right_bottom() - symbol_size)
+                            (rect_position + response.drag_delta())
+                                .clamp(min_rect_position, max_rect_position)
                                 .round_ui(),
                         );
                     }
+                    trace!("post_rendered position: {}", equipment.schematic_symbol().position);
                 }
 
                 for (id, wire) in &project_data.wires {
@@ -176,7 +185,14 @@ pub(crate) fn main_window(
                                     //
                                     //TODO: change connection point to contain a Pos2?
                                     //
-                                    //TODO: look at how left_top(), etc are implemented.
+                                    //TODO: look at lerp (linear interpolation functions instead.
+                                    let connection_point_offset = Vec2::from((
+                                        symbol.scaled_size().x * (connection_point.x / 100.0),
+                                        symbol.scaled_size().y * (connection_point.y / 100.0),
+                                    ));
+                                    trace! {"symbol scaled_size: {}", symbol.scaled_size()};
+                                    trace! {"end1 connection_point: {connection_point:?}"};
+                                    trace! {"end1 connection_point_offset: {connection_point_offset}"};
                                     end1 = symbol.position
                                         + Vec2::from((
                                             symbol.scaled_size().x * connection_point.x / 100.0,
@@ -219,6 +235,13 @@ pub(crate) fn main_window(
                                     //TODO: change connection point to contain a Pos2?
                                     //
                                     //TODO: look at how left_top(), etc are implemented.
+                                    let connection_point_offset = Vec2::from((
+                                        symbol.scaled_size().x * connection_point.x / 100.0,
+                                        symbol.scaled_size().y * connection_point.y / 100.0,
+                                    ));
+                                    trace! {"symbol scaled_size: {}", symbol.scaled_size()};
+                                    trace! {"end1 connection_point: {connection_point:?}"};
+                                    trace! {"end1 connection_point_offset: {connection_point_offset}"};
                                     end1 = symbol.position
                                         + Vec2::from((
                                             symbol.scaled_size().x * connection_point.x / 100.0,
@@ -261,6 +284,13 @@ pub(crate) fn main_window(
                                     //TODO: change connection point to contain a Pos2?
                                     //
                                     //TODO: look at how left_top(), etc are implemented.
+                                    let connection_point_offset = Vec2::from((
+                                        symbol.scaled_size().x * connection_point.x / 100.0,
+                                        symbol.scaled_size().y * connection_point.y / 100.0,
+                                    ));
+                                    trace! {"symbol scaled_size: {}", symbol.scaled_size()};
+                                    trace! {"end2 connection_point: {connection_point:?}"};
+                                    trace! {"end2 connection_point_offset: {connection_point_offset}"};
                                     end2 = symbol.position
                                         + Vec2::from((
                                             symbol.scaled_size().x * connection_point.x / 100.0,
@@ -303,6 +333,13 @@ pub(crate) fn main_window(
                                     //TODO: change connection point to contain a Pos2?
                                     //
                                     //TODO: look at how left_top(), etc are implemented.
+                                    let connection_point_offset = Vec2::from((
+                                        symbol.scaled_size().x * connection_point.x / 100.0,
+                                        symbol.scaled_size().y * connection_point.y / 100.0,
+                                    ));
+                                    trace! {"symbol scaled_size: {}", symbol.scaled_size()};
+                                    trace! {"end2 connection_point: {connection_point:?}"};
+                                    trace! {"end2 connection_point_offset: {connection_point_offset}"};
                                     end2 = symbol.position
                                         + Vec2::from((
                                             symbol.scaled_size().x * connection_point.x / 100.0,
@@ -325,7 +362,7 @@ pub(crate) fn main_window(
                         }
                     }
 
-                    trace! {"ID: {id}, Wire: {wire:#?}"};
+                    //trace! {"ID: {id}, Wire: {wire:#?}"};
 
                     trace! {"wire: {id} end1: {end1}"};
                     trace! {"wire: {id} end2: {end2}"};
