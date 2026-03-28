@@ -49,7 +49,7 @@ where Self: ProjectData
     /// Update the scale parameter in the symbol.
     fn update_symbol_scale(&mut self, scale: f32);
 
-    /// Set the symbol position in the GUI
+    /// Set the symbol position in the GUI.
     fn set_symbol_position(&mut self, position: Pos2);
 
     //TODO: somehow make URI an element of SVG rather than being built in the trait method.

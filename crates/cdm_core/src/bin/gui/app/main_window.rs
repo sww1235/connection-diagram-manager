@@ -1,11 +1,13 @@
-//use std::path::Path;
+use core::cmp::Ordering;
 
 use cdm_core::{
     config::ApplicationConfig,
     datatypes::{
         library_types::Library,
-        project_types::{Project, connection::Type},
-        schematic_symbol::SchematicSymbol,
+        project_types::{
+            Project,
+            connection::{Connection, Type},
+        },
     },
     traits::SchematicRepresentation as _,
 };
@@ -14,20 +16,17 @@ use egui::{
     Id,
     Pos2,
     Rect,
-    Sense,
     Theme,
     Vec2,
     containers::{
-        Area,
         Window,
         menu,
         panel::{CentralPanel, SidePanel, TopBottomPanel},
     },
-    layers::Order,
+    epaint::emath::GuiRounding as _,
     style::Visuals,
-    widgets::{Image, ImageSource},
 };
-use log::{debug, trace};
+use log::{debug, trace, warn};
 use num_traits::cast::FromPrimitive as _;
 
 use crate::app::{AppState, Commands};
@@ -37,6 +36,7 @@ use crate::app::{AppState, Commands};
     reason = "ui and other variables keep getting passed into closures"
 )]
 #[expect(clippy::shadow_reuse, reason = "ui and other variables keep getting passed into closures")]
+#[expect(clippy::too_many_lines, reason = "Its a UI function")]
 /// Main window rendering code.
 pub(crate) fn main_window(
     egui_ctx: &egui::Context,
@@ -80,7 +80,7 @@ pub(crate) fn main_window(
                     trace!("rendered position: {}", equipment.schematic_symbol().position);
                     // want the larger of the two values, to be the minimum top_left corner. It is
                     // confusing.
-                    let min_position = panel_rect.left_top().max(equipment.schematic_symbol().position);
+                    let min_position = panel_rect.left_top().max(equipment.schematic_symbol().position).round_ui();
                     //TODO: revisit scaling here. Provide a method to return size based on scale,
                     //instead of doing the math all over the place.
                     let symbol_size = equipment.schematic_symbol().scaled_size();
@@ -104,9 +104,11 @@ pub(crate) fn main_window(
                         //TODO: add optional hover text. See lines 614-621 of drag_value.rs from egui.
 
                         //TODO: update symbol connections here as well?
+                        #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
                         equipment.set_symbol_position(
                             (equipment.schematic_symbol().position + response.drag_delta())
-                                .min(panel_rect.right_bottom() - symbol_size),
+                                .min(panel_rect.right_bottom() - symbol_size)
+                                .round_ui(),
                         );
                     }
                 }
@@ -116,40 +118,222 @@ pub(crate) fn main_window(
                 for (id, wire) in &project_data.wires {
                     let mut end1 = Pos2::ZERO;
                     let mut end2 = Pos2::ZERO;
+                    let mut wire_connections: Vec<Connection> = Vec::new();
+
+                    //TODO:
+                    //
+                    //First need to find all connections that reference this wire
+                    //
+                    //If more than 2, bird strike, log it, and pick 2 at random?
+                    //
+                    //Then set end 1 and end 2 based on those two connections
+
                     for connection in &project_data.connections {
-                        match &connection.end1 {
-                            Type::Wire { wire_id } if wire_id == id => {
-                                #[expect(
-                                    clippy::match_same_arms,
-                                    reason = "Separating out some match elements makes the code read clearer"
-                                )]
-                                match &connection.end2 {
-                                    // TODO: wire-wire, wire-cable and wire-term_cable connections
-                                    // not defined yet.
-                                    Type::Wire { .. } | Type::Cable { .. } | Type::TermCable { .. } => {
-                                        //todo!();
-                                    }
-
-                                    Type::Equipment {
-                                        equipment_id,
-                                        connection_point_id,
-                                    } => {
-                                        #[expect(clippy::get_unwrap, reason = "temporary for testing")]
-                                        let equipment = project_data.equipment.get(equipment_id).unwrap();
-                                        //let (_, symbol) = equipment.schematic_symbol();
-                                    }
-
-                                    _ => {}
+                        if connection.end1 == connection.end2 {
+                            warn! {"connection: {connection:?} has both ends assigned to the same id."};
+                            break;
+                        }
+                        if let Type::Wire { wire_id } = &connection.end1
+                            && wire_id == id
+                        {
+                            wire_connections.push(connection.clone());
+                        }
+                        if let Type::Wire { wire_id } = &connection.end2
+                            && wire_id == id
+                        {
+                            wire_connections.push(connection.clone());
+                        }
+                    }
+                    #[expect(clippy::match_same_arms, reason = "code not finished yet")]
+                    #[expect(clippy::indexing_slicing, reason = "size of vec validated in outer match")]
+                    match wire_connections.len().cmp(&2) {
+                        Ordering::Equal => {
+                            #[expect(
+                                clippy::match_same_arms,
+                                reason = "Separating out some match elements makes the code read clearer"
+                            )]
+                            match &wire_connections[0].end1 {
+                                Type::Wire { wire_id } if wire_id == id => {
+                                    //Do nothing.
                                 }
-                            }
+                                // TODO: wire-wire, wire-cable and wire-term_cable connections
+                                // not defined yet.
+                                Type::Wire { .. } | Type::Cable { .. } | Type::TermCable { .. } => {
+                                    //todo!();
+                                }
 
-                            _ => {}
+                                #[expect(clippy::arithmetic_side_effects, reason = "deal with it")]
+                                Type::Equipment {
+                                    equipment_id,
+                                    connection_point_id,
+                                } => {
+                                    trace! {"end1 equipment: {equipment_id}"};
+                                    #[expect(clippy::get_unwrap, reason = "temporary for testing")]
+                                    #[expect(clippy::unwrap_used, reason = "temporary for testing")]
+                                    let equipment = project_data.equipment.get(equipment_id).unwrap();
+                                    let symbol = equipment.schematic_symbol();
+                                    #[expect(clippy::get_unwrap, reason = "temporary for testing")]
+                                    #[expect(clippy::unwrap_used, reason = "temporary for testing")]
+                                    let connection_point = symbol.connections.get(connection_point_id).unwrap();
+
+                                    //TODO: move this to a method on SchematicSymbol
+                                    //
+                                    //TODO: change connection point to contain a Pos2?
+                                    //
+                                    //TODO: look at how left_top(), etc are implemented.
+                                    end1 = symbol.position
+                                        + Vec2::from((
+                                            symbol.scaled_size().x * connection_point.x,
+                                            symbol.scaled_size().y * connection_point.y,
+                                        ));
+                                }
+
+                                _ => {}
+                            }
+                            #[expect(
+                                clippy::match_same_arms,
+                                reason = "Separating out some match elements makes the code read clearer"
+                            )]
+                            match &wire_connections[0].end2 {
+                                Type::Wire { wire_id } if wire_id == id => {
+                                    //Do nothing.
+                                }
+                                // TODO: wire-wire, wire-cable and wire-term_cable connections
+                                // not defined yet.
+                                Type::Wire { .. } | Type::Cable { .. } | Type::TermCable { .. } => {
+                                    //todo!();
+                                }
+
+                                #[expect(clippy::arithmetic_side_effects, reason = "deal with it")]
+                                Type::Equipment {
+                                    equipment_id,
+                                    connection_point_id,
+                                } => {
+                                    trace! {"end1 equipment: {equipment_id}"};
+                                    #[expect(clippy::get_unwrap, reason = "temporary for testing")]
+                                    #[expect(clippy::unwrap_used, reason = "temporary for testing")]
+                                    let equipment = project_data.equipment.get(equipment_id).unwrap();
+                                    let symbol = equipment.schematic_symbol();
+                                    #[expect(clippy::get_unwrap, reason = "temporary for testing")]
+                                    #[expect(clippy::unwrap_used, reason = "temporary for testing")]
+                                    let connection_point = symbol.connections.get(connection_point_id).unwrap();
+
+                                    //TODO: move this to a method on SchematicSymbol
+                                    //
+                                    //TODO: change connection point to contain a Pos2?
+                                    //
+                                    //TODO: look at how left_top(), etc are implemented.
+                                    end1 = symbol.position
+                                        + Vec2::from((
+                                            symbol.scaled_size().x * connection_point.x,
+                                            symbol.scaled_size().y * connection_point.y,
+                                        ));
+                                }
+
+                                _ => {}
+                            }
+                            #[expect(
+                                clippy::match_same_arms,
+                                reason = "Separating out some match elements makes the code read clearer"
+                            )]
+                            match &wire_connections[1].end1 {
+                                Type::Wire { wire_id } if wire_id == id => {
+                                    //Do nothing.
+                                }
+                                // TODO: wire-wire, wire-cable and wire-term_cable connections
+                                // not defined yet.
+                                Type::Wire { .. } | Type::Cable { .. } | Type::TermCable { .. } => {
+                                    //todo!();
+                                }
+
+                                #[expect(clippy::arithmetic_side_effects, reason = "deal with it")]
+                                Type::Equipment {
+                                    equipment_id,
+                                    connection_point_id,
+                                } => {
+                                    trace! {"end1 equipment: {equipment_id}"};
+                                    #[expect(clippy::get_unwrap, reason = "temporary for testing")]
+                                    #[expect(clippy::unwrap_used, reason = "temporary for testing")]
+                                    let equipment = project_data.equipment.get(equipment_id).unwrap();
+                                    let symbol = equipment.schematic_symbol();
+                                    #[expect(clippy::get_unwrap, reason = "temporary for testing")]
+                                    #[expect(clippy::unwrap_used, reason = "temporary for testing")]
+                                    let connection_point = symbol.connections.get(connection_point_id).unwrap();
+
+                                    //TODO: move this to a method on SchematicSymbol
+                                    //
+                                    //TODO: change connection point to contain a Pos2?
+                                    //
+                                    //TODO: look at how left_top(), etc are implemented.
+                                    end2 = symbol.position
+                                        + Vec2::from((
+                                            symbol.scaled_size().x * connection_point.x,
+                                            symbol.scaled_size().y * connection_point.y,
+                                        ));
+                                }
+
+                                _ => {}
+                            }
+                            #[expect(
+                                clippy::match_same_arms,
+                                reason = "Separating out some match elements makes the code read clearer"
+                            )]
+                            match &wire_connections[1].end2 {
+                                Type::Wire { wire_id } if wire_id == id => {
+                                    //Do nothing.
+                                }
+                                // TODO: wire-wire, wire-cable and wire-term_cable connections
+                                // not defined yet.
+                                Type::Wire { .. } | Type::Cable { .. } | Type::TermCable { .. } => {
+                                    //todo!();
+                                }
+
+                                #[expect(clippy::arithmetic_side_effects, reason = "deal with it")]
+                                Type::Equipment {
+                                    equipment_id,
+                                    connection_point_id,
+                                } => {
+                                    trace! {"end1 equipment: {equipment_id}"};
+                                    #[expect(clippy::get_unwrap, reason = "temporary for testing")]
+                                    #[expect(clippy::unwrap_used, reason = "temporary for testing")]
+                                    let equipment = project_data.equipment.get(equipment_id).unwrap();
+                                    let symbol = equipment.schematic_symbol();
+                                    #[expect(clippy::get_unwrap, reason = "temporary for testing")]
+                                    #[expect(clippy::unwrap_used, reason = "temporary for testing")]
+                                    let connection_point = symbol.connections.get(connection_point_id).unwrap();
+
+                                    //TODO: move this to a method on SchematicSymbol
+                                    //
+                                    //TODO: change connection point to contain a Pos2?
+                                    //
+                                    //TODO: look at how left_top(), etc are implemented.
+                                    end2 = symbol.position
+                                        + Vec2::from((
+                                            symbol.scaled_size().x * connection_point.x,
+                                            symbol.scaled_size().y * connection_point.y,
+                                        ));
+                                }
+
+                                _ => {}
+                            }
+                        }
+                        Ordering::Greater => {
+
+                            //TODO: log which connections were indicated on this wire and that there
+                            //were greater than 2.
+                        }
+                        Ordering::Less => {
+
+                            //TODO: log which connections were on this wire and that there were less
+                            //than 2.
                         }
                     }
 
                     trace! {"ID: {id}, Wire: {wire:#?}"};
+
+                    trace! {"wire: {id} end1: {end1}"};
+                    trace! {"wire: {id} end2: {end2}"};
                     let panel_painter = ui.painter();
-                    egui_ctx.memory(|memory| for area in memory.areas().visible_layer_ids() {});
                 }
             });
             ui.allocate_space(ui.available_size());

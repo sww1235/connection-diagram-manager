@@ -6,6 +6,7 @@ use egui::{
     Sense,
     Ui,
     Vec2,
+    epaint::emath::GuiRounding as _,
     response::Response,
     widgets::{Image, ImageSource, Widget},
 };
@@ -79,7 +80,7 @@ impl SchematicSymbol {
         if let Some(original_width) = self.visual_representation.get_original_width()
             && let Some(original_height) = self.visual_representation.get_original_height()
         {
-            Vec2::new(original_width, original_height)
+            Vec2::new(original_width, original_height).round_ui()
         } else {
             //TODO: maybe return option instead?
             Vec2::NAN
@@ -91,7 +92,7 @@ impl SchematicSymbol {
     #[inline]
     #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
     pub fn scaled_size(&self) -> Vec2 {
-        self.original_symbol_dimensions() * self.scale
+        (self.original_symbol_dimensions() * self.scale).round_ui()
     }
 }
 
