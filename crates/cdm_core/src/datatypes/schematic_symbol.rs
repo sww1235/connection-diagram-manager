@@ -140,7 +140,7 @@ impl ConnectionDirection {
             ConnectionDirection::BOTTOM => "Bottom",
             ConnectionDirection::RIGHT => "Right",
             ConnectionDirection::LEFT => "Left",
-            _ => "",
+            _ => "None",
         })
     }
 }

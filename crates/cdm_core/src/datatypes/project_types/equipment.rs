@@ -409,7 +409,6 @@ impl SchematicRepresentation for Equipment {
                                 trace! {"found data-connection-point"};
                                 let mut connection: SymbolConnection = SymbolConnection::default();
                                 let mut connection_id = String::new();
-                                let mut connection_direction: ConnectionDirection = ConnectionDirection::default();
 
                                 for attr in attributes {
                                     match attr.name.local_name.as_str() {
@@ -425,21 +424,21 @@ impl SchematicRepresentation for Equipment {
                                             }
                                             match attr.value.as_str() {
                                                 "left" => {
-                                                    connection_direction |= ConnectionDirection::LEFT;
+                                                    connection.allowed_connection_directions |= ConnectionDirection::LEFT;
                                                 }
                                                 "right" => {
-                                                    connection_direction |= ConnectionDirection::RIGHT;
+                                                    connection.allowed_connection_directions |= ConnectionDirection::RIGHT;
                                                 }
                                                 "top" => {
-                                                    connection_direction |= ConnectionDirection::TOP;
+                                                    connection.allowed_connection_directions |= ConnectionDirection::TOP;
                                                 }
                                                 "bottom" => {
-                                                    connection_direction |= ConnectionDirection::BOTTOM;
+                                                    connection.allowed_connection_directions |= ConnectionDirection::BOTTOM;
                                                 }
                                                 "all" => {
                                                     // NOTE: this is all defined flags, not all
                                                     // possible u8 values.
-                                                    connection_direction |= ConnectionDirection::all();
+                                                    connection.allowed_connection_directions |= ConnectionDirection::all();
                                                 }
                                                 x => {
                                                     return Err(SVGValidationError::AttributeValueInvalid(
@@ -449,7 +448,6 @@ impl SchematicRepresentation for Equipment {
                                                     .into());
                                                 }
                                             }
-                                            trace! {"connection-point-type: {connection_direction}"};
                                         }
 
                                         "cx" => {
