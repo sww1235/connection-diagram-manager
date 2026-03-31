@@ -1,3 +1,4 @@
 project_name = "Test Project"
 load_default_libraries = true
+angled_connections = true
 

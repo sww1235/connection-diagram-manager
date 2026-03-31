@@ -1,4 +1,5 @@
 use core::cmp::Ordering;
+use std::collections::HashSet;
 
 use cdm_core::{
     config::ApplicationConfig,
@@ -8,6 +9,7 @@ use cdm_core::{
             Project,
             connection::{Connection, Type},
         },
+        schematic_symbol::ConnectionDirection,
     },
     traits::SchematicRepresentation as _,
 };
@@ -28,7 +30,7 @@ use egui::{
     epaint::emath::GuiRounding as _,
     style::Visuals,
 };
-use log::{debug, trace, warn};
+use log::{debug, trace, warn, error};
 use num_traits::cast::FromPrimitive as _;
 
 use crate::app::{AppState, Commands};
@@ -120,8 +122,8 @@ pub(crate) fn main_window(
                 for (id, wire) in &project_data.wires {
                     //TODO: constrain end1/end2 to ui area, and to their respective endpoint
                     //positions. Look at percentage math
-                    let mut end1 = Pos2::ZERO;
-                    let mut end2 = Pos2::ZERO;
+                    let mut end1: (Pos2, HashSet<ConnectionDirection>) = (Pos2::ZERO, HashSet::from([ConnectionDirection::NONE]));
+                    let mut end2: (Pos2, HashSet<ConnectionDirection>) = (Pos2::ZERO, HashSet::from([ConnectionDirection::NONE]));
                     let mut wire_connections: Vec<Connection> = Vec::new();
 
                     //TODO:
@@ -184,12 +186,15 @@ pub(crate) fn main_window(
                                             #[expect(clippy::get_unwrap, reason = "temporary for testing")]
                                             #[expect(clippy::unwrap_used, reason = "temporary for testing")]
                                             let connection_point = symbol.connections.get(connection_point_id).unwrap();
+                                            trace!(
+                                                "allowed_connection_directions: {:?}",
+                                                connection_point.allowed_connection_directions
+                                            );
+                                            end.1 = connection_point.allowed_connection_directions.clone();
 
                                             //TODO: move this to a method on SchematicSymbol
                                             //
                                             //TODO: change connection point to contain a Pos2?
-                                            //
-                                            //TODO: look at lerp (linear interpolation functions instead.
                                             let connection_point_offset = Vec2::from((
                                                 symbol.scaled_size().x * (connection_point.x / 100.0),
                                                 symbol.scaled_size().y * (connection_point.y / 100.0),
@@ -197,7 +202,7 @@ pub(crate) fn main_window(
                                             trace! {"symbol scaled_size: {}", symbol.scaled_size()};
                                             trace! {"end1 connection_point: {connection_point:?}"};
                                             trace! {"end1 connection_point_offset: {connection_point_offset}"};
-                                            *end = symbol.position
+                                            end.0 = symbol.position
                                                 + Vec2::from((
                                                     symbol.scaled_size().x * connection_point.x / 100.0,
                                                     symbol.scaled_size().y * connection_point.y / 100.0,
@@ -223,15 +228,43 @@ pub(crate) fn main_window(
 
                     //trace! {"ID: {id}, Wire: {wire:#?}"};
 
-                    trace! {"wire: {id} end1: {end1}"};
-                    trace! {"wire: {id} end2: {end2}"};
+                    trace! {"wire: {id} end1: {}->{:?}", end1.0, end1.1};
+                    trace! {"wire: {id} end2: {}->{:?}", end2.0, end2.1};
                     let panel_painter = ui.painter();
                     let stroke = Stroke {
                         width: 4.0,
                         color: Color32::RED,
                     };
 
-                    panel_painter.line_segment([end1, end2], stroke);
+                    if end1.1.is_subset(&ConnectionDirection::horizontal())
+                        && end2.1.is_subset(&ConnectionDirection::horizontal())
+                    {
+                        trace! {"right/left:right/left"}
+                        let midpoint = end1.0.x - end2.0.x;
+                        let end1_midpoint = Pos2::new(midpoint, end1.0.y);
+                        let end2_midpoint = Pos2::new(midpoint, end2.0.y);
+                        let line_points: Vec<Pos2> = vec![end1.0, end1_midpoint, end2_midpoint, end2.0];
+                        panel_painter.line(line_points, stroke);
+                    } else if end1.1.is_subset(&ConnectionDirection::vertical())
+                        && end2.1.is_subset(&ConnectionDirection::vertical())
+                    {
+                        trace! {"top/bottom:top/bottom"}
+                        let midpoint = end1.0.y - end2.0.y;
+                        let end1_midpoint = Pos2::new(end1.0.x, midpoint);
+                        let end2_midpoint = Pos2::new(end2.0.x, midpoint);
+                        let line_points: Vec<Pos2> = vec![end1.0, end1_midpoint, end2_midpoint, end2.0];
+                        panel_painter.line(line_points, stroke);
+                    } else if end1.1.is_subset(&ConnectionDirection::horizontal())
+                        && end2.1.is_subset(&ConnectionDirection::vertical())
+                    {
+                        trace! {"right/left:top/bottom"} //TODO
+                    } else if end1.1.is_subset(&ConnectionDirection::vertical())
+                        && end2.1.is_subset(&ConnectionDirection::horizontal())
+                    {
+                        trace! {"top/bottom:right/left"} //TODO
+                    } else {
+                        error!{"unsupported direction combination"}
+                    }
                 }
             });
             ui.allocate_space(ui.available_size());

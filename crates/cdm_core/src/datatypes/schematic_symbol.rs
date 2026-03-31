@@ -1,6 +1,8 @@
-use std::{collections::BTreeMap, fmt};
+use std::{
+    collections::{BTreeMap, HashSet},
+    fmt,
+};
 
-use bitflags::{bitflags, bitflags_match};
 use egui::{
     Pos2,
     Sense,
@@ -97,7 +99,7 @@ impl SchematicSymbol {
 }
 
 /// A connection point on a `SchematicSymbol`.
-#[derive(Debug, PartialEq, Clone, Default)]
+#[derive(Debug, PartialEq, Clone)]
 #[non_exhaustive]
 pub struct SymbolConnection {
     /// Distance from top left of image horizontally in percentage of full width.
@@ -105,22 +107,78 @@ pub struct SymbolConnection {
     /// Distance from top left of image vertically in percentage of full height.
     pub y: f32,
     /// Which directions wires/cables are allowed to connect to this connection.
-    pub allowed_connection_directions: ConnectionDirection,
+    pub allowed_connection_directions: HashSet<ConnectionDirection>,
 }
 
-bitflags! {
-    /// `ConnectionDirection` specifies which direction(s) wires/cables are allowed to enter a
-    /// connector.
-    #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
-    pub struct ConnectionDirection: u8 {
-        /// If connections are allowed from the top.
-        const TOP = 0b0000_0001;
-        /// If connections are allowed from the bottom.
-        const BOTTOM = 0b0000_0010;
-        /// If connections are allowed from the right.
-        const RIGHT = 0b0000_0100;
-        /// If connections are allowed from the left.
-        const LEFT = 0b0000_1000;
+impl Default for SymbolConnection {
+    #[inline]
+    fn default() -> Self {
+        let mut allowed_connection_directions = HashSet::from([ConnectionDirection::NONE]);
+        allowed_connection_directions.shrink_to(5);
+        Self {
+            x: f32::default(),
+            y: f32::default(),
+            allowed_connection_directions,
+        }
+    }
+}
+
+/// `ConnectionDirection` specifies which direction(s) wires/cables are allowed to enter a
+/// connector. Boolean parameter indicates if angled connections are allowed, or just a
+/// perpendicular connection.
+#[expect(clippy::exhaustive_enums, reason = "Only orthoganal connections allowed at the moment")]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+pub enum ConnectionDirection {
+    /// If connections are allowed from the top.
+    TOP,
+    /// If connections are allowed from the bottom.
+    BOTTOM,
+    /// If connections are allowed from the right.
+    RIGHT,
+    /// If connections are allowed from the left.
+    LEFT,
+    /// If no connections are allowed.
+    #[default]
+    NONE,
+}
+
+//TODO: add in combo directions
+impl ConnectionDirection {
+    /// Returns a string representation of the direction.
+    pub(crate) fn as_str(self) -> &'static str {
+        match self {
+            ConnectionDirection::TOP => "Top",
+            ConnectionDirection::BOTTOM => "Bottom",
+            ConnectionDirection::RIGHT => "Right",
+            ConnectionDirection::LEFT => "Left",
+            ConnectionDirection::NONE => "None",
+        }
+    }
+
+    /// All `ConnectionDirection`s.
+    #[must_use]
+    #[inline]
+    pub fn all() -> HashSet<ConnectionDirection> {
+        HashSet::from([
+            ConnectionDirection::TOP,
+            ConnectionDirection::BOTTOM,
+            ConnectionDirection::RIGHT,
+            ConnectionDirection::LEFT,
+        ])
+    }
+
+    /// Horizontal `ConnectionDirection`s.
+    #[must_use]
+    #[inline]
+    pub fn horizontal() -> HashSet<ConnectionDirection> {
+        HashSet::from([ConnectionDirection::RIGHT, ConnectionDirection::LEFT])
+    }
+
+    /// Vertical `ConnectionDirection`s.
+    #[must_use]
+    #[inline]
+    pub fn vertical() -> HashSet<ConnectionDirection> {
+        HashSet::from([ConnectionDirection::TOP, ConnectionDirection::BOTTOM])
     }
 }
 
@@ -128,19 +186,5 @@ impl fmt::Display for ConnectionDirection {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(self.as_str())
-    }
-}
-
-//TODO: add in combo directions
-impl ConnectionDirection {
-    /// Returns a string representation of the direction.
-    pub(crate) fn as_str(self) -> &'static str {
-        bitflags_match! (self, {
-            ConnectionDirection::TOP => "Top",
-            ConnectionDirection::BOTTOM => "Bottom",
-            ConnectionDirection::RIGHT => "Right",
-            ConnectionDirection::LEFT => "Left",
-            _ => "None",
-        })
     }
 }

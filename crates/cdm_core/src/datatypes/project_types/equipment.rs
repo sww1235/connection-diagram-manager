@@ -424,21 +424,24 @@ impl SchematicRepresentation for Equipment {
                                             }
                                             match attr.value.as_str() {
                                                 "left" => {
-                                                    connection.allowed_connection_directions |= ConnectionDirection::LEFT;
+                                                    connection.allowed_connection_directions.remove(&ConnectionDirection::NONE);
+                                                    connection.allowed_connection_directions.insert(ConnectionDirection::LEFT);
                                                 }
                                                 "right" => {
-                                                    connection.allowed_connection_directions |= ConnectionDirection::RIGHT;
+                                                    connection.allowed_connection_directions.remove(&ConnectionDirection::NONE);
+                                                    connection.allowed_connection_directions.insert(ConnectionDirection::RIGHT);
                                                 }
                                                 "top" => {
-                                                    connection.allowed_connection_directions |= ConnectionDirection::TOP;
+                                                    connection.allowed_connection_directions.remove(&ConnectionDirection::NONE);
+                                                    connection.allowed_connection_directions.insert(ConnectionDirection::TOP);
                                                 }
                                                 "bottom" => {
-                                                    connection.allowed_connection_directions |= ConnectionDirection::BOTTOM;
+                                                    connection.allowed_connection_directions.remove(&ConnectionDirection::NONE);
+                                                    connection.allowed_connection_directions.insert(ConnectionDirection::BOTTOM);
                                                 }
                                                 "all" => {
-                                                    // NOTE: this is all defined flags, not all
-                                                    // possible u8 values.
-                                                    connection.allowed_connection_directions |= ConnectionDirection::all();
+                                                    connection.allowed_connection_directions.remove(&ConnectionDirection::NONE);
+                                                    connection.allowed_connection_directions.extend(ConnectionDirection::all());
                                                 }
                                                 x => {
                                                     return Err(SVGValidationError::AttributeValueInvalid(

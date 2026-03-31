@@ -1663,7 +1663,22 @@ user9 = "PLACEHOLDER"
 
 # There are no specific rules for what types end1 and end2 can be, but
 # suggested that end1 be the wire/cable type and end2 be the
-# terminal/equipment/connector, etc
+# terminal/equipment/connector, etc.
+
+# end1 and end2 cannot refer to the same entity. This will cause an error during parsing.
+
+# All linear items that support connections can have a maximum of 2 connections defined.
+# Any more will error during parsing and will log errors during rendering if not caught during parsing.
+
+# If only one connection is defined, a log message will be triggered and the connection will not render.
+
+
+
+# Multiple connections to a single connection point on an entity should be
+# avoided for graphical clarity. Up to 3 connections will render clearly as long
+# as the connection point on the symbol supports angled connections. If more than
+# 3 connections are specified, there will be overlap and it will probably look
+# like junk. This rendering issue is not considered a bug and will not be fixed.
 
 # replace Type with options from the following list:
 # - { Wire = { wire_id = PLACEHOLDER } }
@@ -2265,7 +2280,12 @@ should match whatever is present on the physical device.
 
 The visual location where a wire/cable will connect to the connection point
 will be the geometric center of whatever element this tag is applied to unless
-the [Connection Point Type](#connection-point-type) is also present.
+the [Connection Point Type](#connection-point-type) is also present. The
+wire/cable will approach the connection point at whatever direction makes the
+rendered line the shortest.
+
+The line rendered for the connection will overlap the connection point graphic
+without `data-connection-point-type` specified.
 
 ##### Connection Point Type
 

@@ -373,6 +373,8 @@ pub struct Config {
     pub project_code: Option<String>,
     /// Optional description of project.
     pub description: Option<String>,
+    /// If angled connections will render in schematic and PDF export.
+    pub angled_connections: bool,
 }
 
 #[cfg(test)]

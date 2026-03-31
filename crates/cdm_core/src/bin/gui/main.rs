@@ -41,6 +41,7 @@ fn main() -> anyhow::Result<()> {
         anyhow::bail!(library_validation_string);
     }
 
+    //TODO: validate that linear items only have 2 connections assigned.
     #[expect(
         clippy::expect_used,
         reason = "This function should never error, no Err() return in function currently"
