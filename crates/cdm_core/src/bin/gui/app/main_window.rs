@@ -92,7 +92,7 @@ pub(crate) fn main_window(
                     trace! {"min_postion: {rect_position}"}
                     let rect = Rect::from_min_size(rect_position, symbol_size);
                     trace!("rect: {rect:?}");
-                    //trace!("{:?}", equipment.schematic_symbol());
+                    equipment.set_symbol_position(rect_position.clamp(min_rect_position, max_rect_position).round_ui());
                     let response = ui.place(rect, &mut equipment.schematic_symbol());
                     // from https://github.com/emilk/egui/discussions/1926#discussioncomment-3414942
                     //
@@ -240,7 +240,7 @@ pub(crate) fn main_window(
                         && end2.1.is_subset(&ConnectionDirection::horizontal())
                     {
                         trace! {"right/left:right/left"}
-                        let midpoint = end1.0.x - end2.0.x;
+                        let midpoint = f32::midpoint(end1.0.x, end2.0.x);
                         let end1_midpoint = Pos2::new(midpoint, end1.0.y);
                         let end2_midpoint = Pos2::new(midpoint, end2.0.y);
                         let line_points: Vec<Pos2> = vec![end1.0, end1_midpoint, end2_midpoint, end2.0];
@@ -249,7 +249,7 @@ pub(crate) fn main_window(
                         && end2.1.is_subset(&ConnectionDirection::vertical())
                     {
                         trace! {"top/bottom:top/bottom"}
-                        let midpoint = end1.0.y - end2.0.y;
+                        let midpoint = f32::midpoint(end1.0.y, end2.0.y);
                         let end1_midpoint = Pos2::new(end1.0.x, midpoint);
                         let end2_midpoint = Pos2::new(end2.0.x, midpoint);
                         let line_points: Vec<Pos2> = vec![end1.0, end1_midpoint, end2_midpoint, end2.0];
