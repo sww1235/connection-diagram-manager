@@ -1,88 +1,136 @@
+use egui::Color32;
 use serde::{Deserialize, Serialize};
 
-/// `Color` is a standardized list of colors supported in the application.
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+/// `Color` is RGBA representation of a color, along with some extra metadata.
+///
+/// The `red`, `green` and `blue` values do not have `alpha` pre-multiplied in them.
+///
+/// `alpha` of 255 means totally opaque.
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(
-    missing_docs,
-    clippy::exhaustive_enums,
-    reason = "no need to document self documenting enum variants"
+    missing_docs_in_private_items,
+    reason = "no need to document self documenting struct fields"
 )]
-pub enum Color {
-    Red,
-    Orange,
-    Yellow,
-    Green,
-    Blue,
-    Purple,
-    Violet,
-    Pink,
-    Rose,
-    Brown,
-    #[default]
-    Black,
-    White,
-    Gray,
-    Grey,
-    Slate,
-    Clear,
-    Cyan,
-    Aqua,
-    /// Used for custom colors. Only the `hex_code` is required.
-    RGB {
-        /// 6 character HEX code. RRGGBB.
-        hex_code: String,
-        /// 3 character abbreviation for the custom color.
-        abbreviation: String,
-        /// name / color code for a color standard that this custom color represents.
-        color_standard: Option<String>,
-    },
+pub struct Color {
+    red: u8,
+    green: u8,
+    blue: u8,
+    alpha: u8,
 }
 
 impl Color {
+    // All constants match CSS Standard Colors as closely as possible.
+
+    ///FF0000FF.
+    pub const RED: Self = Self {
+        red: 0xFF,
+        green: 0x0,
+        blue: 0x0,
+        alpha: 0x0,
+    };
+    ///FFA500FF.
+    pub const ORANGE: Self = Self::from_rgba(0xFF, 0xA5, 0x0, 0xFF);
+    ///FFFF00FF.
+    pub const YELLOW: Self = Self::from_rgba(0xFF, 0xFF, 0x0, 0xFF);
+    ///00FF00FF.
+    pub const GREEN: Self = Self::from_rgba(0x0, 0xFF, 0x0, 0xFF);
+    ///OOOOFFFF.
+    pub const BLUE: Self = Self::from_rgba(0x0, 0x0, 0xFF, 0xFF);
+    ///800080FF.
+    pub const PURPLE: Self = Self::from_rgba(0x80, 0x0, 0x80, 0xFF);
+    ///EE82EEFF.
+    pub const VIOLET: Self = Self::from_rgba(0xEE, 0x82, 0xEE, 0xFF);
+    ///FFC0CBFF.
+    pub const PINK: Self = Self::from_rgba(0xFF, 0xC0, 0xCB, 0xFF);
+    ///FFC0CBFF.
+    pub const ROSE: Self = Self::from_rgba(0xFF, 0xC0, 0xCB, 0xFF);
+    ///FFC0CBFF.
+    pub const MAGENTA: Self = Self::from_rgba(0xFF, 0x0, 0xFF, 0xFF);
+    ///A52A2AFF.
+    pub const BROWN: Self = Self::from_rgba(0xA5, 0x2A, 0x2A, 0xFF);
+    ///852A2AFF.
+    pub const DARK_BROWN: Self = Self::from_rgba(0x85, 0x2A, 0x2A, 0xFF);
+    ///000000FF.
+    pub const BLACK: Self = Self::from_rgba(0x0, 0x0, 0x0, 0xFF);
+    ///FFFFFFFF.
+    pub const WHITE: Self = Self::from_rgba(0xFF, 0xFF, 0xFF, 0xFF);
+    ///808080FF.
+    pub const GRAY: Self = Self::from_rgba(0x89, 0x80, 0x80, 0xFF);
+    ///808080FF.
+    pub const GREY: Self = Self::from_rgba(0x89, 0x80, 0x80, 0xFF);
+    ///808080FF.
+    pub const SLATE: Self = Self::from_rgba(0x89, 0x80, 0x80, 0xFF);
+    ///FFFFFFFF.
+    pub const CLEAR: Self = Self::from_rgba(0xFF, 0xFF, 0xFF, 0xFF);
+    ///00FFFFFF.
+    pub const CYAN: Self = Self::from_rgba(0x0, 0xFF, 0xFF, 0xFF);
+    ///00FFFFFF.
+    pub const AQUA: Self = Self::from_rgba(0x0, 0xFF, 0xFF, 0xFF);
+    ///00000000.
+    pub const TRANSPARENT: Self = Self::from_rgba(0x0, 0x0, 0x0, 0x0);
+
+    /// Creates a `Color` value from separate red, green, blue and alpha values.
+    #[inline]
+    #[must_use]
+    pub const fn from_rgba(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
+        Self { red, green, blue, alpha }
+    }
+
     /// Returns a 3 character abbreviation for each color.
     #[must_use]
     #[inline]
-    pub fn abbreviation(&self) -> String {
+    pub fn abbreviation(self) -> String {
         match self {
-            Self::Red => "RED".to_owned(),
-            Self::Orange => "ORN".to_owned(),
-            Self::Yellow => "YEL".to_owned(),
-            Self::Green => "GRN".to_owned(),
-            Self::Blue => "BLU".to_owned(),
-            Self::Purple => "PUR".to_owned(),
-            Self::Violet => "VIO".to_owned(),
-            Self::Pink => "PNK".to_owned(),
-            Self::Rose => "RSE".to_owned(),
-            Self::Brown => "BRN".to_owned(),
-            Self::Black => "BLK".to_owned(),
-            Self::White => "WHT".to_owned(),
-            Self::Gray | Self::Grey => "GRY".to_owned(),
-            Self::Slate => "SLT".to_owned(),
-            Self::Clear => "CLR".to_owned(),
-            Self::Cyan => "CYN".to_owned(),
-            Self::Aqua => "AQA".to_owned(),
-            Self::RGB { abbreviation, .. } => abbreviation.clone(),
+            Self::RED => "RED".to_owned(),
+            Self::ORANGE => "ORN".to_owned(),
+            Self::YELLOW => "YEL".to_owned(),
+            Self::GREEN => "GRN".to_owned(),
+            Self::BLUE => "BLU".to_owned(),
+            Self::PURPLE => "PUR".to_owned(),
+            Self::VIOLET => "VIO".to_owned(),
+            Self::PINK => "PNK".to_owned(),
+            Self::ROSE => "RSE".to_owned(),
+            Self::MAGENTA => "MGA".to_owned(),
+            Self::BROWN | Self::DARK_BROWN => "BRN".to_owned(),
+            Self::BLACK => "BLK".to_owned(),
+            Self::WHITE => "WHT".to_owned(),
+            Self::GRAY | Self::GREY => "GRY".to_owned(),
+            Self::SLATE => "SLT".to_owned(),
+            Self::CLEAR => "CLR".to_owned(),
+            Self::CYAN => "CYN".to_owned(),
+            Self::AQUA => "AQA".to_owned(),
+            _ => String::new(),
         }
     }
     /// Returns a 6 character hex code (RRGGBB) for each color.
     #[must_use]
     #[inline]
     pub fn hex_code(&self) -> String {
-        match &self {
-            Self::Red => "FF0000".to_owned(),
-            Self::Orange => "FF5100".to_owned(),
-            Self::Yellow => "FFFF00".to_owned(),
-            Self::Green => "00FF00".to_owned(),
-            Self::Blue => "0000FF".to_owned(),
-            Self::Purple => "6700FF".to_owned(),
-            Self::Violet => "EE82EE".to_owned(),
-            Self::Pink | Self::Rose => "FFE4E1".to_owned(),
-            Self::Brown => "8B4513".to_owned(),
-            Self::Black => "000000".to_owned(),
-            Self::White | Self::Clear => "FFFFFF".to_owned(),
-            Self::Gray | Self::Grey | Self::Slate => "808080".to_owned(),
-            Self::Cyan | Self::Aqua => "00FFFF".to_owned(),
-            Self::RGB { hex_code, .. } => hex_code.clone(),
+        format! {"{:02X}{:02X}{:02X}", self.red, self.green, self.blue}
+    }
+}
+
+impl From<Color32> for Color {
+    #[inline]
+    fn from(value: Color32) -> Self {
+        match value {
+            Color32::RED => Self::RED,
+            Color32::ORANGE => Self::ORANGE,
+            Color32::YELLOW => Self::YELLOW,
+            Color32::GREEN => Self::GREEN,
+            Color32::BLUE => Self::BLUE,
+            Color32::PURPLE => Self::PURPLE,
+            Color32::MAGENTA => Self::MAGENTA,
+            Color32::BROWN => Self::BROWN,
+            Color32::BLACK => Self::BLACK,
+            Color32::WHITE => Self::WHITE,
+            Color32::CYAN => Self::CYAN,
+            Color32::TRANSPARENT => Self::TRANSPARENT,
+            _ => {
+                let [red, green, blue, alpha] = value.to_srgba_unmultiplied();
+
+                Self { red, green, blue, alpha }
+            }
         }
     }
 }

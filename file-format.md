@@ -72,26 +72,41 @@ are defined in the examples below for clarity.
 
 All images are specified as SVG, so drawings can scale easily.
 
+### Colors
+
 Where a color is specified, you can choose from the following options,
 or specify a custom RGB color using hexadecimal #RRGGBB syntax (not finalized yet).
 
 If anyone has official color standards/values for these, along with the
 acompanying RGB values, please submit a pull request.
 
+The names and values have been matched to the CSS Standard Colors. The color
+list below is deliberately kept small to reduce maintenance burden.
+
+The one exception to this is `Dark_Brown` which is my preferred shade of brown,
+as CSS brown is much too red.
+
+The colors that seem like duplicates are present to accomodate various standard
+color code names for wires and cables.
+
+<!--TODO: better abbreviation for Magenta-->
+
 #### Color Value List.
 
 | Color Name | Abbreviation | RGB Color Code | Color Standard |
 | ---------- | ------------ | -------------- | -------------- |
 | Red        | RED          | #FF0000        |                |
-| Orange     | ORN          | #FF5100        |                |
+| Orange     | ORN          | #FFA500        |                |
 | Yellow     | YEL          | #FFFF00        |                |
 | Green      | GRN          | #00FF00        |                |
 | Blue       | BLU          | #0000FF        |                |
-| Purple     | PUR          | #6700FF        |                |
+| Purple     | PUR          | #800080        |                |
 | Violet     | VIO          | #EE82EE        |                |
-| Pink       | PNK          | #FFE4E1        |                |
-| Rose       | RSE          | #FFE4E1        |                |
-| Brown      | BRN          | #8B4513        |                |
+| Pink       | PNK          | #FFC0CB        |                |
+| Rose       | RSE          | #FFC0CB        |                |
+| Magenta    | MGA          | #FF00FF        |                |
+| Brown      | BRN          | #A52A2A        |                |
+| Dark Brown | DBR          | #852A2A        |                |
 | Black      | BLK          | #000000        |                |
 | White      | WHT          | #FFFFFF        |                |
 | Gray       | GRY          | #808080        |                |

@@ -33,7 +33,7 @@ pub struct SchematicSymbol {
     // This is updated during creation in update_schematic_symbols_from_library()
     /// Identifier of symbol.
     pub identifier: String,
-    /// Map of connection points on symbol. The ID must be unique per symbol.
+    /// Map of connection points on symbol. The ID must be unique within the symbol.
     pub connections: BTreeMap<String, SymbolConnection>,
     /// Position of `SchematicSymbol` on screen.
     pub position: Pos2,
