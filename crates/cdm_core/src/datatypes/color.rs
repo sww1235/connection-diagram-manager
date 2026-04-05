@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 /// `alpha` of 255 means totally opaque.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(
-    missing_docs_in_private_items,
+    clippy::missing_docs_in_private_items,
     reason = "no need to document self documenting struct fields"
 )]
 pub struct Color {
@@ -110,27 +110,24 @@ impl Color {
     }
 }
 
-impl From<Color32> for Color {
-    #[inline]
-    fn from(value: Color32) -> Self {
-        match value {
-            Color32::RED => Self::RED,
-            Color32::ORANGE => Self::ORANGE,
-            Color32::YELLOW => Self::YELLOW,
-            Color32::GREEN => Self::GREEN,
-            Color32::BLUE => Self::BLUE,
-            Color32::PURPLE => Self::PURPLE,
-            Color32::MAGENTA => Self::MAGENTA,
-            Color32::BROWN => Self::BROWN,
-            Color32::BLACK => Self::BLACK,
-            Color32::WHITE => Self::WHITE,
-            Color32::CYAN => Self::CYAN,
-            Color32::TRANSPARENT => Self::TRANSPARENT,
-            _ => {
-                let [red, green, blue, alpha] = value.to_srgba_unmultiplied();
 
-                Self { red, green, blue, alpha }
-            }
+impl From<Color> for Color32 {
+    #[inline]
+    fn from(value: Color) -> Self {
+        match value {
+            Color::RED => Self::RED,
+            Color::ORANGE => Self::ORANGE,
+            Color::YELLOW => Self::YELLOW,
+            Color::GREEN => Self::GREEN,
+            Color::BLUE => Self::BLUE,
+            Color::PURPLE => Self::PURPLE,
+            Color::MAGENTA => Self::MAGENTA,
+            Color::BROWN => Self::BROWN,
+            Color::BLACK => Self::BLACK,
+            Color::WHITE => Self::WHITE,
+            Color::CYAN => Self::CYAN,
+            Color::TRANSPARENT => Self::TRANSPARENT,
+            _ => Self::from_rgba_unmultiplied(value.red, value.green, value.blue, value.alpha),
         }
     }
 }
