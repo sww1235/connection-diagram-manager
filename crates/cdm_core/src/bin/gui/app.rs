@@ -114,7 +114,7 @@ impl mq::EventHandler for App {
 
         // This is where all the egui code goes
         self.egui_mq.run(&mut *self.mq_ctx, |_mq_ctx, egui_ctx| {
-            // the next few lines are directly copy/pasted from the egui-miniquad demo and modified
+            // the next few lines are copy/pasted from the egui-miniquad demo and modified
             // ever so slightly.
             //
             // zoom factor could have been changed by the user in egui using Ctrl/Cmd and -/+/0,
@@ -137,6 +137,7 @@ impl mq::EventHandler for App {
             debug! {"egui dpi_scale: {egui_dpi_scale}"}
 
             egui_extras::install_image_loaders(egui_ctx);
+            // Load main window
             main_window::main_window(
                 egui_ctx,
                 &self.config,

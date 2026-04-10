@@ -18,6 +18,11 @@ pub mod unit_helper;
 /// including generic enums.
 pub mod util_types;
 
+/// `schematic_connector` is a representation of a linear connection on a schematic. It is an abstraction
+/// over a [`Wire`](project_types::wire::Wire), [`Cable`](project_types::cable::Cable) or [`Term
+/// Cable`](project_types::term_cable::TermCable).
+pub mod schematic_connector;
+
 use std::{
     fs,
     io::{self, ErrorKind},

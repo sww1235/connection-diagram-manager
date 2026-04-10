@@ -69,6 +69,8 @@ are defined in the examples below for clarity.
 > satisfied. Floating point numbers are still used, especially to produce
 > decimal output from Rational types but all the math internally is done with
 > Rational types and just the output step is converted.
+>
+> NOTE to NOTE: This does not apply in the GUI code.
 
 All images are specified as SVG, so drawings can scale easily.
 

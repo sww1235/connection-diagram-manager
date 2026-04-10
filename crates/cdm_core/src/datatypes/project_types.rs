@@ -29,7 +29,7 @@ use std::{
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    datatypes::{library_types::Library, project_types::terminal_strip::TermAccy},
+    datatypes::{library_types::Library, project_types::terminal_strip::TermAccy, schematic_connector::Type as SCType},
     error::{Error, LibraryError, ProjectError},
     traits::FromFile as _,
     util_functions,
@@ -375,6 +375,8 @@ pub struct Config {
     pub description: Option<String>,
     /// If angled connections will render in schematic and PDF export.
     pub angled_connections: bool,
+    /// Default `SchematicConnector` style used in project.
+    pub schematic_connector_style: Option<SCType>,
 }
 
 #[cfg(test)]

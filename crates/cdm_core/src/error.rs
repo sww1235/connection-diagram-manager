@@ -20,6 +20,9 @@ pub enum Error {
         /// filepath of file being checked for duplicates.
         test_file: PathBuf,
     },
+    /// Generic error for unimplemented functionality.
+    #[error("Unimplemented: {0}")]
+    Unimplemented(String),
     /// Errors from `Library` code.
     #[error(transparent)]
     LibraryError(#[from] LibraryError),
@@ -41,6 +44,9 @@ pub enum Error {
     /// Errors resulting from PDF generation.
     #[error(transparent)]
     PDFGenerationError(#[from] PDFError),
+    /// Errors resulting during GUI rendering.
+    #[error(transparent)]
+    GUIRenderingError(#[from] GUIRenderingError),
     /// Errors resulting from parsing unit name strings during Deserialize.
     #[error(transparent)]
     UnitParsingError(#[from] UnitParsingError),
@@ -181,7 +187,7 @@ pub enum ConnectionError {
     // there is correct spacing. That way the fmt string doesn't have to have an extra space in it
     // all the time.
     /// Error produced if both ends of the connection are the same type and not valid to connect.
-    /// make sure that `message` starts with an uppper case letter.
+    /// Make sure that `message` starts with an uppper case letter.
     #[error("The connection between {end1} and {end2} in {project_file} is invalid because they are both the same type.\
     {}", message.clone().map_or(String::new(), |mut value| {value.insert_str(0, ""); value}))]
     SameType {
@@ -210,6 +216,24 @@ pub enum PDFError {
     /// If a pdf page isn't found when indexing.
     #[error("PDF Page not found")]
     PDFPageNotFound,
+}
+
+/// `GUIRenderingError` is the list of errors that can occur during GUI rendering.
+#[derive(Debug, Error)]
+#[non_exhaustive]
+#[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
+pub enum GUIRenderingError {
+    /// Error resulting from rendering connections on linear entities.
+    // Example message: "less than 2 connections found when analyzing connections for Wire{xxxxx}"
+    #[error("{comparison} than 2 connections were found when analyzing connections for {affected_entity:?}")]
+    IncorrectNumberOfConnectionsDefined {
+        /// A string representing the comparision operation being performed.
+        ///
+        /// Suggested values are `Greater` or `Less`.
+        comparison: String,
+        /// The debug representation of the linear entity that connections are being evaluated for.
+        affected_entity: String,
+    },
 }
 
 /// `UnitParsingError` is the list of errors that can occur during Deserialization of units.

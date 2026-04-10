@@ -1,27 +1,17 @@
-use core::cmp::Ordering;
-use std::collections::HashSet;
-
 use cdm_core::{
     config::ApplicationConfig,
     datatypes::{
         library_types::Library,
-        project_types::{
-            Project,
-            connection::{Connection, Type},
-        },
-        schematic_symbol::ConnectionDirection,
+        project_types::Project,
+        schematic_connector::{AsConnector as _, Type as SCType},
     },
     traits::SchematicRepresentation as _,
 };
 use egui::{
-    Color32,
     CursorIcon,
     Id,
-    Pos2,
     Rect,
-    Stroke,
     Theme,
-    Vec2,
     containers::{
         Window,
         menu,
@@ -30,13 +20,12 @@ use egui::{
     epaint::emath::GuiRounding as _,
     style::Visuals,
 };
-use log::{debug, trace, warn, error};
+use log::{debug, error, trace, warn};
 use num_traits::cast::FromPrimitive as _;
 
 use crate::app::{AppState, Commands};
 
 #[expect(clippy::shadow_reuse, reason = "ui and other variables keep getting passed into closures")]
-#[expect(clippy::too_many_lines, reason = "Its a UI function")]
 /// Main window rendering code.
 pub(crate) fn main_window(
     egui_ctx: &egui::Context,
@@ -79,8 +68,7 @@ pub(crate) fn main_window(
                     //TODO: revisit scaling here. Provide a method to return size based on scale,
                     //instead of doing the math all over the place.
                     let symbol_size = equipment.schematic_symbol().scaled_size();
-                    // want the larger of the two values, to be the minimum top_left corner. It is
-                    // confusing.
+
                     let min_rect_position = panel_rect.left_top();
                     #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
                     let max_rect_position = panel_rect.right_bottom() - symbol_size;
@@ -105,7 +93,7 @@ pub(crate) fn main_window(
                     if response.dragged() {
                         // This should be CursorIcon::Grabbing but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
                         ui.output_mut(|output| output.cursor_icon = CursorIcon::Move);
-                        trace!("dragged");
+                        trace!("symbol dragged");
 
                         //TODO: add optional hover text. See lines 614-621 of drag_value.rs from egui.
 
@@ -120,150 +108,54 @@ pub(crate) fn main_window(
                 }
 
                 for (id, wire) in &project_data.wires {
-                    //TODO: constrain end1/end2 to ui area, and to their respective endpoint
-                    //positions. Look at percentage math
-                    let mut end1: (Pos2, HashSet<ConnectionDirection>) = (Pos2::ZERO, HashSet::from([ConnectionDirection::NONE]));
-                    let mut end2: (Pos2, HashSet<ConnectionDirection>) = (Pos2::ZERO, HashSet::from([ConnectionDirection::NONE]));
-                    let mut wire_connections: Vec<Connection> = Vec::new();
-
-                    //TODO:
-                    //
-                    //First need to find all connections that reference this wire
-                    //
-                    //If more than 2, bird strike, log it, and pick 2 at random?
-                    //
-                    //Then set end 1 and end 2 based on those two connections
-
-                    for connection in &project_data.connections {
-                        if connection.end1 == connection.end2 {
-                            warn! {"connection: {connection:?} has both ends assigned to the same id."};
-                            break;
-                        }
-                        if let Type::Wire { wire_id } = &connection.end1
-                            && wire_id == id
-                        {
-                            wire_connections.push(connection.clone());
-                        }
-                        if let Type::Wire { wire_id } = &connection.end2
-                            && wire_id == id
-                        {
-                            wire_connections.push(connection.clone());
-                        }
-                    }
-                    #[expect(clippy::match_same_arms, reason = "code not finished yet")]
-                    #[expect(clippy::indexing_slicing, reason = "size of vec validated in outer match")]
-                    match wire_connections.len().cmp(&2) {
-                        Ordering::Equal => {
-                            let wire_end_connections = [(&mut end1, &wire_connections[0]), (&mut end2, &wire_connections[1])];
-
-                            for (end, connection) in wire_end_connections {
-                                let connection_ends = [&connection.end1, &connection.end2];
-                                for connection_end in connection_ends {
-                                    #[expect(
-                                        clippy::match_same_arms,
-                                        reason = "Separating out some match elements makes the code read clearer"
-                                    )]
-                                    match connection_end {
-                                        Type::Wire { wire_id } if wire_id == id => {
-                                            //Do nothing.
-                                        }
-                                        // TODO: wire-wire, wire-cable and wire-term_cable connections
-                                        // not defined yet.
-                                        Type::Wire { .. } | Type::Cable { .. } | Type::TermCable { .. } => {
-                                            //todo!();
-                                        }
-
-                                        #[expect(clippy::arithmetic_side_effects, reason = "deal with it")]
-                                        Type::Equipment {
-                                            equipment_id,
-                                            connection_point_id,
-                                        } => {
-                                            trace! {"end1 equipment: {equipment_id}"};
-                                            #[expect(clippy::get_unwrap, reason = "temporary for testing")]
-                                            #[expect(clippy::unwrap_used, reason = "temporary for testing")]
-                                            let equipment = project_data.equipment.get(equipment_id).unwrap();
-                                            let symbol = equipment.schematic_symbol();
-                                            #[expect(clippy::get_unwrap, reason = "temporary for testing")]
-                                            #[expect(clippy::unwrap_used, reason = "temporary for testing")]
-                                            let connection_point = symbol.connections.get(connection_point_id).unwrap();
-                                            trace!(
-                                                "allowed_connection_directions: {:?}",
-                                                connection_point.allowed_connection_directions
-                                            );
-                                            end.1 = connection_point.allowed_connection_directions.clone();
-
-                                            //TODO: move this to a method on SchematicSymbol
-                                            //
-                                            //TODO: change connection point to contain a Pos2?
-                                            let connection_point_offset = Vec2::from((
-                                                symbol.scaled_size().x * (connection_point.x / 100.0),
-                                                symbol.scaled_size().y * (connection_point.y / 100.0),
-                                            ));
-                                            trace! {"symbol scaled_size: {}", symbol.scaled_size()};
-                                            trace! {"end1 connection_point: {connection_point:?}"};
-                                            trace! {"end1 connection_point_offset: {connection_point_offset}"};
-                                            end.0 = symbol.position
-                                                + Vec2::from((
-                                                    symbol.scaled_size().x * connection_point.x / 100.0,
-                                                    symbol.scaled_size().y * connection_point.y / 100.0,
-                                                ));
-                                        }
-
-                                        _ => {}
-                                    }
-                                }
-                            }
-                        }
-                        Ordering::Greater => {
-
-                            //TODO: log which connections were indicated on this wire and that there
-                            //were greater than 2.
-                        }
-                        Ordering::Less => {
-
-                            //TODO: log which connections were on this wire and that there were less
-                            //than 2.
-                        }
-                    }
-
                     //trace! {"ID: {id}, Wire: {wire:#?}"};
 
-                    trace! {"wire: {id} end1: {}->{:?}", end1.0, end1.1};
-                    trace! {"wire: {id} end2: {}->{:?}", end2.0, end2.1};
-                    let panel_painter = ui.painter();
-                    let stroke = Stroke {
-                        width: 4.0,
-                        color: Color32::RED,
-                    };
+                    //trace! {"wire: {id} end1: {}->{:?}", end1.0, end1.1};
+                    //trace! {"wire: {id} end2: {}->{:?}", end2.0, end2.1};
 
-                    if end1.1.is_subset(&ConnectionDirection::horizontal())
-                        && end2.1.is_subset(&ConnectionDirection::horizontal())
-                    {
-                        trace! {"right/left:right/left"}
-                        let midpoint = f32::midpoint(end1.0.x, end2.0.x);
-                        let end1_midpoint = Pos2::new(midpoint, end1.0.y);
-                        let end2_midpoint = Pos2::new(midpoint, end2.0.y);
-                        let line_points: Vec<Pos2> = vec![end1.0, end1_midpoint, end2_midpoint, end2.0];
-                        panel_painter.line(line_points, stroke);
-                    } else if end1.1.is_subset(&ConnectionDirection::vertical())
-                        && end2.1.is_subset(&ConnectionDirection::vertical())
-                    {
-                        trace! {"top/bottom:top/bottom"}
-                        let midpoint = f32::midpoint(end1.0.y, end2.0.y);
-                        let end1_midpoint = Pos2::new(end1.0.x, midpoint);
-                        let end2_midpoint = Pos2::new(end2.0.x, midpoint);
-                        let line_points: Vec<Pos2> = vec![end1.0, end1_midpoint, end2_midpoint, end2.0];
-                        panel_painter.line(line_points, stroke);
-                    } else if end1.1.is_subset(&ConnectionDirection::horizontal())
-                        && end2.1.is_subset(&ConnectionDirection::vertical())
-                    {
-                        trace! {"right/left:top/bottom"} //TODO
-                    } else if end1.1.is_subset(&ConnectionDirection::vertical())
-                        && end2.1.is_subset(&ConnectionDirection::horizontal())
-                    {
-                        trace! {"top/bottom:right/left"} //TODO
-                    } else {
-                        error!{"unsupported direction combination"}
+                    //TODO: Finish this
+                    //
+                    //new connector
+                    //
+                    //set endpoints
+                    //
+                    //monitor response for drag
+
+                    //TODO: figure out how to get this value out of project config.
+                    let connector_type = Some(SCType::RightAngle);
+                    #[expect(clippy::wildcard_enum_match_arm, reason = "returns unimplemented error")]
+                    #[expect(clippy::unnecessary_literal_unwrap, reason = "testing porpoises")]
+                    match connector_type.unwrap_or_default() {
+                        SCType::RightAngle => {
+                            let wire_connector = wire.as_connector(id.to_owned(), project_data);
+                            if let Ok(mut wire_connector) = wire_connector {
+                                let response = ui.place(wire_connector.containing_rect(), &mut wire_connector);
+                                if response.hovered() {
+                                    // This should be CursorIcon::Grab but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
+                                    ui.output_mut(|output| output.cursor_icon = CursorIcon::PointingHand);
+                                }
+                                if response.dragged() {
+                                    // This should be CursorIcon::Grabbing but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
+                                    ui.output_mut(|output| output.cursor_icon = CursorIcon::Move);
+                                    trace!("symbol dragged");
+
+                                    //TODO: add optional hover text. See lines 614-621 of drag_value.rs from egui.
+
+                                    //equipment.set_symbol_position(
+                                    //    (rect_position + response.drag_delta())
+                                    //        .clamp(min_rect_position, max_rect_position)
+                                    //        .round_ui(),
+                                    //);
+
+                                    wire_connector.move_midpoint(response.drag_delta());
+                                }
+                            } else {
+                                error!("{:?}", wire_connector.err());
+                            }
+                        }
+                        _ => {
+                            error!("Straight connector not implemented yet");
+                        }
                     }
                 }
             });

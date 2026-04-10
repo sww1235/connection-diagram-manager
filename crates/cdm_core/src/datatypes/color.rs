@@ -110,7 +110,6 @@ impl Color {
     }
 }
 
-
 impl From<Color> for Color32 {
     #[inline]
     fn from(value: Color) -> Self {
