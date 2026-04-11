@@ -92,7 +92,7 @@ pub fn read_config_files_cli() -> Result<(ApplicationConfig, Cli), Error> {
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
     /// Directory that project lives in.
-    #[arg(long, required = true)]
+    #[arg(required = true)]
     pub project_directory: Option<PathBuf>,
     /// Increase verbosity of program by adding more v.
     #[arg(short, long, action = clap::ArgAction::Count)]

@@ -61,9 +61,9 @@ pub(crate) fn main_window(
                 let panel_rect = ui.max_rect();
 
                 for (id, equipment) in &mut project_data.equipment {
-                    //trace! {"ID: {id}, Equipment: {equipment:#?}"};
+                    trace! {"ID: {id}, Equipment: {equipment:#?}"};
                     equipment.update_symbol_scale(app_state.symbol_scale_factor);
-                    //trace! {"Equipment connections: {:?}", equipment.schematic_symbol().connections};
+                    trace! {"Equipment connections: {:?}", equipment.schematic_symbol().connections};
                     trace!("pre_rendered position: {}", equipment.schematic_symbol().position);
                     //TODO: revisit scaling here. Provide a method to return size based on scale,
                     //instead of doing the math all over the place.

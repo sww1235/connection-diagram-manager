@@ -63,7 +63,7 @@ fn main() -> anyhow::Result<()> {
     //need to take place, then this could get messy
     let project_data_reference = project_data.clone();
 
-        // TODO: provide config option for symbol selector
+    // TODO: provide config option for symbol selector
     for (id, equipment_instance) in &mut project_data.equipment {
         // Update schematic symbols on equipment from their library values.
         equipment_instance.update_schematic_symbol_from_library(&library_data, None, id.clone())?;

@@ -156,7 +156,7 @@ impl mq::EventHandler for App {
             egui_ctx.input(|input_state| {
                 // This is the quit button in the menu
                 let window_quit_request = input_state.viewport().close_requested();
-                debug! {"input_state.viewport: {:#?}", input_state.viewport()}
+                //debug! {"input_state.viewport: {:#?}", input_state.viewport()}
                 debug! {"menu quit button clicked: {window_quit_request}"};
                 if window_quit_request {
                     self.state.commands.quit_clicked = true;
