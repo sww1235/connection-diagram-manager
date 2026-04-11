@@ -374,9 +374,13 @@ color = "PLACEHOLDER"
 # second "PLACEHOLDER" is identifier of individual core. Must be unique per cable_type
 [cable_types."PLACEHOLDER".cores."PLACEHOLDER"]
 
-# identifier of wire/cable type that core is
+# identifier of wire/cable type that core is,
+# and an optional line_style per core. Cores inherit their Cable's linestyle if it is not defined here.
+#
+# See defintion of line_style below for more details
+#
 # the key of this key/value pair can be either WireType or CableType
-WireType = "PLACEHOLDER"
+WireType = {type_id: "PLACEHOLDER", line_style: { color: "PLACEHOLDER", secondary_color: "PLACEHOLDER", line_thickness: "PLACEHOLDER", line_appearance: "PLACEHOLDER"}}
 
 # all items here are optional
 # and will use defaults or cable outer jacket/insulation color if not specified

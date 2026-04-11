@@ -76,6 +76,11 @@ fn main() -> anyhow::Result<()> {
         wire.update_data_from_library(&library_data)?;
     }
 
+    // update styling info and core data from their library values.
+    for cable in project_data.cables.values_mut() {
+        cable.update_data_from_library(&library_data)?;
+    }
+
     let mut gui_conf: mqConf = app_config.clone().graphics_config.into();
 
     gui_conf.window_resizable = true;

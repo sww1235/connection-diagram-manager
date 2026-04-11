@@ -181,19 +181,19 @@ impl Library {
         for (id, cable_type) in &self.cable_types {
             for core in cable_type.cores.values() {
                 match core {
-                    CableCore::WireType(wire_type_inner) => {
-                        if !self.wire_types.contains_key(wire_type_inner) {
+                    CableCore::WireType { type_id, .. } => {
+                        if !self.wire_types.contains_key(type_id) {
                             errors.push(LibraryError::ValueNotFound {
-                                id: wire_type_inner.clone(),
+                                id: type_id.clone(),
                                 found_in: id.clone(),
                                 library_type: "WireType".to_owned(),
                             });
                         }
                     }
-                    CableCore::CableType(cable_type_inner) => {
-                        if !self.cable_types.contains_key(cable_type_inner) {
+                    CableCore::CableType { type_id, .. } => {
+                        if !self.cable_types.contains_key(type_id) {
                             errors.push(LibraryError::ValueNotFound {
-                                id: cable_type_inner.clone(),
+                                id: type_id.clone(),
                                 found_in: id.clone(),
                                 library_type: "CableType".to_owned(),
                             });

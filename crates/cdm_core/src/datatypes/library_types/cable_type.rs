@@ -46,8 +46,10 @@ pub struct CableType {
     /// Dimensions of cable.
     pub dimensions: Option<Dimension>,
     /// appearance in schematics.
-    pub line_style: Option<LineStyle>,
-    /// map of cores in cable.
+    pub line_style: LineStyle,
+    /// Map of cores in cable.
+    ///
+    /// Key of map is identifier of core within cable, and is unique within each cable.
     pub cores: BTreeMap<String, CableCore>,
     /// vector of exterior insulation/shielding layers.
     pub layers: Vec<CableLayer>,
@@ -74,9 +76,13 @@ impl FromFile for CableType {
 #[expect(clippy::exhaustive_enums, reason = "only two options make sense")]
 pub enum CableCore {
     /// `WireType`.
-    WireType(String),
+    ///
+    /// If `line_style` is not specified, the `WireType`'s `line_style` will be inheritied.
+    WireType { type_id: String, line_style: Option<LineStyle> },
     /// `CableType`.
-    CableType(String),
+    ///
+    /// If `line_style` is not specified, the `CableType`'s `line_style` will be inheritied.
+    CableType { type_id: String, line_style: Option<LineStyle> },
 }
 
 //TODO: add a way to link 2 cores as a pair within a cable, and specify twisted + parameters
