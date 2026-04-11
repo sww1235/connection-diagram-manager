@@ -3,9 +3,9 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    datatypes::{library_types::Library, util_types::SymbolStyle},
+    datatypes::{library_types::Library, project_types::ProjectData, util_types::SymbolStyle},
     error::LibraryError,
-    traits::{self, FromFile, ProjectData},
+    traits::FromFile,
 };
 
 /// `Connector` is an instance of a [`ConnectorType`](super::connector_type::ConnectorType).
@@ -21,7 +21,7 @@ pub struct Connector {
     pub(crate) contained_datafile_path: PathBuf,
 }
 
-impl traits::Connector for Connector {
+impl Connectorize for Connector {
     #[expect(
         clippy::unwrap_in_result,
         reason = "if somehow this library is used on a 128 bit architecture, I want a panic so people bug me and I can \
@@ -58,3 +58,16 @@ impl FromFile for Connector {
     }
 }
 impl ProjectData for Connector {}
+
+/// `Connector` contains common methods for various specific connector types defined in the
+/// library.
+pub trait Connectorize {
+    /// `pin_count` returns the total number of pins of a connector.
+    ///
+    /// # Errors
+    ///
+    /// Will error if the connector type is not found in the provided library.
+    fn pin_count(&self, library: &Library) -> Result<u64, LibraryError>;
+
+    //TODO: add more methods here
+}

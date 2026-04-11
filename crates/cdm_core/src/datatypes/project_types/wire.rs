@@ -12,15 +12,16 @@ use crate::{
     datatypes::{
         project_types::{
             Project,
+            ProjectData,
             connection::{Connection, Type as ConnectionType},
         },
         schematic_connector::{AsConnector, right_angle::RightAngle},
-        schematic_symbol::ConnectionDirection,
+        schematic_symbol::{ConnectionDirection, SchematicRepresentation as _},
         unit_helper::length::Length,
         util_types::{IECCodes, PhysicalLocation, UserFields},
     },
     error::GUIRenderingError,
-    traits::{FromFile, ProjectData, SchematicRepresentation as _},
+    traits::FromFile,
 };
 
 /// `Wire` represents a particular instance of a `WireType`.

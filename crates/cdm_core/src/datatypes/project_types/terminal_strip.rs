@@ -3,8 +3,11 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    datatypes::util_types::{IECCodes, PhysicalLocation, SymbolStyle, UserFields},
-    traits::{FromFile, ProjectData},
+    datatypes::{
+        project_types::ProjectData,
+        util_types::{IECCodes, PhysicalLocation, SymbolStyle, UserFields},
+    },
+    traits::FromFile,
 };
 
 /// `TerminalStrip` represents an individual terminal strip in a project.

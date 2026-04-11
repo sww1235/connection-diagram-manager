@@ -379,6 +379,9 @@ pub struct Config {
     pub schematic_connector_style: Option<SCType>,
 }
 
+/// Marker trait for Project data.
+pub trait ProjectData {}
+
 #[cfg(test)]
 mod tests {
 

@@ -4,8 +4,8 @@ use cdm_core::{
         library_types::Library,
         project_types::Project,
         schematic_connector::{AsConnector as _, Type as SCType},
+        schematic_symbol::SchematicRepresentation as _,
     },
-    traits::SchematicRepresentation as _,
 };
 use egui::{
     CursorIcon,

@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     datatypes::{
         color::Color,
+        library_types::LibraryData,
         unit_helper::{
             cross_sectional_area::CrossSectionalArea,
             electric_potential::ElectricPotential,
@@ -16,7 +17,7 @@ use crate::{
         },
         util_types::{Catalog, CrossSection, Dimension, LineStyle},
     },
-    traits::{FromFile, LibraryData},
+    traits::FromFile,
 };
 
 //TODO: add validation to check that Figure8 cable cross sections only have 2 cores

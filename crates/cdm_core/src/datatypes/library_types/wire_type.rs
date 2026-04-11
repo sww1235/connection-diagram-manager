@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     datatypes::{
         color::Color,
+        library_types::LibraryData,
         unit_helper::{
             cross_sectional_area::CrossSectionalArea,
             electric_potential::ElectricPotential,
@@ -14,7 +15,7 @@ use crate::{
         },
         util_types::{Catalog, LineStyle},
     },
-    traits::{FromFile, LibraryData},
+    traits::FromFile,
 };
 
 /// `WireType` represents a particular type of wire.

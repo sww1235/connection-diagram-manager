@@ -3,7 +3,10 @@ pub mod right_angle;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{datatypes::project_types::Project, error::GUIRenderingError, traits::ProjectData};
+use crate::{
+    datatypes::project_types::{Project, ProjectData},
+    error::GUIRenderingError,
+};
 
 //TODO: multiple connections on each end.
 

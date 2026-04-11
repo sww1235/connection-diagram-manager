@@ -5,7 +5,7 @@
 //TODO: add cfg(feature = "gui") in library where appropriate
 
 //#[cfg(feature = "gui")]
-use cdm_core::{bin_logic, datatypes, traits::SchematicRepresentation as _};
+use cdm_core::{bin_logic, datatypes, datatypes::schematic_symbol::SchematicRepresentation as _};
 use itertools::Itertools as _;
 use log::debug;
 use miniquad::{self as mq, conf::Conf as mqConf};

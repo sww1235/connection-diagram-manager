@@ -463,6 +463,9 @@ impl Library {
     }
 }
 
+/// Marker trait for Library data.
+pub trait LibraryData {}
+
 #[cfg(test)]
 #[allow(clippy::too_many_lines)]
 mod tests {

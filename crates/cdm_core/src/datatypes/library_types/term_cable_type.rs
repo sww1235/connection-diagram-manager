@@ -7,12 +7,13 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
-        library_types::Library,
+        library_types::{Library, LibraryData},
+        project_types::connector::Connectorize,
         unit_helper::length::Length,
         util_types::{Catalog, LineStyle},
     },
     error::LibraryError,
-    traits::{Connector as ConnectorTrait, FromFile, LibraryData},
+    traits::FromFile,
 };
 
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
@@ -79,7 +80,7 @@ pub struct Connector {
     pub terminations: Vec<Termination>,
 }
 
-impl ConnectorTrait for Connector {
+impl Connectorize for Connector {
     #[expect(clippy::unwrap_in_result, reason = "I want the panic on a 128bit architecture")]
     #[inline(never)]
     fn pin_count(&self, library: &Library) -> Result<u64, LibraryError> {

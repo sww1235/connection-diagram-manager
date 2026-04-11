@@ -5,11 +5,12 @@ use serde::{Deserialize, Serialize};
 use crate::{
     datatypes::{
         library_types::Library,
+        project_types::ProjectData,
         unit_helper::length::Length,
         util_types::{IECCodes, PhysicalLocation, UserFields},
     },
     error::LibraryError,
-    traits::{FromFile, ProjectData},
+    traits::FromFile,
 };
 
 /// `TermCable` represents a particular instance of a `TermCableType`.

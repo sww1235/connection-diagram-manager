@@ -8,10 +8,11 @@ use serde::{Deserialize, Serialize};
 use crate::{
     datatypes::{
         color::Color,
+        library_types::LibraryData,
         svg::Svg,
         util_types::{Catalog, Dimension},
     },
-    traits::{FromFile, LibraryData},
+    traits::FromFile,
 };
 
 //TODO: Make some of these fields enums

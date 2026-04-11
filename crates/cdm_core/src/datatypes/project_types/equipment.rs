@@ -12,12 +12,12 @@ use xml::{EventReader, EventWriter, reader::XmlEvent as ReaderEvent, writer::Xml
 use crate::{
     datatypes::{
         library_types::Library,
-        project_types::{Project, connection::Type as ConnectionType},
-        schematic_symbol::{ConnectionDirection, SchematicSymbol, SymbolConnection},
+        project_types::{Project, ProjectData, connection::Type as ConnectionType},
+        schematic_symbol::{ConnectionDirection, SchematicRepresentation, SchematicSymbol, SymbolConnection},
         util_types::{IECCodes, PhysicalLocation, SymbolStyle, UserFields},
     },
     error::{Error, LibraryError, SVGModificationError, SVGValidationError},
-    traits::{FromFile, ProjectData, SchematicRepresentation},
+    traits::FromFile,
 };
 
 /// `Equipment` represents a particular instance of an `EquipmentType`.

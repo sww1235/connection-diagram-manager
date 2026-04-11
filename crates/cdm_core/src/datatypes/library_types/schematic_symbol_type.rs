@@ -3,8 +3,8 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    datatypes::svg::Svg,
-    traits::{FromFile, LibraryData},
+    datatypes::{library_types::LibraryData, svg::Svg},
+    traits::FromFile,
 };
 
 /// `SchematicSymbolType` represents a schematic symbol type

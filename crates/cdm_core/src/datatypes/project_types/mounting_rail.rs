@@ -7,12 +7,13 @@ use uom::si::length::millimeter;
 use crate::{
     datatypes::{
         library_types::Library,
+        project_types::ProjectData,
         svg::Svg,
         unit_helper::length::Length,
         util_types::{IECCodes, PhysicalLocation, UserFields},
     },
     error::{Error, LibraryError},
-    traits::{FromFile, ProjectData},
+    traits::FromFile,
 };
 
 /// `MountingRail` represents an individual mounting rail in a project.

@@ -7,10 +7,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
+        project_types::ProjectData,
         unit_helper::length::Length,
         util_types::{IECCodes, PhysicalLocation, UserFields},
     },
-    traits::{FromFile, ProjectData},
+    traits::FromFile,
 };
 
 /// `Location` represents a physical instance of a locationType.

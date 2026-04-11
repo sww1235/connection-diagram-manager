@@ -5,11 +5,12 @@ use serde::{Deserialize, Serialize};
 use crate::{
     datatypes::{
         color::Color,
+        library_types::LibraryData,
         svg::Svg,
         unit_helper::cross_sectional_area::CrossSectionalArea,
         util_types::{Catalog, Dimension, LineStyle},
     },
-    traits::{FromFile, LibraryData},
+    traits::FromFile,
 };
 
 /// `PathwayType` represents a route for wires and cables to take from one
