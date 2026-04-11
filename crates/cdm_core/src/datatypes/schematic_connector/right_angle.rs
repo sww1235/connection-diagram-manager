@@ -1,9 +1,11 @@
-use std::collections::HashSet;
-
 use egui::{Pos2, Rect, Sense, Stroke, Ui, Vec2, response::Response, widgets::Widget};
 use log::{error, trace};
 
-use crate::datatypes::{color::Color, schematic_connector::SchematicConnector, schematic_symbol::ConnectionDirection};
+use crate::datatypes::{
+    color::Color,
+    schematic_connector::{ConnectionPoint, SchematicConnector},
+    schematic_symbol::ConnectionDirection,
+};
 
 /// `RightAngle` is a connector that either has a `Z` or `S` shape using right angles or an `L`
 /// shape.
@@ -23,14 +25,10 @@ use crate::datatypes::{color::Color, schematic_connector::SchematicConnector, sc
 /// horizontal and one vertical line. Which is which will depend on the `end_direction`.
 #[non_exhaustive]
 pub struct RightAngle {
-    /// The coordinates of one end of the connection in screen coordinates.
-    pub end1: Pos2,
-    /// The allowed directions for the `end1` end to render in.
-    pub end1_directions: HashSet<ConnectionDirection>,
-    /// The coordinates of the other end of the connection in screen coordinates.
-    pub end2: Pos2,
-    /// The allowed directions for the `end2` end to render in.
-    pub end2_directions: HashSet<ConnectionDirection>,
+    /// One end of the connection.
+    pub end1: ConnectionPoint,
+    /// The other end of the connection.
+    pub end2: ConnectionPoint,
     /// The midpoint of the line. Depending on direction, only the `x` or `y` coordinates are used.
     pub midpoint: Pos2,
     /// If the connection is allowed to render past its bounds based on directions.
@@ -52,28 +50,28 @@ impl Widget for &mut RightAngle {
 
         response.sense = sense_settings;
 
-        if self.end1_directions.is_subset(&ConnectionDirection::horizontal())
-            && self.end2_directions.is_subset(&ConnectionDirection::horizontal())
+        if self.end1.directions.is_subset(&ConnectionDirection::horizontal())
+            && self.end2.directions.is_subset(&ConnectionDirection::horizontal())
         {
             trace! {"right/left:right/left"}
-            let end1_midpoint = Pos2::new(self.midpoint.x, self.end1.y);
-            let end2_midpoint = Pos2::new(self.midpoint.x, self.end2.y);
-            let line_points: Vec<Pos2> = vec![self.end1, end1_midpoint, end2_midpoint, self.end2];
+            let end1_midpoint = Pos2::new(self.midpoint.x, self.end1.position.y);
+            let end2_midpoint = Pos2::new(self.midpoint.x, self.end2.position.y);
+            let line_points: Vec<Pos2> = vec![self.end1.position, end1_midpoint, end2_midpoint, self.end2.position];
             painter.line(line_points, self.stroke);
-        } else if self.end1_directions.is_subset(&ConnectionDirection::vertical())
-            && self.end2_directions.is_subset(&ConnectionDirection::vertical())
+        } else if self.end1.directions.is_subset(&ConnectionDirection::vertical())
+            && self.end2.directions.is_subset(&ConnectionDirection::vertical())
         {
             trace! {"top/bottom:top/bottom"}
-            let end1_midpoint = Pos2::new(self.end1.x, self.midpoint.y);
-            let end2_midpoint = Pos2::new(self.end2.x, self.midpoint.y);
-            let line_points: Vec<Pos2> = vec![self.end1, end1_midpoint, end2_midpoint, self.end2];
+            let end1_midpoint = Pos2::new(self.end1.position.x, self.midpoint.y);
+            let end2_midpoint = Pos2::new(self.end2.position.x, self.midpoint.y);
+            let line_points: Vec<Pos2> = vec![self.end1.position, end1_midpoint, end2_midpoint, self.end2.position];
             painter.line(line_points, self.stroke);
-        } else if self.end1_directions.is_subset(&ConnectionDirection::horizontal())
-            && self.end2_directions.is_subset(&ConnectionDirection::vertical())
+        } else if self.end1.directions.is_subset(&ConnectionDirection::horizontal())
+            && self.end2.directions.is_subset(&ConnectionDirection::vertical())
         {
             trace! {"right/left:top/bottom"} //TODO
-        } else if self.end1_directions.is_subset(&ConnectionDirection::vertical())
-            && self.end2_directions.is_subset(&ConnectionDirection::horizontal())
+        } else if self.end1.directions.is_subset(&ConnectionDirection::vertical())
+            && self.end2.directions.is_subset(&ConnectionDirection::horizontal())
         {
             trace! {"top/bottom:right/left"} //TODO
         } else {
@@ -87,32 +85,25 @@ impl RightAngle {
     /// Creates a new `RightAngle` connector.
     #[must_use]
     #[inline]
-    pub fn new(
-        end1: Pos2,
-        end1_directions: HashSet<ConnectionDirection>,
-        end2: Pos2,
-        end2_directions: HashSet<ConnectionDirection>,
-        overflow: bool,
-        stroke: Stroke,
-    ) -> Self {
-        let midpoint = if end1_directions.is_subset(&ConnectionDirection::horizontal())
-            && end2_directions.is_subset(&ConnectionDirection::horizontal())
+    pub fn new(end1: ConnectionPoint, end2: ConnectionPoint, overflow: bool, stroke: Stroke) -> Self {
+        let midpoint = if end1.directions.is_subset(&ConnectionDirection::horizontal())
+            && end2.directions.is_subset(&ConnectionDirection::horizontal())
         {
-            Pos2::new(f32::midpoint(end1.x, end2.x), 0.0)
-        } else if end1_directions.is_subset(&ConnectionDirection::vertical())
-            && end2_directions.is_subset(&ConnectionDirection::vertical())
+            Pos2::new(f32::midpoint(end1.position.x, end2.position.x), 0.0)
+        } else if end1.directions.is_subset(&ConnectionDirection::vertical())
+            && end2.directions.is_subset(&ConnectionDirection::vertical())
         {
-            Pos2::new(0.0, f32::midpoint(end1.y, end2.y))
-        } else if end1_directions.is_subset(&ConnectionDirection::horizontal())
-            && end2_directions.is_subset(&ConnectionDirection::vertical())
+            Pos2::new(0.0, f32::midpoint(end1.position.y, end2.position.y))
+        } else if end1.directions.is_subset(&ConnectionDirection::horizontal())
+            && end2.directions.is_subset(&ConnectionDirection::vertical())
         {
             trace! {"right/left:top/bottom"} //TODO
-            Pos2::new(end1.x, end2.y)
-        } else if end1_directions.is_subset(&ConnectionDirection::vertical())
-            && end2_directions.is_subset(&ConnectionDirection::horizontal())
+            Pos2::new(end1.position.x, end2.position.y)
+        } else if end1.directions.is_subset(&ConnectionDirection::vertical())
+            && end2.directions.is_subset(&ConnectionDirection::horizontal())
         {
             trace! {"top/bottom:right/left"} //TODO
-            Pos2::new(end1.y, end2.x)
+            Pos2::new(end1.position.y, end2.position.x)
         } else {
             error! {"unsupported direction combination"}
             //TODO: replace with Pos2::NAN once migrated to egui 3.34.1
@@ -121,9 +112,7 @@ impl RightAngle {
 
         Self {
             end1,
-            end1_directions,
             end2,
-            end2_directions,
             midpoint,
             overflow,
             stroke,
@@ -132,9 +121,9 @@ impl RightAngle {
 
     /// Set end positions of Connector.
     #[inline]
-    pub fn set_ends(&mut self, end1: Pos2, end2: Pos2) {
-        self.end1 = end1;
-        self.end2 = end2;
+    pub fn set_end_positions(&mut self, end1: Pos2, end2: Pos2) {
+        self.end1.position = end1;
+        self.end2.position = end2;
     }
     //TODO: add overflow logic here
     /// Set midpoint position for Connector.
@@ -166,6 +155,6 @@ impl RightAngle {
     #[inline]
     #[must_use]
     pub fn containing_rect(&self) -> Rect {
-        Rect::from_two_pos(self.end1, self.end2)
+        Rect::from_two_pos(self.end1.position, self.end2.position)
     }
 }

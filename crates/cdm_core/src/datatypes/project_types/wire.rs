@@ -1,10 +1,7 @@
 use core::cmp::Ordering;
-use std::{
-    collections::HashSet,
-    path::{Path, PathBuf},
-};
+use std::path::{Path, PathBuf};
 
-use egui::{Color32, Pos2, Stroke, Vec2};
+use egui::{Stroke, Vec2};
 use log::{trace, warn};
 use serde::{Deserialize, Serialize};
 
@@ -16,8 +13,8 @@ use crate::{
             ProjectData,
             connection::{Connection, Type as ConnectionType},
         },
-        schematic_connector::{AsConnector, right_angle::RightAngle},
-        schematic_symbol::{ConnectionDirection, SchematicRepresentation as _},
+        schematic_connector::{AsConnector, ConnectionPoint, right_angle::RightAngle},
+        schematic_symbol::SchematicRepresentation as _,
         unit_helper::length::Length,
         util_types::{IECCodes, LineStyle, PhysicalLocation, UserFields},
     },
@@ -47,13 +44,13 @@ pub struct Wire {
     pub user_fields: Option<UserFields>,
     /// Pathway containing instance.
     pub pathway: Option<String>,
-    /// One end of `Wire` / Cable.
+    /// An optional single pin connector on one end of this `Wire`.
     pub end1_connector_type: Option<String>,
-    /// The other end of `Wire`.
+    /// An optional single pin connector on the other end of this `Wire`.
     pub end2_connector_type: Option<String>,
     /// Styling info for the connector that represents this wire.
     #[serde(skip)]
-    line_style: LineStyle,
+    pub(crate) line_style: LineStyle,
     /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
@@ -63,8 +60,8 @@ impl AsConnector for Wire {
     type Output = RightAngle;
     #[inline]
     fn as_connector(&self, id: String, project_data: &Project) -> Result<RightAngle, GUIRenderingError> {
-        let mut end1: (Pos2, HashSet<ConnectionDirection>) = (Pos2::ZERO, HashSet::from([ConnectionDirection::NONE]));
-        let mut end2: (Pos2, HashSet<ConnectionDirection>) = (Pos2::ZERO, HashSet::from([ConnectionDirection::NONE]));
+        let mut end1: ConnectionPoint = ConnectionPoint::default();
+        let mut end2: ConnectionPoint = ConnectionPoint::default();
 
         let mut wire_connections: Vec<Connection> = Vec::new();
 
@@ -132,7 +129,7 @@ impl AsConnector for Wire {
                                     "allowed_connection_directions: {:?}",
                                     connection_point.allowed_connection_directions
                                 );
-                                end.1 = connection_point.allowed_connection_directions.clone();
+                                end.directions = connection_point.allowed_connection_directions.clone();
 
                                 //TODO: move this to a method on SchematicSymbol
                                 //
@@ -144,7 +141,7 @@ impl AsConnector for Wire {
                                 trace! {"symbol scaled_size: {}", symbol.scaled_size()};
                                 trace! {"end1 connection_point: {connection_point:?}"};
                                 trace! {"end1 connection_point_offset: {connection_point_offset}"};
-                                end.0 = symbol.position
+                                end.position = symbol.position
                                     + Vec2::from((
                                         symbol.scaled_size().x * connection_point.x / 100.0,
                                         symbol.scaled_size().y * connection_point.y / 100.0,
@@ -157,10 +154,8 @@ impl AsConnector for Wire {
                 }
 
                 Ok(RightAngle::new(
-                    end1.0,
-                    end1.1,
-                    end2.0,
-                    end2.1,
+                    end1,
+                    end2,
                     false,
                     Into::<Stroke>::into(self.line_style.clone()),
                 ))

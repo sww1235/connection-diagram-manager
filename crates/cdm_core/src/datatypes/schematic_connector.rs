@@ -1,12 +1,17 @@
 /// Right angle represents a right angle connection.
 pub mod right_angle;
 
+use core::cmp::Ordering;
+use std::collections::HashSet;
+
+use egui::Pos2;
 use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
         library_types::Library,
         project_types::{Project, ProjectData},
+        schematic_symbol::ConnectionDirection,
     },
     error::{Error, GUIRenderingError},
 };
@@ -52,3 +57,46 @@ pub enum Type {
     /// A Connector drawn directly between the two ends.
     Straight,
 }
+
+/// `ConnectionPoint` represents a connection point of a `SchematicConnector`.
+#[non_exhaustive]
+pub struct ConnectionPoint {
+    pub id: String,
+    /// The coordinates of the connection in screen coordinates.
+    pub position: Pos2,
+    /// The allowed directions for `SchematicConnections` to render from this `ConnectionPoint`.
+    pub directions: HashSet<ConnectionDirection>,
+}
+
+impl Default for ConnectionPoint {
+    fn default() -> Self {
+        Self {
+            id: String::new(),
+            position: Pos2::ZERO,
+            directions: HashSet::from([ConnectionDirection::NONE]),
+        }
+    }
+}
+
+impl Ord for ConnectionPoint {
+    fn cmp(&self, other: &Self) -> Ordering {
+        let x_ordering: Ordering = self.position.x.total_cmp(&other.position.x);
+        let y_ordering: Ordering = self.position.y.total_cmp(&other.position.y);
+
+        x_ordering.then(y_ordering)
+    }
+}
+
+impl PartialOrd for ConnectionPoint {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for ConnectionPoint {
+    fn eq(&self, other: &Self) -> bool {
+        self.position == other.position
+    }
+}
+
+impl Eq for ConnectionPoint {}
