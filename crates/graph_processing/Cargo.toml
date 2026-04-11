@@ -4,6 +4,7 @@ version = "0.0.1"
 authors.workspace = true
 edition.workspace = true
 repository.workspace = true
+readme = "README.md"
 description = "Graph Layout and Processing Library"
 keywords = ["Graph", "Layout", "Routing", "Crossing"]
 categories = ["Algorithms"]

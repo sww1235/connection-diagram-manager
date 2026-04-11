@@ -68,16 +68,16 @@ impl Graph {
         // the entries in visited_list are the indexes of nodes in self.nodes
         let mut visited_list = Vec::new();
         if let Some(node) = self.nodes.first() {
-            self.depth_first_search_inner(Rc::clone(node), &mut visited_list);
+            Self::depth_first_search_inner(&Rc::clone(node), &mut visited_list);
         }
     }
 
     /// Recursive inner function in depth first search algorithm.
-    fn depth_first_search_inner(&self, node: Rc<RefCell<Node>>, visited_list: &mut Vec<Rc<RefCell<Node>>>) {
-        visited_list.push(Rc::clone(&node));
+    fn depth_first_search_inner(node: &Rc<RefCell<Node>>, visited_list: &mut Vec<Rc<RefCell<Node>>>) {
+        visited_list.push(Rc::clone(node));
         for edge in &node.borrow().edges {
             if !visited_list.contains(&edge.destination) {
-                self.depth_first_search_inner(Rc::clone(&edge.destination), visited_list);
+                Self::depth_first_search_inner(&Rc::clone(&edge.destination), visited_list);
             }
         }
     }
