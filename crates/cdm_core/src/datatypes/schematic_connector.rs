@@ -29,14 +29,14 @@ where Self: ProjectData
     /// checked at the core level.
     fn as_connector(&self, id: String, project_data: &Project) -> Result<Self::Output, GUIRenderingError>;
 
-    /// Updates the styling embedded in `Self` from its library representation.
+    /// Updates the data embedded in `Self` from its library representation.
     ///
     /// # Errors
     ///
     /// Shall error if the id of `&self.entity_type` is not found in the provided library or other
     /// implementation specific errors.
     #[expect(clippy::result_large_err, reason = "Using main Error type")]
-    fn update_styling_from_library(&mut self, library: &Library) -> Result<(), Error>;
+    fn update_data_from_library(&mut self, library: &Library) -> Result<(), Error>;
 }
 
 /// Marker trait for the various types of `SchematicConnectors`.

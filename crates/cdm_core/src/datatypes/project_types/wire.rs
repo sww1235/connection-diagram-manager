@@ -63,8 +63,6 @@ impl AsConnector for Wire {
     type Output = RightAngle;
     #[inline]
     fn as_connector(&self, id: String, project_data: &Project) -> Result<RightAngle, GUIRenderingError> {
-        //TODO: constrain end1/end2 to ui area, and to their respective endpoint
-        //positions. Look at percentage math
         let mut end1: (Pos2, HashSet<ConnectionDirection>) = (Pos2::ZERO, HashSet::from([ConnectionDirection::NONE]));
         let mut end2: (Pos2, HashSet<ConnectionDirection>) = (Pos2::ZERO, HashSet::from([ConnectionDirection::NONE]));
 
@@ -179,7 +177,7 @@ impl AsConnector for Wire {
     }
 
     #[inline]
-    fn update_styling_from_library(&mut self, library: &Library) -> Result<(), Error> {
+    fn update_data_from_library(&mut self, library: &Library) -> Result<(), Error> {
         let wire_type = library.wire_types.get(&self.wire_type).ok_or(LibraryError::ValueNotFound {
             id: self.wire_type.clone(),
             found_in: format!("wire instance {}", self.identifier).to_owned(),

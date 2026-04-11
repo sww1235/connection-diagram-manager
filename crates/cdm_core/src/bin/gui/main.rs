@@ -63,15 +63,17 @@ fn main() -> anyhow::Result<()> {
     //need to take place, then this could get messy
     let project_data_reference = project_data.clone();
 
-    // Update data in schematic symbols on equipment
-    for (id, equipment_instance) in &mut project_data.equipment {
         // TODO: provide config option for symbol selector
+    for (id, equipment_instance) in &mut project_data.equipment {
+        // Update schematic symbols on equipment from their library values.
         equipment_instance.update_schematic_symbol_from_library(&library_data, None, id.clone())?;
+        // Update data in schematic symbols on equipment from their project values.
         equipment_instance.update_symbol_data(&library_data, &project_data_reference)?;
     }
 
+    // Update styling info on wires from their library values
     for wire in project_data.wires.values_mut() {
-        wire.update_styling_from_library(&library_data)?;
+        wire.update_data_from_library(&library_data)?;
     }
 
     let mut gui_conf: mqConf = app_config.clone().graphics_config.into();
