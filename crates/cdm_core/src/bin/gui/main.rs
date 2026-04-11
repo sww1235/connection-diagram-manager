@@ -5,7 +5,11 @@
 //TODO: add cfg(feature = "gui") in library where appropriate
 
 //#[cfg(feature = "gui")]
-use cdm_core::{bin_logic, datatypes, datatypes::schematic_symbol::SchematicRepresentation as _};
+use cdm_core::{
+    bin_logic,
+    datatypes,
+    datatypes::{schematic_connector::AsConnector as _, schematic_symbol::SchematicRepresentation as _},
+};
 use itertools::Itertools as _;
 use log::debug;
 use miniquad::{self as mq, conf::Conf as mqConf};
@@ -64,6 +68,10 @@ fn main() -> anyhow::Result<()> {
         // TODO: provide config option for symbol selector
         equipment_instance.update_schematic_symbol_from_library(&library_data, None, id.clone())?;
         equipment_instance.update_symbol_data(&library_data, &project_data_reference)?;
+    }
+
+    for wire in project_data.wires.values_mut() {
+        wire.update_styling_from_library(&library_data)?;
     }
 
     let mut gui_conf: mqConf = app_config.clone().graphics_config.into();

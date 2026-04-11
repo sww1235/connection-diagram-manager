@@ -1,3 +1,4 @@
+use egui::Stroke;
 use num_rational::Rational64;
 use serde::{Deserialize, Serialize};
 
@@ -50,20 +51,43 @@ pub struct Dimension {
     pub diameter: Option<Length>,
 }
 
-//TODO: make defaults for these part of application and project configuration file
 /// Style information for linear items.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct LineStyle {
     /// Primary `Color` of line.
-    pub color: Option<Color>,
+    pub color: Color,
     /// Secondary `Color` of line.
     pub secondary_color: Option<Color>,
     /// Thickness or width of line.
-    pub line_thickness: Option<Length>,
+    pub line_thickness: f32,
     /// array of lengths/percentages of dashes and gaps
     /// uses same specification as SVG stroke-dasharray field.
     pub line_appearance: Option<Vec<u64>>,
+}
+
+//TODO: make defaults for these part of application and project configuration file
+impl Default for LineStyle {
+    #[inline]
+    fn default() -> Self {
+        Self {
+            color: Color::RED,
+            secondary_color: None,
+            line_thickness: 4.0,
+            line_appearance: None,
+        }
+    }
+}
+
+//TODO: figure out how to handle secondary colors and dashed lines
+impl From<LineStyle> for Stroke {
+    #[inline]
+    fn from(value: LineStyle) -> Self {
+        Self {
+            width: value.line_thickness,
+            color: value.color.into(),
+        }
+    }
 }
 
 /// Style information for symbols.

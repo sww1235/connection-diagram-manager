@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
+        library_types::Library,
         project_types::{
             Project,
             ProjectData,
@@ -18,9 +19,9 @@ use crate::{
         schematic_connector::{AsConnector, right_angle::RightAngle},
         schematic_symbol::{ConnectionDirection, SchematicRepresentation as _},
         unit_helper::length::Length,
-        util_types::{IECCodes, PhysicalLocation, UserFields},
+        util_types::{IECCodes, LineStyle, PhysicalLocation, UserFields},
     },
-    error::GUIRenderingError,
+    error::{Error, GUIRenderingError, LibraryError},
     traits::FromFile,
 };
 
@@ -33,7 +34,7 @@ pub struct Wire {
     pub wire_type: String,
     /// The structured name of the `Wire` instance. This can be used as a wire number or other
     /// identifier.
-    pub identifier: Option<String>,
+    pub identifier: String,
     /// Optional description.
     pub description: Option<String>,
     /// length of wire.
@@ -50,6 +51,9 @@ pub struct Wire {
     pub end1_connector_type: Option<String>,
     /// The other end of `Wire`.
     pub end2_connector_type: Option<String>,
+    /// Styling info for the connector that represents this wire.
+    #[serde(skip)]
+    line_style: LineStyle,
     /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
@@ -154,12 +158,14 @@ impl AsConnector for Wire {
                     }
                 }
 
-                let stroke = Stroke {
-                    width: 4.0,
-                    color: Color32::RED,
-                };
-
-                Ok(RightAngle::new(end1.0, end1.1, end2.0, end2.1, false, stroke))
+                Ok(RightAngle::new(
+                    end1.0,
+                    end1.1,
+                    end2.0,
+                    end2.1,
+                    false,
+                    Into::<Stroke>::into(self.line_style.clone()),
+                ))
             }
             Ordering::Greater => Err(GUIRenderingError::IncorrectNumberOfConnectionsDefined {
                 comparison: "Greater".to_owned(),
@@ -170,6 +176,18 @@ impl AsConnector for Wire {
                 affected_entity: format!("{self:?}"),
             }),
         }
+    }
+
+    #[inline]
+    fn update_styling_from_library(&mut self, library: &Library) -> Result<(), Error> {
+        let wire_type = library.wire_types.get(&self.wire_type).ok_or(LibraryError::ValueNotFound {
+            id: self.wire_type.clone(),
+            found_in: format!("wire instance {}", self.identifier).to_owned(),
+            library_type: "Wire Type".to_owned(),
+        })?;
+
+        self.line_style = wire_type.line_style.clone();
+        Ok(())
     }
 }
 

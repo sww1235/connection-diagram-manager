@@ -58,7 +58,8 @@ pub struct WireType {
     /// Secondary Insulation Color.
     pub secondary_insulation_color: Option<Color>,
     /// Appearance in schematics.
-    pub line_style: Option<LineStyle>,
+    #[serde(default)]
+    pub line_style: LineStyle,
     /// If `WireType` is stranded.
     pub stranded: bool,
     /// How many strands is conductor made of.

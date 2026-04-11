@@ -102,7 +102,7 @@ impl SchematicRepresentation for Equipment {
         }
     }
 
-    #[inline(never)]
+    #[inline]
     fn update_schematic_symbol_from_library(
         &mut self,
         library: &Library,
@@ -329,7 +329,7 @@ impl SchematicRepresentation for Equipment {
                                     }
                                     //TODO: need to figure out cables here
                                     "data-connection-point-wire-identifier" => {
-                                        let mut identifier: Option<String> = None;
+                                        let mut identifier: String = String::new();
                                         if let Some(ref connection_point_id_inner) = connection_point_id {
                                             for connection in &project.connections {
                                                 if let ConnectionType::Equipment {
@@ -353,7 +353,7 @@ impl SchematicRepresentation for Equipment {
                                                 }
                                             }
                                         }
-                                        let character_event = WriterEvent::Characters(&identifier.unwrap_or_default());
+                                        let character_event = WriterEvent::Characters(&identifier);
                                         writer.write(character_event)?;
                                     }
                                     "data-connection-point-label" => {

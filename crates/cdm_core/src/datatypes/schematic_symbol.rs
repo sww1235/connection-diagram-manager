@@ -208,7 +208,6 @@ where Self: ProjectData
     /// Set the symbol position in the GUI.
     fn set_symbol_position(&mut self, position: Pos2);
 
-    //TODO: somehow make URI an element of SVG rather than being built in the trait method.
     /// Updates the `schematic_symbol` in `Self` from the options defined in `&self.entity_type`.
     ///
     /// `symbol_selector` selects an alternate symbol. If the variable is
