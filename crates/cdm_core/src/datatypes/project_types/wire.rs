@@ -1,7 +1,7 @@
 use core::cmp::Ordering;
 use std::path::{Path, PathBuf};
 
-use egui::{Stroke, Vec2};
+use egui::Vec2;
 use log::{trace, warn};
 use serde::{Deserialize, Serialize};
 
@@ -153,12 +153,7 @@ impl AsConnector for Wire {
                     }
                 }
 
-                Ok(RightAngle::new(
-                    end1,
-                    end2,
-                    false,
-                    Into::<Stroke>::into(self.line_style.clone()),
-                ))
+                Ok(RightAngle::new(end1, end2, false, self.line_style.clone()))
             }
             Ordering::Greater => Err(GUIRenderingError::IncorrectNumberOfConnectionsDefined {
                 comparison: "Greater".to_owned(),

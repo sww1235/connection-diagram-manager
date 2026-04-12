@@ -5,6 +5,7 @@ use crate::datatypes::{
     color::Color,
     schematic_connector::{ConnectionPoint, SchematicConnector},
     schematic_symbol::ConnectionDirection,
+    util_types::LineStyle,
 };
 
 /// `RightAngle` is a connector that either has a `Z` or `S` shape using right angles or an `L`
@@ -36,7 +37,7 @@ pub struct RightAngle {
     /// Has no effect if opposing directions are specified.
     pub overflow: bool,
     /// The visual appearance of the connector.
-    pub stroke: Stroke,
+    pub line_style: LineStyle,
 }
 
 impl SchematicConnector for RightAngle {}
@@ -49,6 +50,7 @@ impl Widget for &mut RightAngle {
         let painter = ui.painter();
 
         response.sense = sense_settings;
+        //TODO: use painter.add and Shape::dashed_line_with_offset instead if dashed line.
 
         if self.end1.directions.is_subset(&ConnectionDirection::horizontal())
             && self.end2.directions.is_subset(&ConnectionDirection::horizontal())
@@ -57,7 +59,7 @@ impl Widget for &mut RightAngle {
             let end1_midpoint = Pos2::new(self.midpoint.x, self.end1.position.y);
             let end2_midpoint = Pos2::new(self.midpoint.x, self.end2.position.y);
             let line_points: Vec<Pos2> = vec![self.end1.position, end1_midpoint, end2_midpoint, self.end2.position];
-            painter.line(line_points, self.stroke);
+            painter.line(line_points, Into::<Stroke>::into(self.line_style.clone()));
         } else if self.end1.directions.is_subset(&ConnectionDirection::vertical())
             && self.end2.directions.is_subset(&ConnectionDirection::vertical())
         {
@@ -65,7 +67,7 @@ impl Widget for &mut RightAngle {
             let end1_midpoint = Pos2::new(self.end1.position.x, self.midpoint.y);
             let end2_midpoint = Pos2::new(self.end2.position.x, self.midpoint.y);
             let line_points: Vec<Pos2> = vec![self.end1.position, end1_midpoint, end2_midpoint, self.end2.position];
-            painter.line(line_points, self.stroke);
+            painter.line(line_points, Into::<Stroke>::into(self.line_style.clone()));
         } else if self.end1.directions.is_subset(&ConnectionDirection::horizontal())
             && self.end2.directions.is_subset(&ConnectionDirection::vertical())
         {
@@ -85,7 +87,7 @@ impl RightAngle {
     /// Creates a new `RightAngle` connector.
     #[must_use]
     #[inline]
-    pub fn new(end1: ConnectionPoint, end2: ConnectionPoint, overflow: bool, stroke: Stroke) -> Self {
+    pub fn new(end1: ConnectionPoint, end2: ConnectionPoint, overflow: bool, line_style: LineStyle) -> Self {
         let midpoint = if end1.directions.is_subset(&ConnectionDirection::horizontal())
             && end2.directions.is_subset(&ConnectionDirection::horizontal())
         {
@@ -115,7 +117,7 @@ impl RightAngle {
             end2,
             midpoint,
             overflow,
-            stroke,
+            line_style,
         }
     }
 
@@ -140,16 +142,16 @@ impl RightAngle {
         self.midpoint += delta;
     }
 
-    /// Set `Stroke` of Connector.
+    /// Set `LineStyle` of Connector.
     #[inline]
-    pub fn set_stroke(&mut self, stroke: Stroke) {
-        self.stroke = stroke;
+    pub fn set_line_style(&mut self, line_style: LineStyle) {
+        self.line_style = line_style;
     }
 
     /// Set `Color` of `Stroke` of Connector.
     #[inline]
     pub fn set_color(&mut self, color: Color) {
-        self.stroke.color = color.into();
+        self.line_style.color = color;
     }
     /// Return containing `Rect` of Connector.
     #[inline]
