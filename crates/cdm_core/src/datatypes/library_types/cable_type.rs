@@ -78,11 +78,21 @@ pub enum CableCore {
     /// `WireType`.
     ///
     /// If `line_style` is not specified, the `WireType`'s `line_style` will be inheritied.
-    WireType { type_id: String, line_style: Option<LineStyle> },
+    WireType {
+        /// ID of `WireType` that this core is made of.
+        type_id: String,
+        /// `LineStyle` of `WireType`. If `None`, then it will inherit from the parent `CableType`.
+        line_style: Option<LineStyle>,
+    },
     /// `CableType`.
     ///
     /// If `line_style` is not specified, the `CableType`'s `line_style` will be inheritied.
-    CableType { type_id: String, line_style: Option<LineStyle> },
+    CableType {
+        /// ID of `CableType` that this core is made of.
+        type_id: String,
+        /// `LineStyle` of `CableType`. If `None`, then it will inherit from the parent `CableType`.
+        line_style: Option<LineStyle>,
+    },
 }
 
 //TODO: add a way to link 2 cores as a pair within a cable, and specify twisted + parameters
