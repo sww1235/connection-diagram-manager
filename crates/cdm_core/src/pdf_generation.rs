@@ -253,7 +253,7 @@ pub fn render_enclosure(
                         })));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } if project.cables.contains_key(inner_cable_id) => {
                         return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
                             end1: outer_wire_id.clone(),
@@ -307,7 +307,7 @@ pub fn render_enclosure(
                         }));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } => {
                         return Err(Error::from(ProjectError::ValueNotFound {
                             id: inner_cable_id.clone(),
@@ -356,7 +356,7 @@ pub fn render_enclosure(
                     }
                 },
                 ConnectionType::Cable {
-                    cable_id: outer_cable_id,
+                    cable_id: outer_cable_id, core_id: outer_core_id
                 } if project.term_cables.contains_key(outer_cable_id) => match &connection.end2 {
                     ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
                         return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
@@ -369,7 +369,7 @@ pub fn render_enclosure(
                         })));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } if project.cables.contains_key(inner_cable_id) => {
                         return Err(Error::from(ProjectError::from(ConnectionError::SameType {
                             end1: outer_cable_id.clone(),
@@ -411,7 +411,7 @@ pub fn render_enclosure(
                         }));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } => {
                         return Err(Error::from(ProjectError::ValueNotFound {
                             id: inner_cable_id.clone(),
@@ -471,7 +471,7 @@ pub fn render_enclosure(
                         })));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } if project.cables.contains_key(inner_cable_id) => {
                         return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
                             end1: outer_term_cable_id.clone(),
@@ -504,7 +504,7 @@ pub fn render_enclosure(
                         }));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } => {
                         return Err(Error::from(ProjectError::ValueNotFound {
                             id: inner_cable_id.clone(),
@@ -558,7 +558,7 @@ pub fn render_enclosure(
                 } if project.equipment.contains_key(outer_equipment_id) => match &connection.end2 {
                     ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } if project.cables.contains_key(inner_cable_id) => {}
                     ConnectionType::TermCable {
                         cable_id: inner_term_cable_id,
@@ -601,7 +601,7 @@ pub fn render_enclosure(
                         }));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } => {
                         return Err(Error::from(ProjectError::ValueNotFound {
                             id: inner_cable_id.clone(),
@@ -655,7 +655,7 @@ pub fn render_enclosure(
                 } if project.terminal_strips.contains_key(outer_terminal_strip_id) => match &connection.end2 {
                     ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } if project.cables.contains_key(inner_cable_id) => {}
                     ConnectionType::TermCable {
                         cable_id: inner_term_cable_id,
@@ -699,7 +699,7 @@ pub fn render_enclosure(
                         }));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } => {
                         return Err(Error::from(ProjectError::ValueNotFound {
                             id: inner_cable_id.clone(),
@@ -753,7 +753,7 @@ pub fn render_enclosure(
                 } if project.connectors.contains_key(outer_connector_id) => match &connection.end2 {
                     ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } if project.cables.contains_key(inner_cable_id) => {}
                     ConnectionType::TermCable {
                         cable_id: inner_term_cable_id,
@@ -778,7 +778,7 @@ pub fn render_enclosure(
                         }));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } => {
                         return Err(Error::from(ProjectError::ValueNotFound {
                             id: inner_cable_id.clone(),
@@ -834,7 +834,7 @@ pub fn render_enclosure(
                     }));
                 }
                 ConnectionType::Cable {
-                    cable_id: outer_cable_id,
+                    cable_id: outer_cable_id, core_id: outer_core_id
                 } => {
                     return Err(Error::from(ProjectError::ValueNotFound {
                         id: outer_cable_id.clone(),
@@ -1079,7 +1079,7 @@ pub fn render_enclosure_schematic_ladder(
                         })));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } if project.cables.contains_key(inner_cable_id) => {
                         return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
                             end1: outer_wire_id.clone(),
@@ -1133,7 +1133,7 @@ pub fn render_enclosure_schematic_ladder(
                         }));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } => {
                         return Err(Error::from(ProjectError::ValueNotFound {
                             id: inner_cable_id.clone(),
@@ -1182,7 +1182,7 @@ pub fn render_enclosure_schematic_ladder(
                     }
                 },
                 ConnectionType::Cable {
-                    cable_id: outer_cable_id,
+                    cable_id: outer_cable_id, core_id: outer_core_id
                 } if project.term_cables.contains_key(outer_cable_id) => match &connection.end2 {
                     ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
                         return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
@@ -1195,7 +1195,7 @@ pub fn render_enclosure_schematic_ladder(
                         })));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } if project.cables.contains_key(inner_cable_id) => {
                         return Err(Error::from(ProjectError::from(ConnectionError::SameType {
                             end1: outer_cable_id.clone(),
@@ -1237,7 +1237,7 @@ pub fn render_enclosure_schematic_ladder(
                         }));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } => {
                         return Err(Error::from(ProjectError::ValueNotFound {
                             id: inner_cable_id.clone(),
@@ -1297,7 +1297,7 @@ pub fn render_enclosure_schematic_ladder(
                         })));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } if project.cables.contains_key(inner_cable_id) => {
                         return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
                             end1: outer_term_cable_id.clone(),
@@ -1330,7 +1330,7 @@ pub fn render_enclosure_schematic_ladder(
                         }));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } => {
                         return Err(Error::from(ProjectError::ValueNotFound {
                             id: inner_cable_id.clone(),
@@ -1384,7 +1384,7 @@ pub fn render_enclosure_schematic_ladder(
                 } if project.equipment.contains_key(outer_equipment_id) => match &connection.end2 {
                     ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } if project.cables.contains_key(inner_cable_id) => {}
                     ConnectionType::TermCable {
                         cable_id: inner_term_cable_id,
@@ -1427,7 +1427,7 @@ pub fn render_enclosure_schematic_ladder(
                         }));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } => {
                         return Err(Error::from(ProjectError::ValueNotFound {
                             id: inner_cable_id.clone(),
@@ -1481,7 +1481,7 @@ pub fn render_enclosure_schematic_ladder(
                 } if project.terminal_strips.contains_key(outer_terminal_strip_id) => match &connection.end2 {
                     ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } if project.cables.contains_key(inner_cable_id) => {}
                     ConnectionType::TermCable {
                         cable_id: inner_term_cable_id,
@@ -1525,7 +1525,7 @@ pub fn render_enclosure_schematic_ladder(
                         }));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } => {
                         return Err(Error::from(ProjectError::ValueNotFound {
                             id: inner_cable_id.clone(),
@@ -1579,7 +1579,7 @@ pub fn render_enclosure_schematic_ladder(
                 } if project.connectors.contains_key(outer_connector_id) => match &connection.end2 {
                     ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } if project.cables.contains_key(inner_cable_id) => {}
                     ConnectionType::TermCable {
                         cable_id: inner_term_cable_id,
@@ -1604,7 +1604,7 @@ pub fn render_enclosure_schematic_ladder(
                         }));
                     }
                     ConnectionType::Cable {
-                        cable_id: inner_cable_id,
+                        cable_id: inner_cable_id, core_id: inner_core_id
                     } => {
                         return Err(Error::from(ProjectError::ValueNotFound {
                             id: inner_cable_id.clone(),
@@ -1660,7 +1660,7 @@ pub fn render_enclosure_schematic_ladder(
                     }));
                 }
                 ConnectionType::Cable {
-                    cable_id: outer_cable_id,
+                    cable_id: outer_cable_id, core_id: outer_core_id
                 } => {
                     return Err(Error::from(ProjectError::ValueNotFound {
                         id: outer_cable_id.clone(),
