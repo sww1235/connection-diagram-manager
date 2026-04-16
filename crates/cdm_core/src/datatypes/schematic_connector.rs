@@ -1,14 +1,21 @@
-/// Right angle represents a right angle connection.
+/// `multi_right_angle` represents a right angle connection where each end can split off and have
+/// many separate connection points.
+///
+/// Mainly used for cables.
+pub mod multi_right_angle;
+/// `right_angle` represents a right angle connection between two connection points.
 pub mod right_angle;
 
-use core::cmp::Ordering;
 use std::collections::HashSet;
 
-use egui::Pos2;
+use std::any::Any;
+
+use egui::{Color32, Pos2, Rect, Sense, Ui, Vec2, response::Response, widgets::Widget};
 use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
+        color::Color,
         library_types::Library,
         project_types::{Project, ProjectData},
         schematic_symbol::ConnectionDirection,
@@ -45,58 +52,98 @@ where Self: ProjectData
 }
 
 /// Marker trait for the various types of `SchematicConnectors`.
-pub trait SchematicConnector {}
+pub trait SchematicConnector: Widget {}
 
 /// `SchematicConnector Type`.
 #[non_exhaustive]
 #[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
-pub enum Type {
+pub enum TypeFlag {
     /// A Connector drawn at right angles.
     #[default]
     RightAngle,
     /// A Connector drawn directly between the two ends.
     Straight,
 }
+/// An enum to allow storing different `SchematicConnector`s in one `Vec`.
+#[non_exhaustive]
+pub(crate) enum ConnectorType {
+    /// `RightAngle` contains a `RightAngle` connector.
+    RightAngle(right_angle::RightAngle),
+    /// `MultiRightAngle` contains a `MultiRightAngle` connector.
+    MultiRightAngle(multi_right_angle::MultiRightAngle),
+
+}
+
 
 /// `ConnectionPoint` represents a connection point of a `SchematicConnector`.
 #[non_exhaustive]
+#[derive(Debug, PartialEq, Clone)]
 pub struct ConnectionPoint {
+    /// ID of `ConnectionPoint`. Should be unique within a `SchematicSymbol`.
     pub id: String,
     /// The coordinates of the connection in screen coordinates.
     pub position: Pos2,
     /// The allowed directions for `SchematicConnections` to render from this `ConnectionPoint`.
     pub directions: HashSet<ConnectionDirection>,
+    /// Radius of the circle representing this `ConnectionPoint`.
+    pub radius: f32,
+    /// Fill color.
+    pub color: Color,
 }
 
 impl Default for ConnectionPoint {
+    #[inline]
     fn default() -> Self {
         Self {
             id: String::new(),
             position: Pos2::ZERO,
             directions: HashSet::from([ConnectionDirection::NONE]),
+            radius: 1.0,
+            color: Color::RED,
         }
     }
 }
 
-impl Ord for ConnectionPoint {
-    fn cmp(&self, other: &Self) -> Ordering {
-        let x_ordering: Ordering = self.position.x.total_cmp(&other.position.x);
-        let y_ordering: Ordering = self.position.y.total_cmp(&other.position.y);
+impl ConnectionPoint {
+    /// Creates a new `ConnectionPoint`.
+    #[must_use]
+    #[inline]
+    pub fn new(id: &str, position: Pos2, directions: HashSet<ConnectionDirection>, radius: f32, color: Color) -> Self {
+        Self {
+            id: id.to_owned(),
+            position,
+            directions,
+            radius,
+            color,
+        }
+    }
 
-        x_ordering.then(y_ordering)
+    /// Return containing `Rect` of `ConnectionPoint`.
+    #[must_use]
+    #[inline]
+    pub fn containing_rect(&self) -> Rect {
+        Rect::from_center_size(self.position, Vec2::new(0.0, self.radius))
+    }
+
+    /// Move position of `ConnectionPoint`.
+    #[inline]
+    #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
+    pub fn move_connection_point(&mut self, delta: Vec2) {
+        self.position += delta;
     }
 }
 
-impl PartialOrd for ConnectionPoint {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
+impl Widget for &mut ConnectionPoint {
+    #[inline]
+    fn ui(self, ui: &mut Ui) -> Response {
+        let sense_settings = Sense::click_and_drag();
+        let mut response = ui.response();
+        let painter = ui.painter();
+
+        response.sense = sense_settings;
+
+        painter.circle_filled(self.position, self.radius, Into::<Color32>::into(self.color.clone()));
+
+        response
     }
 }
-
-impl PartialEq for ConnectionPoint {
-    fn eq(&self, other: &Self) -> bool {
-        self.position == other.position
-    }
-}
-
-impl Eq for ConnectionPoint {}
