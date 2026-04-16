@@ -127,6 +127,28 @@ impl RightAngle {
         self.end1.position = end1;
         self.end2.position = end2;
     }
+    /// Set end1 position of Connector.
+    #[inline]
+    pub fn set_end1_position(&mut self, end1: Pos2) {
+        self.end1.position = end1;
+    }
+    /// Set end2 position of Connector.
+    #[inline]
+    pub fn set_end2_position(&mut self, end2: Pos2) {
+        self.end2.position = end2;
+    }
+    /// Move end1 position of Connector.
+    #[inline]
+    #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
+    pub fn move_end1_position(&mut self, delta: Vec2) {
+        self.end1.position += delta;
+    }
+    /// Move end2 position of Connector.
+    #[inline]
+    #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
+    pub fn move_end2_position(&mut self, delta: Vec2) {
+        self.end2.position += delta;
+    }
     //TODO: add overflow logic here
     /// Set midpoint position for Connector.
     #[inline]

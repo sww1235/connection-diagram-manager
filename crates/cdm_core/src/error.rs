@@ -116,8 +116,11 @@ pub enum LibraryError {
     /// `WireTypeError` are errors resulting from functions specific to `WireType`s.
     #[error(transparent)]
     WireTypeError(#[from] WireTypeError),
+    /// `CableTypeError` are errors resulting from functions specific to `CableType`s.
+    #[error(transparent)]
+    CableTypeError(#[from] CableTypeError),
 }
-/// `WireTypeError` are errors resulting from functions specific to `WireType`s.
+/// `WireTypeError`s are errors resulting from functions specific to `WireType`s.
 #[derive(Debug, Error)]
 #[non_exhaustive]
 #[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
@@ -125,6 +128,16 @@ pub enum WireTypeError {
     /// This error is used when failing to calculate Overall Cross Sectional Area.
     #[error("Overall Cross Seectional Area calculation failed due to {0}")]
     UnableToCalculateOverallCrossSectionalArea(String),
+}
+
+/// `CableTypeError`s are errors resulting from functions specifc to `CableType`s.
+#[derive(Debug, Error)]
+#[non_exhaustive]
+#[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
+pub enum CableTypeError {
+    /// No Cores found in `CableType`.
+    #[error("There were no cores found in this CableType: {0}")]
+    NoCores(String),
 }
 
 /// `ProjectError` is the list of errors that can occur within code related to `Project` data,

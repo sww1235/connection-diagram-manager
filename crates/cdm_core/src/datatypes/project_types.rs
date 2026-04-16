@@ -29,7 +29,7 @@ use std::{
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    datatypes::{library_types::Library, project_types::terminal_strip::TermAccy, schematic_connector::Type as SCType},
+    datatypes::{library_types::Library, project_types::terminal_strip::TermAccy, schematic_connector::TypeFlag as SCType},
     error::{Error, LibraryError, ProjectError},
     traits::FromFile as _,
     util_functions,

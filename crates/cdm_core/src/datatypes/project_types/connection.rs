@@ -30,6 +30,19 @@ pub enum Type {
     Cable {
         /// ID of [`Cable`] instance in [`Project`] hashmap.
         cable_id: String,
+        /// ID of `CableCore` generated in `update_data_from_library()`.
+        ///
+        /// This is a `.` separated sequence of strings, starting with the ID of the outermost core
+        /// in the `CableType` (All root cores in a `CableType` have a unique key).
+        ///
+        /// If the `CableCore` is `WireType`, then the ID will be the ID of the core in the
+        /// `CableType`.
+        ///
+        /// If the `CableCore` is `CableType`, then the outer/super ID will be the ID of the core in the
+        /// `CableType`. The IDs of the inner cores will be appended to the ID of the outer/super core
+        /// with a `.`. This will recurse to as many cores as you need to define in a cable, or until
+        /// the program runs out of memory.
+        core_id: String,
     },
     //TODO: which cable core? Or should this be connector based?
     /// A [`TermCable`].

@@ -3,7 +3,7 @@ use cdm_core::{
     datatypes::{
         library_types::Library,
         project_types::Project,
-        schematic_connector::{AsConnector as _, Type as SCType},
+        schematic_connector::{AsConnector as _, TypeFlag as SCType},
         schematic_symbol::SchematicRepresentation as _,
     },
 };
@@ -86,12 +86,16 @@ pub(crate) fn main_window(
                     //
                     //trace!("{response:?}");
                     if response.hovered() {
-                        // This should be CursorIcon::Grab but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
+                        // This should be CursorIcon::Grab but it is not implemented yet.
+                        // See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
+
                         ui.output_mut(|output| output.cursor_icon = CursorIcon::PointingHand);
                     }
 
                     if response.dragged() {
-                        // This should be CursorIcon::Grabbing but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
+                        // This should be CursorIcon::Grabbing but it is not implemented yet.
+                        // See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
+
                         ui.output_mut(|output| output.cursor_icon = CursorIcon::Move);
                         trace!("symbol dragged");
 
@@ -137,7 +141,7 @@ pub(crate) fn main_window(
                                 if response.dragged() {
                                     // This should be CursorIcon::Grabbing but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
                                     ui.output_mut(|output| output.cursor_icon = CursorIcon::Move);
-                                    trace!("symbol dragged");
+                                    trace!("connector for wire {id} dragged");
 
                                     //TODO: add optional hover text. See lines 614-621 of drag_value.rs from egui.
 

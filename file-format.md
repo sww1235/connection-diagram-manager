@@ -1694,6 +1694,23 @@ user9 = "PLACEHOLDER"
 # If only one connection is defined, a log message will be triggered and the connection will not render.
 
 
+# core_id on Cable or TermCable should be populated as follows:
+#
+# It is a `.` separated list of core IDs.
+#
+# The first portion of the id is the core ID of the root Core defined in `CableType`.
+#
+# If the `CableCore` is `WireType`, then the ID will be the ID of the core in the
+# `CableType`.
+#
+# If the `CableCore` is `CableType`, then the outer/super ID will be the ID of the core in the `CableType`.
+# The IDs of the inner cores will be appended to the ID of the outer/super core with a `.`.
+# This will recurse to as many cores as you need to define in a cable, or until the program runs
+# out of memory.
+#
+# This core_id is generated internally in the software, but must be manually created in each connection.
+
+
 
 # Multiple connections to a single connection point on an entity should be
 # avoided for graphical clarity. Up to 3 connections will render clearly as long
@@ -1703,8 +1720,8 @@ user9 = "PLACEHOLDER"
 
 # replace Type with options from the following list:
 # - { Wire = { wire_id = PLACEHOLDER } }
-# - { Cable = { cable_id = PLACEHOLDER } }
-# - { TermCable = { cable_id = PLACEHOLDER } }
+# - { Cable = { cable_id = PLACEHOLDER, core_id = PLACEHOLDER } }
+# - { TermCable = { cable_id = PLACEHOLDER, core_id = PLACEHOLDER } }
 # - { Equipment = { equipment_id = PLACEHOLDER, connection_point_id = PLACEHOLDER } }
 # - { TerminalStrip = { term_strip_id = PLACHOLDER, element_id = PLACEHOLDER } }
 # - { Connector = { connector_id = PLACEHOLDER, pin_id = PLACEHOLDER } }

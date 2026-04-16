@@ -63,6 +63,7 @@ impl AsConnector for Wire {
         let mut end1: ConnectionPoint = ConnectionPoint::default();
         let mut end2: ConnectionPoint = ConnectionPoint::default();
 
+        // In theory this can have more than 2 items in it, but this is checked below.
         let mut wire_connections: Vec<Connection> = Vec::new();
 
         //TODO:
@@ -75,7 +76,7 @@ impl AsConnector for Wire {
 
         for connection in &project_data.connections {
             if connection.end1 == connection.end2 {
-                warn! {"connection: {connection:?} has both ends assigned to the same id."};
+                warn! {"connection: {connection:?} has both ends assigned to the same entity."};
                 continue;
             }
             if let ConnectionType::Wire { wire_id } = &connection.end1
@@ -153,6 +154,7 @@ impl AsConnector for Wire {
                     }
                 }
 
+                //TODO: get overflow parameter from somewhere
                 Ok(RightAngle::new(end1, end2, false, self.line_style.clone()))
             }
             Ordering::Greater => Err(GUIRenderingError::IncorrectNumberOfConnectionsDefined {
