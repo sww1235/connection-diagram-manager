@@ -16,7 +16,13 @@ use crate::{
             connection::{Connection, Type as ConnectionType},
             wire::Wire,
         },
-        schematic_connector::{AsConnector, ConnectionPoint, multi_right_angle::MultiRightAngle, right_angle::RightAngle},
+        schematic_connector::{
+            AsConnector,
+            ConnectionPoint,
+            ConnectorType,
+            multi_right_angle::MultiRightAngle,
+            right_angle::RightAngle,
+        },
         unit_helper::length::Length,
         util_types::{IECCodes, LineStyle, PhysicalLocation, UserFields},
     },
@@ -76,8 +82,8 @@ impl AsConnector for Cable {
     fn as_connector(&self, id: String, project_data: &Project) -> Result<MultiRightAngle, GUIRenderingError> {
         let mut end1_junction: ConnectionPoint = ConnectionPoint::default();
         let mut end2_junction: ConnectionPoint = ConnectionPoint::default();
-        let mut end1_connections: Vec<RightAngle> = Vec::new();
-        let mut end2_connections: Vec<RightAngle> = Vec::new();
+        let mut end1_connections: Vec<ConnectorType> = Vec::new();
+        let mut end2_connections: Vec<ConnectorType> = Vec::new();
 
         let mut end1_cable_connections: Vec<Connection> = Vec::new();
         let mut end2_cable_connections: Vec<Connection> = Vec::new();

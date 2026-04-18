@@ -20,7 +20,7 @@ use egui::{
     epaint::emath::GuiRounding as _,
     style::Visuals,
 };
-use log::{debug, error, trace, warn};
+use log::{debug, error, trace};
 use num_traits::cast::FromPrimitive as _;
 
 use crate::app::{AppState, Commands};

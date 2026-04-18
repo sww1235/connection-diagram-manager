@@ -1,13 +1,11 @@
 use core::iter::chain;
 
 use egui::{CursorIcon, Pos2, Rect, Sense, Ui, Vec2, response::Response, widgets::Widget};
-use log::trace;
-
-use log::warn;
+use log::{trace, warn};
 
 use crate::datatypes::{
     color::Color,
-    schematic_connector::{ConnectionPoint, SchematicConnector, right_angle::RightAngle, ConnectorType},
+    schematic_connector::{ConnectionPoint, ConnectorType, SchematicConnector, right_angle::RightAngle},
     util_types::LineStyle,
 };
 
@@ -105,12 +103,12 @@ impl Widget for &mut MultiRightAngle {
                 // linked to end1_junction.
                 match connection {
                     ConnectorType::RightAngle(ra) => {
-                ra.move_end1_position(drag_delta);
-                }
-                    ConnectorType::MultiRightAngle(mra)=> {
+                        ra.move_end1_position(drag_delta);
+                    }
+                    ConnectorType::MultiRightAngle(mra) => {
                         todo!()
                     }
-                    _ => warn!{"connection type not recognized"}
+                    _ => warn! {"connection type not recognized"},
                 }
             }
         }
@@ -134,20 +132,18 @@ impl Widget for &mut MultiRightAngle {
                 // linked to end2_junction.
                 match connection {
                     ConnectorType::RightAngle(ra) => {
-
-                ra.move_end1_position(drag_delta);
+                        ra.move_end1_position(drag_delta);
                     }
-                    ConnectorType::MultiRightAngle(mra)=> {
+                    ConnectorType::MultiRightAngle(mra) => {
                         todo!()
                     }
-                    _ => warn!{"connection type not recognized"}
+                    _ => warn! {"connection type not recognized"},
                 }
             }
         }
 
-        // Then render all the individual connectors
+        // Then render all the individual connectors for end1
         for connection in &mut self.end1_connections {
-            match connection {
             let inner_response = ui.place(connection.containing_rect(), &mut *connection);
             if inner_response.hovered() {
                 // This should be CursorIcon::Grab but it is not implemented yet.
@@ -162,10 +158,18 @@ impl Widget for &mut MultiRightAngle {
 
                 ui.output_mut(|output| output.cursor_icon = CursorIcon::Move);
 
-                connection.move_midpoint(inner_response.drag_delta());
-            }}
+                match connection {
+                    ConnectorType::RightAngle(ra) => {
+                        ra.move_midpoint(inner_response.drag_delta());
+                    }
+                    ConnectorType::MultiRightAngle(mra) => {
+                        todo!()
+                    }
+                    _ => warn! {"connection type not recognized"},
+                }
+            }
         }
-        // Then render all the individual connectors
+        // Then render all the individual connectors for end2
         for connection in &mut self.end2_connections {
             let inner_response = ui.place(connection.containing_rect(), &mut *connection);
             if inner_response.hovered() {
@@ -181,7 +185,15 @@ impl Widget for &mut MultiRightAngle {
 
                 ui.output_mut(|output| output.cursor_icon = CursorIcon::Move);
 
-                connection.move_midpoint(inner_response.drag_delta());
+                match connection {
+                    ConnectorType::RightAngle(ra) => {
+                        ra.move_midpoint(inner_response.drag_delta());
+                    }
+                    ConnectorType::MultiRightAngle(mra) => {
+                        todo!()
+                    }
+                    _ => warn! {"connection type not recognized"},
+                }
             }
         }
 
@@ -288,7 +300,7 @@ impl MultiRightAngle {
     #[must_use]
     pub fn containing_rect(&self) -> Rect {
         let connector_rects: Vec<Rect> = chain(&self.end1_connections, &self.end2_connections)
-            .map(RightAngle::containing_rect)
+            .map(ConnectorType::containing_rect)
             .collect();
         let mut connection_points: Vec<Pos2> = connector_rects
             .iter()

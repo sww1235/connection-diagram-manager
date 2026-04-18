@@ -8,8 +8,6 @@ pub mod right_angle;
 
 use std::collections::HashSet;
 
-use std::any::Any;
-
 use egui::{Color32, Pos2, Rect, Sense, Ui, Vec2, response::Response, widgets::Widget};
 use serde::{Deserialize, Serialize};
 
@@ -52,7 +50,7 @@ where Self: ProjectData
 }
 
 /// Marker trait for the various types of `SchematicConnectors`.
-pub trait SchematicConnector: Widget {}
+pub trait SchematicConnector {}
 
 /// `SchematicConnector Type`.
 #[non_exhaustive]
@@ -66,14 +64,34 @@ pub enum TypeFlag {
 }
 /// An enum to allow storing different `SchematicConnector`s in one `Vec`.
 #[non_exhaustive]
-pub(crate) enum ConnectorType {
+pub enum ConnectorType {
     /// `RightAngle` contains a `RightAngle` connector.
     RightAngle(right_angle::RightAngle),
     /// `MultiRightAngle` contains a `MultiRightAngle` connector.
     MultiRightAngle(multi_right_angle::MultiRightAngle),
-
 }
 
+impl Widget for &mut ConnectorType {
+    #[inline]
+    fn ui(self, ui: &mut Ui) -> Response {
+        match self {
+            ConnectorType::RightAngle(widget) => widget.ui(ui),
+            ConnectorType::MultiRightAngle(widget) => widget.ui(ui),
+        }
+    }
+}
+
+impl ConnectorType {
+    #[must_use]
+    #[inline]
+    /// Helper method to avoid code duplication.
+    pub fn containing_rect(&self) -> Rect {
+        match self {
+            ConnectorType::RightAngle(ra) => ra.containing_rect(),
+            ConnectorType::MultiRightAngle(mra) => mra.containing_rect(),
+        }
+    }
+}
 
 /// `ConnectionPoint` represents a connection point of a `SchematicConnector`.
 #[non_exhaustive]
