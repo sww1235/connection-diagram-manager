@@ -118,7 +118,7 @@ impl AsConnector for Wire {
                                 equipment_id,
                                 connection_point_id,
                             } => {
-                                trace! {"end1 equipment: {equipment_id}"};
+                                trace! {"end equipment: {equipment_id}"};
                                 #[expect(clippy::get_unwrap, reason = "temporary for testing")]
                                 #[expect(clippy::unwrap_used, reason = "temporary for testing")]
                                 let equipment = project_data.equipment.get(equipment_id).unwrap();
@@ -140,8 +140,8 @@ impl AsConnector for Wire {
                                     symbol.scaled_size().y * (connection_point.y / 100.0),
                                 ));
                                 trace! {"symbol scaled_size: {}", symbol.scaled_size()};
-                                trace! {"end1 connection_point: {connection_point:?}"};
-                                trace! {"end1 connection_point_offset: {connection_point_offset}"};
+                                trace! {"end connection_point: {connection_point:?}"};
+                                trace! {"end connection_point_offset: {connection_point_offset}"};
                                 end.position = symbol.position
                                     + Vec2::from((
                                         symbol.scaled_size().x * connection_point.x / 100.0,

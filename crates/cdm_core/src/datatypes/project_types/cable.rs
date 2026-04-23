@@ -4,6 +4,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use egui::Vec2;
 use log::{trace, warn};
 use serde::{Deserialize, Serialize};
 
@@ -23,6 +24,7 @@ use crate::{
             multi_right_angle::MultiRightAngle,
             right_angle::RightAngle,
         },
+        schematic_symbol::SchematicRepresentation as _,
         unit_helper::length::Length,
         util_types::{IECCodes, LineStyle, PhysicalLocation, UserFields},
     },
@@ -79,9 +81,10 @@ pub(crate) enum CableCore {
 impl AsConnector for Cable {
     type Output = MultiRightAngle;
     #[inline]
+    #[expect(clippy::too_many_lines, reason = "it has lines")]
     fn as_connector(&self, id: String, project_data: &Project) -> Result<MultiRightAngle, GUIRenderingError> {
-        let mut end1_junction: ConnectionPoint = ConnectionPoint::default();
-        let mut end2_junction: ConnectionPoint = ConnectionPoint::default();
+        let end1_junction: ConnectionPoint = ConnectionPoint::default();
+        let end2_junction: ConnectionPoint = ConnectionPoint::default();
         let mut end1_connections: Vec<ConnectorType> = Vec::new();
         let mut end2_connections: Vec<ConnectorType> = Vec::new();
 
@@ -105,6 +108,165 @@ impl AsConnector for Cable {
                 && self.cores.contains_key(core_id)
             {
                 end2_cable_connections.push(connection.clone());
+            }
+        }
+
+        // These are only the cores in this current cable, not the outer cable.
+        for (core_id, core) in &self.cores {
+            match core {
+                CableCore::Wire(wire) => {
+                    // we already know that end1_cable_connections, contains connections with
+                    // reference to cable in end1
+                    for connection in &end1_cable_connections {
+                        #[expect(
+                            clippy::match_same_arms,
+                            reason = "Separating out some match elements makes the code read clearer"
+                        )]
+                        #[expect(clippy::wildcard_enum_match_arm, reason = "code still in development")]
+                        match &connection.end2 {
+                            ConnectionType::Wire { wire_id } if wire_id == core_id => {
+                                //Do nothing.
+                            }
+                            // TODO: wire-wire, wire-cable and wire-term_cable connections
+                            // not defined yet.
+                            ConnectionType::Wire { .. } | ConnectionType::Cable { .. } | ConnectionType::TermCable { .. } => {
+                                //todo!();
+                            }
+
+                            #[expect(clippy::arithmetic_side_effects, reason = "deal with it")]
+                            ConnectionType::Equipment {
+                                equipment_id,
+                                connection_point_id,
+                            } => {
+                                let mut end: ConnectionPoint = ConnectionPoint::default();
+
+                                trace! {"end equipment: {equipment_id}"};
+                                #[expect(clippy::get_unwrap, reason = "temporary for testing")]
+                                #[expect(clippy::unwrap_used, reason = "temporary for testing")]
+                                let equipment = project_data.equipment.get(equipment_id).unwrap();
+                                let symbol = equipment.schematic_symbol();
+                                #[expect(clippy::get_unwrap, reason = "temporary for testing")]
+                                #[expect(clippy::unwrap_used, reason = "temporary for testing")]
+                                let connection_point = symbol.connections.get(connection_point_id).unwrap();
+                                trace!(
+                                    "allowed_connection_directions: {:?}",
+                                    connection_point.allowed_connection_directions
+                                );
+                                end.directions = connection_point.allowed_connection_directions.clone();
+
+                                //TODO: move this to a method on SchematicSymbol
+                                //
+                                //TODO: change connection point to contain a Pos2?
+                                let connection_point_offset = Vec2::from((
+                                    symbol.scaled_size().x * (connection_point.x / 100.0),
+                                    symbol.scaled_size().y * (connection_point.y / 100.0),
+                                ));
+                                trace! {"symbol scaled_size: {}", symbol.scaled_size()};
+                                trace! {"end connection_point: {connection_point:?}"};
+                                trace! {"end connection_point_offset: {connection_point_offset}"};
+                                end.position = symbol.position
+                                    + Vec2::from((
+                                        symbol.scaled_size().x * connection_point.x / 100.0,
+                                        symbol.scaled_size().y * connection_point.y / 100.0,
+                                    ));
+                                end1_connections.push(ConnectorType::RightAngle(RightAngle::new(
+                                    end1_junction.clone(),
+                                    end,
+                                    false,
+                                    self.line_style.clone(),
+                                )));
+                            }
+                            _ => {}
+                        }
+                    }
+                    for connection in &end2_cable_connections {
+                        #[expect(
+                            clippy::match_same_arms,
+                            reason = "Separating out some match elements makes the code read clearer"
+                        )]
+                        #[expect(clippy::wildcard_enum_match_arm, reason = "code still in development")]
+                        match &connection.end1 {
+                            ConnectionType::Wire { wire_id } if wire_id == core_id => {
+                                //Do nothing.
+                            }
+                            // TODO: wire-wire, wire-cable and wire-term_cable connections
+                            // not defined yet.
+                            ConnectionType::Wire { .. } | ConnectionType::Cable { .. } | ConnectionType::TermCable { .. } => {
+                                //todo!();
+                            }
+
+                            #[expect(clippy::arithmetic_side_effects, reason = "deal with it")]
+                            ConnectionType::Equipment {
+                                equipment_id,
+                                connection_point_id,
+                            } => {
+                                let mut end: ConnectionPoint = ConnectionPoint::default();
+
+                                trace! {"end equipment: {equipment_id}"};
+                                #[expect(clippy::get_unwrap, reason = "temporary for testing")]
+                                #[expect(clippy::unwrap_used, reason = "temporary for testing")]
+                                let equipment = project_data.equipment.get(equipment_id).unwrap();
+                                let symbol = equipment.schematic_symbol();
+                                #[expect(clippy::get_unwrap, reason = "temporary for testing")]
+                                #[expect(clippy::unwrap_used, reason = "temporary for testing")]
+                                let connection_point = symbol.connections.get(connection_point_id).unwrap();
+                                trace!(
+                                    "allowed_connection_directions: {:?}",
+                                    connection_point.allowed_connection_directions
+                                );
+                                end.directions = connection_point.allowed_connection_directions.clone();
+
+                                //TODO: move this to a method on SchematicSymbol
+                                //
+                                //TODO: change connection point to contain a Pos2?
+                                let connection_point_offset = Vec2::from((
+                                    symbol.scaled_size().x * (connection_point.x / 100.0),
+                                    symbol.scaled_size().y * (connection_point.y / 100.0),
+                                ));
+                                trace! {"symbol scaled_size: {}", symbol.scaled_size()};
+                                trace! {"end connection_point: {connection_point:?}"};
+                                trace! {"end connection_point_offset: {connection_point_offset}"};
+                                end.position = symbol.position
+                                    + Vec2::from((
+                                        symbol.scaled_size().x * connection_point.x / 100.0,
+                                        symbol.scaled_size().y * connection_point.y / 100.0,
+                                    ));
+                                end2_connections.push(ConnectorType::RightAngle(RightAngle::new(
+                                    end2_junction.clone(),
+                                    end,
+                                    false,
+                                    self.line_style.clone(),
+                                )));
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+
+                CableCore::Cable(cable) => {
+
+                    match cable.cores.len().cmp(&1) {
+                        Ordering::Greater => {
+                            // recursive call to handle inner cables
+                            cable.insert_cores(&core_type.cores, library, super_id.clone())?;
+                            // migrate to trim_prefix() once stablized
+                            // https://github.com/rust-lang/rust/issues/142312
+                            let new_core_id = format!("{}.{id}", super_id.clone().unwrap_or_default());
+                            #[expect(clippy::shadow_reuse, reason = "just stripping a prefix")]
+                            let new_core_id = new_core_id.strip_prefix('.').unwrap_or(&new_core_id).to_owned();
+                            self.cores.insert(new_core_id, CableCore::Cable(cable));
+                        }
+                        Ordering::Equal => {
+                            self.cores.insert(
+                                format!("{}.{id}", super_id.clone().unwrap_or_default()),
+                                CableCore::Cable(cable),
+                            );
+                        }
+                        Ordering::Less => {
+                            return Err(CableTypeError::NoCores(type_id.to_owned()).into());
+                        }
+                    }
+                }
             }
         }
 

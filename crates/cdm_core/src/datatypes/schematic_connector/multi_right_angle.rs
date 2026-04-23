@@ -108,7 +108,6 @@ impl Widget for &mut MultiRightAngle {
                     ConnectorType::MultiRightAngle(mra) => {
                         todo!()
                     }
-                    _ => warn! {"connection type not recognized"},
                 }
             }
         }
@@ -137,7 +136,6 @@ impl Widget for &mut MultiRightAngle {
                     ConnectorType::MultiRightAngle(mra) => {
                         todo!()
                     }
-                    _ => warn! {"connection type not recognized"},
                 }
             }
         }
@@ -165,7 +163,6 @@ impl Widget for &mut MultiRightAngle {
                     ConnectorType::MultiRightAngle(mra) => {
                         todo!()
                     }
-                    _ => warn! {"connection type not recognized"},
                 }
             }
         }
@@ -192,7 +189,6 @@ impl Widget for &mut MultiRightAngle {
                     ConnectorType::MultiRightAngle(mra) => {
                         todo!()
                     }
-                    _ => warn! {"connection type not recognized"},
                 }
             }
         }
