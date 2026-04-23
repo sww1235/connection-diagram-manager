@@ -133,7 +133,7 @@ pub(crate) fn main_window(
                         SCType::RightAngle => {
                             let wire_connector = wire.as_connector(id.to_owned(), project_data);
                             if let Ok(mut wire_connector) = wire_connector {
-                                let response = ui.place(wire_connector.containing_rect(), &mut wire_connector);
+                                let response = ui.place(wire_connector.bounding_rect(), &mut wire_connector);
                                 if response.hovered() {
                                     // This should be CursorIcon::Grab but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
                                     ui.output_mut(|output| output.cursor_icon = CursorIcon::PointingHand);

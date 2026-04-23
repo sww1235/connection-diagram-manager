@@ -40,7 +40,12 @@ pub struct RightAngle {
     pub line_style: LineStyle,
 }
 
-impl SchematicConnector for RightAngle {}
+impl SchematicConnector for RightAngle {
+    #[inline]
+    fn bounding_rect(&self) -> Rect {
+        Rect::from_two_pos(self.end1.position, self.end2.position)
+    }
+}
 
 impl Widget for &mut RightAngle {
     #[inline]
@@ -174,11 +179,5 @@ impl RightAngle {
     #[inline]
     pub fn set_color(&mut self, color: Color) {
         self.line_style.color = color;
-    }
-    /// Return containing `Rect` of Connector.
-    #[inline]
-    #[must_use]
-    pub fn containing_rect(&self) -> Rect {
-        Rect::from_two_pos(self.end1.position, self.end2.position)
     }
 }

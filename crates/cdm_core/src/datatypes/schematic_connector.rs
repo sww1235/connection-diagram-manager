@@ -41,6 +41,8 @@ where Self: ProjectData
 
     /// Updates the data embedded in `Self` from its library representation.
     ///
+    /// Also inserts `SchematicConnector`s as appropriate.
+    ///
     /// # Errors
     ///
     /// Shall error if the id of `&self.entity_type` is not found in the provided library or other
@@ -50,7 +52,13 @@ where Self: ProjectData
 }
 
 /// Marker trait for the various types of `SchematicConnectors`.
-pub trait SchematicConnector {}
+///
+/// Also provides some common methods.
+pub trait SchematicConnector {
+    /// Returns a `Rect` that is the bounding box of this `SchematicConnector`.
+    #[must_use]
+    fn bounding_rect(&self) -> Rect;
+}
 
 /// `SchematicConnector Type`.
 #[non_exhaustive]
@@ -87,8 +95,8 @@ impl ConnectorType {
     /// Helper method to avoid code duplication.
     pub fn containing_rect(&self) -> Rect {
         match self {
-            ConnectorType::RightAngle(ra) => ra.containing_rect(),
-            ConnectorType::MultiRightAngle(mra) => mra.containing_rect(),
+            ConnectorType::RightAngle(ra) => ra.bounding_rect(),
+            ConnectorType::MultiRightAngle(mra) => mra.bounding_rect(),
         }
     }
 }
@@ -136,10 +144,10 @@ impl ConnectionPoint {
         }
     }
 
-    /// Return containing `Rect` of `ConnectionPoint`.
+    /// Returns a `Rect` that is the bounding box of this `ConnectionPoint`.
     #[must_use]
     #[inline]
-    pub fn containing_rect(&self) -> Rect {
+    pub fn bounding_rect(&self) -> Rect {
         Rect::from_center_size(self.position, Vec2::new(0.0, self.radius))
     }
 

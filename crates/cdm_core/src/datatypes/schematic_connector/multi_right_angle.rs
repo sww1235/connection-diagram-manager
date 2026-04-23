@@ -41,7 +41,22 @@ pub struct MultiRightAngle {
     pub line_style: LineStyle,
 }
 
-impl SchematicConnector for MultiRightAngle {}
+impl SchematicConnector for MultiRightAngle {
+    #[inline]
+    fn bounding_rect(&self) -> Rect {
+        let connector_rects: Vec<Rect> = chain(&self.end1_connections, &self.end2_connections)
+            .map(ConnectorType::containing_rect)
+            .collect();
+        let mut connection_points: Vec<Pos2> = connector_rects
+            .iter()
+            .flat_map(|rect| [rect.left_top(), rect.right_bottom()].to_vec())
+            .collect();
+
+        connection_points.push(self.end1_junction.position);
+        connection_points.push(self.end2_junction.position);
+        Rect::from_points(&connection_points)
+    }
+}
 
 impl Widget for &mut MultiRightAngle {
     #[inline]
@@ -62,7 +77,7 @@ impl Widget for &mut MultiRightAngle {
             self.line_style.clone(),
         );
 
-        let main_connector_response = ui.place(main_connector.containing_rect(), &mut main_connector);
+        let main_connector_response = ui.place(main_connector.bounding_rect(), &mut main_connector);
         if main_connector_response.hovered() {
             // This should be CursorIcon::Grab but it is not implemented yet.
             // See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
@@ -80,8 +95,8 @@ impl Widget for &mut MultiRightAngle {
         }
 
         // then render the junctions themselves
-        let end1_junction_response = ui.place(self.end1_junction.containing_rect(), &mut self.end1_junction);
-        let end2_junction_response = ui.place(self.end2_junction.containing_rect(), &mut self.end2_junction);
+        let end1_junction_response = ui.place(self.end1_junction.bounding_rect(), &mut self.end1_junction);
+        let end2_junction_response = ui.place(self.end2_junction.bounding_rect(), &mut self.end2_junction);
 
         if end1_junction_response.hovered() {
             // This should be CursorIcon::Grab but it is not implemented yet.
@@ -290,21 +305,5 @@ impl MultiRightAngle {
     #[inline]
     pub fn set_color(&mut self, color: Color) {
         self.line_style.color = color;
-    }
-    /// Return containing `Rect` of Connector.
-    #[inline]
-    #[must_use]
-    pub fn containing_rect(&self) -> Rect {
-        let connector_rects: Vec<Rect> = chain(&self.end1_connections, &self.end2_connections)
-            .map(ConnectorType::containing_rect)
-            .collect();
-        let mut connection_points: Vec<Pos2> = connector_rects
-            .iter()
-            .flat_map(|rect| [rect.left_top(), rect.right_bottom()].to_vec())
-            .collect();
-
-        connection_points.push(self.end1_junction.position);
-        connection_points.push(self.end2_junction.position);
-        Rect::from_points(&connection_points)
     }
 }
