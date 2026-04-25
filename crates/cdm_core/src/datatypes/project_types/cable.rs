@@ -58,6 +58,9 @@ pub struct Cable {
     /// Key of map is identifier of core within cable, and is unique within each cable.
     #[serde(skip)]
     pub(crate) cores: BTreeMap<String, CableCore>,
+    /// The schematic representation of this cable.
+    #[serde(skip)]
+    pub(crate) connector: Option<ConnectorType>,
     /// The `LineStyle` of this cable. Initially copied from the `CableType`.
     #[serde(skip)]
     pub(crate) line_style: LineStyle,
@@ -244,28 +247,23 @@ impl AsConnector for Cable {
                 }
 
                 CableCore::Cable(cable) => {
+                    //match cable.cores.len().cmp(&1) {
+                    //    Ordering::Greater => {
+                    //        // recursive call to handle inner cables
 
-                    match cable.cores.len().cmp(&1) {
-                        Ordering::Greater => {
-                            // recursive call to handle inner cables
-                            cable.insert_cores(&core_type.cores, library, super_id.clone())?;
-                            // migrate to trim_prefix() once stablized
-                            // https://github.com/rust-lang/rust/issues/142312
-                            let new_core_id = format!("{}.{id}", super_id.clone().unwrap_or_default());
-                            #[expect(clippy::shadow_reuse, reason = "just stripping a prefix")]
-                            let new_core_id = new_core_id.strip_prefix('.').unwrap_or(&new_core_id).to_owned();
-                            self.cores.insert(new_core_id, CableCore::Cable(cable));
-                        }
-                        Ordering::Equal => {
-                            self.cores.insert(
-                                format!("{}.{id}", super_id.clone().unwrap_or_default()),
-                                CableCore::Cable(cable),
-                            );
-                        }
-                        Ordering::Less => {
-                            return Err(CableTypeError::NoCores(type_id.to_owned()).into());
-                        }
-                    }
+                    //        // migrate to trim_prefix() once stablized
+                    //        // https://github.com/rust-lang/rust/issues/142312
+                    //    }
+                    //    Ordering::Equal => {
+                    //        self.cores.insert(
+                    //            format!("{}.{id}", super_id.clone().unwrap_or_default()),
+                    //            CableCore::Cable(cable),
+                    //        );
+                    //    }
+                    //    Ordering::Less => {
+                    //        return Err(CableTypeError::NoCores(type_id.to_owned()).into());
+                    //    }
+                    //}
                 }
             }
         }
@@ -295,6 +293,31 @@ impl AsConnector for Cable {
         self.cores = BTreeMap::new();
 
         self.insert_cores(&cable_type.cores, library, None)?;
+
+        match self.cores.len().cmp(&1) {
+            Ordering::Equal => {
+                self.connector = Some(ConnectorType::RightAngle(RightAngle::new(
+                    ConnectionPoint::default(),
+                    ConnectionPoint::default(),
+                    false,
+                    self.line_style.clone(),
+                )));
+            }
+            Ordering::Less => {
+                return Err(CableTypeError::NoCores(self.cable_type.to_owned())).map_err(LibraryError::from)?;
+            }
+            Ordering::Greater => {
+                self.connector = Some(ConnectorType::MultiRightAngle(MultiRightAngle::new(
+                    ConnectionPoint::default(),
+                    Vec::new(),
+                    ConnectionPoint::default(),
+                    Vec::new(),
+                    false,
+                    self.line_style.clone(),
+                )));
+            }
+        }
+
         Ok(())
     }
 }
@@ -345,6 +368,12 @@ impl Cable {
                             end1_connector_type: None,
                             end2_connector_type: None,
                             line_style: line_style.clone().unwrap_or(core_type.line_style.clone()),
+                            connector: Some(ConnectorType::RightAngle(RightAngle::new(
+                                ConnectionPoint::default(),
+                                ConnectionPoint::default(),
+                                false,
+                                line_style.clone().unwrap_or(core_type.line_style.clone()),
+                            ))),
                             contained_datafile_path: self.contained_datafile_path.clone(),
                         }),
                     );
@@ -369,6 +398,7 @@ impl Cable {
                         cores: BTreeMap::new(),
                         layers: core_type.layers.clone(),
                         line_style: line_style.clone().unwrap_or(core_type.line_style.clone()),
+                        connector: None,
                         contained_datafile_path: self.contained_datafile_path.clone(),
                     };
                     match core_type.cores.len().cmp(&1) {
@@ -381,12 +411,26 @@ impl Cable {
                             #[expect(clippy::shadow_reuse, reason = "just stripping a prefix")]
                             let new_core_id = new_core_id.strip_prefix('.').unwrap_or(&new_core_id).to_owned();
                             self.cores.insert(new_core_id, CableCore::Cable(cable));
+                            self.connector = Some(ConnectorType::MultiRightAngle(MultiRightAngle::new(
+                                ConnectionPoint::default(),
+                                Vec::new(),
+                                ConnectionPoint::default(),
+                                Vec::new(),
+                                false,
+                                self.line_style.clone(),
+                            )));
                         }
                         Ordering::Equal => {
                             self.cores.insert(
                                 format!("{}.{id}", super_id.clone().unwrap_or_default()),
                                 CableCore::Cable(cable),
                             );
+                            self.connector = Some(ConnectorType::RightAngle(RightAngle::new(
+                                ConnectionPoint::default(),
+                                ConnectionPoint::default(),
+                                false,
+                                self.line_style.clone(),
+                            )));
                         }
                         Ordering::Less => {
                             return Err(CableTypeError::NoCores(type_id.to_owned()).into());

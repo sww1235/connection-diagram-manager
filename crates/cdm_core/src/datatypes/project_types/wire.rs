@@ -13,7 +13,7 @@ use crate::{
             ProjectData,
             connection::{Connection, Type as ConnectionType},
         },
-        schematic_connector::{AsConnector, ConnectionPoint, right_angle::RightAngle},
+        schematic_connector::{AsConnector, ConnectionPoint, ConnectorType, right_angle::RightAngle},
         schematic_symbol::SchematicRepresentation as _,
         unit_helper::length::Length,
         util_types::{IECCodes, LineStyle, PhysicalLocation, UserFields},
@@ -51,6 +51,9 @@ pub struct Wire {
     /// Styling info for the connector that represents this wire.
     #[serde(skip)]
     pub(crate) line_style: LineStyle,
+    /// The schematic representation of this wire.
+    #[serde(skip)]
+    pub(crate) connector: Option<ConnectorType>,
     /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
@@ -177,6 +180,15 @@ impl AsConnector for Wire {
         })?;
 
         self.line_style = wire_type.line_style.clone();
+
+        let end1: ConnectionPoint = ConnectionPoint::default();
+        let end2: ConnectionPoint = ConnectionPoint::default();
+        self.connector = Some(ConnectorType::RightAngle(RightAngle::new(
+            end1,
+            end2,
+            false,
+            self.line_style.clone(),
+        )));
         Ok(())
     }
 }

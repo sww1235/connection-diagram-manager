@@ -72,6 +72,7 @@ pub enum TypeFlag {
 }
 /// An enum to allow storing different `SchematicConnector`s in one `Vec`.
 #[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
 pub enum ConnectorType {
     /// `RightAngle` contains a `RightAngle` connector.
     RightAngle(right_angle::RightAngle),

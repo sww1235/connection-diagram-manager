@@ -25,6 +25,7 @@ use crate::datatypes::{
 /// `ConnectionDirection`, then the connection will render as a right angled line, with one
 /// horizontal and one vertical line. Which is which will depend on the `end_direction`.
 #[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
 pub struct RightAngle {
     /// One end of the connection.
     pub end1: ConnectionPoint,

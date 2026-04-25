@@ -18,6 +18,7 @@ use crate::datatypes::{
 /// The main connector follows the same rules as `RightAngle` for directionality, as do all the
 /// sub-connectors.
 #[non_exhaustive]
+#[derive(Debug, Clone, PartialEq)]
 pub struct MultiRightAngle {
     /// The split point of one end of the connection in screen coordinates.
     pub end1_junction: ConnectionPoint,
