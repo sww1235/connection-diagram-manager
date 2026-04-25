@@ -3,7 +3,7 @@ use cdm_core::{
     datatypes::{
         library_types::Library,
         project_types::Project,
-        schematic_connector::{AsConnector as _, TypeFlag as SCType},
+        schematic_connector::{AsConnector as _, SchematicConnector as _, TypeFlag as SCType},
         schematic_symbol::SchematicRepresentation as _,
     },
 };
@@ -73,15 +73,14 @@ pub(crate) fn main_window(
                     #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
                     let max_rect_position = panel_rect.right_bottom() - symbol_size;
                     let rect_position = equipment
-                        .schematic_symbol()
-                        .position
+                        .symbol_position()
                         .clamp(min_rect_position, max_rect_position)
                         .round_ui();
                     trace! {"min_postion: {rect_position}"}
                     let rect = Rect::from_min_size(rect_position, symbol_size);
                     trace!("rect: {rect:?}");
                     equipment.set_symbol_position(rect_position.clamp(min_rect_position, max_rect_position).round_ui());
-                    let response = ui.place(rect, &mut equipment.schematic_symbol());
+                    let response = ui.place(rect, equipment.schematic_symbol_mut());
                     // from https://github.com/emilk/egui/discussions/1926#discussioncomment-3414942
                     //
                     //trace!("{response:?}");

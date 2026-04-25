@@ -196,17 +196,23 @@ impl fmt::Display for ConnectionDirection {
 pub trait SchematicRepresentation
 where Self: ProjectData
 {
-    /// Returns the SVG `schematic_symbol` of the entity and a URI used in rendering code.
+    /// Returns a copy of the `SchematicSymbol` of the entity.
     ///
     /// If `schematic_symbol` is `None` then this shall return a placeholder warning graphic
-    /// instead.
+    /// instead. This placeholder graphic is `Svg::default()`.
     fn schematic_symbol(&self) -> SchematicSymbol;
+
+    /// Returns a mutable reference to the `SchematicSymbol` of the entitity.
+    fn schematic_symbol_mut(&mut self) -> &mut SchematicSymbol;
 
     /// Update the scale parameter in the symbol.
     fn update_symbol_scale(&mut self, scale: f32);
 
     /// Set the symbol position in the GUI.
     fn set_symbol_position(&mut self, position: Pos2);
+
+    /// Returns the current symbol position.
+    fn symbol_position(&self) -> Pos2;
 
     /// Updates the `schematic_symbol` in `Self` from the options defined in `&self.entity_type`.
     ///

@@ -56,7 +56,7 @@ pub struct Equipment {
     /// This field is designed to cache the final symbol used for display so the update methods are
     /// not running every frame.
     #[serde(skip)]
-    schematic_symbol: Option<SchematicSymbol>,
+    pub(crate) schematic_symbol: Option<SchematicSymbol>,
     /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
@@ -84,8 +84,18 @@ impl Equipment {
 impl SchematicRepresentation for Equipment {
     #[inline]
     fn schematic_symbol(&self) -> SchematicSymbol {
-        //TODO: don't have the warning symbol as default?
+        //TODO: don't have the warning symbol as default? Currently Svg::default().
         self.schematic_symbol.clone().unwrap_or_default()
+    }
+
+    #[inline]
+    fn schematic_symbol_mut(&mut self) -> &mut SchematicSymbol {
+        //TODO: don't have the warning symbol as default? Currently Svg::default().
+        if let Some(schematic_symbol) = &mut self.schematic_symbol {
+            schematic_symbol
+        } else {
+            panic!()
+        }
     }
 
     #[inline]
@@ -100,6 +110,11 @@ impl SchematicRepresentation for Equipment {
         if let Some(schematic_symbol) = &mut self.schematic_symbol {
             schematic_symbol.position = position;
         }
+    }
+
+    #[inline]
+    fn symbol_position(&self) -> Pos2 {
+        self.schematic_symbol.clone().unwrap_or_default().position
     }
 
     #[inline]
