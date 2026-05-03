@@ -2245,7 +2245,7 @@ following guidelines:
 - All text sizes specified in `%` units
 - `font-weight`, `fill`, `font-family` and `stroke-width` specified as
 	appropriate for the symbol.
-- All text elements should have obvious placeholder values in them for
+- All text elements shall have obvious placeholder values in them for
 	debugging purposes.
 - See provided symbols in the standard library for additional inspiration.
 
@@ -2257,7 +2257,11 @@ following guidelines:
 
 The reference designator (referred to as a `TAG` in other CAD
 software, is the main human facing label that is the main cross reference
-between schematic / panel / reality
+between schematic / panel / reality.
+
+Any `<text>` tags within the SVG with this attribute will have
+their contents replaced with the `<entity_type>.identifier` found on the entity if
+populated during rendering.
 
 ##### Manufacturer
 
@@ -2314,7 +2318,7 @@ found on the entity if populated during rendering.
 
 SVG elements with this attribute will be identified as a place for wires/cables
 to attach to. The value of the attribute is used as the connection identifier and
-should match whatever is present on the physical device.
+should match whatever is present on the physical device if possible.
 
 The visual location where a wire/cable will connect to the connection point
 will be the geometric center of whatever element this tag is applied to unless
@@ -2355,8 +2359,11 @@ Possible values are:
 Any `<text>` tags within the SVG with this attribute will have their contents
 replaced with the `identifier` of the wire/cable connected to the connection
 point indicated by the value of this attribute. The value of this attribute
-should be the value of the entity with the matching `data-connection-point`
-attribute.
+should be the value of the matching `data-connection-point` attribute on the
+entity.
+
+This is used to display the wire/cable `identifier` nearby the connection point
+itself, or in an alternate location on the symbol.
 
 ##### Connection Point Description
 
@@ -2364,8 +2371,8 @@ attribute.
 
 Any `<text>` tags within the SVG with this attribute will have their contents
 replaced with the `label` of the connection point indicated by the value of
-this attribute. The value of this attribute should be the value of the entity
-with the matching `data-connection-point` attribute.
+this attribute. The value of this attribute should be the value of the matching
+`data-connection-point` attribute on the entity.
 
 ##### Terminal Identifier
 
@@ -2374,8 +2381,9 @@ with the matching `data-connection-point` attribute.
 Any `<text>` tags within the SVG with this attribute will have their contents
 replaced with the `identifier` of the `element` within a `TerminalStrip`  of
 the connection point indicated by the value of this attribute. The value of
-this attribute should be the value of the entity with the matching
-`data-connection-point` attribute.
+this attribute should be the value of the matching `data-connection-point`
+attribute on the entity.
+
 
 
 #### Schematic Symbol Attributes
@@ -2390,7 +2398,8 @@ Schematic symbols use the following attributes to turn plain SVGs into "smart" s
 No attributes are currently required to be included in a Schematic Symbol SVG
 but will be used if present.
 
-Schematic symbols can contain all attributes contained in [common attributes](#common-attributes)
+Schematic symbols can contain all attributes contained in [common
+attributes](#common-attributes)
 
 ##### Terminal
 
