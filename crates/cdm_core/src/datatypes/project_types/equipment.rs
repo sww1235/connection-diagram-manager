@@ -244,7 +244,7 @@ impl SchematicRepresentation for Equipment {
                             }
                             //https://stackoverflow.com/a/37700229
                             //
-                            // Checking for duplicate attributes
+                            // Checking for duplicate attributes on text element
                             let unique_attributes: HashSet<_> =
                                 attributes.iter().map(|attr| attr.name.local_name.as_str()).collect();
 
@@ -253,33 +253,16 @@ impl SchematicRepresentation for Equipment {
                                 return Err(SVGModificationError::DuplicateAttributes.into());
                             }
 
-                            // if this text element is linked to a connection
+                            // if this text element is related to a connection point on the symbol.
+                            //
+                            // This is used to display data on the symbol for a specific connection
+                            // point.
                             let connection_indication_attribute = "data-connection-point";
 
                             let connection_point_id: Option<String> = attributes
                                 .iter()
                                 .find(|attr| attr.name.local_name.as_str() == connection_indication_attribute)
                                 .map(|attr| attr.value.clone());
-
-                            // Validate that only 1 data attribute is present that affects the
-                            // value of the SVG text element
-
-                            #[expect(unused_mut, reason = "will be used in future")]
-                            let mut duplicate_attr_detected = false;
-                            #[expect(unused, reason = "will be used in future")]
-                            for attr in attributes {
-                                if duplicate_attr_detected {
-                                    return Err(SVGModificationError::ConflictingAttributes.into());
-                                }
-                                //TODO: validate that all data- attributes should be unique
-                                //
-                                //FIXME: This code doesn't do what it was intended to do. There can be
-                                //more than one data- attribute on an element.
-                                //roxmltree parsing will error on duplicate attributes..., so all we
-                                //have to do is make sure the SVG is validated first, which it should
-                                //be during deserialization.
-                                //duplicate_attr_detected = attr.name.local_name.starts_with("data-");
-                            }
 
                             // Write out StartElement first
                             // the else path here should never happen.
@@ -343,10 +326,17 @@ impl SchematicRepresentation for Equipment {
                                         writer.write(character_event)?;
                                     }
                                     //TODO: need to figure out cables here
-                                    "data-connection-point-wire-identifier" => {
-                                        let mut identifier: String = String::new();
+                                    //
+                                    // This text displays the identifier of the wire/cable/etc that
+                                    // is connected to this connection point.
+                                    "data-connection-point-identifier" => {
+                                        let mut identifier = String::new();
                                         if let Some(ref connection_point_id_inner) = connection_point_id {
                                             for connection in &project.connections {
+                                                //TODO: this needs to validate against connections
+                                                //contained within equipment because
+                                                //connection_point_id is only unique within an
+                                                //instance of Equipment.
                                                 if let ConnectionType::Equipment {
                                                     equipment_id,
                                                     connection_point_id: equip_connection_point_id,

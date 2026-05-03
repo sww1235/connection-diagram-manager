@@ -333,6 +333,16 @@ impl Project {
         }
         Ok(errors)
     }
+
+    // pub fn add_initial_connection_lists(&mut self) {
+    // for (key, connection) in connections {
+    //      match end1 {
+    //          Equipment -> add key to connections (secondarymap?)
+    //          Terminal -> add key to connections (secondarymap?)
+    //      }
+    //      do the same for end2
+    //
+    // }
 }
 
 /// Config contains project specific configuration information.
@@ -379,6 +389,7 @@ pub struct Config {
     pub schematic_connector_style: Option<SCType>,
 }
 
+//TODO: impl id() method that returns entity.identifier
 /// Marker trait for Project data.
 pub trait ProjectData {}
 
