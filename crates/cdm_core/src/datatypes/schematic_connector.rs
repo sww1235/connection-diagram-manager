@@ -29,15 +29,36 @@ where Self: ProjectData
 {
     /// Type of Connector returned from function.
     type Output: SchematicConnector;
-    /// returns a `SchematicConnector` representation of a linear entity.
+
+    /// Returns a reference to the `SchematicConnector` of the implementing datatype.
+    fn connector(&self) -> Self::Output;
+
+    /// Returns a mutable reference to the `SchematicConnector` of the implementing datatype.
+    fn connector_mut(&mut self) -> &mut Self::Output;
+
+    /// Sets the position of the primary `end1` of the connector.
     ///
-    /// # Errors
+    /// If the connector branches, then this should set the position of the `end1` branch point or
+    /// junction.
+    fn set_end1_position(&mut self, position: Pos2);
+
+    /// Sets the position of the primary `end2` of the connector.
     ///
-    /// Will return an `Err` if `Self` has greater or fewer than 2 connections defined overall.
+    /// If the connector branches, then this should set the position of the `end2` branch point or
+    /// junction.
+    fn set_end2_position(&mut self, position: Pos2);
+
+    /// Returns the position of the primary `end1` of the connector.
     ///
-    /// For things like `Cables` that might have more than 2 connections overall defined, this is
-    /// checked at the core level.
-    fn as_connector(&self, id: String, project_data: &Project) -> Result<Self::Output, GUIRenderingError>;
+    /// If the connector branches, then this should return the position of the `end1` branch point or
+    /// junction.
+    fn end1_position(&self) -> Pos2;
+
+    /// Returns the position of the primary `end2` of the connector.
+    ///
+    /// If the connector branches, then this should return the position of the `end2` branch point or
+    /// junction.
+    fn end2_position(&self) -> Pos2;
 
     /// Updates the data embedded in `Self` from its library representation.
     ///
@@ -90,11 +111,9 @@ impl Widget for &mut ConnectorType {
     }
 }
 
-impl ConnectorType {
-    #[must_use]
+impl SchematicConnector for ConnectorType {
     #[inline]
-    /// Helper method to avoid code duplication.
-    pub fn containing_rect(&self) -> Rect {
+    fn bounding_rect(&self) -> Rect {
         match self {
             ConnectorType::RightAngle(ra) => ra.bounding_rect(),
             ConnectorType::MultiRightAngle(mra) => mra.bounding_rect(),
@@ -155,8 +174,21 @@ impl ConnectionPoint {
     /// Move position of `ConnectionPoint`.
     #[inline]
     #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
-    pub fn move_connection_point(&mut self, delta: Vec2) {
+    pub fn move_position(&mut self, delta: Vec2) {
         self.position += delta;
+    }
+
+    /// Set position of `ConnectionPoint`.
+    #[inline]
+    pub fn set_position(&mut self, position: Pos2) {
+        self.position = position;
+    }
+
+    /// Returns position of `ConnectionPoint`.
+    #[must_use]
+    #[inline]
+    pub fn position(&self) -> Pos2 {
+        self.position
     }
 }
 

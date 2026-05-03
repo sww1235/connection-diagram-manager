@@ -1,7 +1,7 @@
 use core::cmp::Ordering;
 use std::path::{Path, PathBuf};
 
-use egui::Vec2;
+use egui::{Pos2, Vec2};
 use log::{trace, warn};
 use serde::{Deserialize, Serialize};
 
@@ -61,115 +61,160 @@ pub struct Wire {
 
 impl AsConnector for Wire {
     type Output = RightAngle;
+
     #[inline]
-    fn as_connector(&self, id: String, project_data: &Project) -> Result<RightAngle, GUIRenderingError> {
-        let mut end1: ConnectionPoint = ConnectionPoint::default();
-        let mut end2: ConnectionPoint = ConnectionPoint::default();
-
-        // In theory this can have more than 2 items in it, but this is checked below.
-        let mut wire_connections: Vec<Connection> = Vec::new();
-
-        //TODO:
-        //
-        //First need to find all connections that reference this wire
-        //
-        //If more than 2, bird strike, log it, and pick 2 at random?
-        //
-        //Then set end 1 and end 2 based on those two connections
-
-        for connection in &project_data.connections {
-            if connection.end1 == connection.end2 {
-                warn! {"connection: {connection:?} has both ends assigned to the same entity."};
-                continue;
-            }
-            if let ConnectionType::Wire { wire_id } = &connection.end1
-                && wire_id == &id
-            {
-                wire_connections.push(connection.clone());
-            }
-            if let ConnectionType::Wire { wire_id } = &connection.end2
-                && wire_id == &id
-            {
-                wire_connections.push(connection.clone());
-            }
-        }
-        #[expect(clippy::indexing_slicing, reason = "size of vec validated in outer match")]
-        match wire_connections.len().cmp(&2) {
-            Ordering::Equal => {
-                let wire_end_connections = [(&mut end1, &wire_connections[0]), (&mut end2, &wire_connections[1])];
-
-                for (end, connection) in wire_end_connections {
-                    let connection_ends = [&connection.end1, &connection.end2];
-                    for connection_end in connection_ends {
-                        #[expect(
-                            clippy::match_same_arms,
-                            reason = "Separating out some match elements makes the code read clearer"
-                        )]
-                        #[expect(clippy::wildcard_enum_match_arm, reason = "code still in development")]
-                        match connection_end {
-                            ConnectionType::Wire { wire_id } if wire_id == &id => {
-                                //Do nothing.
-                            }
-                            // TODO: wire-wire, wire-cable and wire-term_cable connections
-                            // not defined yet.
-                            ConnectionType::Wire { .. } | ConnectionType::Cable { .. } | ConnectionType::TermCable { .. } => {
-                                //todo!();
-                            }
-
-                            #[expect(clippy::arithmetic_side_effects, reason = "deal with it")]
-                            ConnectionType::Equipment {
-                                equipment_id,
-                                connection_point_id,
-                            } => {
-                                trace! {"end equipment: {equipment_id}"};
-                                #[expect(clippy::get_unwrap, reason = "temporary for testing")]
-                                #[expect(clippy::unwrap_used, reason = "temporary for testing")]
-                                let equipment = project_data.equipment.get(equipment_id).unwrap();
-                                let symbol = equipment.schematic_symbol();
-                                #[expect(clippy::get_unwrap, reason = "temporary for testing")]
-                                #[expect(clippy::unwrap_used, reason = "temporary for testing")]
-                                let connection_point = symbol.connections.get(connection_point_id).unwrap();
-                                trace!(
-                                    "allowed_connection_directions: {:?}",
-                                    connection_point.allowed_connection_directions
-                                );
-                                end.directions = connection_point.allowed_connection_directions.clone();
-
-                                //TODO: move this to a method on SchematicSymbol
-                                //
-                                //TODO: change connection point to contain a Pos2?
-                                let connection_point_offset = Vec2::from((
-                                    symbol.scaled_size().x * (connection_point.x / 100.0),
-                                    symbol.scaled_size().y * (connection_point.y / 100.0),
-                                ));
-                                trace! {"symbol scaled_size: {}", symbol.scaled_size()};
-                                trace! {"end connection_point: {connection_point:?}"};
-                                trace! {"end connection_point_offset: {connection_point_offset}"};
-                                end.position = symbol.position
-                                    + Vec2::from((
-                                        symbol.scaled_size().x * connection_point.x / 100.0,
-                                        symbol.scaled_size().y * connection_point.y / 100.0,
-                                    ));
-                            }
-
-                            _ => {}
-                        }
-                    }
-                }
-
-                //TODO: get overflow parameter from somewhere
-                Ok(RightAngle::new(end1, end2, false, self.line_style.clone()))
-            }
-            Ordering::Greater => Err(GUIRenderingError::IncorrectNumberOfConnectionsDefined {
-                comparison: "Greater".to_owned(),
-                affected_entity: format!("{self:?}"),
-            }),
-            Ordering::Less => Err(GUIRenderingError::IncorrectNumberOfConnectionsDefined {
-                comparison: "Less".to_owned(),
-                affected_entity: format!("{self:?}"),
-            }),
+    fn connector(&self) -> Self::Output {
+        match self.connector.as_ref().unwrap() {
+            ConnectorType::RightAngle(ra) => ra.clone(),
+            _ => panic!(),
         }
     }
+
+    #[inline]
+    fn connector_mut(&mut self) -> &mut Self::Output {
+        match self.connector.as_mut().unwrap() {
+            ConnectorType::RightAngle(ra) => ra,
+            _ => panic!(),
+        }
+    }
+
+    #[inline]
+    fn set_end1_position(&mut self, position: Pos2) {
+        match self.connector.as_mut().unwrap() {
+            ConnectorType::RightAngle(ra) => ra.end1.set_position(position),
+            _ => panic!(),
+        }
+    }
+    #[inline]
+    fn set_end2_position(&mut self, position: Pos2) {
+        match self.connector.as_mut().unwrap() {
+            ConnectorType::RightAngle(ra) => ra.end2.set_position(position),
+            _ => panic!(),
+        }
+    }
+    #[inline]
+    fn end1_position(&self) -> Pos2 {
+        match self.connector.as_ref().unwrap() {
+            ConnectorType::RightAngle(ra) => ra.end1.position(),
+            _ => panic!(),
+        }
+    }
+    #[inline]
+    fn end2_position(&self) -> Pos2 {
+        match self.connector.as_ref().unwrap() {
+            ConnectorType::RightAngle(ra) => ra.end2.position(),
+            _ => panic!(),
+        }
+    }
+    //#[inline]
+    //fn as_connector(&self, id: String, project_data: &Project) -> Result<RightAngle, GUIRenderingError> {
+    //    let mut end1: ConnectionPoint = ConnectionPoint::default();
+    //    let mut end2: ConnectionPoint = ConnectionPoint::default();
+
+    //    // In theory this can have more than 2 items in it, but this is checked below.
+    //    let mut wire_connections: Vec<Connection> = Vec::new();
+
+    //    //TODO:
+    //    //
+    //    //First need to find all connections that reference this wire
+    //    //
+    //    //If more than 2, bird strike, log it, and pick 2 at random?
+    //    //
+    //    //Then set end 1 and end 2 based on those two connections
+
+    //    for connection in &project_data.connections {
+    //        if connection.end1 == connection.end2 {
+    //            warn! {"connection: {connection:?} has both ends assigned to the same entity."};
+    //            continue;
+    //        }
+    //        if let ConnectionType::Wire { wire_id } = &connection.end1
+    //            && wire_id == &id
+    //        {
+    //            wire_connections.push(connection.clone());
+    //        }
+    //        if let ConnectionType::Wire { wire_id } = &connection.end2
+    //            && wire_id == &id
+    //        {
+    //            wire_connections.push(connection.clone());
+    //        }
+    //    }
+    //    #[expect(clippy::indexing_slicing, reason = "size of vec validated in outer match")]
+    //    match wire_connections.len().cmp(&2) {
+    //        Ordering::Equal => {
+    //            let wire_end_connections = [(&mut end1, &wire_connections[0]), (&mut end2,
+    // &wire_connections[1])];
+
+    //            for (end, connection) in wire_end_connections {
+    //                let connection_ends = [&connection.end1, &connection.end2];
+    //                for connection_end in connection_ends {
+    //                    #[expect(
+    //                        clippy::match_same_arms,
+    //                        reason = "Separating out some match elements makes the code read clearer"
+    //                    )]
+    //                    #[expect(clippy::wildcard_enum_match_arm, reason = "code still in development")]
+    //                    match connection_end {
+    //                        ConnectionType::Wire { wire_id } if wire_id == &id => {
+    //                            //Do nothing.
+    //                        }
+    //                        // TODO: wire-wire, wire-cable and wire-term_cable connections
+    //                        // not defined yet.
+    //                        ConnectionType::Wire { .. } | ConnectionType::Cable { .. } |
+    // ConnectionType::TermCable { .. } => {                            //todo!();
+    //                        }
+
+    //                        #[expect(clippy::arithmetic_side_effects, reason = "deal with it")]
+    //                        ConnectionType::Equipment {
+    //                            equipment_id,
+    //                            connection_point_id,
+    //                        } => {
+    //                            trace! {"end equipment: {equipment_id}"};
+    //                            #[expect(clippy::get_unwrap, reason = "temporary for testing")]
+    //                            #[expect(clippy::unwrap_used, reason = "temporary for testing")]
+    //                            let equipment = project_data.equipment.get(equipment_id).unwrap();
+    //                            let symbol = equipment.schematic_symbol();
+    //                            #[expect(clippy::get_unwrap, reason = "temporary for testing")]
+    //                            #[expect(clippy::unwrap_used, reason = "temporary for testing")]
+    //                            let connection_point = symbol.connections.get(connection_point_id).unwrap();
+    //                            trace!(
+    //                                "allowed_connection_directions: {:?}",
+    //                                connection_point.allowed_connection_directions
+    //                            );
+    //                            end.directions = connection_point.allowed_connection_directions.clone();
+
+    //                            //TODO: move this to a method on SchematicSymbol
+    //                            //
+    //                            //TODO: change connection point to contain a Pos2?
+    //                            let connection_point_offset = Vec2::from((
+    //                                symbol.scaled_size().x * (connection_point.x / 100.0),
+    //                                symbol.scaled_size().y * (connection_point.y / 100.0),
+    //                            ));
+    //                            trace! {"symbol scaled_size: {}", symbol.scaled_size()};
+    //                            trace! {"end connection_point: {connection_point:?}"};
+    //                            trace! {"end connection_point_offset: {connection_point_offset}"};
+    //                            end.position = symbol.position
+    //                                + Vec2::from(( symbol.scaled_size().x * connection_point.x / 100.0,
+    //                                  symbol.scaled_size().y * connection_point.y / 100.0,
+    //                                ));
+    //                        }
+
+    //                        _ => {}
+    //                    }
+    //                }
+    //            }
+
+    //            //TODO: get overflow parameter from somewhere
+    //            Ok(RightAngle::new(end1, end2, false, self.line_style.clone()))
+    //        }
+    //        Ordering::Greater => Err(GUIRenderingError::IncorrectNumberOfConnectionsDefined {
+    //            comparison: "Greater".to_owned(),
+    //            affected_entity: format!("{self:?}"),
+    //        }),
+    //        Ordering::Less => Err(GUIRenderingError::IncorrectNumberOfConnectionsDefined {
+    //            comparison: "Less".to_owned(),
+    //            affected_entity: format!("{self:?}"),
+    //        }),
+    //    }
+    //}
 
     #[inline]
     fn update_data_from_library(&mut self, library: &Library) -> Result<(), Error> {

@@ -59,6 +59,8 @@ pub(crate) fn main_window(
 
             CentralPanel::default().show_inside(ui, |ui| {
                 let panel_rect = ui.max_rect();
+                let min_rect_position = panel_rect.left_top();
+                let max_rect_position = panel_rect.right_bottom();
 
                 for (id, equipment) in &mut project_data.equipment {
                     trace! {"ID: {id}, Equipment: {equipment:#?}"};
@@ -69,17 +71,16 @@ pub(crate) fn main_window(
                     //instead of doing the math all over the place.
                     let symbol_size = equipment.schematic_symbol().scaled_size();
 
-                    let min_rect_position = panel_rect.left_top();
                     #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
-                    let max_rect_position = panel_rect.right_bottom() - symbol_size;
-                    let rect_position = equipment
+                    let max_symbol_rect_position = max_rect_position - symbol_size;
+                    let symbol_position = equipment
                         .symbol_position()
-                        .clamp(min_rect_position, max_rect_position)
+                        .clamp(min_rect_position, max_symbol_rect_position)
                         .round_ui();
-                    trace! {"min_postion: {rect_position}"}
-                    let rect = Rect::from_min_size(rect_position, symbol_size);
+                    trace! {"min_postion: {symbol_position}"}
+                    let rect = Rect::from_min_size(symbol_position, symbol_size);
                     trace!("rect: {rect:?}");
-                    equipment.set_symbol_position(rect_position.clamp(min_rect_position, max_rect_position).round_ui());
+                    equipment.set_symbol_position(symbol_position.clamp(min_rect_position, max_symbol_rect_position).round_ui());
                     let response = ui.place(rect, equipment.schematic_symbol_mut());
                     // from https://github.com/emilk/egui/discussions/1926#discussioncomment-3414942
                     //
@@ -102,15 +103,21 @@ pub(crate) fn main_window(
 
                         #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
                         equipment.set_symbol_position(
-                            (rect_position + response.drag_delta())
-                                .clamp(min_rect_position, max_rect_position)
+                            (symbol_position + response.drag_delta())
+                                .clamp(min_rect_position, max_symbol_rect_position)
                                 .round_ui(),
                         );
+
+                        // equipment.connections stores index of all connections
+
+                        // for connection in equipment.connections
+                        //  Update connection end position (based on which end this equipment is
+                        //  connected to)
                     }
                     trace!("post_rendered position: {}", equipment.schematic_symbol().position);
                 }
 
-                for (id, wire) in &project_data.wires {
+                for (id, wire) in &mut project_data.wires {
                     //trace! {"ID: {id}, Wire: {wire:#?}"};
 
                     //trace! {"wire: {id} end1: {}->{:?}", end1.0, end1.1};
@@ -128,32 +135,28 @@ pub(crate) fn main_window(
                     let connector_type = Some(SCType::RightAngle);
                     #[expect(clippy::wildcard_enum_match_arm, reason = "returns unimplemented error")]
                     #[expect(clippy::unnecessary_literal_unwrap, reason = "testing porpoises")]
+                    #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
                     match connector_type.unwrap_or_default() {
                         SCType::RightAngle => {
-                            let wire_connector = wire.as_connector(id.to_owned(), project_data);
-                            if let Ok(mut wire_connector) = wire_connector {
-                                let response = ui.place(wire_connector.bounding_rect(), &mut wire_connector);
-                                if response.hovered() {
-                                    // This should be CursorIcon::Grab but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
-                                    ui.output_mut(|output| output.cursor_icon = CursorIcon::PointingHand);
-                                }
-                                if response.dragged() {
-                                    // This should be CursorIcon::Grabbing but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
-                                    ui.output_mut(|output| output.cursor_icon = CursorIcon::Move);
-                                    trace!("connector for wire {id} dragged");
+                            let response = ui.place(wire.connector().bounding_rect(), wire.connector_mut());
+                            if response.hovered() {
+                                // This should be CursorIcon::Grab but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
+                                ui.output_mut(|output| output.cursor_icon = CursorIcon::PointingHand);
+                            }
+                            if response.dragged() {
+                                // This should be CursorIcon::Grabbing but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
+                                ui.output_mut(|output| output.cursor_icon = CursorIcon::Move);
+                                trace!("connector for wire {id} dragged");
 
-                                    //TODO: add optional hover text. See lines 614-621 of drag_value.rs from egui.
+                                //TODO: add optional hover text. See lines 614-621 of drag_value.rs from egui.
 
-                                    //equipment.set_symbol_position(
-                                    //    (rect_position + response.drag_delta())
-                                    //        .clamp(min_rect_position, max_rect_position)
-                                    //        .round_ui(),
-                                    //);
+                                let midpoint = wire.connector().midpoint();
 
-                                    wire_connector.move_midpoint(response.drag_delta());
-                                }
-                            } else {
-                                error!("{:?}", wire_connector.err());
+                                wire.connector_mut().set_midpoint(
+                                    (midpoint + response.drag_delta())
+                                        .clamp(min_rect_position, max_rect_position)
+                                        .round_ui(),
+                                );
                             }
                         }
                         _ => {

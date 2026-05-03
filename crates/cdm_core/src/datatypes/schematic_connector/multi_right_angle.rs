@@ -46,7 +46,7 @@ impl SchematicConnector for MultiRightAngle {
     #[inline]
     fn bounding_rect(&self) -> Rect {
         let connector_rects: Vec<Rect> = chain(&self.end1_connections, &self.end2_connections)
-            .map(ConnectorType::containing_rect)
+            .map(ConnectorType::bounding_rect)
             .collect();
         let mut connection_points: Vec<Pos2> = connector_rects
             .iter()
@@ -112,7 +112,7 @@ impl Widget for &mut MultiRightAngle {
             ui.output_mut(|output| output.cursor_icon = CursorIcon::Move);
             trace!("end1_junction dragged");
             let drag_delta = end1_junction_response.drag_delta();
-            self.end1_junction.move_connection_point(drag_delta);
+            self.end1_junction.move_position(drag_delta);
             main_connector.move_end1_position(drag_delta);
             for connection in &mut self.end1_connections {
                 // Only updating end1 position here because that is the end of RightAngle
@@ -140,7 +140,7 @@ impl Widget for &mut MultiRightAngle {
             ui.output_mut(|output| output.cursor_icon = CursorIcon::Move);
             trace!("end2_junction dragged");
             let drag_delta = end2_junction_response.drag_delta();
-            self.end2_junction.move_connection_point(drag_delta);
+            self.end2_junction.move_position(drag_delta);
             main_connector.move_end2_position(drag_delta);
             for connection in &mut self.end2_connections {
                 // Only updating end1 position here because that is the end of RightAngle
@@ -158,7 +158,7 @@ impl Widget for &mut MultiRightAngle {
 
         // Then render all the individual connectors for end1
         for connection in &mut self.end1_connections {
-            let inner_response = ui.place(connection.containing_rect(), &mut *connection);
+            let inner_response = ui.place(connection.bounding_rect(), &mut *connection);
             if inner_response.hovered() {
                 // This should be CursorIcon::Grab but it is not implemented yet.
                 // See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
@@ -184,7 +184,7 @@ impl Widget for &mut MultiRightAngle {
         }
         // Then render all the individual connectors for end2
         for connection in &mut self.end2_connections {
-            let inner_response = ui.place(connection.containing_rect(), &mut *connection);
+            let inner_response = ui.place(connection.bounding_rect(), &mut *connection);
             if inner_response.hovered() {
                 // This should be CursorIcon::Grab but it is not implemented yet.
                 // See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249

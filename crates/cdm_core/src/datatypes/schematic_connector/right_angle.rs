@@ -170,6 +170,12 @@ impl RightAngle {
         self.midpoint += delta;
     }
 
+    /// Return midpoint position for Connector.
+    #[inline]
+    pub fn midpoint(&mut self) -> Pos2 {
+        self.midpoint
+    }
+
     /// Set `LineStyle` of Connector.
     #[inline]
     pub fn set_line_style(&mut self, line_style: LineStyle) {
