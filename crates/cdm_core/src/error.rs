@@ -68,9 +68,12 @@ pub enum Error {
     /// Errors resulting from modifying SVGs programatically to display as icons.
     #[error(transparent)]
     SVGModificationError(#[from] SVGModificationError),
-    /// Errors resulting from validation checks internal to the library.
+    /// Errors resulting from SVG validation checks internal to the library.
     #[error(transparent)]
     SVGValidationError(#[from] SVGValidationError),
+    /// Errors resulting from methods associated with `SchematicSymbol`s.
+    #[error(transparent)]
+    SchematicSymbolError(#[from] SchematicSymbolError),
     /// Errors resulting from string -> number parsing.
     #[error(transparent)]
     ParseIntError(#[from] core::num::ParseIntError),
@@ -237,7 +240,9 @@ pub enum PDFError {
 #[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
 pub enum GUIRenderingError {
     /// Error resulting from rendering connections on linear entities.
-    // Example message: "less than 2 connections found when analyzing connections for Wire{xxxxx}"
+    ///
+    /// Example message: `less than 2 connections found when analyzing connections for
+    /// Wire{xxxxx}`.
     #[error("{comparison} than 2 connections were found when analyzing connections for {affected_entity:?}")]
     IncorrectNumberOfConnectionsDefined {
         /// A string representing the comparision operation being performed.
@@ -246,6 +251,22 @@ pub enum GUIRenderingError {
         comparison: String,
         /// The debug representation of the linear entity that connections are being evaluated for.
         affected_entity: String,
+    },
+}
+
+/// `SchematicSymbolError` is the list of errors that can occur in methods related to
+/// `SchematicSymbol's`.
+#[derive(Debug, Error)]
+#[non_exhaustive]
+#[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
+pub enum SchematicSymbolError {
+    /// If the connection point ID is not found in the connections Vec on the symbol.
+    #[error("Connection point {connection_point_id} not found in {searched_symbol_id}")]
+    ConnectionPointNotFound {
+        /// ID of connection point being searched for.
+        connection_point_id: String,
+        /// Identifier of symbol being searched.
+        searched_symbol_id: String,
     },
 }
 
@@ -316,6 +337,7 @@ pub enum SVGValidationError {
     /// If attributes that are numbers are required to be specified as percentages.
     #[error("Attribute {0} must be specified using percentages.")]
     AttributeMustBePercentage(String),
+    //TODO: modify to be struct rather than tuple
     /// Generic invalid attribute value error.
     #[error("Attribute {0} has an invalid value: {1}")]
     AttributeValueInvalid(String, String),

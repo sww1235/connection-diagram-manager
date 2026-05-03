@@ -16,7 +16,7 @@ use log::trace;
 
 use crate::{
     datatypes::{Library, Project, project_types::ProjectData, svg::Svg},
-    error::Error,
+    error::{Error, SchematicSymbolError},
 };
 
 /// `SchematicSymbol` represents an instance of a `SchematicSymbolType`.
@@ -99,6 +99,26 @@ impl SchematicSymbol {
     #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
     pub fn scaled_size(&self) -> Vec2 {
         (self.original_symbol_dimensions() * self.scale).round_ui()
+    }
+
+    /// Returns the offset of a connection point from the top-left corner of the symbol.
+    ///
+    /// # Errors
+    ///
+    /// Will error if the `connection_id` is not found in `Self`.
+    #[inline]
+    pub fn connection_point_offset(&self, connection_id: &str) -> Result<Vec2, SchematicSymbolError> {
+        let connection_point = self
+            .connections
+            .get(connection_id)
+            .ok_or(SchematicSymbolError::ConnectionPointNotFound {
+                connection_point_id: connection_id.to_owned(),
+                searched_symbol_id: self.identifier.clone(),
+            })?;
+        Ok(Vec2::from((
+            self.scaled_size().x * connection_point.x / 100.0,
+            self.scaled_size().y * connection_point.y / 100.0,
+        )))
     }
 }
 
