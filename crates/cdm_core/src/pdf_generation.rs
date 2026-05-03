@@ -236,8 +236,8 @@ pub fn render_enclosure(
     }
 
     if render_connections {
-        //TODO: fix this
-        for (idx, connection) in project.connections.iter().enumerate() {
+        //TODO: fix this. Use slotmap functionality.
+        for (idx, (key, connection)) in project.connections.iter().enumerate() {
             match &connection.end1 {
                 ConnectionType::Wire { wire_id: outer_wire_id } if project.wires.contains_key(outer_wire_id) => match &connection
                     .end2
@@ -1076,8 +1076,8 @@ pub fn render_enclosure_schematic_ladder(
     }
 
     if render_connections {
-        //TODO: fix this
-        for (idx, connection) in project.connections.iter().enumerate() {
+        //TODO: fix this. Use slotmap functionality.
+        for (idx, (key, connection)) in project.connections.iter().enumerate() {
             match &connection.end1 {
                 ConnectionType::Wire { wire_id: outer_wire_id } if project.wires.contains_key(outer_wire_id) => match &connection
                     .end2

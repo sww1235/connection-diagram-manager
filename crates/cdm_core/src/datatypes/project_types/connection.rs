@@ -1,6 +1,8 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
+
+use crate::traits::FromFile;
 
 /// `Connection` represents a connection between two different elements.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
@@ -71,4 +73,25 @@ pub enum Type {
         /// ID or index of connector pin.
         pin_id: String,
     },
+}
+impl FromFile for Connection {
+    #[inline]
+    fn datafile(&self) -> PathBuf {
+        self.contained_datafile_path.clone()
+    }
+    #[inline]
+    fn set_datafile(&mut self, datafile_path: &Path) {
+        self.contained_datafile_path = datafile_path.to_path_buf();
+    }
+}
+
+/// Used to tag connection id references if they refer to End1 or End2 to reduce the need for
+/// additional match or if let statements.
+#[derive(Debug, PartialEq, Clone)]
+#[expect(clippy::exhaustive_enums, reason = "Can't have more than 2 ends of a linear item")]
+pub enum EndDesignation {
+    /// End 1.
+    End1,
+    /// End 2.
+    End2,
 }

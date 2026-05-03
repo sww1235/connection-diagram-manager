@@ -7,12 +7,19 @@ use std::{
 use egui::Pos2;
 use log::{trace, warn};
 use serde::{Deserialize, Serialize};
+use slotmap::SparseSecondaryMap;
 use xml::{EventReader, EventWriter, reader::XmlEvent as ReaderEvent, writer::XmlEvent as WriterEvent};
 
 use crate::{
     datatypes::{
         library_types::Library,
-        project_types::{Project, ProjectData, connection::Type as ConnectionType},
+        project_types::{
+            InnerConnectionId,
+            Project,
+            ProjectData,
+            cable::CableCore,
+            connection::{EndDesignation, Type as ConnectionType},
+        },
         schematic_symbol::{ConnectionDirection, SchematicRepresentation, SchematicSymbol, SymbolConnection},
         util_types::{IECCodes, PhysicalLocation, SymbolStyle, UserFields},
     },
@@ -50,6 +57,13 @@ pub struct Equipment {
     ///
     /// Styling can also be defined in the SVG itself, but will be overrriden if this is defined.
     pub symbol_style: Option<SymbolStyle>,
+    /// Stores ids of connections that are connected to an equipment instance to avoid iterating over the
+    /// entire `project.connections` map every time.
+    ///
+    /// The mapped value indicates if the connection end that represents the equipment instance is
+    /// `End1` or `End2`.
+    #[serde(skip)]
+    pub(crate) connections: SparseSecondaryMap<InnerConnectionId, EndDesignation>,
     /// Schematic symbol instance that is updated from the library and contains updated data unique
     /// to this instance. This also has the `symbol_style` applied if `Some()`.
     ///
@@ -253,6 +267,7 @@ impl SchematicRepresentation for Equipment {
                                 return Err(SVGModificationError::DuplicateAttributes.into());
                             }
 
+                            // This attribute indicates
                             // if this text element is related to a connection point on the symbol.
                             //
                             // This is used to display data on the symbol for a specific connection
@@ -332,29 +347,106 @@ impl SchematicRepresentation for Equipment {
                                     "data-connection-point-identifier" => {
                                         let mut identifier = String::new();
                                         if let Some(ref connection_point_id_inner) = connection_point_id {
-                                            for connection in &project.connections {
-                                                //TODO: this needs to validate against connections
-                                                //contained within equipment because
-                                                //connection_point_id is only unique within an
-                                                //instance of Equipment.
-                                                if let ConnectionType::Equipment {
-                                                    equipment_id,
-                                                    connection_point_id: equip_connection_point_id,
-                                                } = &connection.end1
-                                                    && equip_connection_point_id == connection_point_id_inner
-                                                    && let ConnectionType::Wire { wire_id } = &connection.end2
-                                                {
-                                                    identifier = project.wires.get(wire_id).unwrap().identifier.clone();
-                                                }
-
-                                                if let ConnectionType::Equipment {
-                                                    equipment_id,
-                                                    connection_point_id: equip_connection_point_id,
-                                                } = &connection.end2
-                                                    && equip_connection_point_id == connection_point_id_inner
-                                                    && let ConnectionType::Wire { wire_id } = &connection.end1
-                                                {
-                                                    identifier = project.wires.get(wire_id).unwrap().identifier.clone();
+                                            // these connection_keys should all refer to
+                                            // connections that already have Equipment as the other
+                                            // end.
+                                            //
+                                            // which_end refers to the end the Equipment was
+                                            // associated with.
+                                            for (connection_key, which_end) in &self.connections {
+                                                let connection = project.connections.get(connection_key).unwrap();
+                                                match which_end {
+                                                    EndDesignation::End1 => {
+                                                        if let ConnectionType::Equipment {
+                                                            connection_point_id: equip_connection_point_id,
+                                                            ..
+                                                        } = &connection.end1
+                                                            && equip_connection_point_id == connection_point_id_inner
+                                                        {
+                                                            #[expect(
+                                                                clippy::wildcard_enum_match_arm,
+                                                                reason = "only need to handle these 3 variants here"
+                                                            )]
+                                                            match &connection.end2 {
+                                                                ConnectionType::Wire { wire_id } => {
+                                                                    identifier =
+                                                                        project.wires.get(wire_id).unwrap().identifier.clone();
+                                                                }
+                                                                ConnectionType::Cable { cable_id, core_id } => {
+                                                                    match &project
+                                                                        .cables
+                                                                        .get(cable_id)
+                                                                        .unwrap()
+                                                                        .cores
+                                                                        .get(core_id)
+                                                                        .unwrap()
+                                                                    {
+                                                                        CableCore::Cable(cable) => {
+                                                                            identifier = cable.identifier.clone()
+                                                                        }
+                                                                        CableCore::Wire(wire) => {
+                                                                            identifier = wire.identifier.clone()
+                                                                        }
+                                                                    }
+                                                                    //TODO: need to correctly pull
+                                                                    //identifier for core
+                                                                    //identifier =
+                                                                    // project.cables.get(cable_id).unwrap().
+                                                                    // cores.
+                                                                    // get(core_id).unwrap().0.identifier.
+                                                                    // clone();
+                                                                }
+                                                                ConnectionType::TermCable { cable_id } => {
+                                                                    //TODO: need to correctly pull
+                                                                    //identifier for core
+                                                                    //identifier =
+                                                                    // project.cables.get(cable_id).unwrap().
+                                                                    // cores.
+                                                                    // get(core_id).unwrap().0.identifier.
+                                                                    // clone();
+                                                                }
+                                                                _ => {}
+                                                            }
+                                                        }
+                                                    }
+                                                    EndDesignation::End2 => {
+                                                        if let ConnectionType::Equipment {
+                                                            connection_point_id: equip_connection_point_id,
+                                                            ..
+                                                        } = &connection.end2
+                                                            && equip_connection_point_id == connection_point_id_inner
+                                                        {
+                                                            #[expect(
+                                                                clippy::wildcard_enum_match_arm,
+                                                                reason = "only need to handle these 3 variants here"
+                                                            )]
+                                                            match &connection.end2 {
+                                                                ConnectionType::Wire { wire_id } => {
+                                                                    identifier =
+                                                                        project.wires.get(wire_id).unwrap().identifier.clone();
+                                                                }
+                                                                ConnectionType::Cable { cable_id, core_id } => {
+                                                                    //TODO: need to correctly pull
+                                                                    //identifier for core
+                                                                    //identifier =
+                                                                    // project.cables.get(cable_id).unwrap().
+                                                                    // cores.
+                                                                    // get(core_id).unwrap().0.identifier.
+                                                                    // clone();
+                                                                }
+                                                                ConnectionType::TermCable { cable_id } => {
+                                                                    //TODO: need to correctly pull
+                                                                    //identifier for core
+                                                                    //identifier =
+                                                                    // project.cables.get(cable_id).unwrap().
+                                                                    // cores.
+                                                                    // get(core_id).unwrap().0.identifier.
+                                                                    // clone();
+                                                                }
+                                                                _ => {}
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -367,7 +459,7 @@ impl SchematicRepresentation for Equipment {
                                     "data-terminal-identifier" => {
                                         let mut identifier: Option<String> = None;
                                         if let Some(ref connection_point_id_inner) = connection_point_id {
-                                            for connection in &project.connections {
+                                            for (key, connection) in &project.connections {
                                                 if let ConnectionType::Equipment {
                                                     equipment_id,
                                                     connection_point_id: equip_connection_point_id,
@@ -494,7 +586,7 @@ impl SchematicRepresentation for Equipment {
                                         _ => {}
                                     }
                                 }
-                                // Making sure there is indeed a value assigned to the connection_id
+                                // Making sure there is indeed a value assigned to the connection_id after processing attributes.
                                 if connection_id == String::new() {
                                     return Err(
                                         SVGValidationError::BlankAttributeValue("data-connection-point".to_owned()).into()

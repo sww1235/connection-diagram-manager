@@ -27,16 +27,32 @@ use std::{
 };
 
 use serde::{Deserialize, Serialize};
+use slotmap::SlotMap;
 
 use crate::{
-    datatypes::{library_types::Library, project_types::terminal_strip::TermAccy, schematic_connector::TypeFlag as SCType},
+    datatypes::{
+        library_types::Library,
+        project_types::{
+            connection::{EndDesignation, Type as ConnectionType},
+            terminal_strip::TermAccy,
+        },
+        schematic_connector::TypeFlag as SCType,
+    },
     error::{Error, LibraryError, ProjectError},
-    traits::FromFile as _,
+    traits::FromFile,
     util_functions,
 };
 
+// TODO: see how fontdb does things
+// https://github.com/RazrFalcon/fontdb/blob/62cfd96671eba4debe73eeecf541b1a3a051d223/src/lib.rs#L93
+
+slotmap::new_key_type! {
+    /// Internal ID for connections.
+    pub struct InnerConnectionId;
+}
+
 /// `Project` represents all project specific data used in program.
-#[derive(Debug, Default, PartialEq, Serialize, Deserialize, Clone)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 #[serde(default)]
 #[serde(deny_unknown_fields)]
 #[non_exhaustive]
@@ -44,7 +60,7 @@ pub struct Project {
     /// contains all cables read in from files, and/or added in via program logic.
     pub cables: BTreeMap<String, cable::Cable>,
     /// `connections` contains all connections between different equipment/cables/wires.
-    pub connections: Vec<connection::Connection>,
+    pub connections: SlotMap<InnerConnectionId, connection::Connection>,
     //TODO: are connectors going to be read in separately?
     /// contains all connectors read in from files, and/or added in via program logic.
     pub connectors: BTreeMap<String, connector::Connector>,
@@ -75,7 +91,7 @@ impl Project {
     #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
     pub fn merge(&mut self, test_map: Project, test_file: &Path) -> Result<(), Error> {
         util_functions::merge_btreemaps(&mut self.cables, test_map.cables, test_file)?;
-        self.connections.extend(test_map.connections);
+        Project::merge_connections(&mut self.connections, test_map.connections, test_file)?;
         //TODO: are connectors going to be read in separately?
         //util_functions::merge_btreemaps(&mut self.connectors, test_map.connectors, test_file)?;
         util_functions::merge_btreemaps(&mut self.enclosures, test_map.enclosures, test_file)?;
@@ -334,15 +350,73 @@ impl Project {
         Ok(errors)
     }
 
-    // pub fn add_initial_connection_lists(&mut self) {
-    // for (key, connection) in connections {
-    //      match end1 {
-    //          Equipment -> add key to connections (secondarymap?)
-    //          Terminal -> add key to connections (secondarymap?)
-    //      }
-    //      do the same for end2
-    //
-    // }
+    /// Add in connection references that apply to each `Equipment` and `TerminalStrip`.
+    #[inline]
+    pub fn add_initial_connection_lists(&mut self) {
+        for (key, connection) in &self.connections {
+            #[expect(clippy::wildcard_enum_match_arm, reason = "only need to handle these 3 variants here")]
+            match &connection.end1 {
+                ConnectionType::Equipment {
+                    equipment_id,
+                    connection_point_id,
+                } => {
+                    let _ = self
+                        .equipment
+                        .get_mut(equipment_id)
+                        .unwrap()
+                        .connections
+                        .insert(key, EndDesignation::End1);
+                }
+                ConnectionType::TerminalStrip {
+                    term_strip_id,
+                    element_id,
+                } => {
+                    todo!()
+                }
+                _ => {}
+            }
+            #[expect(clippy::wildcard_enum_match_arm, reason = "only need to handle these 3 variants here")]
+            match &connection.end2 {
+                ConnectionType::Equipment {
+                    equipment_id,
+                    connection_point_id,
+                } => {
+                    let _ = self
+                        .equipment
+                        .get_mut(equipment_id)
+                        .unwrap()
+                        .connections
+                        .insert(key, EndDesignation::End2);
+                }
+                ConnectionType::TerminalStrip {
+                    term_strip_id,
+                    element_id,
+                } => {
+                    todo!()
+                }
+                _ => {}
+            }
+        }
+    }
+
+    /// Merge connections from multiple datafiles.
+    //TODO: Maybe check for duplicate connections somehow?
+    #[expect(clippy::unnecessary_wraps, reason = "may add err path in the future")]
+    #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
+    fn merge_connections<U, V>(origin_map: &mut SlotMap<U, V>, test_map: SlotMap<U, V>, test_file: &Path) -> Result<(), Error>
+    where
+        U: slotmap::Key,
+        V: FromFile,
+    {
+        // don't need to do any work if test map is empty
+        if test_map.is_empty() {
+            return Ok(());
+        }
+        for (_, value) in test_map {
+            origin_map.insert(value);
+        }
+        Ok(())
+    }
 }
 
 /// Config contains project specific configuration information.
