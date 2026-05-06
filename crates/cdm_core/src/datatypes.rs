@@ -1,5 +1,8 @@
 /// `color` is used to define common colors, as well as allow custom colors to be defined.
 pub mod color;
+/// `file_types` contains the on-disk representation of datatypes used within this application.
+/// These map directly to the TOML files used to store the datatypes on disk.
+pub mod file_types;
 /// `library_types` contains the types that are contained in a library.
 pub mod library_types;
 /// `project_types` contains the types that are contained in a project.
