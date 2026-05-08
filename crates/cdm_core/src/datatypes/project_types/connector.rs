@@ -40,11 +40,11 @@ impl Connectorize for Connector {
             })?;
 
         #[expect(
-            clippy::unwrap_used,
+            clippy::expect_used,
             reason = "if somehow this library is used on a 128 bit architecture, I want a panic so people bug me and I can \
                       rearchitect the library to accomodate"
         )]
-        Ok(u64::try_from(connector_type.pins.len()).unwrap())
+        Ok(u64::try_from(connector_type.pins.len()).expect("Library used on 128 bit architecture. Either change architectures or file an issue."))
     }
 }
 impl FromFile for Connector {
