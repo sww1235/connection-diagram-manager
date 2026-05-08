@@ -1,8 +1,6 @@
-use core::cmp::Ordering;
 use std::path::{Path, PathBuf};
 
-use egui::{Pos2, Vec2};
-use log::{trace, warn};
+use egui::{Pos2};
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -10,16 +8,13 @@ use crate::{
         file_types,
         library_types::Library,
         project_types::{
-            Project,
             ProjectData,
-            connection::{Connection, Type as ConnectionType},
         },
         schematic_connector::{AsConnector, ConnectionPoint, ConnectorType, right_angle::RightAngle},
-        schematic_symbol::SchematicRepresentation as _,
         unit_helper::length::Length,
         util_types::{IECCodes, LineStyle, PhysicalLocation, UserFields},
     },
-    error::{Error, GUIRenderingError, LibraryError},
+    error::{Error, LibraryError},
     traits::FromFile,
 };
 

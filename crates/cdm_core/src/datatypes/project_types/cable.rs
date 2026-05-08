@@ -4,8 +4,8 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use egui::{Pos2, Vec2};
-use log::{trace, warn};
+use egui::{Pos2};
+use log::{trace};
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -13,9 +13,7 @@ use crate::{
         file_types,
         library_types::{Library, cable_type, cable_type::CableLayer},
         project_types::{
-            Project,
             ProjectData,
-            connection::{Connection, Type as ConnectionType},
             wire::Wire,
         },
         schematic_connector::{
@@ -25,11 +23,10 @@ use crate::{
             multi_right_angle::MultiRightAngle,
             right_angle::RightAngle,
         },
-        schematic_symbol::SchematicRepresentation as _,
         unit_helper::length::Length,
         util_types::{IECCodes, LineStyle, PhysicalLocation, UserFields},
     },
-    error::{CableTypeError, Error, GUIRenderingError, LibraryError},
+    error::{CableTypeError, Error, LibraryError},
     traits::FromFile,
 };
 

@@ -405,10 +405,10 @@ impl SchematicRepresentation for Equipment {
                                                                         .unwrap()
                                                                     {
                                                                         CableCore::Cable(cable) => {
-                                                                            identifier = cable.identifier.clone()
+                                                                            identifier = cable.identifier.clone();
                                                                         }
                                                                         CableCore::Wire(wire) => {
-                                                                            identifier = wire.identifier.clone()
+                                                                            identifier = wire.identifier.clone();
                                                                         }
                                                                     }
                                                                     //TODO: need to correctly pull

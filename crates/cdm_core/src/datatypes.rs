@@ -7,6 +7,10 @@ pub mod file_types;
 pub mod library_types;
 /// `project_types` contains the types that are contained in a project.
 pub mod project_types;
+/// `schematic_connector` is a representation of a linear connection on a schematic. It is an abstraction
+/// over a [`Wire`](project_types::wire::Wire), [`Cable`](project_types::cable::Cable) or [`Term
+/// Cable`](project_types::term_cable::TermCable).
+pub mod schematic_connector;
 /// `schematic_symbol` is a specialized representation of SVG data along with extra data that allow
 /// extra functionality.
 pub mod schematic_symbol;
@@ -20,11 +24,6 @@ pub mod unit_helper;
 /// `util_types` contains utility types that are used in multiple other different types and files,
 /// including generic enums.
 pub mod util_types;
-
-/// `schematic_connector` is a representation of a linear connection on a schematic. It is an abstraction
-/// over a [`Wire`](project_types::wire::Wire), [`Cable`](project_types::cable::Cable) or [`Term
-/// Cable`](project_types::term_cable::TermCable).
-pub mod schematic_connector;
 
 use std::{
     fs,
@@ -43,8 +42,6 @@ use crate::{
     error::Error,
     path_utils::is_hidden,
 };
-
-//TODO: Validate project data is included in library data
 
 //TODO: investigate local structs instead of tuples
 //https://stackoverflow.com/questions/39008880/is-it-possible-to-declare-local-anonymous-structs-in-rust
