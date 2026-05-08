@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
+        file_types,
         project_types::ProjectData,
         unit_helper::length::Length,
         util_types::{IECCodes, PhysicalLocation, UserFields},
@@ -16,7 +17,7 @@ use crate::{
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct Pathway {
     /// Type of pathway.
-    pub path_type: String,
+    pub pathway_type: String,
     /// structured identifier of pathway.
     pub identifier: Option<String>,
     /// Optional description.
@@ -32,6 +33,23 @@ pub struct Pathway {
     /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
+}
+
+impl From<file_types::pathway::Pathway> for Pathway {
+
+    #[inline]
+    fn from(value: file_types::pathway::Pathway) -> Self {
+        Self{
+            pathway_type: value.pathway_type,
+            length: value.length,
+            identifier: value.identifier,
+            description: value.description,
+            physical_location: value.physical_location,
+            iec_codes: value.iec_codes,
+            user_fields: value.user_fields,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
 }
 
 impl FromFile for Pathway {

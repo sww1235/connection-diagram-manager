@@ -11,7 +11,7 @@ use crate::datatypes::{
 #[non_exhaustive]
 pub struct Pathway {
     /// Type of pathway.
-    pub path_type: String,
+    pub pathway_type: String,
     /// structured identifier of pathway.
     pub identifier: Option<String>,
     /// Optional description.

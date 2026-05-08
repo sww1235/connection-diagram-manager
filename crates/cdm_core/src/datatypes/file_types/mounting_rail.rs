@@ -12,6 +12,10 @@ use crate::datatypes::{
 pub struct MountingRail {
     /// ID of type of mounting rail.
     pub mounting_rail_type: String,
+    /// The structured name of the `MountingRail` instance.
+    pub identifier: String,
+    /// Optional description.
+    pub description: Option<String>,
     /// Length of mounting rail.
     pub length: Length,
     /// physical location of `MountingRail`.

@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     datatypes::{
         color::Color,
+        file_types,
         library_types::LibraryData,
         svg::Svg,
         util_types::{Catalog, Dimension},
@@ -57,6 +58,30 @@ pub struct ConnectorType {
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
+
+impl From<file_types::connector_type::ConnectorType> for ConnectorType {
+
+    #[inline]
+    fn from(value: file_types::connector_type::ConnectorType) -> Self {
+        Self {
+            catalog: value.catalog,
+            dimensions: value.dimensions,
+            mount_type: value.mount_type,
+            panel_cutout: value.panel_cutout,
+            gender: value.gender,
+            color: value.color,
+            component_designator: value.component_designator,
+            //TODO: turn this into slotmap
+            schematic_symbols: value.schematic_symbols,
+            //TODO: turn this into slotmap
+            connector_type_mate: value.connector_type_mate,
+            pins: value.pins,
+            visual_representation: value.visual_representation,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
+}
+
 impl FromFile for ConnectorType {
     #[inline]
     fn datafile(&self) -> PathBuf {

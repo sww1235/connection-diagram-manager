@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     datatypes::{
         color::Color,
+        file_types,
         library_types::LibraryData,
         svg::Svg,
         unit_helper::length::Length,
@@ -36,12 +37,31 @@ pub struct EnclosureType {
     /// Other rating information for enclosure.
     pub rating: Option<String>,
     /// Visual representation of Enclosure.
-    pub visual_representation: Option<Svg>,
+    pub visual_representation: Svg,
     /// Primary color of enclosure.
     pub color: Option<Color>,
     /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
+}
+
+impl From<file_types::enclosure_type::EnclosureType> for EnclosureType {
+
+    #[inline]
+    fn from(value: file_types::enclosure_type::EnclosureType) -> Self {
+        Self {
+            catalog: value.catalog,
+            dimensions: value.dimensions,
+            material: value.material,
+            usable_width: value.usable_width,
+            usable_height: value.usable_height,
+            usable_depth: value.usable_depth,
+            rating: value.rating,
+            visual_representation: value.visual_representation.unwrap_or_default(),
+            color: value.color,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
 }
 
 impl FromFile for EnclosureType {

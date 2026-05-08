@@ -7,12 +7,13 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
+        file_types,
         library_types::{Library, LibraryData},
         project_types::connector::Connectorize,
         unit_helper::length::Length,
         util_types::{Catalog, LineStyle},
     },
-    error::LibraryError,
+    error::{LibraryError},
     traits::FromFile,
 };
 
@@ -39,6 +40,24 @@ pub struct TermCableType {
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
+
+impl From<file_types::term_cable_type::TermCableType> for TermCableType {
+
+    #[inline]
+    fn from(value: file_types::term_cable_type::TermCableType) -> Self {
+        Self {
+            catalog: value.catalog,
+            wire_cable: value.wire_cable,
+            nominal_length: value.nominal_length,
+            actual_length: value.actual_length,
+            line_style: value.line_style,
+            end1: value.end1,
+            end2: value.end2,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
+}
+
 impl FromFile for TermCableType {
     #[inline]
     fn datafile(&self) -> PathBuf {

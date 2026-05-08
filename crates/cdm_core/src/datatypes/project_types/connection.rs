@@ -4,6 +4,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::traits::FromFile;
 
+use crate::datatypes::file_types;
+
 /// `Connection` represents a connection between two different elements.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
@@ -15,6 +17,20 @@ pub struct Connection {
     /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
+}
+
+
+impl From<file_types::connection::Connection> for Connection {
+
+    #[inline]
+    fn from(value: file_types::connection::Connection) -> Self {
+        Self{
+            end1: value.end1,
+            end2: value.end2,
+            contained_datafile_path: PathBuf::new(),
+
+        }
+    }
 }
 
 /// `Type` is an enum that defines what type of things can be connected to what other

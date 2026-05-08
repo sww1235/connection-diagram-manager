@@ -239,10 +239,10 @@ impl Project {
         }
         // Pathways
         for (id, pathway) in &self.pathways {
-            if !library_data.pathway_types.contains_key(&pathway.path_type) {
+            if !library_data.pathway_types.contains_key(&pathway.pathway_type) {
                 errors.push(
                     LibraryError::ValueNotFound {
-                        id: pathway.path_type.clone(),
+                        id: pathway.pathway_type.clone(),
                         found_in: id.clone(),
                         library_type: "PathwayType".to_owned(),
                     }

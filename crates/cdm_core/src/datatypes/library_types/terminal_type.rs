@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     datatypes::{
         color::Color,
+        file_types,
         library_types::LibraryData,
         svg::Svg,
         unit_helper::cross_sectional_area::CrossSectionalArea,
@@ -15,8 +16,6 @@ use crate::{
     },
     traits::FromFile,
 };
-
-//TODO:
 
 /// `TerminalType` represents a terminal for connecting wires together.
 /// Terminals are separated out into their own category due to some special case things with them,
@@ -73,9 +72,9 @@ pub struct TerminalType {
     /// If there is an integrated, non-removable disconnect present.
     ///
     /// If the disconnect is removable, use an accessory instead.
-    pub integrated_disconnect_present: Option<String>,
+    pub integrated_disconnect_present: bool,
     /// Visual representation of `TerminalType`.
-    pub visual_representation: Option<Svg>,
+    pub visual_representation: Svg,
     /// Vector of schematic symbols that can represent this terminal.
     /// values must be the id of the `symbol_type`.
     #[serde(default)]
@@ -89,6 +88,36 @@ pub struct TerminalType {
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
+
+impl From<file_types::terminal_type::TerminalType> for TerminalType {
+
+    #[inline]
+    fn from(value: file_types::terminal_type::TerminalType) -> Self {
+        Self {
+            catalog: value.catalog,
+            dimensions: value.dimensions,
+            color: value.color,
+            component_designator: value.component_designator,
+            secondary_color: value.secondary_color,
+            accepts_accessories: value.accepts_accessories,
+            fuse_terminal: value.fuse_terminal,
+            fuse_rating: value.fuse_rating,
+            indicator_present: value.indicator_present,
+            indicator_rating: value.indicator_rating,
+            indicator_type: value.indicator_type,
+            discrete_component_present: value.discrete_component_present,
+            discrete_component_rating: value.discrete_component_rating,
+            discrete_component_type: value.discrete_component_type,
+            integrated_disconnect_present: value.integrated_disconnect_present,
+            visual_representation: value.visual_representation.unwrap_or_default(),
+            schematic_symbols: value.schematic_symbols,
+            layers: value.layers,
+            internal_connections: value.internal_connections,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
+}
+
 impl FromFile for TerminalType {
     #[inline]
     fn datafile(&self) -> PathBuf {
@@ -217,7 +246,7 @@ pub struct TerminalStripJumperType {
     pub schematic_symbols: Vec<String>,
     /// Per pin compatible `TerminalType`s.
     ///
-    /// Specify an array of `TermianlType`s per pin.
+    /// Specify an array of `TerminalType`s per pin.
     /// The outer array is pin numbers.
     #[serde(default)]
     pub pin_compatible_terminal_types: Vec<Vec<String>>,

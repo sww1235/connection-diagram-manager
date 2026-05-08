@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
+        file_types,
         project_types::ProjectData,
         unit_helper::length::Length,
         util_types::{IECCodes, PhysicalLocation, UserFields},
@@ -37,6 +38,29 @@ pub struct Enclosure {
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
+
+
+impl From<file_types::enclosure::Enclosure> for Enclosure {
+
+    #[inline]
+    fn from(value: file_types::enclosure::Enclosure) -> Self {
+        Self{
+            enclosure_type: value.enclosure_type,
+            identifier: value.identifier,
+            description: value.description,
+            physical_location: value.physical_location,
+            iec_codes: value.iec_codes,
+            user_fields: value.user_fields,
+            mount_points: value.mount_points,
+
+
+
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
+}
+
+
 /// `MountPoint` represents a particular physical x/y/z within an `Enclosure`.
 ///
 /// Examples of `MountPoint`s include:
@@ -45,7 +69,6 @@ pub struct Enclosure {
 /// - Individual keystone slots on a panel
 /// - Rack units/Sub rack units within a panel
 
-//TODO: add mounting rails?
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum MountPoint {

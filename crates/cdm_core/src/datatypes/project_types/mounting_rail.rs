@@ -6,6 +6,7 @@ use uom::si::length::millimeter;
 
 use crate::{
     datatypes::{
+        file_types,
         library_types::Library,
         project_types::ProjectData,
         svg::Svg,
@@ -22,6 +23,10 @@ use crate::{
 pub struct MountingRail {
     /// ID of type of mounting rail.
     pub mounting_rail_type: String,
+    /// The structured name of the `MountingRail` instance.
+    pub identifier: String,
+    /// Optional description.
+    pub description: Option<String>,
     /// Length of mounting rail.
     pub length: Length,
     /// physical location of `MountingRail`.
@@ -33,6 +38,23 @@ pub struct MountingRail {
     /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
+}
+
+impl From<file_types::mounting_rail::MountingRail> for MountingRail {
+
+    #[inline]
+    fn from(value: file_types::mounting_rail::MountingRail) -> Self {
+        Self{
+            mounting_rail_type: value.mounting_rail_type,
+            length: value.length,
+            identifier: value.identifier,
+            description: value.description,
+            physical_location: value.physical_location,
+            iec_codes: value.iec_codes,
+            user_fields: value.user_fields,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
 }
 
 impl FromFile for MountingRail {

@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    datatypes::{library_types::LibraryData, svg::Svg},
+    datatypes::{file_types, library_types::LibraryData, svg::Svg},
     traits::FromFile,
 };
 
@@ -26,6 +26,21 @@ pub struct SchematicSymbolType {
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
+
+impl From<file_types::schematic_symbol_type::SchematicSymbolType> for SchematicSymbolType {
+
+    #[inline]
+    fn from(value: file_types::schematic_symbol_type::SchematicSymbolType) -> Self {
+        Self {
+            name: value.name,
+            visual_representation: value.visual_representation,
+            description: value.description,
+            supports_links: value.supports_links,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
+}
+
 impl FromFile for SchematicSymbolType {
     #[inline]
     fn datafile(&self) -> PathBuf {

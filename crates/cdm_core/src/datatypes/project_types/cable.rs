@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
+        file_types,
         library_types::{Library, cable_type, cable_type::CableLayer},
         project_types::{
             Project,
@@ -58,6 +59,7 @@ pub struct Cable {
     /// Key of map is identifier of core within cable, and is unique within each cable.
     #[serde(skip)]
     pub(crate) cores: BTreeMap<String, CableCore>,
+    //TODO: rename connector and connectortype to something more distinct
     /// The schematic representation of this cable.
     #[serde(skip)]
     pub(crate) connector: Option<ConnectorType>,
@@ -71,6 +73,32 @@ pub struct Cable {
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
+
+
+impl From<file_types::cable::Cable> for Cable {
+
+    #[inline]
+    fn from(value: file_types::cable::Cable) -> Self {
+        Self{
+            cable_type: value.cable_type,
+            identifier: value.identifier,
+            description: value.description,
+            length: value.length,
+            pathway: value.pathway,
+            physical_location: value.physical_location,
+            iec_codes: value.iec_codes,
+            user_fields: value.user_fields,
+            cores: BTreeMap::new(),
+            connector: None,
+            line_style: LineStyle::default(),
+            layers: Vec::new(),
+            contained_datafile_path: PathBuf::new(),
+
+
+        }
+    }
+}
+
 
 /// `CableCore` represents a core of a cable, which can either be a `Wire` or another `Cable`.
 #[derive(Debug, PartialEq, Clone)]

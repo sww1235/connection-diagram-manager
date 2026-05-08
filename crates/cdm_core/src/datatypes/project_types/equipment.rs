@@ -12,6 +12,7 @@ use xml::{EventReader, EventWriter, reader::XmlEvent as ReaderEvent, writer::Xml
 
 use crate::{
     datatypes::{
+        file_types,
         library_types::Library,
         project_types::{
             InnerConnectionId,
@@ -74,6 +75,28 @@ pub struct Equipment {
     /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
+}
+
+impl From<file_types::equipment::Equipment> for Equipment {
+
+    #[inline]
+    fn from(value: file_types::equipment::Equipment) -> Self {
+        Self{
+            equipment_type: value.equipment_type,
+            identifier: value.identifier,
+            mounting_type: value.mounting_type,
+            enclosure: value.enclosure,
+            mount_point: value.mount_point,
+            description: value.description,
+            physical_location: value.physical_location,
+            iec_codes: value.iec_codes,
+            user_fields: value.user_fields,
+            symbol_style: value.symbol_style,
+            connections: SparseSecondaryMap::new(),
+            schematic_symbol: None,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
 }
 
 impl FromFile for Equipment {

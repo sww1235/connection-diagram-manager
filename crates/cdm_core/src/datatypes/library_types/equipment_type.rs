@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
+        file_types,
         library_types::LibraryData,
         svg::Svg,
         util_types::{Catalog, Dimension},
@@ -42,13 +43,35 @@ pub struct EquipmentType {
     // TODO: figure out what angle to standardize on, or
     // just rely on the face vis_rep
     // TODO: create associated method to return correct face here
-    pub visual_representation: Option<Svg>,
+    pub visual_representation: Svg,
     /// faces represents a visual representation of each face of a piece of equipment.
     pub faces: Option<BTreeMap<String, EquipFace>>,
     /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
+
+impl From<file_types::equipment_type::EquipmentType> for EquipmentType {
+
+    #[inline]
+    fn from(value: file_types::equipment_type::EquipmentType) -> Self {
+        Self {
+            catalog: value.catalog,
+            dimensions: value.dimensions,
+            mount_types: value.mount_types,
+            category: value.category,
+            supertype: value.supertype,
+            component_designator: value.component_designator,
+            rating: value.rating,
+            //TODO: validate this exists somehow?
+            schematic_symbols: value.schematic_symbols,
+            visual_representation: value.visual_representation.unwrap_or_default(),
+            faces: value.faces,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
+}
+
 impl FromFile for EquipmentType {
     #[inline]
     fn datafile(&self) -> PathBuf {

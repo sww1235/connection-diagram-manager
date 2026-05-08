@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     datatypes::{
         color::Color,
+        file_types,
         library_types::LibraryData,
         unit_helper::{
             cross_sectional_area::CrossSectionalArea,
@@ -43,7 +44,7 @@ pub struct WireType {
     /// Conductor cross sectional area.
     pub conductor_cross_sect_area: Option<CrossSectionalArea>,
     /// Nominal cross sectional area.
-    pub nominal_cross_section: Option<NominalWireSize>,
+    pub nominal_cross_sect_area: Option<NominalWireSize>,
     /// AC Insulation voltage rating.
     pub ac_insulation_potential_rating: Option<ElectricPotential>,
     /// DC Insulation voltage rating.
@@ -70,6 +71,35 @@ pub struct WireType {
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
+
+impl From<file_types::wire_type::WireType> for WireType {
+
+    #[inline]
+    fn from(value: file_types::wire_type::WireType) -> Self {
+        Self {
+            catalog: value.catalog,
+            wire_type_code: value.wire_type_code,
+            material: value.material,
+            insulated: value.insulated,
+            insulation_material: value.insulation_material,
+            insulation_thickness: value.insulation_thickness,
+            conductor_cross_sect_area: value.conductor_cross_sect_area,
+            nominal_cross_sect_area: value.nominal_cross_sect_area,
+            ac_insulation_potential_rating: value.ac_insulation_potential_rating,
+            dc_insulation_potential_rating: value.dc_insulation_potential_rating,
+            insulation_temperature_rating: value.insulation_temperature_rating,
+            insulation_rating: value.insulation_rating,
+            insulation_color: value.insulation_color,
+            secondary_insulation_color: value.secondary_insulation_color,
+            line_style: value.line_style,
+            stranded: value.stranded,
+            num_strands: value.num_strands,
+            strand_cross_sect_area: value.strand_cross_sect_area,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
+}
+
 impl FromFile for WireType {
     #[inline]
     fn datafile(&self) -> PathBuf {

@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     datatypes::{
         color::Color,
+        file_types,
         library_types::LibraryData,
         svg::Svg,
         unit_helper::cross_sectional_area::CrossSectionalArea,
@@ -51,6 +52,28 @@ pub struct PathwayType {
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
+
+impl From<file_types::pathway_type::PathwayType> for PathwayType {
+
+    #[inline]
+    fn from(value: file_types::pathway_type::PathwayType) -> Self {
+        Self {
+            catalog: value.catalog,
+            supertype: value.supertype,
+            size: value.size,
+            trade_size: value.trade_size,
+            visual_representation: value.visual_representation,
+            cross_sect_area: value.cross_sect_area,
+            material: value.material,
+            color: value.color,
+            rating: value.rating,
+            dimensions: value.dimensions,
+            line_style: value.line_style,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
+}
+
 impl FromFile for PathwayType {
     #[inline]
     fn datafile(&self) -> PathBuf {

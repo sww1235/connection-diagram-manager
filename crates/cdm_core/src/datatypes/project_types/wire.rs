@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
+        file_types,
         library_types::Library,
         project_types::{
             Project,
@@ -57,6 +58,28 @@ pub struct Wire {
     /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
+}
+
+impl From<file_types::wire::Wire> for Wire {
+
+    #[inline]
+    fn from(value: file_types::wire::Wire) -> Self {
+        Self{
+            wire_type: value.wire_type,
+            identifier: value.identifier,
+            description: value.description,
+            length: value.length,
+            pathway: value.pathway,
+            physical_location: value.physical_location,
+            iec_codes: value.iec_codes,
+            user_fields: value.user_fields,
+            end1_connector_type: value.end1_connector_type,
+            end2_connector_type: value.end2_connector_type,
+            line_style: LineStyle::default(),
+            connector: None,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
 }
 
 impl AsConnector for Wire {

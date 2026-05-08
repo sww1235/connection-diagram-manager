@@ -23,6 +23,9 @@ pub enum Error {
     /// Generic error for unimplemented functionality.
     #[error("Unimplemented: {0}")]
     Unimplemented(String),
+    /// Errors resulting from converting Datafiles into internal structs.
+    #[error(transparent)]
+    DataFileConversionError(#[from] DataFileConversionError),
     /// Errors from `Library` code.
     #[error(transparent)]
     LibraryError(#[from] LibraryError),
@@ -81,6 +84,12 @@ pub enum Error {
     #[error(transparent)]
     ParseFloatError(#[from] core::num::ParseFloatError),
 }
+
+/// `FileDataIntakeError` is the list of errors that can occur when loading in datafiles.
+#[derive(Debug, Error)]
+#[non_exhaustive]
+#[expect(clippy::module_name_repetitions, reason = "error types should have Error in the name")]
+pub enum DataFileConversionError {}
 
 /// `LibraryError` is the list of errors that can occur within code related to `Library` data,
 /// especially during parsing.

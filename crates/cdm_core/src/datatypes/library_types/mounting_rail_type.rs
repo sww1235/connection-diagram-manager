@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    datatypes::{library_types::LibraryData, svg::Svg, unit_helper::length::Length, util_types::Catalog},
+    datatypes::{file_types, library_types::LibraryData, svg::Svg, unit_helper::length::Length, util_types::Catalog},
     traits::FromFile,
 };
 
@@ -76,6 +76,35 @@ pub struct MountingRailType {
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
+
+impl From<file_types::mounting_rail_type::MountingRailType> for MountingRailType {
+
+    #[inline]
+    fn from(value: file_types::mounting_rail_type::MountingRailType) -> Self {
+        Self {
+            catalog: value.catalog,
+            rail_height: value.rail_height,
+            rail_center_height: value.rail_center_height,
+            slots: value.slots,
+            rounded_slots: value.rounded_slots,
+            first_slot_center: value.first_slot_center,
+            slot_center_to_center: value.slot_center_to_center,
+            slot_length: value.slot_length,
+            slot_height: value.slot_height,
+            standard_rail_length: value.standard_rail_length,
+            minimum_rail_length: value.minimum_rail_length,
+            no_partial_holes: value.no_partial_holes,
+            top_rail_center_height: value.top_rail_center_height,
+            bottom_rail_center_height: value.bottom_rail_center_height,
+            slot_vertical_center: value.slot_vertical_center,
+            start_image: value.start_image,
+            middle_image: value.middle_image,
+            end_image: value.end_image,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
+}
+
 impl FromFile for MountingRailType {
     #[inline]
     fn datafile(&self) -> PathBuf {

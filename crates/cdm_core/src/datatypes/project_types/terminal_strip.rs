@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
+        file_types,
         project_types::ProjectData,
         util_types::{IECCodes, PhysicalLocation, SymbolStyle, UserFields},
     },
@@ -37,6 +38,25 @@ pub struct TerminalStrip {
     /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
+}
+
+impl From<file_types::terminal_strip::TerminalStrip> for TerminalStrip {
+
+    #[inline]
+    fn from(value: file_types::terminal_strip::TerminalStrip) -> Self {
+        Self{
+            identifier: value.identifier,
+            enclosure: value.enclosure,
+            mounting_rail: value.mounting_rail,
+            description: value.description,
+            physical_location: value.physical_location,
+            iec_codes: value.iec_codes,
+            user_fields: value.user_fields,
+            elements: value.elements,
+            jumpers: value.jumpers,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
 }
 
 /// `Element` represents one element of a terminal strip, be it terminal block or

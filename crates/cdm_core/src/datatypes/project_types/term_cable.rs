@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
+        file_types,
         library_types::Library,
         project_types::ProjectData,
         unit_helper::length::Length,
@@ -36,6 +37,24 @@ pub struct TermCable {
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
+
+impl From<file_types::term_cable::TermCable> for TermCable {
+
+    #[inline]
+    fn from(value: file_types::term_cable::TermCable) -> Self {
+        Self{
+            term_cable_type: value.term_cable_type,
+            identifier: value.identifier,
+            description: value.description,
+            pathway: value.pathway,
+            physical_location: value.physical_location,
+            iec_codes: value.iec_codes,
+            user_fields: value.user_fields,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
+}
+
 impl TermCable {
     /// length of `TermCableType`.
     ///

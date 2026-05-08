@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     datatypes::{
         color::Color,
+        file_types,
         library_types::LibraryData,
         unit_helper::{
             cross_sectional_area::CrossSectionalArea,
@@ -56,6 +57,24 @@ pub struct CableType {
     /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
+}
+
+impl From<file_types::cable_type::CableType> for CableType {
+
+    #[inline]
+    fn from(value: file_types::cable_type::CableType) -> Self {
+        Self {
+            catalog: value.catalog,
+            cable_type_code: value.cable_type_code,
+            cross_sect_area: value.cross_sect_area,
+            cross_section: value.cross_section,
+            dimensions: value.dimensions,
+            line_style: value.line_style,
+            cores: value.cores,
+            layers: value.layers,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
 }
 
 impl FromFile for CableType {
