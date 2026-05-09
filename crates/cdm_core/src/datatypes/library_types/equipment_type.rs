@@ -52,7 +52,6 @@ pub struct EquipmentType {
 }
 
 impl From<file_types::equipment_type::EquipmentType> for EquipmentType {
-
     #[inline]
     fn from(value: file_types::equipment_type::EquipmentType) -> Self {
         Self {

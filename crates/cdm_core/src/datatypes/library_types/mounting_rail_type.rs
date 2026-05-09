@@ -78,7 +78,6 @@ pub struct MountingRailType {
 }
 
 impl From<file_types::mounting_rail_type::MountingRailType> for MountingRailType {
-
     #[inline]
     fn from(value: file_types::mounting_rail_type::MountingRailType) -> Self {
         Self {

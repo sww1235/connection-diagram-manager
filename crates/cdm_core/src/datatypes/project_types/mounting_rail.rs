@@ -41,10 +41,9 @@ pub struct MountingRail {
 }
 
 impl From<file_types::mounting_rail::MountingRail> for MountingRail {
-
     #[inline]
     fn from(value: file_types::mounting_rail::MountingRail) -> Self {
-        Self{
+        Self {
             mounting_rail_type: value.mounting_rail_type,
             length: value.length,
             identifier: value.identifier,

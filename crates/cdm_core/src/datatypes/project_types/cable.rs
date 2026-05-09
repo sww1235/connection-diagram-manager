@@ -4,18 +4,15 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use egui::{Pos2};
-use log::{trace};
+use egui::Pos2;
+use log::trace;
 use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
         file_types,
         library_types::{Library, cable_type, cable_type::CableLayer},
-        project_types::{
-            ProjectData,
-            wire::Wire,
-        },
+        project_types::{ProjectData, wire::Wire},
         schematic_connector::{
             AsConnector,
             ConnectionPoint,
@@ -71,12 +68,10 @@ pub struct Cable {
     pub(crate) contained_datafile_path: PathBuf,
 }
 
-
 impl From<file_types::cable::Cable> for Cable {
-
     #[inline]
     fn from(value: file_types::cable::Cable) -> Self {
-        Self{
+        Self {
             cable_type: value.cable_type,
             identifier: value.identifier,
             description: value.description,
@@ -90,12 +85,9 @@ impl From<file_types::cable::Cable> for Cable {
             line_style: LineStyle::default(),
             layers: Vec::new(),
             contained_datafile_path: PathBuf::new(),
-
-
         }
     }
 }
-
 
 /// `CableCore` represents a core of a cable, which can either be a `Wire` or another `Cable`.
 #[derive(Debug, PartialEq, Clone)]

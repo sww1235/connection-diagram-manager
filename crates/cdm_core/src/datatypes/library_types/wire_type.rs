@@ -73,7 +73,6 @@ pub struct WireType {
 }
 
 impl From<file_types::wire_type::WireType> for WireType {
-
     #[inline]
     fn from(value: file_types::wire_type::WireType) -> Self {
         Self {

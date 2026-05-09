@@ -13,7 +13,7 @@ use crate::{
         unit_helper::length::Length,
         util_types::{Catalog, LineStyle},
     },
-    error::{LibraryError},
+    error::LibraryError,
     traits::FromFile,
 };
 
@@ -42,7 +42,6 @@ pub struct TermCableType {
 }
 
 impl From<file_types::term_cable_type::TermCableType> for TermCableType {
-
     #[inline]
     fn from(value: file_types::term_cable_type::TermCableType) -> Self {
         Self {

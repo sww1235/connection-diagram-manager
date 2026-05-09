@@ -41,10 +41,9 @@ pub struct TerminalStrip {
 }
 
 impl From<file_types::terminal_strip::TerminalStrip> for TerminalStrip {
-
     #[inline]
     fn from(value: file_types::terminal_strip::TerminalStrip) -> Self {
-        Self{
+        Self {
             identifier: value.identifier,
             enclosure: value.enclosure,
             mounting_rail: value.mounting_rail,

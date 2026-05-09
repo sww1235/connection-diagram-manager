@@ -39,12 +39,10 @@ pub struct Enclosure {
     pub(crate) contained_datafile_path: PathBuf,
 }
 
-
 impl From<file_types::enclosure::Enclosure> for Enclosure {
-
     #[inline]
     fn from(value: file_types::enclosure::Enclosure) -> Self {
-        Self{
+        Self {
             enclosure_type: value.enclosure_type,
             identifier: value.identifier,
             description: value.description,
@@ -53,13 +51,10 @@ impl From<file_types::enclosure::Enclosure> for Enclosure {
             user_fields: value.user_fields,
             mount_points: value.mount_points,
 
-
-
             contained_datafile_path: PathBuf::new(),
         }
     }
 }
-
 
 /// `MountPoint` represents a particular physical x/y/z within an `Enclosure`.
 ///

@@ -1,15 +1,13 @@
 use std::path::{Path, PathBuf};
 
-use egui::{Pos2};
+use egui::Pos2;
 use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
         file_types,
         library_types::Library,
-        project_types::{
-            ProjectData,
-        },
+        project_types::ProjectData,
         schematic_connector::{AsConnector, ConnectionPoint, ConnectorType, right_angle::RightAngle},
         unit_helper::length::Length,
         util_types::{IECCodes, LineStyle, PhysicalLocation, UserFields},
@@ -56,10 +54,9 @@ pub struct Wire {
 }
 
 impl From<file_types::wire::Wire> for Wire {
-
     #[inline]
     fn from(value: file_types::wire::Wire) -> Self {
-        Self{
+        Self {
             wire_type: value.wire_type,
             identifier: value.identifier,
             description: value.description,

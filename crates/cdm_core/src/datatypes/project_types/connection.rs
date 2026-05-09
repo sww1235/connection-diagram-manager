@@ -2,9 +2,7 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::traits::FromFile;
-
-use crate::datatypes::file_types;
+use crate::{datatypes::file_types, traits::FromFile};
 
 /// `Connection` represents a connection between two different elements.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
@@ -19,16 +17,13 @@ pub struct Connection {
     pub(crate) contained_datafile_path: PathBuf,
 }
 
-
 impl From<file_types::connection::Connection> for Connection {
-
     #[inline]
     fn from(value: file_types::connection::Connection) -> Self {
-        Self{
+        Self {
             end1: value.end1,
             end2: value.end2,
             contained_datafile_path: PathBuf::new(),
-
         }
     }
 }

@@ -28,7 +28,6 @@ pub struct SchematicSymbolType {
 }
 
 impl From<file_types::schematic_symbol_type::SchematicSymbolType> for SchematicSymbolType {
-
     #[inline]
     fn from(value: file_types::schematic_symbol_type::SchematicSymbolType) -> Self {
         Self {

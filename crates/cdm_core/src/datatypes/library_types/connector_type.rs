@@ -60,7 +60,6 @@ pub struct ConnectorType {
 }
 
 impl From<file_types::connector_type::ConnectorType> for ConnectorType {
-
     #[inline]
     fn from(value: file_types::connector_type::ConnectorType) -> Self {
         Self {

@@ -60,7 +60,6 @@ pub struct CableType {
 }
 
 impl From<file_types::cable_type::CableType> for CableType {
-
     #[inline]
     fn from(value: file_types::cable_type::CableType) -> Self {
         Self {

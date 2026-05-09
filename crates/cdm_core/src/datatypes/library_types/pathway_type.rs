@@ -54,7 +54,6 @@ pub struct PathwayType {
 }
 
 impl From<file_types::pathway_type::PathwayType> for PathwayType {
-
     #[inline]
     fn from(value: file_types::pathway_type::PathwayType) -> Self {
         Self {

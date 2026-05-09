@@ -36,10 +36,9 @@ pub struct Pathway {
 }
 
 impl From<file_types::pathway::Pathway> for Pathway {
-
     #[inline]
     fn from(value: file_types::pathway::Pathway) -> Self {
-        Self{
+        Self {
             pathway_type: value.pathway_type,
             length: value.length,
             identifier: value.identifier,

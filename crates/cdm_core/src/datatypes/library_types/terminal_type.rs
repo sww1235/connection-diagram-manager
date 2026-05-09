@@ -90,7 +90,6 @@ pub struct TerminalType {
 }
 
 impl From<file_types::terminal_type::TerminalType> for TerminalType {
-
     #[inline]
     fn from(value: file_types::terminal_type::TerminalType) -> Self {
         Self {

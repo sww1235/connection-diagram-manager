@@ -21,16 +21,13 @@ pub struct Connector {
     pub(crate) contained_datafile_path: PathBuf,
 }
 
-
 impl From<file_types::connector::Connector> for Connector {
-
     #[inline]
     fn from(value: file_types::connector::Connector) -> Self {
-        Self{
+        Self {
             connector_type: value.connector_type,
             symbol_style: value.symbol_style,
             contained_datafile_path: PathBuf::new(),
-
         }
     }
 }
@@ -58,7 +55,8 @@ impl Connectorize for Connector {
             reason = "if somehow this library is used on a 128 bit architecture, I want a panic so people bug me and I can \
                       rearchitect the library to accomodate"
         )]
-        Ok(u64::try_from(connector_type.pins.len()).expect("Library used on 128 bit architecture. Either change architectures or file an issue."))
+        Ok(u64::try_from(connector_type.pins.len())
+            .expect("Library used on 128 bit architecture. Either change architectures or file an issue."))
     }
 }
 impl FromFile for Connector {

@@ -39,10 +39,9 @@ pub struct TermCable {
 }
 
 impl From<file_types::term_cable::TermCable> for TermCable {
-
     #[inline]
     fn from(value: file_types::term_cable::TermCable) -> Self {
-        Self{
+        Self {
             term_cable_type: value.term_cable_type,
             identifier: value.identifier,
             description: value.description,

@@ -132,6 +132,7 @@ pub fn parse_datafiles(cli: &Cli) -> Result<(ProjectConfig, Library, Project), E
         //
         //TODO: add prefix to all string keys read in from file (maybe file_name or something) to
         //avoid unintended duplicate keys in multiple files
+
         trace! {"library files: {library_files:?}"}
         for file in library_files {
             trace! {"{}", file.display()};

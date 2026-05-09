@@ -46,7 +46,6 @@ pub struct EnclosureType {
 }
 
 impl From<file_types::enclosure_type::EnclosureType> for EnclosureType {
-
     #[inline]
     fn from(value: file_types::enclosure_type::EnclosureType) -> Self {
         Self {
