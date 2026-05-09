@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    datatypes::{library_types::Library, project_types::ProjectData, util_types::SymbolStyle},
+    datatypes::{file_types, library_types::Library, project_types::ProjectData, util_types::SymbolStyle},
     error::LibraryError,
     traits::FromFile,
 };
@@ -19,6 +19,20 @@ pub struct Connector {
     /// datafile the struct instance was read in from.
     #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
+}
+
+
+impl From<file_types::connector::Connector> for Connector {
+
+    #[inline]
+    fn from(value: file_types::connector::Connector) -> Self {
+        Self{
+            connector_type: value.connector_type,
+            symbol_style: value.symbol_style,
+            contained_datafile_path: PathBuf::new(),
+
+        }
+    }
 }
 
 impl Connectorize for Connector {

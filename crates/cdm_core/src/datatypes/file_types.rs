@@ -6,6 +6,7 @@
 //TODO: validate SVG during TryFrom impls
 pub mod cable;
 pub mod connection;
+pub mod connector;
 pub mod enclosure;
 pub mod equipment;
 pub mod mounting_rail;
