@@ -17,7 +17,7 @@ This repository is a rewrite of my initial attempt at this same program in
 [Go](https://github.com/sww1235/connection-diagram-manager). I migrated to Rust
 because I liked the additional safety of Rust, along with some potential speed
 advantages with the memory management (no GC). I also found the serialization
-and deserialization of YAML to work much better, and be much better documented.
+and deserialization of TOML to work much better, and be much better documented.
 
 ## Credits
 
