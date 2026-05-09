@@ -24,7 +24,7 @@ use crate::{
 /// Terminal definitions include both DIN rail mounted terminals, WAGO lever nuts, and Wire nuts
 /// Ferrules, ring/space/fork terminals, etc should be defined as connectors since they associate
 /// with wires.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(
     clippy::struct_excessive_bools,
     clippy::partial_pub_fields,
@@ -77,7 +77,6 @@ pub struct TerminalType {
     pub visual_representation: Svg,
     /// Vector of schematic symbols that can represent this terminal.
     /// values must be the id of the `symbol_type`.
-    #[serde(default)]
     pub schematic_symbols: Vec<String>,
     /// `BTreeMap` defining terminal layers.
     /// At least 1 layer is required for a terminal.
@@ -85,7 +84,6 @@ pub struct TerminalType {
     /// Which terminal connections are connected.
     pub internal_connections: Vec<InternalConnection>,
     /// Datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 
@@ -224,7 +222,7 @@ pub struct InternalConnection {
 
 /// `TerminalStripJumperType` represents a manufactured jumper
 /// that jumps between multiple terminals in a `TerminalStrip`.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct TerminalStripJumperType {
     /// Catalog information.
@@ -238,21 +236,36 @@ pub struct TerminalStripJumperType {
     /// color of jumper.
     pub color: Option<Color>,
     /// Visual representation of `TerminalStripJumperType`.
-    pub visual_representation: Option<Svg>,
+    pub visual_representation: Svg,
     /// Vector of schematic symbols that can represent this terminal strip jumper type.
     /// values must be the id of the `symbol_type`.
-    #[serde(default)]
     pub schematic_symbols: Vec<String>,
     /// Per pin compatible `TerminalType`s.
     ///
     /// Specify an array of `TerminalType`s per pin.
     /// The outer array is pin numbers.
-    #[serde(default)]
     pub pin_compatible_terminal_types: Vec<Vec<String>>,
     /// Datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(super) contained_datafile_path: PathBuf,
 }
+
+impl From<file_types::terminal_type::TerminalStripJumperType> for TerminalStripJumperType {
+    #[inline]
+    fn from(value: file_types::terminal_type::TerminalStripJumperType) -> Self {
+        Self {
+            catalog: value.catalog,
+            dimensions: value.dimensions,
+            compatible_terminal_types: value.compatible_terminal_types,
+            number_of_positions: value.number_of_positions,
+            color: value.color,
+            visual_representation: value.visual_representation.unwrap_or_default(),
+            schematic_symbols: value.schematic_symbols,
+            pin_compatible_terminal_types: value.pin_compatible_terminal_types,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
+}
+
 impl FromFile for TerminalStripJumperType {
     #[inline]
     fn datafile(&self) -> PathBuf {
@@ -266,7 +279,7 @@ impl FromFile for TerminalStripJumperType {
 
 /// `TerminalAccessoryType` represents Terminal accessories are items that insert into a terminal
 /// like fuse holders, component holders, disconnect switches, etc.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct TerminalAccessoryType {
     /// Catalog information.
@@ -280,17 +293,32 @@ pub struct TerminalAccessoryType {
     /// Fuse, component carrier, disconect blade, etc.
     pub accessory_supertype: String,
     /// Visual representation of `TerminalAccessoryType`.
-    pub visual_representation: Option<Svg>,
+    pub visual_representation: Svg,
     /// Vector of schematic symbols that can represent this terminal accessory type.
     /// values must be the id of the `SchematicSymbolType`.
-    #[serde(default)]
     pub schematic_symbols: Vec<String>,
     /// Color of accessory.
     pub color: Option<Color>,
     /// Datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(super) contained_datafile_path: PathBuf,
 }
+
+impl From<file_types::terminal_type::TerminalAccessoryType> for TerminalAccessoryType {
+    #[inline]
+    fn from(value: file_types::terminal_type::TerminalAccessoryType) -> Self {
+        Self {
+            catalog: value.catalog,
+            dimensions: value.dimensions,
+            compatible_terminal_types: value.compatible_terminal_types,
+            accessory_supertype: value.accessory_supertype,
+            color: value.color,
+            visual_representation: value.visual_representation.unwrap_or_default(),
+            schematic_symbols: value.schematic_symbols,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
+}
+
 impl FromFile for TerminalAccessoryType {
     #[inline]
     fn datafile(&self) -> PathBuf {
@@ -307,7 +335,7 @@ impl FromFile for TerminalAccessoryType {
 /// Terminal strip accessories are things like end plates or spacers that are incorporated into a
 /// `terminal_strip` linearly and interface with terminals This does not include things like DIN
 /// rail stops.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct TerminalStripAccessoryType {
     /// Catalog information.
@@ -321,17 +349,32 @@ pub struct TerminalStripAccessoryType {
     /// Fuse, component carrier, disconect blade, etc.
     pub accessory_supertype: String,
     /// Visual representation of `TerminalAccessoryType`.
-    pub visual_representation: Option<Svg>,
+    pub visual_representation: Svg,
     /// Vector of schematic symbols that can represent this terminal strip accessory type.
     /// values must be the id of the `SchematicSymbolType`.
-    #[serde(default)]
     pub schematic_symbols: Vec<String>,
     /// Color of accessory.
     pub color: Option<Color>,
     /// Datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(super) contained_datafile_path: PathBuf,
 }
+
+impl From<file_types::terminal_type::TerminalStripAccessoryType> for TerminalStripAccessoryType {
+    #[inline]
+    fn from(value: file_types::terminal_type::TerminalStripAccessoryType) -> Self {
+        Self {
+            catalog: value.catalog,
+            dimensions: value.dimensions,
+            compatible_terminal_types: value.compatible_terminal_types,
+            accessory_supertype: value.accessory_supertype,
+            color: value.color,
+            visual_representation: value.visual_representation.unwrap_or_default(),
+            schematic_symbols: value.schematic_symbols,
+            contained_datafile_path: PathBuf::new(),
+        }
+    }
+}
+
 impl FromFile for TerminalStripAccessoryType {
     #[inline]
     fn datafile(&self) -> PathBuf {

@@ -1,7 +1,6 @@
 use core::str::FromStr as _;
 use std::path::{Path, PathBuf};
 
-use serde::{Deserialize, Serialize};
 use uom::si::length::millimeter;
 
 use crate::{
@@ -18,7 +17,7 @@ use crate::{
 };
 
 /// `MountingRail` represents an individual mounting rail in a project.
-#[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct MountingRail {
     /// ID of type of mounting rail.
@@ -36,7 +35,6 @@ pub struct MountingRail {
     /// User defined fields.
     pub user_fields: Option<UserFields>,
     /// datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 

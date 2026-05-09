@@ -17,7 +17,7 @@ use crate::{
 
 /// `Location` represents a physical instance of a locationType.
 // TODO: add page/sheet number for pdf generation and printing
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct Enclosure {
     /// Type of location.
@@ -35,7 +35,6 @@ pub struct Enclosure {
     /// `mount_point` - Actual locations of associated equipment within location.
     pub mount_points: BTreeMap<String, MountPoint>,
     /// datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 
@@ -50,7 +49,6 @@ impl From<file_types::enclosure::Enclosure> for Enclosure {
             iec_codes: value.iec_codes,
             user_fields: value.user_fields,
             mount_points: value.mount_points,
-
             contained_datafile_path: PathBuf::new(),
         }
     }

@@ -29,7 +29,7 @@ use crate::{
 //TODO: add optional min/max bend radius parameters
 /// `CableType` represents a type of cable that consists of multiple cores. If something only has
 /// one core, then it is a wire, not a cable.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct CableType {
     /// Catalog information.
@@ -55,7 +55,6 @@ pub struct CableType {
     /// vector of exterior insulation/shielding layers.
     pub layers: Vec<CableLayer>,
     /// datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 

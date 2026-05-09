@@ -18,7 +18,7 @@ use crate::{
 };
 
 /// `TermCableType` represents a terminated cable with 2 ends and a connector on at least 1 end.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct TermCableType {
     /// Catalog information.
@@ -30,14 +30,12 @@ pub struct TermCableType {
     /// Actual Length of Terminated Cable.
     pub actual_length: Option<Length>,
     /// appearance in schematics.
-    #[serde(default)]
     pub line_style: LineStyle,
     /// One end of Terminated Cable.
     pub end1: BTreeMap<String, Connector>,
     /// The other end of Terminated Cable.
     pub end2: BTreeMap<String, Connector>,
     /// datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 

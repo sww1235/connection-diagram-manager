@@ -21,7 +21,7 @@ use crate::{
 ///
 /// Connector can represent more than just a metal or plastic blob on the end of a cable, it can
 /// represent a screw terminal on a piece of equipment or a hole for wire to be entered in.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct ConnectorType {
     /// Catalog information.
@@ -55,7 +55,6 @@ pub struct ConnectorType {
     /// overall diagram of connector TODO: figure out what angle this should be.
     pub visual_representation: Option<Svg>,
     /// datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 

@@ -6,7 +6,6 @@ use std::{
 
 use egui::Pos2;
 use log::trace;
-use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
@@ -29,7 +28,7 @@ use crate::{
 
 /// `Cable` represents a particular instance of a `CableType`
 /// It represents a physical item.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct Cable {
     /// The `CableType` key of this instance.
@@ -51,20 +50,15 @@ pub struct Cable {
     /// The cores in this cable. Generated from the data in the associcated `CableType`.
     ///
     /// Key of map is identifier of core within cable, and is unique within each cable.
-    #[serde(skip)]
     pub(crate) cores: BTreeMap<String, CableCore>,
     //TODO: rename connector and connectortype to something more distinct
     /// The schematic representation of this cable.
-    #[serde(skip)]
-    pub(crate) connector: Option<ConnectorType>,
+    pub(crate) connector: ConnectorType,
     /// The `LineStyle` of this cable. Initially copied from the `CableType`.
-    #[serde(skip)]
     pub(crate) line_style: LineStyle,
     /// vector of exterior insulation/shielding layers. Copied from the `CableType`.
-    #[serde(skip)]
     pub(crate) layers: Vec<CableLayer>,
     /// datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 
@@ -81,7 +75,7 @@ impl From<file_types::cable::Cable> for Cable {
             iec_codes: value.iec_codes,
             user_fields: value.user_fields,
             cores: BTreeMap::new(),
-            connector: None,
+            connector: ConnectorType::MultiRightAngle(MultiRightAngle::default()),
             line_style: LineStyle::default(),
             layers: Vec::new(),
             contained_datafile_path: PathBuf::new(),
@@ -103,45 +97,75 @@ impl AsConnector for Cable {
 
     #[inline]
     fn connector(&self) -> Self::Output {
-        match self.connector.as_ref().unwrap() {
+        #[expect(
+            clippy::wildcard_enum_match_arm,
+            reason = "Only one option implemented at this point, but others may be in the future."
+        )]
+        match &self.connector {
             ConnectorType::MultiRightAngle(mra) => mra.clone(),
+            #[expect(clippy::panic, reason = "The wildcard arm of the match should never happen currently")]
             _ => panic!(),
         }
     }
 
     #[inline]
     fn connector_mut(&mut self) -> &mut Self::Output {
-        match self.connector.as_mut().unwrap() {
+        #[expect(
+            clippy::wildcard_enum_match_arm,
+            reason = "Only one option implemented at this point, but others may be in the future."
+        )]
+        match &mut self.connector {
             ConnectorType::MultiRightAngle(mra) => mra,
+            #[expect(clippy::panic, reason = "The wildcard arm of the match should never happen currently")]
             _ => panic!(),
         }
     }
 
     #[inline]
     fn set_end1_position(&mut self, position: Pos2) {
-        match self.connector.as_mut().unwrap() {
+        #[expect(
+            clippy::wildcard_enum_match_arm,
+            reason = "Only one option implemented at this point, but others may be in the future."
+        )]
+        match &mut self.connector {
             ConnectorType::MultiRightAngle(mra) => mra.end1_junction.set_position(position),
+            #[expect(clippy::panic, reason = "The wildcard arm of the match should never happen currently")]
             _ => panic!(),
         }
     }
     #[inline]
     fn set_end2_position(&mut self, position: Pos2) {
-        match self.connector.as_mut().unwrap() {
+        #[expect(
+            clippy::wildcard_enum_match_arm,
+            reason = "Only one option implemented at this point, but others may be in the future."
+        )]
+        match &mut self.connector {
             ConnectorType::MultiRightAngle(mra) => mra.end2_junction.set_position(position),
+            #[expect(clippy::panic, reason = "The wildcard arm of the match should never happen currently")]
             _ => panic!(),
         }
     }
     #[inline]
     fn end1_position(&self) -> Pos2 {
-        match self.connector.as_ref().unwrap() {
+        #[expect(
+            clippy::wildcard_enum_match_arm,
+            reason = "Only one option implemented at this point, but others may be in the future."
+        )]
+        match &self.connector {
             ConnectorType::MultiRightAngle(mra) => mra.end1_junction.position(),
+            #[expect(clippy::panic, reason = "The wildcard arm of the match should never happen currently")]
             _ => panic!(),
         }
     }
     #[inline]
     fn end2_position(&self) -> Pos2 {
-        match self.connector.as_ref().unwrap() {
+        #[expect(
+            clippy::wildcard_enum_match_arm,
+            reason = "Only one option implemented at this point, but others may be in the future."
+        )]
+        match &self.connector {
             ConnectorType::MultiRightAngle(mra) => mra.end2_junction.position(),
+            #[expect(clippy::panic, reason = "The wildcard arm of the match should never happen currently")]
             _ => panic!(),
         }
     }
@@ -356,25 +380,25 @@ impl AsConnector for Cable {
 
         match self.cores.len().cmp(&1) {
             Ordering::Equal => {
-                self.connector = Some(ConnectorType::RightAngle(RightAngle::new(
+                self.connector = ConnectorType::RightAngle(RightAngle::new(
                     ConnectionPoint::default(),
                     ConnectionPoint::default(),
                     false,
                     self.line_style.clone(),
-                )));
+                ));
             }
             Ordering::Less => {
                 return Err(LibraryError::from(CableTypeError::NoCores(self.cable_type.clone())).into());
             }
             Ordering::Greater => {
-                self.connector = Some(ConnectorType::MultiRightAngle(MultiRightAngle::new(
+                self.connector = ConnectorType::MultiRightAngle(MultiRightAngle::new(
                     ConnectionPoint::default(),
                     Vec::new(),
                     ConnectionPoint::default(),
                     Vec::new(),
                     false,
                     self.line_style.clone(),
-                )));
+                ));
             }
         }
 
@@ -428,12 +452,12 @@ impl Cable {
                             end1_connector_type: None,
                             end2_connector_type: None,
                             line_style: line_style.clone().unwrap_or(core_type.line_style.clone()),
-                            connector: Some(ConnectorType::RightAngle(RightAngle::new(
+                            connector: ConnectorType::RightAngle(RightAngle::new(
                                 ConnectionPoint::default(),
                                 ConnectionPoint::default(),
                                 false,
                                 line_style.clone().unwrap_or(core_type.line_style.clone()),
-                            ))),
+                            )),
                             contained_datafile_path: self.contained_datafile_path.clone(),
                         }),
                     );
@@ -458,7 +482,7 @@ impl Cable {
                         cores: BTreeMap::new(),
                         layers: core_type.layers.clone(),
                         line_style: line_style.clone().unwrap_or(core_type.line_style.clone()),
-                        connector: None,
+                        connector: ConnectorType::RightAngle(RightAngle::default()),
                         contained_datafile_path: self.contained_datafile_path.clone(),
                     };
                     match core_type.cores.len().cmp(&1) {
@@ -471,26 +495,26 @@ impl Cable {
                             #[expect(clippy::shadow_reuse, reason = "just stripping a prefix")]
                             let new_core_id = new_core_id.strip_prefix('.').unwrap_or(&new_core_id).to_owned();
                             self.cores.insert(new_core_id, CableCore::Cable(cable));
-                            self.connector = Some(ConnectorType::MultiRightAngle(MultiRightAngle::new(
+                            self.connector = ConnectorType::MultiRightAngle(MultiRightAngle::new(
                                 ConnectionPoint::default(),
                                 Vec::new(),
                                 ConnectionPoint::default(),
                                 Vec::new(),
                                 false,
                                 self.line_style.clone(),
-                            )));
+                            ));
                         }
                         Ordering::Equal => {
                             self.cores.insert(
                                 format!("{}.{id}", super_id.clone().unwrap_or_default()),
                                 CableCore::Cable(cable),
                             );
-                            self.connector = Some(ConnectorType::RightAngle(RightAngle::new(
+                            self.connector = ConnectorType::RightAngle(RightAngle::new(
                                 ConnectionPoint::default(),
                                 ConnectionPoint::default(),
                                 false,
                                 self.line_style.clone(),
-                            )));
+                            ));
                         }
                         Ordering::Less => {
                             return Err(CableTypeError::NoCores(type_id.to_owned()).into());

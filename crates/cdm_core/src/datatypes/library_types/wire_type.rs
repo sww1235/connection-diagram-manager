@@ -1,7 +1,5 @@
 use std::path::{Path, PathBuf};
 
-use serde::{Deserialize, Serialize};
-
 use crate::{
     datatypes::{
         color::Color,
@@ -25,7 +23,7 @@ use crate::{
 /// mainly provided for logical reasons rather than
 /// functional (model/part number/manufacturer part number
 /// may all be equivalent in some cases).
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct WireType {
     /// Catalog information.
@@ -59,7 +57,6 @@ pub struct WireType {
     /// Secondary Insulation Color.
     pub secondary_insulation_color: Option<Color>,
     /// Appearance in schematics.
-    #[serde(default)]
     pub line_style: LineStyle,
     /// If `WireType` is stranded.
     pub stranded: bool,
@@ -68,7 +65,6 @@ pub struct WireType {
     /// Cross sectional area of individual strand.
     pub strand_cross_sect_area: Option<CrossSectionalArea>,
     /// Datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 

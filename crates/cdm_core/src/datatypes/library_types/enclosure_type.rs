@@ -1,7 +1,5 @@
 use std::path::{Path, PathBuf};
 
-use serde::{Deserialize, Serialize};
-
 use crate::{
     datatypes::{
         color::Color,
@@ -14,12 +12,11 @@ use crate::{
     traits::FromFile,
 };
 
-//TODO: create physical location stuff
 /// `EnclosureType` represents a type/model of location.
 ///
 /// Examples of `EnclosureType` include junction boxes, racks, panels, etc.
 /// It does not include places these are located.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct EnclosureType {
     /// Catalog information.
@@ -41,7 +38,6 @@ pub struct EnclosureType {
     /// Primary color of enclosure.
     pub color: Option<Color>,
     /// datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 

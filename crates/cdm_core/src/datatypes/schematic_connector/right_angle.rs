@@ -188,3 +188,16 @@ impl RightAngle {
         self.line_style.color = color;
     }
 }
+
+impl Default for RightAngle {
+    #[inline]
+    fn default() -> Self {
+        Self {
+            end1: ConnectionPoint::default(),
+            end2: ConnectionPoint::default(),
+            midpoint: Pos2::default(),
+            overflow: false,
+            line_style: LineStyle::default(),
+        }
+    }
+}

@@ -6,7 +6,6 @@ use std::{
 
 use egui::Pos2;
 use log::{trace, warn};
-use serde::{Deserialize, Serialize};
 use slotmap::SparseSecondaryMap;
 use xml::{EventReader, EventWriter, reader::XmlEvent as ReaderEvent, writer::XmlEvent as WriterEvent};
 
@@ -30,7 +29,7 @@ use crate::{
 
 /// `Equipment` represents a particular instance of an `EquipmentType`.
 /// This is the physical unit you would hold in your hand.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "some fields are not part of the public API")]
 pub struct Equipment {
     /// The type of equipment of the instance.
@@ -63,17 +62,14 @@ pub struct Equipment {
     ///
     /// The mapped value indicates if the connection end that represents the equipment instance is
     /// `End1` or `End2`.
-    #[serde(skip)]
     pub(crate) connections: SparseSecondaryMap<InnerConnectionId, EndDesignation>,
     /// Schematic symbol instance that is updated from the library and contains updated data unique
     /// to this instance. This also has the `symbol_style` applied if `Some()`.
     ///
     /// This field is designed to cache the final symbol used for display so the update methods are
     /// not running every frame.
-    #[serde(skip)]
-    pub(crate) schematic_symbol: Option<SchematicSymbol>,
+    pub(crate) schematic_symbol: SchematicSymbol,
     /// datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 
@@ -92,7 +88,7 @@ impl From<file_types::equipment::Equipment> for Equipment {
             user_fields: value.user_fields,
             symbol_style: value.symbol_style,
             connections: SparseSecondaryMap::new(),
-            schematic_symbol: None,
+            schematic_symbol: SchematicSymbol::default(),
             contained_datafile_path: PathBuf::new(),
         }
     }
@@ -121,36 +117,28 @@ impl SchematicRepresentation for Equipment {
     #[inline]
     fn schematic_symbol(&self) -> SchematicSymbol {
         //TODO: don't have the warning symbol as default? Currently Svg::default().
-        self.schematic_symbol.clone().unwrap_or_default()
+        self.schematic_symbol.clone()
     }
 
     #[inline]
     fn schematic_symbol_mut(&mut self) -> &mut SchematicSymbol {
         //TODO: don't have the warning symbol as default? Currently Svg::default().
-        if let Some(schematic_symbol) = &mut self.schematic_symbol {
-            schematic_symbol
-        } else {
-            panic!()
-        }
+        &mut self.schematic_symbol
     }
 
     #[inline]
     fn update_symbol_scale(&mut self, scale: f32) {
-        if let Some(schematic_symbol) = &mut self.schematic_symbol {
-            schematic_symbol.scale = scale;
-        }
+        self.schematic_symbol.scale = scale;
     }
 
     #[inline]
     fn set_symbol_position(&mut self, position: Pos2) {
-        if let Some(schematic_symbol) = &mut self.schematic_symbol {
-            schematic_symbol.position = position;
-        }
+        self.schematic_symbol.position = position;
     }
 
     #[inline]
     fn symbol_position(&self) -> Pos2 {
-        self.schematic_symbol.clone().unwrap_or_default().position
+        self.schematic_symbol.position
     }
 
     #[inline]
@@ -211,7 +199,7 @@ impl SchematicRepresentation for Equipment {
             scale: 1.0,
         };
 
-        self.schematic_symbol = Some(schematic_symbol);
+        self.schematic_symbol = schematic_symbol;
 
         Ok(())
     }
@@ -220,10 +208,7 @@ impl SchematicRepresentation for Equipment {
     #[expect(clippy::too_many_lines, reason = "Its a long function, deal with it.")]
     fn update_symbol_data(&mut self, library: &Library, project: &Project) -> Result<(), Error> {
         // TODO: look at reader config
-        let Some(schematic_symbol) = &mut self.schematic_symbol else {
-            return Err(SVGModificationError::UpdatingUndefinedSvg.into());
-        };
-        let svg_data = schematic_symbol.visual_representation.get_data_mut();
+        let svg_data = self.schematic_symbol.visual_representation.get_data_mut();
         let equipment_type = library
             .equipment_types
             .get(&self.equipment_type)
@@ -614,7 +599,7 @@ impl SchematicRepresentation for Equipment {
                                         SVGValidationError::BlankAttributeValue("data-connection-point".to_owned()).into()
                                     );
                                 }
-                                schematic_symbol.connections.insert(connection_id, connection);
+                                self.schematic_symbol.connections.insert(connection_id, connection);
                             }
 
                             //TODO:
@@ -658,7 +643,7 @@ impl SchematicRepresentation for Equipment {
         let output_string = str::from_utf8(&out_buffer)?.to_owned();
         //trace!{"{}", output_string};
 
-        schematic_symbol.visual_representation.set_data(&output_string);
+        self.schematic_symbol.visual_representation.set_data(&output_string);
 
         Ok(())
     }

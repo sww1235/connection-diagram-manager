@@ -308,3 +308,17 @@ impl MultiRightAngle {
         self.line_style.color = color;
     }
 }
+
+impl Default for MultiRightAngle {
+    #[inline]
+    fn default() -> Self {
+        Self {
+            end1_junction: ConnectionPoint::default(),
+            end1_connections: Vec::default(),
+            end2_junction: ConnectionPoint::default(),
+            end2_connections: Vec::default(),
+            overflow: false,
+            line_style: LineStyle::default(),
+        }
+    }
+}

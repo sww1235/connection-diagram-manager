@@ -23,19 +23,18 @@ pub mod wire_type;
 
 use std::{collections::BTreeMap, path::Path};
 
-use serde::{Deserialize, Serialize};
-
 use crate::{
-    datatypes::library_types::{cable_type::CableCore, mounting_rail_type::MountingRailType, term_cable_type::WireCable},
+    datatypes::{
+        file_types,
+        library_types::{cable_type::CableCore, mounting_rail_type::MountingRailType, term_cable_type::WireCable},
+    },
     error::{Error, LibraryError},
     traits::FromFile as _,
     util_functions,
 };
 
 /// `Library` represents all library data used in program.
-#[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
-#[serde(default)]
-#[serde(deny_unknown_fields)]
+#[derive(Debug, Default, PartialEq)]
 #[non_exhaustive]
 pub struct Library {
     /// contains all cable types read in from file, and/or added in via program logic.
@@ -460,6 +459,79 @@ impl Library {
         // No validation currently needed
         //    for wire_type in self.wire_types.values() {}
         Ok(errors)
+    }
+}
+
+impl From<file_types::Library> for Library {
+    #[inline]
+    fn from(value: file_types::Library) -> Self {
+        Self {
+            cable_types: value
+                .cable_types
+                .into_iter()
+                .map(|(key, inner_value)| (key, cable_type::CableType::from(inner_value)))
+                .collect(),
+            connector_types: value
+                .connector_types
+                .into_iter()
+                .map(|(key, inner_value)| (key, connector_type::ConnectorType::from(inner_value)))
+                .collect(),
+            enclosure_types: value
+                .enclosure_types
+                .into_iter()
+                .map(|(key, inner_value)| (key, enclosure_type::EnclosureType::from(inner_value)))
+                .collect(),
+            equipment_types: value
+                .equipment_types
+                .into_iter()
+                .map(|(key, inner_value)| (key, equipment_type::EquipmentType::from(inner_value)))
+                .collect(),
+            mounting_rail_types: value
+                .mounting_rail_types
+                .into_iter()
+                .map(|(key, inner_value)| (key, mounting_rail_type::MountingRailType::from(inner_value)))
+                .collect(),
+            pathway_types: value
+                .pathway_types
+                .into_iter()
+                .map(|(key, inner_value)| (key, pathway_type::PathwayType::from(inner_value)))
+                .collect(),
+            schematic_symbol_types: value
+                .schematic_symbol_types
+                .into_iter()
+                .map(|(key, inner_value)| (key, schematic_symbol_type::SchematicSymbolType::from(inner_value)))
+                .collect(),
+            term_cable_types: value
+                .term_cable_types
+                .into_iter()
+                .map(|(key, inner_value)| (key, term_cable_type::TermCableType::from(inner_value)))
+                .collect(),
+            terminal_types: value
+                .terminal_types
+                .into_iter()
+                .map(|(key, inner_value)| (key, terminal_type::TerminalType::from(inner_value)))
+                .collect(),
+            terminal_strip_jumper_types: value
+                .terminal_strip_jumper_types
+                .into_iter()
+                .map(|(key, inner_value)| (key, terminal_type::TerminalStripJumperType::from(inner_value)))
+                .collect(),
+            terminal_accessory_types: value
+                .terminal_accessory_types
+                .into_iter()
+                .map(|(key, inner_value)| (key, terminal_type::TerminalAccessoryType::from(inner_value)))
+                .collect(),
+            terminal_strip_accessory_types: value
+                .terminal_strip_accessory_types
+                .into_iter()
+                .map(|(key, inner_value)| (key, terminal_type::TerminalStripAccessoryType::from(inner_value)))
+                .collect(),
+            wire_types: value
+                .wire_types
+                .into_iter()
+                .map(|(key, inner_value)| (key, wire_type::WireType::from(inner_value)))
+                .collect(),
+        }
     }
 }
 

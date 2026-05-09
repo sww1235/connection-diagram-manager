@@ -20,14 +20,8 @@ pub struct Color {
 
 impl Color {
     // All constants match CSS Standard Colors as closely as possible.
-
     ///FF0000FF.
-    pub const RED: Self = Self {
-        red: 0xFF,
-        green: 0x0,
-        blue: 0x0,
-        alpha: 0x0,
-    };
+    pub const RED: Self = Self::from_rgba(0xFF, 0x0, 0x0, 0x0);
     ///FFA500FF.
     pub const ORANGE: Self = Self::from_rgba(0xFF, 0xA5, 0x0, 0xFF);
     ///FFFF00FF.

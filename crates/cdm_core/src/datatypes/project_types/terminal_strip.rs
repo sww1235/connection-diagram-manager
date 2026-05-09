@@ -14,7 +14,7 @@ use crate::{
 /// `TerminalStrip` represents an individual terminal strip in a project.
 ///
 /// A `TerminalStrip` is a collection or group of 1 or more terminal blocks.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct TerminalStrip {
     /// structured identifier of terminal strip.
@@ -36,7 +36,6 @@ pub struct TerminalStrip {
     /// Jumpers in terminal strip.
     pub jumpers: Vec<Jumper>,
     /// datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 

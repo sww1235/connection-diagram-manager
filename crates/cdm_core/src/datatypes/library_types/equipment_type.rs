@@ -19,7 +19,7 @@ use crate::{
 /// `EquipmentType` represents a type of equipment.
 ///
 /// Anything from a rackmount piece of gear to an outlet or terminal block.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct EquipmentType {
     /// Catalog information.
@@ -47,7 +47,6 @@ pub struct EquipmentType {
     /// faces represents a visual representation of each face of a piece of equipment.
     pub faces: Option<BTreeMap<String, EquipFace>>,
     /// datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 

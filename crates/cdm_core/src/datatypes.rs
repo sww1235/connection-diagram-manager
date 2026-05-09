@@ -137,14 +137,14 @@ pub fn parse_datafiles(cli: &Cli) -> Result<(ProjectConfig, Library, Project), E
         for file in library_files {
             trace! {"{}", file.display()};
             let library_file_contents = fs::read_to_string(&file)?;
-            let library_file: Library = toml::from_str(&library_file_contents)?;
-            library_data.merge(library_file, &file)?;
+            let library_file: file_types::Library = toml::from_str(&library_file_contents)?;
+            library_data.merge(library_file.into(), &file)?;
         }
         for file in project_files {
             trace! {"{}", file.display()};
             let project_file_contents = fs::read_to_string(&file)?;
-            let project_file: Project = toml::from_str(&project_file_contents)?;
-            project_data.merge(project_file, &file)?;
+            let project_file: file_types::Project = toml::from_str(&project_file_contents)?;
+            project_data.merge(project_file.into(), &file)?;
         }
 
         Ok((project_config, library_data, project_data))

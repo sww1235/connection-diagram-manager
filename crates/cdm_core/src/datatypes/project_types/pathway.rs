@@ -1,7 +1,5 @@
 use std::path::{Path, PathBuf};
 
-use serde::{Deserialize, Serialize};
-
 use crate::{
     datatypes::{
         file_types,
@@ -13,7 +11,7 @@ use crate::{
 };
 
 /// `Pathway` represents a physical instance of a pathway.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct Pathway {
     /// Type of pathway.
@@ -31,7 +29,6 @@ pub struct Pathway {
     /// User defined fields.
     pub user_fields: Option<UserFields>,
     /// datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 

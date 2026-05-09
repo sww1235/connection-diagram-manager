@@ -1,7 +1,5 @@
 use std::path::{Path, PathBuf};
 
-use serde::{Deserialize, Serialize};
-
 use crate::{
     datatypes::{
         file_types,
@@ -16,7 +14,7 @@ use crate::{
 
 /// `TermCable` represents a particular instance of a `TermCableType`.
 /// It represents a physical item.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct TermCable {
     /// The `TermCableType` of this instance.
@@ -34,7 +32,6 @@ pub struct TermCable {
     /// User defined fields.
     pub user_fields: Option<UserFields>,
     /// datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 

@@ -1,7 +1,5 @@
 use std::path::{Path, PathBuf};
 
-use serde::{Deserialize, Serialize};
-
 use crate::{
     datatypes::{file_types, library_types::Library, project_types::ProjectData, util_types::SymbolStyle},
     error::LibraryError,
@@ -9,7 +7,7 @@ use crate::{
 };
 
 /// `Connector` is an instance of a [`ConnectorType`](super::connector_type::ConnectorType).
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct Connector {
     /// The type of this connector instance.
@@ -17,7 +15,6 @@ pub struct Connector {
     /// Optional styling data for schematic symbol.
     pub symbol_style: Option<SymbolStyle>,
     /// datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 

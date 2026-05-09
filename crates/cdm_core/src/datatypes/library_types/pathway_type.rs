@@ -1,7 +1,5 @@
 use std::path::{Path, PathBuf};
 
-use serde::{Deserialize, Serialize};
-
 use crate::{
     datatypes::{
         color::Color,
@@ -18,7 +16,7 @@ use crate::{
 /// [`LocationType`](super::location_type::LocationType) to another.
 ///
 /// Examples of Pathways include, conduit, cable tray, free air.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct PathwayType {
     /// Catalog information.
@@ -49,7 +47,6 @@ pub struct PathwayType {
     /// appearance in schematics.
     pub line_style: Option<LineStyle>,
     /// datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 

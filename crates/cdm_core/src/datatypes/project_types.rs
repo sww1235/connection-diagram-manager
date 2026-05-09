@@ -31,6 +31,7 @@ use slotmap::SlotMap;
 
 use crate::{
     datatypes::{
+        file_types,
         library_types::Library,
         project_types::{
             connection::{EndDesignation, Type as ConnectionType},
@@ -52,9 +53,7 @@ slotmap::new_key_type! {
 }
 
 /// `Project` represents all project specific data used in program.
-#[derive(Debug, Default, Serialize, Deserialize, Clone)]
-#[serde(default)]
-#[serde(deny_unknown_fields)]
+#[derive(Debug, Default, Clone)]
 #[non_exhaustive]
 pub struct Project {
     /// contains all cables read in from files, and/or added in via program logic.
@@ -416,6 +415,66 @@ impl Project {
             origin_map.insert(value);
         }
         Ok(())
+    }
+}
+
+impl From<file_types::Project> for Project {
+    #[inline]
+    fn from(value: file_types::Project) -> Self {
+        Self {
+            cables: value
+                .cables
+                .into_iter()
+                .map(|(key, inner_value)| (key, cable::Cable::from(inner_value)))
+                .collect(),
+            connections: {
+                let mut temp_map: SlotMap<InnerConnectionId, connection::Connection> = SlotMap::with_key();
+                for connection in value.connections {
+                    temp_map.insert(connection.into());
+                }
+                temp_map
+            },
+            connectors: value
+                .connectors
+                .into_iter()
+                .map(|(key, inner_value)| (key, connector::Connector::from(inner_value)))
+                .collect(),
+            enclosures: value
+                .enclosures
+                .into_iter()
+                .map(|(key, inner_value)| (key, enclosure::Enclosure::from(inner_value)))
+                .collect(),
+            equipment: value
+                .equipment
+                .into_iter()
+                .map(|(key, inner_value)| (key, equipment::Equipment::from(inner_value)))
+                .collect(),
+            mounting_rails: value
+                .mounting_rails
+                .into_iter()
+                .map(|(key, inner_value)| (key, mounting_rail::MountingRail::from(inner_value)))
+                .collect(),
+            pathways: value
+                .pathways
+                .into_iter()
+                .map(|(key, inner_value)| (key, pathway::Pathway::from(inner_value)))
+                .collect(),
+            term_cables: value
+                .term_cables
+                .into_iter()
+                .map(|(key, inner_value)| (key, term_cable::TermCable::from(inner_value)))
+                .collect(),
+            terminal_strips: value
+                .terminal_strips
+                .into_iter()
+                .map(|(key, inner_value)| (key, terminal_strip::TerminalStrip::from(inner_value)))
+                .collect(),
+            wires: value
+                .wires
+                .into_iter()
+                .map(|(key, inner_value)| (key, wire::Wire::from(inner_value)))
+                .collect(),
+        }
     }
 }
 

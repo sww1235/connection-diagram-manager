@@ -1,7 +1,5 @@
 use std::path::{Path, PathBuf};
 
-use serde::{Deserialize, Serialize};
-
 use crate::{
     datatypes::{file_types, library_types::LibraryData, svg::Svg, unit_helper::length::Length, util_types::Catalog},
     traits::FromFile,
@@ -14,7 +12,7 @@ use crate::{
 ///
 /// `MountingRailType`s are defined in a horizontal orientation for consistency. Any of the
 /// provided SVG files must be defined to accomodate this.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct MountingRailType {
     /// Catalog information.
@@ -50,7 +48,6 @@ pub struct MountingRailType {
     /// will be ignored.
     pub minimum_rail_length: Option<Length>,
     /// extend rail so there are no partial holes.
-    #[serde(default)]
     pub no_partial_holes: bool,
     /// distance between top `center_line` and origin.
     pub top_rail_center_height: Option<Length>,
@@ -73,7 +70,6 @@ pub struct MountingRailType {
     #[expect(missing_docs, reason = "documented above")]
     pub end_image: Option<Svg>,
     /// datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 

@@ -1,7 +1,6 @@
 use std::path::{Path, PathBuf};
 
 use egui::Pos2;
-use serde::{Deserialize, Serialize};
 
 use crate::{
     datatypes::{
@@ -18,7 +17,7 @@ use crate::{
 
 /// `Wire` represents a particular instance of a `WireType`.
 /// It represents a physical item.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct Wire {
     /// The `WireType` of this instance.
@@ -43,13 +42,10 @@ pub struct Wire {
     /// An optional single pin connector on the other end of this `Wire`.
     pub end2_connector_type: Option<String>,
     /// Styling info for the connector that represents this wire.
-    #[serde(skip)]
     pub(crate) line_style: LineStyle,
     /// The schematic representation of this wire.
-    #[serde(skip)]
-    pub(crate) connector: Option<ConnectorType>,
+    pub(crate) connector: ConnectorType,
     /// datafile the struct instance was read in from.
-    #[serde(skip)]
     pub(crate) contained_datafile_path: PathBuf,
 }
 
@@ -68,7 +64,7 @@ impl From<file_types::wire::Wire> for Wire {
             end1_connector_type: value.end1_connector_type,
             end2_connector_type: value.end2_connector_type,
             line_style: LineStyle::default(),
-            connector: None,
+            connector: ConnectorType::RightAngle(RightAngle::default()),
             contained_datafile_path: PathBuf::new(),
         }
     }
@@ -79,45 +75,75 @@ impl AsConnector for Wire {
 
     #[inline]
     fn connector(&self) -> Self::Output {
-        match self.connector.as_ref().unwrap() {
+        #[expect(
+            clippy::wildcard_enum_match_arm,
+            reason = "Only one option implemented at this point, but others may be in the future."
+        )]
+        match &self.connector {
             ConnectorType::RightAngle(ra) => ra.clone(),
+            #[expect(clippy::panic, reason = "The wildcard arm of the match should never happen currently")]
             _ => panic!(),
         }
     }
 
     #[inline]
     fn connector_mut(&mut self) -> &mut Self::Output {
-        match self.connector.as_mut().unwrap() {
+        #[expect(
+            clippy::wildcard_enum_match_arm,
+            reason = "Only one option implemented at this point, but others may be in the future."
+        )]
+        match &mut self.connector {
             ConnectorType::RightAngle(ra) => ra,
+            #[expect(clippy::panic, reason = "The wildcard arm of the match should never happen currently")]
             _ => panic!(),
         }
     }
 
     #[inline]
     fn set_end1_position(&mut self, position: Pos2) {
-        match self.connector.as_mut().unwrap() {
+        #[expect(
+            clippy::wildcard_enum_match_arm,
+            reason = "Only one option implemented at this point, but others may be in the future."
+        )]
+        match &mut self.connector {
             ConnectorType::RightAngle(ra) => ra.end1.set_position(position),
+            #[expect(clippy::panic, reason = "The wildcard arm of the match should never happen currently")]
             _ => panic!(),
         }
     }
     #[inline]
     fn set_end2_position(&mut self, position: Pos2) {
-        match self.connector.as_mut().unwrap() {
+        #[expect(
+            clippy::wildcard_enum_match_arm,
+            reason = "Only one option implemented at this point, but others may be in the future."
+        )]
+        match &mut self.connector {
             ConnectorType::RightAngle(ra) => ra.end2.set_position(position),
+            #[expect(clippy::panic, reason = "The wildcard arm of the match should never happen currently")]
             _ => panic!(),
         }
     }
     #[inline]
     fn end1_position(&self) -> Pos2 {
-        match self.connector.as_ref().unwrap() {
+        #[expect(
+            clippy::wildcard_enum_match_arm,
+            reason = "Only one option implemented at this point, but others may be in the future."
+        )]
+        match &self.connector {
             ConnectorType::RightAngle(ra) => ra.end1.position(),
+            #[expect(clippy::panic, reason = "The wildcard arm of the match should never happen currently")]
             _ => panic!(),
         }
     }
     #[inline]
     fn end2_position(&self) -> Pos2 {
-        match self.connector.as_ref().unwrap() {
+        #[expect(
+            clippy::wildcard_enum_match_arm,
+            reason = "Only one option implemented at this point, but others may be in the future."
+        )]
+        match &self.connector {
             ConnectorType::RightAngle(ra) => ra.end2.position(),
+            #[expect(clippy::panic, reason = "The wildcard arm of the match should never happen currently")]
             _ => panic!(),
         }
     }
@@ -243,12 +269,7 @@ impl AsConnector for Wire {
 
         let end1: ConnectionPoint = ConnectionPoint::default();
         let end2: ConnectionPoint = ConnectionPoint::default();
-        self.connector = Some(ConnectorType::RightAngle(RightAngle::new(
-            end1,
-            end2,
-            false,
-            self.line_style.clone(),
-        )));
+        self.connector = ConnectorType::RightAngle(RightAngle::new(end1, end2, false, self.line_style.clone()));
         Ok(())
     }
 }
