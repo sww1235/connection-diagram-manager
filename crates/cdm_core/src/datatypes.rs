@@ -30,7 +30,7 @@ use std::{
     io::{self, ErrorKind},
 };
 
-use log::{debug, trace};
+use log::{debug, info, trace};
 
 use crate::{
     bin_logic::Cli,
@@ -90,16 +90,18 @@ pub fn parse_datafiles(cli: &Cli) -> Result<(ProjectConfig, Library, Project), E
 
         if let Some(lib_paths) = &project_config.library_paths {
             for path in lib_paths {
-                if is_hidden(path)? {
+                #[expect(clippy::shadow_reuse, reason = "canonicalizing path")]
+                let path = path.canonicalize()?;
+                if is_hidden(&path)? {
                     debug!("skipping hidden path {}", path.display());
                 } else if path.is_dir() {
                     library_files.append(&mut directory_navigator::files_in_dir(path, Some("toml"), false)?);
                 } else {
-                    library_files.push(path.canonicalize()?);
+                    library_files.push(path);
                 }
             }
         } else {
-            debug!("no library paths specified in project config, using default value of `lib`");
+            info!("no library paths specified in project config, using default value of `lib`");
             library_files.append(&mut directory_navigator::files_in_dir(
                 project_directory.join("lib"),
                 Some("toml"),
@@ -109,16 +111,18 @@ pub fn parse_datafiles(cli: &Cli) -> Result<(ProjectConfig, Library, Project), E
 
         if let Some(project_paths) = &project_config.source_paths {
             for path in project_paths {
-                if is_hidden(path)? {
+                #[expect(clippy::shadow_reuse, reason = "canonicalizing path")]
+                let path = path.canonicalize()?;
+                if is_hidden(&path)? {
                     debug!("skipping hidden path {}", path.display());
                 } else if path.is_dir() {
                     project_files.append(&mut directory_navigator::files_in_dir(path, Some("toml"), false)?);
                 } else {
-                    project_files.push(path.canonicalize()?);
+                    project_files.push(path);
                 }
             }
         } else {
-            debug!("no project paths specified in project config, using default value of `src`");
+            info!("no project paths specified in project config, using default value of `src`");
             project_files.append(&mut directory_navigator::files_in_dir(
                 project_directory.join("src"),
                 Some("toml"),
