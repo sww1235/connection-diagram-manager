@@ -291,18 +291,14 @@ document. A summary of base tables is listed below:
 - [Terminal Strip Jumper Types](#terminal-strip-jumper-types)
 - [Terminal Accessory Types](#terminal-accessory-types)
 - [Terminal Strip Accessory Types](#terminal-strip-accessory-types)
-- [Wire Types](#wire-types)
 
 #### Cable Types
 ```toml
 # Table (dictonary) of all available cable types.
-# A cable is defined as one or more wires mechanically attached together,
-# with optional insulation and semiconducting layers, and optional shields
-# if a product has a shield or additional layers, it must be defined as a cable
-# wire insulation color is defined on individual wire instance
-#
-# In theory, all wires could be defined as cables, with one layer of insulation
-# TODO: explore this idea further
+# A cable is defined as one or more wires or cables mechanically attached together,
+# with optional insulation and semiconducting layers, and optional shields.
+# Both the usual definition of a Wire and a Cable in common parlance are defined as `Cable`s
+# here.
 
 # Cable_types can be composed of cable_types.
 [cable_types]
@@ -314,8 +310,8 @@ document. A summary of base tables is listed below:
 # Most keys in a cable_type sub-table are optional
 [cable_types."PLACEHOLDER"]
 
-# SOOW, FC, FCC, TC, MC, AC, MC, UF, PLTC, MV, etc
-cable_type_code = "PLACEHOLDER"
+# SOOW, FC, FCC, TC, MC, AC, MC, UF, PLTC, MV, THHN, SIS, MTW, etc
+type_code = "PLACEHOLDER"
 
 # Outer cross sectional area of cable
 cross_sect_area =  {value = [0,0], original_unit = "PLACEHOLDER"}
@@ -366,21 +362,38 @@ thickness = {value = [0,0], original_unit = "PLACEHOLDER"}
 # color of insulation or semiconductor
 color = "PLACEHOLDER"
 
+# secondary color of insulation or semiconductor
+# commonly seen as a stripe
+secondary_color = "PLACEHOLDER"
 
-# dictionary of wire or cable cores inside cable.
-# strength members are treated as a wire
+
+# dictionary of cores inside cable.
 [cable_types."PLACEHOLDER".cores]
 
 # second "PLACEHOLDER" is identifier of individual core. Must be unique per cable_type
 [cable_types."PLACEHOLDER".cores."PLACEHOLDER"]
 
-# identifier of wire/cable type that core is,
+# identifier of cable_type that core is,
 # and an optional line_style per core. Cores inherit their Cable's linestyle if it is not defined here.
 #
 # See defintion of line_style below for more details
 #
 # the key of this key/value pair can be either WireType or CableType
-WireType = {type_id: "PLACEHOLDER", line_style: { color: "PLACEHOLDER", secondary_color: "PLACEHOLDER", line_thickness: "PLACEHOLDER", line_appearance: "PLACEHOLDER"}}
+type_id = "PLACEHOLDER"
+
+line_styler = { color: "PLACEHOLDER", secondary_color: "PLACEHOLDER", line_thickness: "PLACEHOLDER", line_appearance: "PLACEHOLDER"}
+
+material = "PLACEHOLDER"
+
+cross_sect_area = {value = [0,0], original_unit = "PLACEHOLDER"}
+
+nominal_size = {value = [0,0], original_unit = "PLACEHOLDER"}
+
+stranded = false
+
+num_strands = 1
+
+strand_cross_sect_area = {value = [0,0], original_unit = "PLACEHOLDER"}
 
 # all items here are optional
 # and will use defaults or cable outer jacket/insulation color if not specified
@@ -473,7 +486,6 @@ component_designator = "PLACEHOLDER"
 # array of schematic symbols that can represent this connector
 schematic_symbols = ["PLACEHOLDER"]
 
-# TODO: decide if these should be filepaths or directly included SVGs
 # SVGs should be layed out for a horizontal orientation when defined.
 # instances can be rotated when defined in project.
 # if not defined, a generic diagram will be used
@@ -1501,111 +1513,6 @@ supplier = "PLACEHOLDER"
 supplier_part_number = "PLACEHOLDER"
 ```
 
-
-#### Wire Types
-```toml
-# Table (dictonary) of all available wire types.
-# A wire is defined as a material (not necessarily conductive) with optional insulation.
-# if a product has a shield or additional layers, it must be defined as a cable
-# insulation color is defined on individual wire instance
-[wire_types]
-
-# Table (dictionary) representing one wire type
-# The `"PLACEHOLDER"` is the wire type identifier. This is a `key` in TOML and
-# must comply with the TOML spec.
-
-# Most keys in a wire_types sub-table are optional
-[wire_types."PLACEHOLDER"]
-
-# THWN, XHHN, etc
-wire_type_code = "PLACEHOLDER"
-
-# copper, alumninum, ACSR, steel, glass, plastic
-material = "PLACEHOLDER"
-
-insulated = true # PLACEHOLDER
-
-# PVC, Nylon, thermoplastic, etc
-insulation_material = "PLACEHOLDER"
-
-insulation_thickness =  {value = [0,0], original_unit = "PLACEHOLDER"}
-
-# the cross sectional area of the conductor
-conductor_cross_sect_area =  {value = [0,0], original_unit = "PLACEHOLDER"}
-
-# Nominal cross section of wire
-nominal_cross_section =  {value = [0,0], original_unit = "PLACEHOLDER"}
-
-# including insulation
-overall_cross_sect_area =  {value = [0,0], original_unit = "PLACEHOLDER"}
-
-# If conductor is stranded
-stranded = true # PLACEHOLDER
-
-# number of strands if cable is stranded. overriden to 1 if wire is not stranded
-num_strands = 0 # PLACEHOLDER
-
-strand_cross_sect_area = {value = [0,0], original_unit = "PLACEHOLDER"}
-
-# AC voltage rating of insulation
-ac_insulation_potential_rating =  {value = [0,0], original_unit = "PLACEHOLDER"}
-
-# DC voltage rating of insulation
-dc_insulation_potential_rating =  {value = [0,0], original_unit = "PLACEHOLDER"}
-
-# temperature rating of insulation.
-insulation_temperature_rating =  {value = [0,0], original_unit = "PLACEHOLDER"}
-
-# Other insulation properties such as
-# flamability or smoke generation
-insulation_rating = "PLACEHOLDER"
-
-insulation_color = "PLACEHOLDER"
-
-secondary_insulation_color = "PLACEHOLDER"
-
-# all items here are optional
-# and will use defaults or insulation color values if not specified
-# schematic appearance of linear items
-[wire_types."PLACEHOLDER".line_style]
-
-color = "PLACEHOLDER"
-
-secondary_color = "PLACEHOLDER"
-
-line_thickness = {value = [0,0], original_unit = "PLACEHOLDER"}
-
-# array of lengths/percentages of dashes and gaps
-# uses same specification as SVG stroke-dasharray field.
-line_appearance = [0] # PLACEHOLDER
-
-
-# Catalog subtable for each wire_type. Groups common properties
-# All fields here are optional, but highly encouraged.
-[wire_types."PLACEHOLDER".catalog]
-
-# manufacturer name
-manufacturer = "PLACEHOLDER"
-
-# wire type model description
-model = "PLACEHOLDER"
-
-# free text field for larger descriptions
-description = "PLACEHOLDER"
-
-# [internal] part number
-part_number = "PLACEHOLDER"
-
-# manufacturer part number
-manufactuer_part_number = "PLACEHOLDER"
-
-# supplier
-supplier = "PLACEHOLDER"
-
-# supplier part number
-supplier_part_number = "PLACEHOLDER"
-```
-
 ### Project Definitions
 
 Project files contain definitions for each unique entity, part or component in the project and how they are connected together and located.
@@ -1622,7 +1529,6 @@ Projects consist of the following entities:
 - [Schematic Symbols](#schematic-symbols)
 - [Term Cables](#term-cables)
 - [Terminal Strips](#terminal-strips)
-- [Wires](#wires)
 
 #### Cables
 ```toml
@@ -2139,67 +2045,6 @@ color = "PLACEHOLDER"
 line_thickness = {value = [0,0], original_unit = "PLACEHOLDER"}
 ```
 
-#### Wires
-```toml
-# dictionary of wires defined in project
-# wires can only have two ends
-# Wires within cables are assigned IDs automatically and are not listed here
-[wires]
-
-# table of attributes for wire instance
-[wires."PLACEHOLDER"]
-
-# ID of wire type
-wire_type = "PLACEHOLDER"
-
-# structured name / wire number
-identifier = "PLACEHOLDER"
-
-# optional description
-description = "PLACEHOLDER"
-
-# ID of containing pathway instance
-pathway = "PLACEHOLDER"
-
-# wire length
-length =  {value = [0,0], original_unit = "PLACEHOLDER"}
-
-# will be checked for 1 pin only
-# intended for things like ferrules, ring terminals, etc.
-end1_connector_type = "PLACEHOLDER"
-
-end2_connector_type = "PLACEHOLDER"
-
-# Physical Location Information
-[wires."PLACEHOLDER".physical_location]
-
-street_address = "PLACEHOLDER"
-city = "PLACEHOLDER"
-state = "PLACEHOLDER"
-zip_code = "PLACEHOLDER"
-latitude = [0,0]
-longitude = [0,0]
-structured_location_id = "PLACEHOLDER"
-planet = "PLACEHOLDER"
-building = "PLACEHOLDER"
-
-[wires."PLACEHOLDER".iec_codes]
-location = "PLACEHOLDER"
-installation = "PLACEHOLDER"
-
-# custom fields for user specified data. Not parsed
-[wires."PLACEHOLDER".user_fields]
-user0 = "PLACEHOLDER"
-user1 = "PLACEHOLDER"
-user2 = "PLACEHOLDER"
-user3 = "PLACEHOLDER"
-user4 = "PLACEHOLDER"
-user5 = "PLACEHOLDER"
-user6 = "PLACEHOLDER"
-user7 = "PLACEHOLDER"
-user8 = "PLACEHOLDER"
-user9 = "PLACEHOLDER"
-```
 
 ### SVG Files
 

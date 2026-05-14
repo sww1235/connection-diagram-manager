@@ -15,8 +15,6 @@ pub mod pathway;
 pub mod term_cable;
 /// `terminal_strip` contains the main `terminal_strip` type and accessory types.
 pub mod terminal_strip;
-/// `wire` represents an instance of a `WireType`.
-pub mod wire;
 // TODO: improve this documentation
 /// `connection` represents a connection between two different elements.
 pub mod connection;
@@ -75,8 +73,6 @@ pub struct Project {
     pub term_cables: BTreeMap<String, term_cable::TermCable>,
     /// contains all terminal strips read in from files and/or added in via program logic.
     pub terminal_strips: BTreeMap<String, terminal_strip::TerminalStrip>,
-    /// `wires` contains all wires read in from files, and/or added in via program logic.
-    pub wires: BTreeMap<String, wire::Wire>,
 }
 
 impl Project {
@@ -99,7 +95,6 @@ impl Project {
         util_functions::merge_btreemaps(&mut self.pathways, test_map.pathways, test_file)?;
         util_functions::merge_btreemaps(&mut self.term_cables, test_map.term_cables, test_file)?;
         util_functions::merge_btreemaps(&mut self.terminal_strips, test_map.terminal_strips, test_file)?;
-        util_functions::merge_btreemaps(&mut self.wires, test_map.wires, test_file)?;
         Ok(())
     }
     /// Inserts datafile path into all structs in the called project.
@@ -141,10 +136,6 @@ impl Project {
         // Terminal Strips
         for terminal_strip in self.terminal_strips.values_mut() {
             terminal_strip.set_datafile(datafile_path);
-        }
-        // Wires
-        for wire in self.wires.values_mut() {
-            wire.set_datafile(datafile_path);
         }
     }
 
@@ -333,19 +324,6 @@ impl Project {
                 }
             }
         }
-        // Wires
-        for (id, wire) in &self.wires {
-            if !library_data.wire_types.contains_key(&wire.wire_type) {
-                errors.push(
-                    LibraryError::ValueNotFound {
-                        id: wire.wire_type.clone(),
-                        found_in: id.clone(),
-                        library_type: "WireType".to_owned(),
-                    }
-                    .into(),
-                );
-            }
-        }
         Ok(errors)
     }
 
@@ -468,11 +446,6 @@ impl From<file_types::Project> for Project {
                 .terminal_strips
                 .into_iter()
                 .map(|(key, inner_value)| (key, terminal_strip::TerminalStrip::from(inner_value)))
-                .collect(),
-            wires: value
-                .wires
-                .into_iter()
-                .map(|(key, inner_value)| (key, wire::Wire::from(inner_value)))
                 .collect(),
         }
     }

@@ -18,8 +18,8 @@ pub mod term_cable_type;
 ///
 /// This module also includes related defintions including accessories and jumpers.
 pub mod terminal_type;
-/// `wire_type` represents an individual wire with optional insulation.
-pub mod wire_type;
+// `wire_type` represents an individual wire with optional insulation.
+//pub mod wire_type;
 
 use std::{collections::BTreeMap, path::Path};
 
@@ -63,8 +63,6 @@ pub struct Library {
     /// contains all terminal strip accessory types read in from file, and/or added in via program
     /// logic.
     pub terminal_strip_accessory_types: BTreeMap<String, terminal_type::TerminalStripAccessoryType>,
-    /// contains all wire types read in from file, and/or added in via program logic.
-    pub wire_types: BTreeMap<String, wire_type::WireType>,
 }
 
 impl Library {
@@ -101,7 +99,6 @@ impl Library {
             test_map.terminal_strip_accessory_types,
             test_file,
         )?;
-        util_functions::merge_btreemaps(&mut self.wire_types, test_map.wire_types, test_file)?;
         Ok(())
     }
 
@@ -156,10 +153,6 @@ impl Library {
         for terminal_strip_accessory_type in self.terminal_strip_accessory_types.values_mut() {
             terminal_strip_accessory_type.set_datafile(datafile_path);
         }
-        // Wire Types
-        for wire_type in self.wire_types.values_mut() {
-            wire_type.set_datafile(datafile_path);
-        }
     }
 
     /// Validates that all lookup values in library data are present in library.
@@ -176,31 +169,32 @@ impl Library {
     pub fn validate(&self) -> Result<Vec<LibraryError>, ()> {
         let mut errors: Vec<LibraryError> = Vec::new();
 
+        //TODO: fix cable type validation
         // Cable Types
-        for (id, cable_type) in &self.cable_types {
-            for core in cable_type.cores.values() {
-                match core {
-                    CableCore::WireType { type_id, .. } => {
-                        if !self.wire_types.contains_key(type_id) {
-                            errors.push(LibraryError::ValueNotFound {
-                                id: type_id.clone(),
-                                found_in: id.clone(),
-                                library_type: "WireType".to_owned(),
-                            });
-                        }
-                    }
-                    CableCore::CableType { type_id, .. } => {
-                        if !self.cable_types.contains_key(type_id) {
-                            errors.push(LibraryError::ValueNotFound {
-                                id: type_id.clone(),
-                                found_in: id.clone(),
-                                library_type: "CableType".to_owned(),
-                            });
-                        }
-                    }
-                }
-            }
-        }
+        //for (id, cable_type) in &self.cable_types {
+        //    for core in cable_type.cores.values() {
+        //        match core {
+        //            CableCore::WireType { type_id, .. } => {
+        //                if !self.wire_types.contains_key(type_id) {
+        //                    errors.push(LibraryError::ValueNotFound {
+        //                        id: type_id.clone(),
+        //                        found_in: id.clone(),
+        //                        library_type: "WireType".to_owned(),
+        //                    });
+        //                }
+        //            }
+        //            CableCore::CableType { type_id, .. } => {
+        //                if !self.cable_types.contains_key(type_id) {
+        //                    errors.push(LibraryError::ValueNotFound {
+        //                        id: type_id.clone(),
+        //                        found_in: id.clone(),
+        //                        library_type: "CableType".to_owned(),
+        //                    });
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
         // Connector Types
         // No validation currently needed
         //    for connector_type in self.connector_types.values() {
@@ -330,26 +324,27 @@ impl Library {
         // Term Cable Types
         // TODO: validate termination as well
         for (id, term_cable_type) in &self.term_cable_types {
-            match &term_cable_type.wire_cable {
-                WireCable::WireType(wire_type_inner) => {
-                    if !self.wire_types.contains_key(wire_type_inner) {
-                        errors.push(LibraryError::ValueNotFound {
-                            id: wire_type_inner.clone(),
-                            found_in: id.clone(),
-                            library_type: "WireType".to_owned(),
-                        });
-                    }
-                }
-                WireCable::CableType(cable_type_inner) => {
-                    if !self.cable_types.contains_key(cable_type_inner) {
-                        errors.push(LibraryError::ValueNotFound {
-                            id: cable_type_inner.clone(),
-                            found_in: id.clone(),
-                            library_type: "CableType".to_owned(),
-                        });
-                    }
-                }
-            }
+            //TODO: fix validation here as well.
+            //match &term_cable_type.wire_cable {
+            //    WireCable::WireType(wire_type_inner) => {
+            //        if !self.wire_types.contains_key(wire_type_inner) {
+            //            errors.push(LibraryError::ValueNotFound {
+            //                id: wire_type_inner.clone(),
+            //                found_in: id.clone(),
+            //                library_type: "WireType".to_owned(),
+            //            });
+            //        }
+            //    }
+            //    WireCable::CableType(cable_type_inner) => {
+            //        if !self.cable_types.contains_key(cable_type_inner) {
+            //            errors.push(LibraryError::ValueNotFound {
+            //                id: cable_type_inner.clone(),
+            //                found_in: id.clone(),
+            //                library_type: "CableType".to_owned(),
+            //            });
+            //        }
+            //    }
+            //}
             for connector in term_cable_type.end1.values() {
                 if !self.connector_types.contains_key(&connector.connector_type) {
                     errors.push(LibraryError::ValueNotFound {
@@ -455,9 +450,6 @@ impl Library {
                 }
             }
         }
-        // Wire Types
-        // No validation currently needed
-        //    for wire_type in self.wire_types.values() {}
         Ok(errors)
     }
 }
@@ -526,11 +518,6 @@ impl From<file_types::Library> for Library {
                 .into_iter()
                 .map(|(key, inner_value)| (key, terminal_type::TerminalStripAccessoryType::from(inner_value)))
                 .collect(),
-            wire_types: value
-                .wire_types
-                .into_iter()
-                .map(|(key, inner_value)| (key, wire_type::WireType::from(inner_value)))
-                .collect(),
         }
     }
 }
@@ -559,7 +546,6 @@ mod tests {
             library_types::{
                 Library,
                 cable_type::{CableCore, CableLayer, CableType, LayerType},
-                wire_type::WireType,
             },
             unit_helper::{
                 cross_sectional_area::CrossSectionalArea,
@@ -655,7 +641,6 @@ mod tests {
             terminal_strip_jumper_types: BTreeMap::new(),
             terminal_accessory_types: BTreeMap::new(),
             terminal_strip_accessory_types: BTreeMap::new(),
-            wire_types: BTreeMap::new(),
         };
         let library_filepath = PathBuf::from("../../resources/test/library_tests/cable_type_test_minimal_realistic.toml")
             .canonicalize()
@@ -720,7 +705,6 @@ mod tests {
             terminal_strip_jumper_types: BTreeMap::new(),
             terminal_accessory_types: BTreeMap::new(),
             terminal_strip_accessory_types: BTreeMap::new(),
-            wire_types: BTreeMap::new(),
         };
         let library_filepath = PathBuf::from("../../resources/test/library_tests/cable_type_test_minimal.toml")
             .canonicalize()
@@ -843,7 +827,6 @@ mod tests {
             terminal_strip_jumper_types: BTreeMap::new(),
             terminal_accessory_types: BTreeMap::new(),
             terminal_strip_accessory_types: BTreeMap::new(),
-            wire_types: BTreeMap::new(),
         };
         let library_filepath = PathBuf::from("../../resources/test/library_tests/cable_type_test_multi_layer.toml")
             .canonicalize()
@@ -951,7 +934,6 @@ mod tests {
             terminal_strip_jumper_types: BTreeMap::new(),
             terminal_accessory_types: BTreeMap::new(),
             terminal_strip_accessory_types: BTreeMap::new(),
-            wire_types: BTreeMap::new(),
         };
         let library_filepath = PathBuf::from("../../resources/test/library_tests/cable_type_test_full_realistic.toml")
             .canonicalize()

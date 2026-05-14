@@ -20,7 +20,7 @@ use crate::{
         cross_sectional_area::CrossSectionalArea,
         electric_potential::ElectricPotential,
         length::Length,
-        nominal_wire_size::NominalWireSize,
+        nominal_core_size::NominalCoreSize,
         temperature_interval::TemperatureInterval,
     },
     error::Error,
@@ -199,7 +199,7 @@ pub fn print_file_units(cli: &Cli) {
         }
         Some(PrintUnitCmdOption::NominalWireSize) => {
             println!("{:^43}", "Nominal Wire Size Units");
-            println!("{}", NominalWireSize::output_units());
+            println!("{}", NominalCoreSize::output_units());
         }
         Some(PrintUnitCmdOption::TemperatureInterval) => {
             println!("{:^43}", "Temperature Units");

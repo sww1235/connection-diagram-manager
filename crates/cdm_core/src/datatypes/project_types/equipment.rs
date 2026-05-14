@@ -361,12 +361,21 @@ impl SchematicRepresentation for Equipment {
                                             // which_end refers to the end the Equipment was
                                             // associated with.
                                             for (connection_key, which_end) in &self.connections {
-                                                let connection = project.connections.get(connection_key).unwrap();
+                                                #[expect(
+                                                    clippy::expect_used,
+                                                    reason = "this condition should be impossible within this application."
+                                                )]
+                                                let connection = project.connections.get(connection_key).expect(
+                                                    "Connection_key not found in slotmap of connections. This should be \
+                                                     impossible.",
+                                                );
                                                 match which_end {
                                                     EndDesignation::End1 => {
+                                                        //TODO: not sure if we need to validate
+                                                        //equipment_id here as well.
                                                         if let ConnectionType::Equipment {
+                                                            equipment_id,
                                                             connection_point_id: equip_connection_point_id,
-                                                            ..
                                                         } = &connection.end1
                                                             && equip_connection_point_id == connection_point_id_inner
                                                         {
@@ -375,33 +384,26 @@ impl SchematicRepresentation for Equipment {
                                                                 reason = "only need to handle these 3 variants here"
                                                             )]
                                                             match &connection.end2 {
-                                                                ConnectionType::Wire { wire_id } => {
-                                                                    identifier =
-                                                                        project.wires.get(wire_id).unwrap().identifier.clone();
-                                                                }
                                                                 ConnectionType::Cable { cable_id, core_id } => {
+                                                                    #[expect(
+                                                                        clippy::expect_used,
+                                                                        reason = "critical validation failure"
+                                                                    )]
                                                                     match &project
                                                                         .cables
                                                                         .get(cable_id)
-                                                                        .unwrap()
+                                                                        .expect(
+                                                                            "The presence of cable_id in project.cables should \
+                                                                             already be validated by previous program logic",
+                                                                        )
                                                                         .cores
                                                                         .get(core_id)
-                                                                        .unwrap()
+                                                                        .expect("Core ID presence should already be validated.")
                                                                     {
                                                                         CableCore::Cable(cable) => {
                                                                             identifier = cable.identifier.clone();
                                                                         }
-                                                                        CableCore::Wire(wire) => {
-                                                                            identifier = wire.identifier.clone();
-                                                                        }
                                                                     }
-                                                                    //TODO: need to correctly pull
-                                                                    //identifier for core
-                                                                    //identifier =
-                                                                    // project.cables.get(cable_id).unwrap().
-                                                                    // cores.
-                                                                    // get(core_id).unwrap().0.identifier.
-                                                                    // clone();
                                                                 }
                                                                 ConnectionType::TermCable { cable_id } => {
                                                                     //TODO: need to correctly pull
@@ -412,11 +414,15 @@ impl SchematicRepresentation for Equipment {
                                                                     // get(core_id).unwrap().0.identifier.
                                                                     // clone();
                                                                 }
-                                                                _ => {}
+                                                                _ => {
+                                                                    warn! {"Connections between Equipment non wire/cable/term-cable instances are not supported currently." }
+                                                                }
                                                             }
                                                         }
                                                     }
                                                     EndDesignation::End2 => {
+                                                        //TODO: not sure if we need to validate
+                                                        //equipment_id here as well.
                                                         if let ConnectionType::Equipment {
                                                             connection_point_id: equip_connection_point_id,
                                                             ..
@@ -428,18 +434,26 @@ impl SchematicRepresentation for Equipment {
                                                                 reason = "only need to handle these 3 variants here"
                                                             )]
                                                             match &connection.end2 {
-                                                                ConnectionType::Wire { wire_id } => {
-                                                                    identifier =
-                                                                        project.wires.get(wire_id).unwrap().identifier.clone();
-                                                                }
                                                                 ConnectionType::Cable { cable_id, core_id } => {
-                                                                    //TODO: need to correctly pull
-                                                                    //identifier for core
-                                                                    //identifier =
-                                                                    // project.cables.get(cable_id).unwrap().
-                                                                    // cores.
-                                                                    // get(core_id).unwrap().0.identifier.
-                                                                    // clone();
+                                                                    #[expect(
+                                                                        clippy::expect_used,
+                                                                        reason = "critical validation failure"
+                                                                    )]
+                                                                    match &project
+                                                                        .cables
+                                                                        .get(cable_id)
+                                                                        .expect(
+                                                                            "The presence of cable_id in project.cables should \
+                                                                             already be validated by previous program logic",
+                                                                        )
+                                                                        .cores
+                                                                        .get(core_id)
+                                                                        .expect("Core ID presence should already be validated.")
+                                                                    {
+                                                                        CableCore::Cable(cable) => {
+                                                                            identifier = cable.identifier.clone();
+                                                                        }
+                                                                    }
                                                                 }
                                                                 ConnectionType::TermCable { cable_id } => {
                                                                     //TODO: need to correctly pull
@@ -460,41 +474,71 @@ impl SchematicRepresentation for Equipment {
                                         let character_event = WriterEvent::Characters(&identifier);
                                         writer.write(character_event)?;
                                     }
+                                    #[expect(clippy::match_same_arms, reason = "code not complete yet")]
                                     "data-connection-point-label" => {
                                         //TODO:
                                     }
+                                    // This text displays
                                     "data-terminal-identifier" => {
-                                        let mut identifier: Option<String> = None;
+                                        let mut identifier = String::new();
                                         if let Some(ref connection_point_id_inner) = connection_point_id {
-                                            for (key, connection) in &project.connections {
-                                                if let ConnectionType::Equipment {
-                                                    equipment_id,
-                                                    connection_point_id: equip_connection_point_id,
-                                                } = &connection.end1
-                                                    && equip_connection_point_id == connection_point_id_inner
-                                                    && let ConnectionType::TerminalStrip {
-                                                        term_strip_id,
-                                                        element_id,
-                                                    } = &connection.end2
-                                                {
-                                                    identifier = Some(element_id.clone());
-                                                }
-
-                                                if let ConnectionType::Equipment {
-                                                    equipment_id,
-                                                    connection_point_id: equip_connection_point_id,
-                                                } = &connection.end2
-                                                    && equip_connection_point_id == connection_point_id_inner
-                                                    && let ConnectionType::TerminalStrip {
-                                                        term_strip_id,
-                                                        element_id,
-                                                    } = &connection.end1
-                                                {
-                                                    identifier = Some(element_id.clone());
+                                            for (connection_key, which_end) in &self.connections {
+                                                #[expect(
+                                                    clippy::expect_used,
+                                                    reason = "this condition should be impossible within this application."
+                                                )]
+                                                let connection = project.connections.get(connection_key).expect(
+                                                    "Connection_key not found in slotmap of connections. This should be \
+                                                     impossible.",
+                                                );
+                                                match which_end {
+                                                    EndDesignation::End1 => {
+                                                        //TODO: not sure if we need to validate
+                                                        //equipment_id here as well.
+                                                        if let ConnectionType::Equipment {
+                                                            connection_point_id: equip_connection_point_id,
+                                                            ..
+                                                        } = &connection.end1
+                                                            && equip_connection_point_id == connection_point_id_inner
+                                                        {
+                                                            match &connection.end2 {}
+                                                        }
+                                                    }
+                                                    EndDesignation::End2 => {}
                                                 }
                                             }
+
+                                            //for (key, connection) in &project.connections {
+                                            //    if let ConnectionType::Equipment {
+                                            //        equipment_id,
+                                            //        connection_point_id: equip_connection_point_id,
+                                            //    } = &connection.end1
+                                            //        && equip_connection_point_id ==
+                                            // connection_point_id_inner
+                                            //        && let ConnectionType::TerminalStrip {
+                                            //            term_strip_id,
+                                            //            element_id,
+                                            //        } = &connection.end2
+                                            //    {
+                                            //        identifier = Some(element_id.clone());
+                                            //    }
+
+                                            //    if let ConnectionType::Equipment {
+                                            //        equipment_id,
+                                            //        connection_point_id: equip_connection_point_id,
+                                            //    } = &connection.end2
+                                            //        && equip_connection_point_id ==
+                                            // connection_point_id_inner
+                                            //        && let ConnectionType::TerminalStrip {
+                                            //            term_strip_id,
+                                            //            element_id,
+                                            //        } = &connection.end1
+                                            //    {
+                                            //        identifier = Some(element_id.clone());
+                                            //    }
+                                            //}
                                         }
-                                        let character_event = WriterEvent::Characters(&identifier.unwrap_or_default());
+                                        let character_event = WriterEvent::Characters(&identifier);
                                         writer.write(character_event)?;
                                     }
                                     // other attributes

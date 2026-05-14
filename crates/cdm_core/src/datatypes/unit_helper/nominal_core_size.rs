@@ -9,18 +9,18 @@ use crate::error::UnitParsingError;
 #[derive(Debug, Default, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(try_from = "IntermediateUnit")]
 #[non_exhaustive]
-pub struct NominalWireSize {
+pub struct NominalCoreSize {
     /// contained uom Unit.
-    pub value: NominalWireUnit,
+    pub value: NominalCoreUnit,
     /// original unit in datafile.
     pub original_unit: String,
 }
 
 //TODO: replace f64 with a fixed/decimal equivalent type
-/// Represents common nominal units for wire sizes.
+/// Represents common nominal units for core sizes.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
-pub enum NominalWireUnit {
+pub enum NominalCoreUnit {
     /// Nominal size represented in American Wire Gauge (AWG).
     Awg(f64),
     /// Nominal size represented in mm².
@@ -29,14 +29,14 @@ pub enum NominalWireUnit {
     Cmil(f64),
 }
 
-impl Default for NominalWireUnit {
+impl Default for NominalCoreUnit {
     #[inline]
     fn default() -> Self {
         Self::Mm2(f64::default())
     }
 }
 
-impl NominalWireSize {
+impl NominalCoreSize {
     /// outputs all usable `NominalWireSize` units allowed in configuration files in the form of
     /// `<unit name>: <unit abbreviation>`.
     #[must_use]
@@ -56,34 +56,34 @@ impl NominalWireSize {
     }
 }
 
-impl TryFrom<IntermediateUnit> for NominalWireSize {
+impl TryFrom<IntermediateUnit> for NominalCoreSize {
     type Error = UnitParsingError;
     #[inline]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
         match item.original_unit.to_uppercase().as_str() {
             "AWG" | "American Wire Gauge" => Ok(Self {
-                value: NominalWireUnit::Awg(item.value.to_f64().ok_or(UnitParsingError::ValueError {
+                value: NominalCoreUnit::Awg(item.value.to_f64().ok_or(UnitParsingError::ValueError {
                     quantity_type: "Nominal Wire Size".to_owned(),
                     data_type: "f64".to_owned(),
                 })?),
                 original_unit: item.original_unit,
             }),
             "MM²" => Ok(Self {
-                value: NominalWireUnit::Mm2(item.value.to_f64().ok_or(UnitParsingError::ValueError {
+                value: NominalCoreUnit::Mm2(item.value.to_f64().ok_or(UnitParsingError::ValueError {
                     quantity_type: "Nominal Wire Size".to_owned(),
                     data_type: "f64".to_owned(),
                 })?),
                 original_unit: item.original_unit,
             }),
             "CMIL" => Ok(Self {
-                value: NominalWireUnit::Cmil(item.value.to_f64().ok_or(UnitParsingError::ValueError {
+                value: NominalCoreUnit::Cmil(item.value.to_f64().ok_or(UnitParsingError::ValueError {
                     quantity_type: "Nominal Wire Size".to_owned(),
                     data_type: "f64".to_owned(),
                 })?),
                 original_unit: item.original_unit,
             }),
             "KCMIL" | "MCM" => Ok(Self {
-                value: NominalWireUnit::Cmil(
+                value: NominalCoreUnit::Cmil(
                     item.value.to_f64().ok_or(UnitParsingError::ValueError {
                         quantity_type: "Nominal Wire Size".to_owned(),
                         data_type: "f64".to_owned(),

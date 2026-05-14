@@ -17,7 +17,6 @@ pub mod mounting_rail;
 pub mod pathway;
 pub mod term_cable;
 pub mod terminal_strip;
-pub mod wire;
 
 pub mod cable_type;
 pub mod connector_type;
@@ -28,7 +27,6 @@ pub mod pathway_type;
 pub mod schematic_symbol_type;
 pub mod term_cable_type;
 pub mod terminal_type;
-pub mod wire_type;
 
 /// `Project` is the source code representation of the on-disk file format for an in-memory
 /// [`Project`](crate::datatypes::project_types::Project).
@@ -56,8 +54,6 @@ pub struct Project {
     pub term_cables: BTreeMap<String, term_cable::TermCable>,
     /// contains all terminal strips read in from files and/or added in via program logic.
     pub terminal_strips: BTreeMap<String, terminal_strip::TerminalStrip>,
-    /// `wires` contains all wires read in from files, and/or added in via program logic.
-    pub wires: BTreeMap<String, wire::Wire>,
 }
 
 /// `Library` is the source code representation of the on-disk file format for an in-memory
@@ -93,6 +89,4 @@ pub struct Library {
     /// contains all terminal strip accessory types read in from file, and/or added in via program
     /// logic.
     pub terminal_strip_accessory_types: BTreeMap<String, terminal_type::TerminalStripAccessoryType>,
-    /// contains all wire types read in from file, and/or added in via program logic.
-    pub wire_types: BTreeMap<String, wire_type::WireType>,
 }

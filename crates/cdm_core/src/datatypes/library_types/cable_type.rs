@@ -14,6 +14,7 @@ use crate::{
             cross_sectional_area::CrossSectionalArea,
             electric_potential::ElectricPotential,
             length::Length,
+            nominal_core_size::NominalCoreSize,
             temperature_interval::TemperatureInterval,
         },
         util_types::{Catalog, CrossSection, Dimension, LineStyle},
@@ -21,14 +22,22 @@ use crate::{
     traits::FromFile,
 };
 
+//TODO: come up with better name
+
 //TODO: add validation to check that Figure8 cable cross sections only have 2 cores
 //
 //TODO: add optional parameters for ac/dc electric potential, min/max temperature rating to
 //cableType itself, maybe?
 //
 //TODO: add optional min/max bend radius parameters
-/// `CableType` represents a type of cable that consists of multiple cores. If something only has
-/// one core, then it is a wire, not a cable.
+/// `CableType` contains defintions for any type of linear item such as wire, cable, fiber optic
+/// cable, tube that would be used to interconnect `Equipment`. `Pathway`s are used to hold
+/// instances of `CableType`s such as conduit, raceway, tray, etc. A cable with multiple cores in a
+/// outer sheath would not be a `Pathway`, but multiple `Cable`s in a conduit would be `Cable`s
+/// within a `Pathway`.
+///
+/// Wire and Cable are not separated out here, as they are handled in a similar fashion in the
+/// code.
 #[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::partial_pub_fields, reason = "contained_datafile_path is not part of public API")]
 pub struct CableType {
@@ -37,14 +46,14 @@ pub struct CableType {
     /// Cable Type Code.
     ///
     /// SOOW, NM, USE, etc.
-    pub cable_type_code: Option<String>,
-    /// Cable cross sectional area.
+    pub type_code: Option<String>,
+    /// Overall cross sectional area.
     pub cross_sect_area: CrossSectionalArea,
-    /// Cable cross section shape.
+    /// Cross section shape.
     ///
     /// Oval, circular, siamese.
     pub cross_section: CrossSection,
-    /// Dimensions of cable.
+    /// Outer dimensions of cable.
     pub dimensions: Option<Dimension>,
     /// appearance in schematics.
     pub line_style: LineStyle,
@@ -63,12 +72,16 @@ impl From<file_types::cable_type::CableType> for CableType {
     fn from(value: file_types::cable_type::CableType) -> Self {
         Self {
             catalog: value.catalog,
-            cable_type_code: value.cable_type_code,
+            type_code: value.type_code,
             cross_sect_area: value.cross_sect_area,
             cross_section: value.cross_section,
             dimensions: value.dimensions,
             line_style: value.line_style,
-            cores: value.cores,
+            cores: value
+                .cores
+                .into_iter()
+                .map(|(key, inner_value)| (key, CableCore::from(inner_value)))
+                .collect(),
             layers: value.layers,
             contained_datafile_path: PathBuf::new(),
         }
@@ -89,27 +102,41 @@ impl FromFile for CableType {
 //https://stackoverflow.com/questions/67594909/multiple-possible-types-for-a-serializable-structs-field
 
 /// `CableCore` represents an individual conductor, strength member or optical fiber in a cable.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone)]
 #[expect(clippy::exhaustive_enums, reason = "only two options make sense")]
-pub enum CableCore {
-    /// `WireType`.
-    ///
-    /// If `line_style` is not specified, the `WireType`'s `line_style` will be inheritied.
-    WireType {
-        /// ID of `WireType` that this core is made of.
-        type_id: String,
-        /// `LineStyle` of `WireType`. If `None`, then it will inherit from the parent `CableType`.
-        line_style: Option<LineStyle>,
-    },
-    /// `CableType`.
-    ///
-    /// If `line_style` is not specified, the `CableType`'s `line_style` will be inheritied.
-    CableType {
-        /// ID of `CableType` that this core is made of.
-        type_id: String,
-        /// `LineStyle` of `CableType`. If `None`, then it will inherit from the parent `CableType`.
-        line_style: Option<LineStyle>,
-    },
+pub struct CableCore {
+    /// ID of `CableType` that this core is made of.
+    pub type_id: String,
+    /// `LineStyle` of `CableType`. If `None`, then it will inherit from the parent `CableType`.
+    pub line_style: Option<LineStyle>,
+    /// The material the core is made out of.
+    pub material: Option<String>,
+    /// Cross sectional area.
+    pub cross_sect_area: Option<CrossSectionalArea>,
+    /// Nominal size of core.
+    pub nominal_size: Option<NominalCoreSize>,
+    /// If `CableCore` is stranded.
+    pub stranded: Option<bool>,
+    /// How many strands is conductor made of.
+    pub num_strands: Option<u64>,
+    /// Cross sectional area of individual strand.
+    pub strand_cross_sect_area: Option<CrossSectionalArea>,
+}
+
+impl From<file_types::cable_type::CableCore> for CableCore {
+    #[inline]
+    fn from(value: file_types::cable_type::CableCore) -> Self {
+        Self {
+            type_id: value.type_id,
+            line_style: value.line_style,
+            material: value.material,
+            cross_sect_area: value.cross_sect_area,
+            nominal_size: value.nominal_size,
+            stranded: value.stranded,
+            num_strands: value.num_strands,
+            strand_cross_sect_area: value.strand_cross_sect_area,
+        }
+    }
 }
 
 //TODO: add a way to link 2 cores as a pair within a cable, and specify twisted + parameters
@@ -123,9 +150,9 @@ pub enum CableCore {
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct CableLayer {
-    /// layer number, counted from inside to outside of cable, 1 indexed.
+    /// Layer number, counted from inside to outside of cable, 1 indexed.
     pub layer_number: u64,
-    /// layer type.
+    /// Layer type.
     pub layer_type: LayerType,
     /// `Material of CableLayer`.
     pub material: Option<String>,
@@ -140,8 +167,10 @@ pub struct CableLayer {
     pub rating: Option<String>,
     /// Thickness of `CableLayer`.
     pub thickness: Option<Length>,
-    /// color of `CableLayer`.
+    /// Color of `CableLayer`.
     pub color: Option<Color>,
+    /// Secondary color of `CableLayer`.
+    pub secondary_color: Option<Color>,
 }
 
 /// `LayerType` represents different functions of a `CableLayer` `layer_type`.

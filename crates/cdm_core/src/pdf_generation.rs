@@ -238,664 +238,664 @@ pub fn render_enclosure(
     if render_connections {
         //TODO: fix this. Use slotmap functionality.
         for (idx, (key, connection)) in project.connections.iter().enumerate() {
-            match &connection.end1 {
-                ConnectionType::Wire { wire_id: outer_wire_id } if project.wires.contains_key(outer_wire_id) => match &connection
-                    .end2
-                {
-                    ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::SameType {
-                            end1: outer_wire_id.clone(),
-                            end2: inner_wire_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            message: Some(
-                                "Wires cannot be directly connected. Use an interposing terminal strip or connector".to_owned(),
-                            ),
-                        })));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } if project.cables.contains_key(inner_cable_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-                            end1: outer_wire_id.clone(),
-                            end2: inner_cable_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            reason: "Wires and cables cannot be directly connected. Use an interposing terminal strip or \
-                                     connector"
-                                .to_owned(),
-                        })));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } if project.term_cables.contains_key(inner_term_cable_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-                            end1: outer_wire_id.clone(),
-                            end2: inner_term_cable_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            reason: "Wires and term cables cannot be directly connected. use an interposing connector".to_owned(),
-                        })));
-                    }
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } if project.equipment.contains_key(inner_equipment_id) => {
-                        let equipment =
-                            project
-                                .equipment
-                                .get(inner_equipment_id)
-                                .ok_or(Error::from(ProjectError::ValueNotFound {
-                                    id: inner_equipment_id.clone(),
-                                    found_in: format!("connection: {idx}"),
-                                    project_type: "Equipment".to_owned(),
-                                }))?;
-                        if let Some(equip_enclosure) = equipment.enclosure.clone()
-                            && equip_enclosure == *enclosure_id
-                        {}
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } if project.connectors.contains_key(inner_connector_id) => {}
-                    ConnectionType::Wire { wire_id: inner_wire_id } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_wire_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Wire".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Cable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_term_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "TermCable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_equipment_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Equipment".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_terminal_strip_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Terminal Strip".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_connector_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Connector".to_owned(),
-                        }));
-                    }
-                },
-                ConnectionType::Cable {
-                    cable_id: outer_cable_id,
-                    core_id: outer_core_id,
-                } if project.term_cables.contains_key(outer_cable_id) => match &connection.end2 {
-                    ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-                            end1: outer_cable_id.clone(),
-                            end2: inner_wire_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            reason: "Wires and cables cannot be directly connected. Use an interposing terminal strip or \
-                                     connector"
-                                .to_owned(),
-                        })));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } if project.cables.contains_key(inner_cable_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::SameType {
-                            end1: outer_cable_id.clone(),
-                            end2: inner_cable_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            message: Some(
-                                "Cables cannot be directly connected. Use an interposing terminal strip or connector".to_owned(),
-                            ),
-                        })));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } if project.term_cables.contains_key(inner_term_cable_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-                            end1: outer_cable_id.clone(),
-                            end2: inner_term_cable_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            reason: "Cables and term cables cannot be directly connected. use an interposing connector"
-                                .to_owned(),
-                        })));
-                    }
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } if project.equipment.contains_key(inner_equipment_id) => {}
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } if project.connectors.contains_key(inner_connector_id) => {}
-                    ConnectionType::Wire { wire_id: inner_wire_id } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_wire_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Wire".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Cable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_term_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "TermCable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_equipment_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Equipment".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_terminal_strip_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Terminal Strip".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_connector_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Connector".to_owned(),
-                        }));
-                    }
-                },
-                ConnectionType::TermCable {
-                    cable_id: outer_term_cable_id,
-                } if project.term_cables.contains_key(outer_term_cable_id) => match &connection.end2 {
-                    ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-                            end1: outer_term_cable_id.clone(),
-                            end2: inner_wire_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            reason: "Wires and term cables cannot be directly connected. use an interposing connector".to_owned(),
-                        })));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } if project.cables.contains_key(inner_cable_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-                            end1: outer_term_cable_id.clone(),
-                            end2: inner_cable_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            reason: "Cables and term cables cannot be directly connected. use an interposing connector"
-                                .to_owned(),
-                        })));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } if project.term_cables.contains_key(inner_term_cable_id) => {}
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } if project.equipment.contains_key(inner_equipment_id) => {}
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } if project.connectors.contains_key(inner_connector_id) => {}
-                    ConnectionType::Wire { wire_id: inner_wire_id } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_wire_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Wire".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Cable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_term_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "TermCable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_equipment_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Equipment".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_terminal_strip_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Terminal Strip".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_connector_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Connector".to_owned(),
-                        }));
-                    }
-                },
-                ConnectionType::Equipment {
-                    equipment_id: outer_equipment_id,
-                    connection_point_id: _,
-                } if project.equipment.contains_key(outer_equipment_id) => match &connection.end2 {
-                    ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } if project.cables.contains_key(inner_cable_id) => {}
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } if project.term_cables.contains_key(inner_term_cable_id) => {}
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } if project.equipment.contains_key(inner_equipment_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::SameType {
-                            end1: outer_equipment_id.clone(),
-                            end2: inner_equipment_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            message: Some(
-                                "Equipment cannot be directly connected. Use an interposing wire, cable or term cable".to_owned(),
-                            ),
-                        })));
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-                            end1: outer_equipment_id.clone(),
-                            end2: inner_terminal_strip_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            reason: "Equipment and Terminal Strips cannot be directly connected. use an wire, cable or term \
-                                     cable"
-                                .to_owned(),
-                        })));
-                    }
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } if project.connectors.contains_key(inner_connector_id) => {}
-                    ConnectionType::Wire { wire_id: inner_wire_id } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_wire_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Wire".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Cable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_term_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "TermCable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_equipment_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Equipment".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_terminal_strip_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Terminal Strip".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_connector_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Connector".to_owned(),
-                        }));
-                    }
-                },
-                ConnectionType::TerminalStrip {
-                    term_strip_id: outer_terminal_strip_id,
-                    element_id: _,
-                } if project.terminal_strips.contains_key(outer_terminal_strip_id) => match &connection.end2 {
-                    ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } if project.cables.contains_key(inner_cable_id) => {}
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } if project.term_cables.contains_key(inner_term_cable_id) => {}
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } if project.equipment.contains_key(inner_equipment_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-                            end1: outer_terminal_strip_id.clone(),
-                            end2: inner_equipment_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            reason: "Equipment and Terminal Strips cannot be directly connected. use an wire, cable or term \
-                                     cable"
-                                .to_owned(),
-                        })));
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::SameType {
-                            end1: outer_terminal_strip_id.clone(),
-                            end2: inner_terminal_strip_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            message: Some(
-                                "Terminal Strips cannot be directly connected. Use an interposing wire, cable or term cable"
-                                    .to_owned(),
-                            ),
-                        })));
-                    }
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } if project.connectors.contains_key(inner_connector_id) => {}
-                    ConnectionType::Wire { wire_id: inner_wire_id } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_wire_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Wire".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Cable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_term_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "TermCable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_equipment_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Equipment".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_terminal_strip_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Terminal Strip".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_connector_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Connector".to_owned(),
-                        }));
-                    }
-                },
-                ConnectionType::Connector {
-                    connector_id: outer_connector_id,
-                    pin_id: _,
-                } if project.connectors.contains_key(outer_connector_id) => match &connection.end2 {
-                    ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } if project.cables.contains_key(inner_cable_id) => {}
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } if project.term_cables.contains_key(inner_term_cable_id) => {}
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } if project.equipment.contains_key(inner_equipment_id) => {}
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } if project.connectors.contains_key(inner_connector_id) => {}
-                    ConnectionType::Wire { wire_id: inner_wire_id } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_wire_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Wire".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Cable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_term_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "TermCable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_equipment_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Equipment".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_terminal_strip_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Terminal Strip".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_connector_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Connector".to_owned(),
-                        }));
-                    }
-                },
-                ConnectionType::Wire { wire_id: outer_wire_id } => {
-                    return Err(Error::from(ProjectError::ValueNotFound {
-                        id: outer_wire_id.clone(),
-                        found_in: format!("connection: {idx}"),
-                        project_type: "Wire".to_owned(),
-                    }));
-                }
-                ConnectionType::Cable {
-                    cable_id: outer_cable_id,
-                    core_id: outer_core_id,
-                } => {
-                    return Err(Error::from(ProjectError::ValueNotFound {
-                        id: outer_cable_id.clone(),
-                        found_in: format!("connection: {idx}"),
-                        project_type: "Cable".to_owned(),
-                    }));
-                }
-                ConnectionType::TermCable {
-                    cable_id: outer_term_cable_id,
-                } => {
-                    return Err(Error::from(ProjectError::ValueNotFound {
-                        id: outer_term_cable_id.clone(),
-                        found_in: format!("connection: {idx}"),
-                        project_type: "TermCable".to_owned(),
-                    }));
-                }
-                ConnectionType::Equipment {
-                    equipment_id: outer_equipment_id,
-                    connection_point_id: _,
-                } => {
-                    return Err(Error::from(ProjectError::ValueNotFound {
-                        id: outer_equipment_id.clone(),
-                        found_in: format!("connection: {idx}"),
-                        project_type: "Equipment".to_owned(),
-                    }));
-                }
-                ConnectionType::TerminalStrip {
-                    term_strip_id: outer_terminal_strip_id,
-                    element_id: _,
-                } => {
-                    return Err(Error::from(ProjectError::ValueNotFound {
-                        id: outer_terminal_strip_id.clone(),
-                        found_in: format!("connection: {idx}"),
-                        project_type: "Terminal Strip".to_owned(),
-                    }));
-                }
-                ConnectionType::Connector {
-                    connector_id: outer_connector_id,
-                    pin_id: _,
-                } => {
-                    return Err(Error::from(ProjectError::ValueNotFound {
-                        id: outer_connector_id.clone(),
-                        found_in: format!("connection: {idx}"),
-                        project_type: "Connector".to_owned(),
-                    }));
-                }
-            }
+            //match &connection.end1 {
+            //    ConnectionType::Wire { wire_id: outer_wire_id } if project.wires.contains_key(outer_wire_id) => match &connection
+            //        .end2
+            //    {
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::SameType {
+            //                end1: outer_wire_id.clone(),
+            //                end2: inner_wire_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                message: Some(
+            //                    "Wires cannot be directly connected. Use an interposing terminal strip or connector".to_owned(),
+            //                ),
+            //            })));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } if project.cables.contains_key(inner_cable_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
+            //                end1: outer_wire_id.clone(),
+            //                end2: inner_cable_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                reason: "Wires and cables cannot be directly connected. Use an interposing terminal strip or \
+            //                         connector"
+            //                    .to_owned(),
+            //            })));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } if project.term_cables.contains_key(inner_term_cable_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
+            //                end1: outer_wire_id.clone(),
+            //                end2: inner_term_cable_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                reason: "Wires and term cables cannot be directly connected. use an interposing connector".to_owned(),
+            //            })));
+            //        }
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } if project.equipment.contains_key(inner_equipment_id) => {
+            //            let equipment =
+            //                project
+            //                    .equipment
+            //                    .get(inner_equipment_id)
+            //                    .ok_or(Error::from(ProjectError::ValueNotFound {
+            //                        id: inner_equipment_id.clone(),
+            //                        found_in: format!("connection: {idx}"),
+            //                        project_type: "Equipment".to_owned(),
+            //                    }))?;
+            //            if let Some(equip_enclosure) = equipment.enclosure.clone()
+            //                && equip_enclosure == *enclosure_id
+            //            {}
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } if project.connectors.contains_key(inner_connector_id) => {}
+            //        ConnectionType::Wire { wire_id: inner_wire_id } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_wire_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Wire".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Cable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_term_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "TermCable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_equipment_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Equipment".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_terminal_strip_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Terminal Strip".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_connector_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Connector".to_owned(),
+            //            }));
+            //        }
+            //    },
+            //    ConnectionType::Cable {
+            //        cable_id: outer_cable_id,
+            //        core_id: outer_core_id,
+            //    } if project.term_cables.contains_key(outer_cable_id) => match &connection.end2 {
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
+            //                end1: outer_cable_id.clone(),
+            //                end2: inner_wire_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                reason: "Wires and cables cannot be directly connected. Use an interposing terminal strip or \
+            //                         connector"
+            //                    .to_owned(),
+            //            })));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } if project.cables.contains_key(inner_cable_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::SameType {
+            //                end1: outer_cable_id.clone(),
+            //                end2: inner_cable_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                message: Some(
+            //                    "Cables cannot be directly connected. Use an interposing terminal strip or connector".to_owned(),
+            //                ),
+            //            })));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } if project.term_cables.contains_key(inner_term_cable_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
+            //                end1: outer_cable_id.clone(),
+            //                end2: inner_term_cable_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                reason: "Cables and term cables cannot be directly connected. use an interposing connector"
+            //                    .to_owned(),
+            //            })));
+            //        }
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } if project.equipment.contains_key(inner_equipment_id) => {}
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } if project.connectors.contains_key(inner_connector_id) => {}
+            //        ConnectionType::Wire { wire_id: inner_wire_id } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_wire_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Wire".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Cable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_term_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "TermCable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_equipment_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Equipment".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_terminal_strip_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Terminal Strip".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_connector_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Connector".to_owned(),
+            //            }));
+            //        }
+            //    },
+            //    ConnectionType::TermCable {
+            //        cable_id: outer_term_cable_id,
+            //    } if project.term_cables.contains_key(outer_term_cable_id) => match &connection.end2 {
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
+            //                end1: outer_term_cable_id.clone(),
+            //                end2: inner_wire_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                reason: "Wires and term cables cannot be directly connected. use an interposing connector".to_owned(),
+            //            })));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } if project.cables.contains_key(inner_cable_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
+            //                end1: outer_term_cable_id.clone(),
+            //                end2: inner_cable_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                reason: "Cables and term cables cannot be directly connected. use an interposing connector"
+            //                    .to_owned(),
+            //            })));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } if project.term_cables.contains_key(inner_term_cable_id) => {}
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } if project.equipment.contains_key(inner_equipment_id) => {}
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } if project.connectors.contains_key(inner_connector_id) => {}
+            //        ConnectionType::Wire { wire_id: inner_wire_id } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_wire_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Wire".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Cable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_term_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "TermCable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_equipment_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Equipment".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_terminal_strip_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Terminal Strip".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_connector_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Connector".to_owned(),
+            //            }));
+            //        }
+            //    },
+            //    ConnectionType::Equipment {
+            //        equipment_id: outer_equipment_id,
+            //        connection_point_id: _,
+            //    } if project.equipment.contains_key(outer_equipment_id) => match &connection.end2 {
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } if project.cables.contains_key(inner_cable_id) => {}
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } if project.term_cables.contains_key(inner_term_cable_id) => {}
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } if project.equipment.contains_key(inner_equipment_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::SameType {
+            //                end1: outer_equipment_id.clone(),
+            //                end2: inner_equipment_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                message: Some(
+            //                    "Equipment cannot be directly connected. Use an interposing wire, cable or term cable".to_owned(),
+            //                ),
+            //            })));
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
+            //                end1: outer_equipment_id.clone(),
+            //                end2: inner_terminal_strip_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                reason: "Equipment and Terminal Strips cannot be directly connected. use an wire, cable or term \
+            //                         cable"
+            //                    .to_owned(),
+            //            })));
+            //        }
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } if project.connectors.contains_key(inner_connector_id) => {}
+            //        ConnectionType::Wire { wire_id: inner_wire_id } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_wire_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Wire".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Cable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_term_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "TermCable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_equipment_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Equipment".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_terminal_strip_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Terminal Strip".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_connector_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Connector".to_owned(),
+            //            }));
+            //        }
+            //    },
+            //    ConnectionType::TerminalStrip {
+            //        term_strip_id: outer_terminal_strip_id,
+            //        element_id: _,
+            //    } if project.terminal_strips.contains_key(outer_terminal_strip_id) => match &connection.end2 {
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } if project.cables.contains_key(inner_cable_id) => {}
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } if project.term_cables.contains_key(inner_term_cable_id) => {}
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } if project.equipment.contains_key(inner_equipment_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
+            //                end1: outer_terminal_strip_id.clone(),
+            //                end2: inner_equipment_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                reason: "Equipment and Terminal Strips cannot be directly connected. use an wire, cable or term \
+            //                         cable"
+            //                    .to_owned(),
+            //            })));
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::SameType {
+            //                end1: outer_terminal_strip_id.clone(),
+            //                end2: inner_terminal_strip_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                message: Some(
+            //                    "Terminal Strips cannot be directly connected. Use an interposing wire, cable or term cable"
+            //                        .to_owned(),
+            //                ),
+            //            })));
+            //        }
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } if project.connectors.contains_key(inner_connector_id) => {}
+            //        ConnectionType::Wire { wire_id: inner_wire_id } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_wire_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Wire".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Cable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_term_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "TermCable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_equipment_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Equipment".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_terminal_strip_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Terminal Strip".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_connector_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Connector".to_owned(),
+            //            }));
+            //        }
+            //    },
+            //    ConnectionType::Connector {
+            //        connector_id: outer_connector_id,
+            //        pin_id: _,
+            //    } if project.connectors.contains_key(outer_connector_id) => match &connection.end2 {
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } if project.cables.contains_key(inner_cable_id) => {}
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } if project.term_cables.contains_key(inner_term_cable_id) => {}
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } if project.equipment.contains_key(inner_equipment_id) => {}
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } if project.connectors.contains_key(inner_connector_id) => {}
+            //        ConnectionType::Wire { wire_id: inner_wire_id } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_wire_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Wire".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Cable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_term_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "TermCable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_equipment_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Equipment".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_terminal_strip_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Terminal Strip".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_connector_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Connector".to_owned(),
+            //            }));
+            //        }
+            //    },
+            //    ConnectionType::Wire { wire_id: outer_wire_id } => {
+            //        return Err(Error::from(ProjectError::ValueNotFound {
+            //            id: outer_wire_id.clone(),
+            //            found_in: format!("connection: {idx}"),
+            //            project_type: "Wire".to_owned(),
+            //        }));
+            //    }
+            //    ConnectionType::Cable {
+            //        cable_id: outer_cable_id,
+            //        core_id: outer_core_id,
+            //    } => {
+            //        return Err(Error::from(ProjectError::ValueNotFound {
+            //            id: outer_cable_id.clone(),
+            //            found_in: format!("connection: {idx}"),
+            //            project_type: "Cable".to_owned(),
+            //        }));
+            //    }
+            //    ConnectionType::TermCable {
+            //        cable_id: outer_term_cable_id,
+            //    } => {
+            //        return Err(Error::from(ProjectError::ValueNotFound {
+            //            id: outer_term_cable_id.clone(),
+            //            found_in: format!("connection: {idx}"),
+            //            project_type: "TermCable".to_owned(),
+            //        }));
+            //    }
+            //    ConnectionType::Equipment {
+            //        equipment_id: outer_equipment_id,
+            //        connection_point_id: _,
+            //    } => {
+            //        return Err(Error::from(ProjectError::ValueNotFound {
+            //            id: outer_equipment_id.clone(),
+            //            found_in: format!("connection: {idx}"),
+            //            project_type: "Equipment".to_owned(),
+            //        }));
+            //    }
+            //    ConnectionType::TerminalStrip {
+            //        term_strip_id: outer_terminal_strip_id,
+            //        element_id: _,
+            //    } => {
+            //        return Err(Error::from(ProjectError::ValueNotFound {
+            //            id: outer_terminal_strip_id.clone(),
+            //            found_in: format!("connection: {idx}"),
+            //            project_type: "Terminal Strip".to_owned(),
+            //        }));
+            //    }
+            //    ConnectionType::Connector {
+            //        connector_id: outer_connector_id,
+            //        pin_id: _,
+            //    } => {
+            //        return Err(Error::from(ProjectError::ValueNotFound {
+            //            id: outer_connector_id.clone(),
+            //            found_in: format!("connection: {idx}"),
+            //            project_type: "Connector".to_owned(),
+            //        }));
+            //    }
+            //}
         }
     }
     //TODO: now need to figure out which equipment is connected to which other equipment in the
@@ -1078,664 +1078,664 @@ pub fn render_enclosure_schematic_ladder(
     if render_connections {
         //TODO: fix this. Use slotmap functionality.
         for (idx, (key, connection)) in project.connections.iter().enumerate() {
-            match &connection.end1 {
-                ConnectionType::Wire { wire_id: outer_wire_id } if project.wires.contains_key(outer_wire_id) => match &connection
-                    .end2
-                {
-                    ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::SameType {
-                            end1: outer_wire_id.clone(),
-                            end2: inner_wire_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            message: Some(
-                                "Wires cannot be directly connected. Use an interposing terminal strip or connector".to_owned(),
-                            ),
-                        })));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } if project.cables.contains_key(inner_cable_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-                            end1: outer_wire_id.clone(),
-                            end2: inner_cable_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            reason: "Wires and cables cannot be directly connected. Use an interposing terminal strip or \
-                                     connector"
-                                .to_owned(),
-                        })));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } if project.term_cables.contains_key(inner_term_cable_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-                            end1: outer_wire_id.clone(),
-                            end2: inner_term_cable_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            reason: "Wires and term cables cannot be directly connected. use an interposing connector".to_owned(),
-                        })));
-                    }
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } if project.equipment.contains_key(inner_equipment_id) => {
-                        let equipment =
-                            project
-                                .equipment
-                                .get(inner_equipment_id)
-                                .ok_or(Error::from(ProjectError::ValueNotFound {
-                                    id: inner_equipment_id.clone(),
-                                    found_in: format!("connection: {idx}"),
-                                    project_type: "Equipment".to_owned(),
-                                }))?;
-                        if let Some(equip_enclosure) = equipment.enclosure.clone()
-                            && equip_enclosure == *enclosure_id
-                        {}
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } if project.connectors.contains_key(inner_connector_id) => {}
-                    ConnectionType::Wire { wire_id: inner_wire_id } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_wire_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Wire".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Cable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_term_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "TermCable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_equipment_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Equipment".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_terminal_strip_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Terminal Strip".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_connector_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Connector".to_owned(),
-                        }));
-                    }
-                },
-                ConnectionType::Cable {
-                    cable_id: outer_cable_id,
-                    core_id: outer_core_id,
-                } if project.term_cables.contains_key(outer_cable_id) => match &connection.end2 {
-                    ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-                            end1: outer_cable_id.clone(),
-                            end2: inner_wire_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            reason: "Wires and cables cannot be directly connected. Use an interposing terminal strip or \
-                                     connector"
-                                .to_owned(),
-                        })));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } if project.cables.contains_key(inner_cable_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::SameType {
-                            end1: outer_cable_id.clone(),
-                            end2: inner_cable_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            message: Some(
-                                "Cables cannot be directly connected. Use an interposing terminal strip or connector".to_owned(),
-                            ),
-                        })));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } if project.term_cables.contains_key(inner_term_cable_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-                            end1: outer_cable_id.clone(),
-                            end2: inner_term_cable_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            reason: "Cables and term cables cannot be directly connected. use an interposing connector"
-                                .to_owned(),
-                        })));
-                    }
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } if project.equipment.contains_key(inner_equipment_id) => {}
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } if project.connectors.contains_key(inner_connector_id) => {}
-                    ConnectionType::Wire { wire_id: inner_wire_id } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_wire_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Wire".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Cable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_term_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "TermCable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_equipment_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Equipment".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_terminal_strip_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Terminal Strip".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_connector_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Connector".to_owned(),
-                        }));
-                    }
-                },
-                ConnectionType::TermCable {
-                    cable_id: outer_term_cable_id,
-                } if project.term_cables.contains_key(outer_term_cable_id) => match &connection.end2 {
-                    ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-                            end1: outer_term_cable_id.clone(),
-                            end2: inner_wire_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            reason: "Wires and term cables cannot be directly connected. use an interposing connector".to_owned(),
-                        })));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } if project.cables.contains_key(inner_cable_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-                            end1: outer_term_cable_id.clone(),
-                            end2: inner_cable_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            reason: "Cables and term cables cannot be directly connected. use an interposing connector"
-                                .to_owned(),
-                        })));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } if project.term_cables.contains_key(inner_term_cable_id) => {}
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } if project.equipment.contains_key(inner_equipment_id) => {}
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } if project.connectors.contains_key(inner_connector_id) => {}
-                    ConnectionType::Wire { wire_id: inner_wire_id } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_wire_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Wire".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Cable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_term_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "TermCable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_equipment_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Equipment".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_terminal_strip_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Terminal Strip".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_connector_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Connector".to_owned(),
-                        }));
-                    }
-                },
-                ConnectionType::Equipment {
-                    equipment_id: outer_equipment_id,
-                    connection_point_id: _,
-                } if project.equipment.contains_key(outer_equipment_id) => match &connection.end2 {
-                    ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } if project.cables.contains_key(inner_cable_id) => {}
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } if project.term_cables.contains_key(inner_term_cable_id) => {}
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } if project.equipment.contains_key(inner_equipment_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::SameType {
-                            end1: outer_equipment_id.clone(),
-                            end2: inner_equipment_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            message: Some(
-                                "Equipment cannot be directly connected. Use an interposing wire, cable or term cable".to_owned(),
-                            ),
-                        })));
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-                            end1: outer_equipment_id.clone(),
-                            end2: inner_terminal_strip_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            reason: "Equipment and Terminal Strips cannot be directly connected. use an wire, cable or term \
-                                     cable"
-                                .to_owned(),
-                        })));
-                    }
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } if project.connectors.contains_key(inner_connector_id) => {}
-                    ConnectionType::Wire { wire_id: inner_wire_id } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_wire_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Wire".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Cable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_term_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "TermCable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_equipment_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Equipment".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_terminal_strip_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Terminal Strip".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_connector_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Connector".to_owned(),
-                        }));
-                    }
-                },
-                ConnectionType::TerminalStrip {
-                    term_strip_id: outer_terminal_strip_id,
-                    element_id: _,
-                } if project.terminal_strips.contains_key(outer_terminal_strip_id) => match &connection.end2 {
-                    ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } if project.cables.contains_key(inner_cable_id) => {}
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } if project.term_cables.contains_key(inner_term_cable_id) => {}
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } if project.equipment.contains_key(inner_equipment_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-                            end1: outer_terminal_strip_id.clone(),
-                            end2: inner_equipment_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            reason: "Equipment and Terminal Strips cannot be directly connected. use an wire, cable or term \
-                                     cable"
-                                .to_owned(),
-                        })));
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {
-                        return Err(Error::from(ProjectError::from(ConnectionError::SameType {
-                            end1: outer_terminal_strip_id.clone(),
-                            end2: inner_terminal_strip_id.clone(),
-                            project_file: connection.contained_datafile_path.clone(),
-                            message: Some(
-                                "Terminal Strips cannot be directly connected. Use an interposing wire, cable or term cable"
-                                    .to_owned(),
-                            ),
-                        })));
-                    }
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } if project.connectors.contains_key(inner_connector_id) => {}
-                    ConnectionType::Wire { wire_id: inner_wire_id } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_wire_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Wire".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Cable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_term_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "TermCable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_equipment_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Equipment".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_terminal_strip_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Terminal Strip".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_connector_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Connector".to_owned(),
-                        }));
-                    }
-                },
-                ConnectionType::Connector {
-                    connector_id: outer_connector_id,
-                    pin_id: _,
-                } if project.connectors.contains_key(outer_connector_id) => match &connection.end2 {
-                    ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } if project.cables.contains_key(inner_cable_id) => {}
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } if project.term_cables.contains_key(inner_term_cable_id) => {}
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } if project.equipment.contains_key(inner_equipment_id) => {}
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } if project.connectors.contains_key(inner_connector_id) => {}
-                    ConnectionType::Wire { wire_id: inner_wire_id } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_wire_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Wire".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Cable {
-                        cable_id: inner_cable_id,
-                        core_id: inner_core_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Cable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TermCable {
-                        cable_id: inner_term_cable_id,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_term_cable_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "TermCable".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Equipment {
-                        equipment_id: inner_equipment_id,
-                        connection_point_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_equipment_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Equipment".to_owned(),
-                        }));
-                    }
-                    ConnectionType::TerminalStrip {
-                        term_strip_id: inner_terminal_strip_id,
-                        element_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_terminal_strip_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Terminal Strip".to_owned(),
-                        }));
-                    }
-                    ConnectionType::Connector {
-                        connector_id: inner_connector_id,
-                        pin_id: _,
-                    } => {
-                        return Err(Error::from(ProjectError::ValueNotFound {
-                            id: inner_connector_id.clone(),
-                            found_in: format!("connection: {idx}"),
-                            project_type: "Connector".to_owned(),
-                        }));
-                    }
-                },
-                ConnectionType::Wire { wire_id: outer_wire_id } => {
-                    return Err(Error::from(ProjectError::ValueNotFound {
-                        id: outer_wire_id.clone(),
-                        found_in: format!("connection: {idx}"),
-                        project_type: "Wire".to_owned(),
-                    }));
-                }
-                ConnectionType::Cable {
-                    cable_id: outer_cable_id,
-                    core_id: outer_core_id,
-                } => {
-                    return Err(Error::from(ProjectError::ValueNotFound {
-                        id: outer_cable_id.clone(),
-                        found_in: format!("connection: {idx}"),
-                        project_type: "Cable".to_owned(),
-                    }));
-                }
-                ConnectionType::TermCable {
-                    cable_id: outer_term_cable_id,
-                } => {
-                    return Err(Error::from(ProjectError::ValueNotFound {
-                        id: outer_term_cable_id.clone(),
-                        found_in: format!("connection: {idx}"),
-                        project_type: "TermCable".to_owned(),
-                    }));
-                }
-                ConnectionType::Equipment {
-                    equipment_id: outer_equipment_id,
-                    connection_point_id: _,
-                } => {
-                    return Err(Error::from(ProjectError::ValueNotFound {
-                        id: outer_equipment_id.clone(),
-                        found_in: format!("connection: {idx}"),
-                        project_type: "Equipment".to_owned(),
-                    }));
-                }
-                ConnectionType::TerminalStrip {
-                    term_strip_id: outer_terminal_strip_id,
-                    element_id: _,
-                } => {
-                    return Err(Error::from(ProjectError::ValueNotFound {
-                        id: outer_terminal_strip_id.clone(),
-                        found_in: format!("connection: {idx}"),
-                        project_type: "Terminal Strip".to_owned(),
-                    }));
-                }
-                ConnectionType::Connector {
-                    connector_id: outer_connector_id,
-                    pin_id: _,
-                } => {
-                    return Err(Error::from(ProjectError::ValueNotFound {
-                        id: outer_connector_id.clone(),
-                        found_in: format!("connection: {idx}"),
-                        project_type: "Connector".to_owned(),
-                    }));
-                }
-            }
+            //match &connection.end1 {
+            //    ConnectionType::Wire { wire_id: outer_wire_id } if project.wires.contains_key(outer_wire_id) => match &connection
+            //        .end2
+            //    {
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::SameType {
+            //                end1: outer_wire_id.clone(),
+            //                end2: inner_wire_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                message: Some(
+            //                    "Wires cannot be directly connected. Use an interposing terminal strip or connector".to_owned(),
+            //                ),
+            //            })));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } if project.cables.contains_key(inner_cable_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
+            //                end1: outer_wire_id.clone(),
+            //                end2: inner_cable_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                reason: "Wires and cables cannot be directly connected. Use an interposing terminal strip or \
+            //                         connector"
+            //                    .to_owned(),
+            //            })));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } if project.term_cables.contains_key(inner_term_cable_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
+            //                end1: outer_wire_id.clone(),
+            //                end2: inner_term_cable_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                reason: "Wires and term cables cannot be directly connected. use an interposing connector".to_owned(),
+            //            })));
+            //        }
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } if project.equipment.contains_key(inner_equipment_id) => {
+            //            let equipment =
+            //                project
+            //                    .equipment
+            //                    .get(inner_equipment_id)
+            //                    .ok_or(Error::from(ProjectError::ValueNotFound {
+            //                        id: inner_equipment_id.clone(),
+            //                        found_in: format!("connection: {idx}"),
+            //                        project_type: "Equipment".to_owned(),
+            //                    }))?;
+            //            if let Some(equip_enclosure) = equipment.enclosure.clone()
+            //                && equip_enclosure == *enclosure_id
+            //            {}
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } if project.connectors.contains_key(inner_connector_id) => {}
+            //        ConnectionType::Wire { wire_id: inner_wire_id } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_wire_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Wire".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Cable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_term_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "TermCable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_equipment_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Equipment".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_terminal_strip_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Terminal Strip".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_connector_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Connector".to_owned(),
+            //            }));
+            //        }
+            //    },
+            //    ConnectionType::Cable {
+            //        cable_id: outer_cable_id,
+            //        core_id: outer_core_id,
+            //    } if project.term_cables.contains_key(outer_cable_id) => match &connection.end2 {
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
+            //                end1: outer_cable_id.clone(),
+            //                end2: inner_wire_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                reason: "Wires and cables cannot be directly connected. Use an interposing terminal strip or \
+            //                         connector"
+            //                    .to_owned(),
+            //            })));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } if project.cables.contains_key(inner_cable_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::SameType {
+            //                end1: outer_cable_id.clone(),
+            //                end2: inner_cable_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                message: Some(
+            //                    "Cables cannot be directly connected. Use an interposing terminal strip or connector".to_owned(),
+            //                ),
+            //            })));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } if project.term_cables.contains_key(inner_term_cable_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
+            //                end1: outer_cable_id.clone(),
+            //                end2: inner_term_cable_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                reason: "Cables and term cables cannot be directly connected. use an interposing connector"
+            //                    .to_owned(),
+            //            })));
+            //        }
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } if project.equipment.contains_key(inner_equipment_id) => {}
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } if project.connectors.contains_key(inner_connector_id) => {}
+            //        ConnectionType::Wire { wire_id: inner_wire_id } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_wire_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Wire".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Cable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_term_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "TermCable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_equipment_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Equipment".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_terminal_strip_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Terminal Strip".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_connector_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Connector".to_owned(),
+            //            }));
+            //        }
+            //    },
+            //    ConnectionType::TermCable {
+            //        cable_id: outer_term_cable_id,
+            //    } if project.term_cables.contains_key(outer_term_cable_id) => match &connection.end2 {
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
+            //                end1: outer_term_cable_id.clone(),
+            //                end2: inner_wire_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                reason: "Wires and term cables cannot be directly connected. use an interposing connector".to_owned(),
+            //            })));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } if project.cables.contains_key(inner_cable_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
+            //                end1: outer_term_cable_id.clone(),
+            //                end2: inner_cable_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                reason: "Cables and term cables cannot be directly connected. use an interposing connector"
+            //                    .to_owned(),
+            //            })));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } if project.term_cables.contains_key(inner_term_cable_id) => {}
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } if project.equipment.contains_key(inner_equipment_id) => {}
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } if project.connectors.contains_key(inner_connector_id) => {}
+            //        ConnectionType::Wire { wire_id: inner_wire_id } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_wire_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Wire".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Cable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_term_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "TermCable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_equipment_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Equipment".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_terminal_strip_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Terminal Strip".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_connector_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Connector".to_owned(),
+            //            }));
+            //        }
+            //    },
+            //    ConnectionType::Equipment {
+            //        equipment_id: outer_equipment_id,
+            //        connection_point_id: _,
+            //    } if project.equipment.contains_key(outer_equipment_id) => match &connection.end2 {
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } if project.cables.contains_key(inner_cable_id) => {}
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } if project.term_cables.contains_key(inner_term_cable_id) => {}
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } if project.equipment.contains_key(inner_equipment_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::SameType {
+            //                end1: outer_equipment_id.clone(),
+            //                end2: inner_equipment_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                message: Some(
+            //                    "Equipment cannot be directly connected. Use an interposing wire, cable or term cable".to_owned(),
+            //                ),
+            //            })));
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
+            //                end1: outer_equipment_id.clone(),
+            //                end2: inner_terminal_strip_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                reason: "Equipment and Terminal Strips cannot be directly connected. use an wire, cable or term \
+            //                         cable"
+            //                    .to_owned(),
+            //            })));
+            //        }
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } if project.connectors.contains_key(inner_connector_id) => {}
+            //        ConnectionType::Wire { wire_id: inner_wire_id } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_wire_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Wire".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Cable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_term_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "TermCable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_equipment_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Equipment".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_terminal_strip_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Terminal Strip".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_connector_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Connector".to_owned(),
+            //            }));
+            //        }
+            //    },
+            //    ConnectionType::TerminalStrip {
+            //        term_strip_id: outer_terminal_strip_id,
+            //        element_id: _,
+            //    } if project.terminal_strips.contains_key(outer_terminal_strip_id) => match &connection.end2 {
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } if project.cables.contains_key(inner_cable_id) => {}
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } if project.term_cables.contains_key(inner_term_cable_id) => {}
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } if project.equipment.contains_key(inner_equipment_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
+            //                end1: outer_terminal_strip_id.clone(),
+            //                end2: inner_equipment_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                reason: "Equipment and Terminal Strips cannot be directly connected. use an wire, cable or term \
+            //                         cable"
+            //                    .to_owned(),
+            //            })));
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {
+            //            return Err(Error::from(ProjectError::from(ConnectionError::SameType {
+            //                end1: outer_terminal_strip_id.clone(),
+            //                end2: inner_terminal_strip_id.clone(),
+            //                project_file: connection.contained_datafile_path.clone(),
+            //                message: Some(
+            //                    "Terminal Strips cannot be directly connected. Use an interposing wire, cable or term cable"
+            //                        .to_owned(),
+            //                ),
+            //            })));
+            //        }
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } if project.connectors.contains_key(inner_connector_id) => {}
+            //        ConnectionType::Wire { wire_id: inner_wire_id } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_wire_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Wire".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Cable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_term_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "TermCable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_equipment_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Equipment".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_terminal_strip_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Terminal Strip".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_connector_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Connector".to_owned(),
+            //            }));
+            //        }
+            //    },
+            //    ConnectionType::Connector {
+            //        connector_id: outer_connector_id,
+            //        pin_id: _,
+            //    } if project.connectors.contains_key(outer_connector_id) => match &connection.end2 {
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } if project.cables.contains_key(inner_cable_id) => {}
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } if project.term_cables.contains_key(inner_term_cable_id) => {}
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } if project.equipment.contains_key(inner_equipment_id) => {}
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } if project.terminal_strips.contains_key(inner_terminal_strip_id) => {}
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } if project.connectors.contains_key(inner_connector_id) => {}
+            //        ConnectionType::Wire { wire_id: inner_wire_id } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_wire_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Wire".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Cable {
+            //            cable_id: inner_cable_id,
+            //            core_id: inner_core_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Cable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TermCable {
+            //            cable_id: inner_term_cable_id,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_term_cable_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "TermCable".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Equipment {
+            //            equipment_id: inner_equipment_id,
+            //            connection_point_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_equipment_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Equipment".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::TerminalStrip {
+            //            term_strip_id: inner_terminal_strip_id,
+            //            element_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_terminal_strip_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Terminal Strip".to_owned(),
+            //            }));
+            //        }
+            //        ConnectionType::Connector {
+            //            connector_id: inner_connector_id,
+            //            pin_id: _,
+            //        } => {
+            //            return Err(Error::from(ProjectError::ValueNotFound {
+            //                id: inner_connector_id.clone(),
+            //                found_in: format!("connection: {idx}"),
+            //                project_type: "Connector".to_owned(),
+            //            }));
+            //        }
+            //    },
+            //    ConnectionType::Wire { wire_id: outer_wire_id } => {
+            //        return Err(Error::from(ProjectError::ValueNotFound {
+            //            id: outer_wire_id.clone(),
+            //            found_in: format!("connection: {idx}"),
+            //            project_type: "Wire".to_owned(),
+            //        }));
+            //    }
+            //    ConnectionType::Cable {
+            //        cable_id: outer_cable_id,
+            //        core_id: outer_core_id,
+            //    } => {
+            //        return Err(Error::from(ProjectError::ValueNotFound {
+            //            id: outer_cable_id.clone(),
+            //            found_in: format!("connection: {idx}"),
+            //            project_type: "Cable".to_owned(),
+            //        }));
+            //    }
+            //    ConnectionType::TermCable {
+            //        cable_id: outer_term_cable_id,
+            //    } => {
+            //        return Err(Error::from(ProjectError::ValueNotFound {
+            //            id: outer_term_cable_id.clone(),
+            //            found_in: format!("connection: {idx}"),
+            //            project_type: "TermCable".to_owned(),
+            //        }));
+            //    }
+            //    ConnectionType::Equipment {
+            //        equipment_id: outer_equipment_id,
+            //        connection_point_id: _,
+            //    } => {
+            //        return Err(Error::from(ProjectError::ValueNotFound {
+            //            id: outer_equipment_id.clone(),
+            //            found_in: format!("connection: {idx}"),
+            //            project_type: "Equipment".to_owned(),
+            //        }));
+            //    }
+            //    ConnectionType::TerminalStrip {
+            //        term_strip_id: outer_terminal_strip_id,
+            //        element_id: _,
+            //    } => {
+            //        return Err(Error::from(ProjectError::ValueNotFound {
+            //            id: outer_terminal_strip_id.clone(),
+            //            found_in: format!("connection: {idx}"),
+            //            project_type: "Terminal Strip".to_owned(),
+            //        }));
+            //    }
+            //    ConnectionType::Connector {
+            //        connector_id: outer_connector_id,
+            //        pin_id: _,
+            //    } => {
+            //        return Err(Error::from(ProjectError::ValueNotFound {
+            //            id: outer_connector_id.clone(),
+            //            found_in: format!("connection: {idx}"),
+            //            project_type: "Connector".to_owned(),
+            //        }));
+            //    }
+            //}
         }
     }
     //TODO: now need to figure out which equipment is connected to which other equipment in the

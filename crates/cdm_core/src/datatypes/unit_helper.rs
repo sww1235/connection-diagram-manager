@@ -10,7 +10,7 @@ pub mod electric_potential;
 /// Helper types and functions for `Length` units.
 pub mod length;
 /// Helper types and functions for `Nominal Wire Size` units.
-pub mod nominal_wire_size;
+pub mod nominal_core_size;
 /// Helper types and functions for `Temperature Interval` units.
 pub mod temperature_interval;
 
