@@ -111,6 +111,36 @@ impl Equipment {
     // LibraryError> {
     //
     //}
+
+    /// Update connection directions on associated
+    /// [`Connection`](crate::datatypes::project_types::connection::Connection)'s
+    #[inline]
+    pub fn update_connection_directions_from_symbol(&self, project: &mut Project) {
+        let symbol = self.schematic_symbol();
+
+        for (connection_id, end_designation) in &self.connections {
+            let connection = project.connections.get_mut(connection_id).unwrap();
+
+            if let End::Equipment { connection_point_id, .. } = &connection.end1 {
+                let symbol_connection_point = symbol.connections.get(connection_point_id).unwrap();
+                let allowed_connection_directions = symbol_connection_point.allowed_connection_directions.clone();
+
+                match &connection.connection {
+                    InnerConnection::Cable { cable_id, core_id } => {
+                        let cable = project.cables.get_mut(cable_id).unwrap();
+                        let core = cable.cores.get_mut(core_id).unwrap();
+
+                        for direction in allowed_connection_directions {
+                            core.connector_mut().end1_junction.directions.insert(direction);
+                        }
+                    }
+                    InnerConnection::TermCable { cable_id, core_id } => {
+                        //TODO
+                    }
+                }
+            }
+        }
+    }
 }
 
 impl SchematicRepresentation for Equipment {
