@@ -71,7 +71,7 @@ impl Default for LineStyle {
     #[inline]
     fn default() -> Self {
         Self {
-            color: Color::RED,
+            color: Color::Red,
             secondary_color: None,
             line_thickness: 4.0,
             line_appearance: None,

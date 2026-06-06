@@ -140,7 +140,7 @@ impl Default for ConnectionPoint {
             position: Pos2::ZERO,
             directions: HashSet::from([ConnectionDirection::NONE]),
             radius: 1.0,
-            color: Color::RED,
+            color: Color::Red,
         }
     }
 }
