@@ -213,6 +213,11 @@ fn validate_and_update_svg(svg: &mut Svg) -> Result<(), Error> {
         let event = event?.clone();
 
         // Using match here in case I ever need to check or update more things here.
+        // don't care about any other events currently here
+        #[expect(
+            clippy::wildcard_enum_match_arm,
+            reason = "Only care about StartElement, but using match for ergonomics"
+        )]
         match event {
             ReaderEvent::StartElement { name, attributes, .. } if name.local_name == "svg" => {
                 for attr in attributes {
@@ -253,8 +258,6 @@ fn validate_and_update_svg(svg: &mut Svg) -> Result<(), Error> {
                     }
                 }
             }
-            // don't care about any other events currently here
-            //#[expect(clippy::wildcard_enum_match_arm, reason = "Only care about StartElement, but using match for ergonomics")]
             _ => {}
         }
     }

@@ -83,7 +83,7 @@ impl Widget for &mut RightAngle {
         {
             trace! {"top/bottom:right/left"} //TODO
         } else {
-            error! {"unsupported direction combination"}
+            error! {"ui() fn: unsupported direction combination"}
         }
         response
     }
@@ -113,7 +113,7 @@ impl RightAngle {
             trace! {"top/bottom:right/left"} //TODO
             Pos2::new(end1.position.y, end2.position.x)
         } else {
-            error! {"unsupported direction combination"}
+            error! {"new() fn: unsupported direction combination"}
             //TODO: replace with Pos2::NAN once migrated to egui 3.34.1
             Pos2::new(f32::NAN, f32::NAN)
         };

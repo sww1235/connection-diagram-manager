@@ -234,17 +234,17 @@ pub fn render_enclosure(
         //TODO: fix this. Use slotmap functionality.
         for (idx, (key, connection)) in project.connections.iter().enumerate() {
             //match &connection.end1 {
-            //    ConnectionType::Wire { wire_id: outer_wire_id } if project.wires.contains_key(outer_wire_id) => match &connection
-            //        .end2
+            //    ConnectionType::Wire { wire_id: outer_wire_id } if project.wires.contains_key(outer_wire_id)
+            // => match &connection        .end2
             //    {
-            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
-            //            return Err(Error::from(ProjectError::from(ConnectionError::SameType {
-            //                end1: outer_wire_id.clone(),
-            //                end2: inner_wire_id.clone(),
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if
+            // project.wires.contains_key(inner_wire_id) => {            return
+            // Err(Error::from(ProjectError::from(ConnectionError::SameType {                end1:
+            // outer_wire_id.clone(),                end2: inner_wire_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
             //                message: Some(
-            //                    "Wires cannot be directly connected. Use an interposing terminal strip or connector".to_owned(),
-            //                ),
+            //                    "Wires cannot be directly connected. Use an interposing terminal strip or
+            // connector".to_owned(),                ),
             //            })));
             //        }
             //        ConnectionType::Cable {
@@ -255,8 +255,8 @@ pub fn render_enclosure(
             //                end1: outer_wire_id.clone(),
             //                end2: inner_cable_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
-            //                reason: "Wires and cables cannot be directly connected. Use an interposing terminal strip or \
-            //                         connector"
+            //                reason: "Wires and cables cannot be directly connected. Use an interposing
+            // terminal strip or \                         connector"
             //                    .to_owned(),
             //            })));
             //        }
@@ -267,8 +267,8 @@ pub fn render_enclosure(
             //                end1: outer_wire_id.clone(),
             //                end2: inner_term_cable_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
-            //                reason: "Wires and term cables cannot be directly connected. use an interposing connector".to_owned(),
-            //            })));
+            //                reason: "Wires and term cables cannot be directly connected. use an interposing
+            // connector".to_owned(),            })));
             //        }
             //        ConnectionType::Equipment {
             //            equipment_id: inner_equipment_id,
@@ -356,13 +356,13 @@ pub fn render_enclosure(
             //        cable_id: outer_cable_id,
             //        core_id: outer_core_id,
             //    } if project.term_cables.contains_key(outer_cable_id) => match &connection.end2 {
-            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
-            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-            //                end1: outer_cable_id.clone(),
-            //                end2: inner_wire_id.clone(),
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if
+            // project.wires.contains_key(inner_wire_id) => {            return
+            // Err(Error::from(ProjectError::from(ConnectionError::Invalid {                end1:
+            // outer_cable_id.clone(),                end2: inner_wire_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
-            //                reason: "Wires and cables cannot be directly connected. Use an interposing terminal strip or \
-            //                         connector"
+            //                reason: "Wires and cables cannot be directly connected. Use an interposing
+            // terminal strip or \                         connector"
             //                    .to_owned(),
             //            })));
             //        }
@@ -375,8 +375,8 @@ pub fn render_enclosure(
             //                end2: inner_cable_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
             //                message: Some(
-            //                    "Cables cannot be directly connected. Use an interposing terminal strip or connector".to_owned(),
-            //                ),
+            //                    "Cables cannot be directly connected. Use an interposing terminal strip or
+            // connector".to_owned(),                ),
             //            })));
             //        }
             //        ConnectionType::TermCable {
@@ -386,8 +386,8 @@ pub fn render_enclosure(
             //                end1: outer_cable_id.clone(),
             //                end2: inner_term_cable_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
-            //                reason: "Cables and term cables cannot be directly connected. use an interposing connector"
-            //                    .to_owned(),
+            //                reason: "Cables and term cables cannot be directly connected. use an interposing
+            // connector"                    .to_owned(),
             //            })));
             //        }
             //        ConnectionType::Equipment {
@@ -462,13 +462,13 @@ pub fn render_enclosure(
             //    ConnectionType::TermCable {
             //        cable_id: outer_term_cable_id,
             //    } if project.term_cables.contains_key(outer_term_cable_id) => match &connection.end2 {
-            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
-            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-            //                end1: outer_term_cable_id.clone(),
-            //                end2: inner_wire_id.clone(),
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if
+            // project.wires.contains_key(inner_wire_id) => {            return
+            // Err(Error::from(ProjectError::from(ConnectionError::Invalid {                end1:
+            // outer_term_cable_id.clone(),                end2: inner_wire_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
-            //                reason: "Wires and term cables cannot be directly connected. use an interposing connector".to_owned(),
-            //            })));
+            //                reason: "Wires and term cables cannot be directly connected. use an interposing
+            // connector".to_owned(),            })));
             //        }
             //        ConnectionType::Cable {
             //            cable_id: inner_cable_id,
@@ -478,8 +478,8 @@ pub fn render_enclosure(
             //                end1: outer_term_cable_id.clone(),
             //                end2: inner_cable_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
-            //                reason: "Cables and term cables cannot be directly connected. use an interposing connector"
-            //                    .to_owned(),
+            //                reason: "Cables and term cables cannot be directly connected. use an interposing
+            // connector"                    .to_owned(),
             //            })));
             //        }
             //        ConnectionType::TermCable {
@@ -558,8 +558,8 @@ pub fn render_enclosure(
             //        equipment_id: outer_equipment_id,
             //        connection_point_id: _,
             //    } if project.equipment.contains_key(outer_equipment_id) => match &connection.end2 {
-            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
-            //        ConnectionType::Cable {
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if
+            // project.wires.contains_key(inner_wire_id) => {}        ConnectionType::Cable {
             //            cable_id: inner_cable_id,
             //            core_id: inner_core_id,
             //        } if project.cables.contains_key(inner_cable_id) => {}
@@ -575,8 +575,8 @@ pub fn render_enclosure(
             //                end2: inner_equipment_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
             //                message: Some(
-            //                    "Equipment cannot be directly connected. Use an interposing wire, cable or term cable".to_owned(),
-            //                ),
+            //                    "Equipment cannot be directly connected. Use an interposing wire, cable or
+            // term cable".to_owned(),                ),
             //            })));
             //        }
             //        ConnectionType::TerminalStrip {
@@ -587,8 +587,8 @@ pub fn render_enclosure(
             //                end1: outer_equipment_id.clone(),
             //                end2: inner_terminal_strip_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
-            //                reason: "Equipment and Terminal Strips cannot be directly connected. use an wire, cable or term \
-            //                         cable"
+            //                reason: "Equipment and Terminal Strips cannot be directly connected. use an
+            // wire, cable or term \                         cable"
             //                    .to_owned(),
             //            })));
             //        }
@@ -656,9 +656,9 @@ pub fn render_enclosure(
             //    ConnectionType::TerminalStrip {
             //        term_strip_id: outer_terminal_strip_id,
             //        element_id: _,
-            //    } if project.terminal_strips.contains_key(outer_terminal_strip_id) => match &connection.end2 {
-            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
-            //        ConnectionType::Cable {
+            //    } if project.terminal_strips.contains_key(outer_terminal_strip_id) => match &connection.end2
+            // {        ConnectionType::Wire { wire_id: inner_wire_id } if
+            // project.wires.contains_key(inner_wire_id) => {}        ConnectionType::Cable {
             //            cable_id: inner_cable_id,
             //            core_id: inner_core_id,
             //        } if project.cables.contains_key(inner_cable_id) => {}
@@ -673,8 +673,8 @@ pub fn render_enclosure(
             //                end1: outer_terminal_strip_id.clone(),
             //                end2: inner_equipment_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
-            //                reason: "Equipment and Terminal Strips cannot be directly connected. use an wire, cable or term \
-            //                         cable"
+            //                reason: "Equipment and Terminal Strips cannot be directly connected. use an
+            // wire, cable or term \                         cable"
             //                    .to_owned(),
             //            })));
             //        }
@@ -687,8 +687,8 @@ pub fn render_enclosure(
             //                end2: inner_terminal_strip_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
             //                message: Some(
-            //                    "Terminal Strips cannot be directly connected. Use an interposing wire, cable or term cable"
-            //                        .to_owned(),
+            //                    "Terminal Strips cannot be directly connected. Use an interposing wire,
+            // cable or term cable"                        .to_owned(),
             //                ),
             //            })));
             //        }
@@ -757,8 +757,8 @@ pub fn render_enclosure(
             //        connector_id: outer_connector_id,
             //        pin_id: _,
             //    } if project.connectors.contains_key(outer_connector_id) => match &connection.end2 {
-            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
-            //        ConnectionType::Cable {
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if
+            // project.wires.contains_key(inner_wire_id) => {}        ConnectionType::Cable {
             //            cable_id: inner_cable_id,
             //            core_id: inner_core_id,
             //        } if project.cables.contains_key(inner_cable_id) => {}
@@ -932,10 +932,6 @@ pub fn render_enclosure(
 #[inline(never)]
 #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
 #[expect(unused_variables, reason = "function not finished yet")]
-#[expect(
-    clippy::unneeded_field_pattern,
-    reason = "leaving unused fields specified so I remember what fields are present"
-)]
 pub fn render_enclosure_schematic_ladder(
     project: &Project,
     library: &Library,
@@ -1074,17 +1070,17 @@ pub fn render_enclosure_schematic_ladder(
         //TODO: fix this. Use slotmap functionality.
         for (idx, (key, connection)) in project.connections.iter().enumerate() {
             //match &connection.end1 {
-            //    ConnectionType::Wire { wire_id: outer_wire_id } if project.wires.contains_key(outer_wire_id) => match &connection
-            //        .end2
+            //    ConnectionType::Wire { wire_id: outer_wire_id } if project.wires.contains_key(outer_wire_id)
+            // => match &connection        .end2
             //    {
-            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
-            //            return Err(Error::from(ProjectError::from(ConnectionError::SameType {
-            //                end1: outer_wire_id.clone(),
-            //                end2: inner_wire_id.clone(),
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if
+            // project.wires.contains_key(inner_wire_id) => {            return
+            // Err(Error::from(ProjectError::from(ConnectionError::SameType {                end1:
+            // outer_wire_id.clone(),                end2: inner_wire_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
             //                message: Some(
-            //                    "Wires cannot be directly connected. Use an interposing terminal strip or connector".to_owned(),
-            //                ),
+            //                    "Wires cannot be directly connected. Use an interposing terminal strip or
+            // connector".to_owned(),                ),
             //            })));
             //        }
             //        ConnectionType::Cable {
@@ -1095,8 +1091,8 @@ pub fn render_enclosure_schematic_ladder(
             //                end1: outer_wire_id.clone(),
             //                end2: inner_cable_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
-            //                reason: "Wires and cables cannot be directly connected. Use an interposing terminal strip or \
-            //                         connector"
+            //                reason: "Wires and cables cannot be directly connected. Use an interposing
+            // terminal strip or \                         connector"
             //                    .to_owned(),
             //            })));
             //        }
@@ -1107,8 +1103,8 @@ pub fn render_enclosure_schematic_ladder(
             //                end1: outer_wire_id.clone(),
             //                end2: inner_term_cable_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
-            //                reason: "Wires and term cables cannot be directly connected. use an interposing connector".to_owned(),
-            //            })));
+            //                reason: "Wires and term cables cannot be directly connected. use an interposing
+            // connector".to_owned(),            })));
             //        }
             //        ConnectionType::Equipment {
             //            equipment_id: inner_equipment_id,
@@ -1196,13 +1192,13 @@ pub fn render_enclosure_schematic_ladder(
             //        cable_id: outer_cable_id,
             //        core_id: outer_core_id,
             //    } if project.term_cables.contains_key(outer_cable_id) => match &connection.end2 {
-            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
-            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-            //                end1: outer_cable_id.clone(),
-            //                end2: inner_wire_id.clone(),
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if
+            // project.wires.contains_key(inner_wire_id) => {            return
+            // Err(Error::from(ProjectError::from(ConnectionError::Invalid {                end1:
+            // outer_cable_id.clone(),                end2: inner_wire_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
-            //                reason: "Wires and cables cannot be directly connected. Use an interposing terminal strip or \
-            //                         connector"
+            //                reason: "Wires and cables cannot be directly connected. Use an interposing
+            // terminal strip or \                         connector"
             //                    .to_owned(),
             //            })));
             //        }
@@ -1215,8 +1211,8 @@ pub fn render_enclosure_schematic_ladder(
             //                end2: inner_cable_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
             //                message: Some(
-            //                    "Cables cannot be directly connected. Use an interposing terminal strip or connector".to_owned(),
-            //                ),
+            //                    "Cables cannot be directly connected. Use an interposing terminal strip or
+            // connector".to_owned(),                ),
             //            })));
             //        }
             //        ConnectionType::TermCable {
@@ -1226,8 +1222,8 @@ pub fn render_enclosure_schematic_ladder(
             //                end1: outer_cable_id.clone(),
             //                end2: inner_term_cable_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
-            //                reason: "Cables and term cables cannot be directly connected. use an interposing connector"
-            //                    .to_owned(),
+            //                reason: "Cables and term cables cannot be directly connected. use an interposing
+            // connector"                    .to_owned(),
             //            })));
             //        }
             //        ConnectionType::Equipment {
@@ -1302,13 +1298,13 @@ pub fn render_enclosure_schematic_ladder(
             //    ConnectionType::TermCable {
             //        cable_id: outer_term_cable_id,
             //    } if project.term_cables.contains_key(outer_term_cable_id) => match &connection.end2 {
-            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {
-            //            return Err(Error::from(ProjectError::from(ConnectionError::Invalid {
-            //                end1: outer_term_cable_id.clone(),
-            //                end2: inner_wire_id.clone(),
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if
+            // project.wires.contains_key(inner_wire_id) => {            return
+            // Err(Error::from(ProjectError::from(ConnectionError::Invalid {                end1:
+            // outer_term_cable_id.clone(),                end2: inner_wire_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
-            //                reason: "Wires and term cables cannot be directly connected. use an interposing connector".to_owned(),
-            //            })));
+            //                reason: "Wires and term cables cannot be directly connected. use an interposing
+            // connector".to_owned(),            })));
             //        }
             //        ConnectionType::Cable {
             //            cable_id: inner_cable_id,
@@ -1318,8 +1314,8 @@ pub fn render_enclosure_schematic_ladder(
             //                end1: outer_term_cable_id.clone(),
             //                end2: inner_cable_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
-            //                reason: "Cables and term cables cannot be directly connected. use an interposing connector"
-            //                    .to_owned(),
+            //                reason: "Cables and term cables cannot be directly connected. use an interposing
+            // connector"                    .to_owned(),
             //            })));
             //        }
             //        ConnectionType::TermCable {
@@ -1398,8 +1394,8 @@ pub fn render_enclosure_schematic_ladder(
             //        equipment_id: outer_equipment_id,
             //        connection_point_id: _,
             //    } if project.equipment.contains_key(outer_equipment_id) => match &connection.end2 {
-            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
-            //        ConnectionType::Cable {
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if
+            // project.wires.contains_key(inner_wire_id) => {}        ConnectionType::Cable {
             //            cable_id: inner_cable_id,
             //            core_id: inner_core_id,
             //        } if project.cables.contains_key(inner_cable_id) => {}
@@ -1415,8 +1411,8 @@ pub fn render_enclosure_schematic_ladder(
             //                end2: inner_equipment_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
             //                message: Some(
-            //                    "Equipment cannot be directly connected. Use an interposing wire, cable or term cable".to_owned(),
-            //                ),
+            //                    "Equipment cannot be directly connected. Use an interposing wire, cable or
+            // term cable".to_owned(),                ),
             //            })));
             //        }
             //        ConnectionType::TerminalStrip {
@@ -1427,8 +1423,8 @@ pub fn render_enclosure_schematic_ladder(
             //                end1: outer_equipment_id.clone(),
             //                end2: inner_terminal_strip_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
-            //                reason: "Equipment and Terminal Strips cannot be directly connected. use an wire, cable or term \
-            //                         cable"
+            //                reason: "Equipment and Terminal Strips cannot be directly connected. use an
+            // wire, cable or term \                         cable"
             //                    .to_owned(),
             //            })));
             //        }
@@ -1496,9 +1492,9 @@ pub fn render_enclosure_schematic_ladder(
             //    ConnectionType::TerminalStrip {
             //        term_strip_id: outer_terminal_strip_id,
             //        element_id: _,
-            //    } if project.terminal_strips.contains_key(outer_terminal_strip_id) => match &connection.end2 {
-            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
-            //        ConnectionType::Cable {
+            //    } if project.terminal_strips.contains_key(outer_terminal_strip_id) => match &connection.end2
+            // {        ConnectionType::Wire { wire_id: inner_wire_id } if
+            // project.wires.contains_key(inner_wire_id) => {}        ConnectionType::Cable {
             //            cable_id: inner_cable_id,
             //            core_id: inner_core_id,
             //        } if project.cables.contains_key(inner_cable_id) => {}
@@ -1513,8 +1509,8 @@ pub fn render_enclosure_schematic_ladder(
             //                end1: outer_terminal_strip_id.clone(),
             //                end2: inner_equipment_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
-            //                reason: "Equipment and Terminal Strips cannot be directly connected. use an wire, cable or term \
-            //                         cable"
+            //                reason: "Equipment and Terminal Strips cannot be directly connected. use an
+            // wire, cable or term \                         cable"
             //                    .to_owned(),
             //            })));
             //        }
@@ -1527,8 +1523,8 @@ pub fn render_enclosure_schematic_ladder(
             //                end2: inner_terminal_strip_id.clone(),
             //                project_file: connection.contained_datafile_path.clone(),
             //                message: Some(
-            //                    "Terminal Strips cannot be directly connected. Use an interposing wire, cable or term cable"
-            //                        .to_owned(),
+            //                    "Terminal Strips cannot be directly connected. Use an interposing wire,
+            // cable or term cable"                        .to_owned(),
             //                ),
             //            })));
             //        }
@@ -1597,8 +1593,8 @@ pub fn render_enclosure_schematic_ladder(
             //        connector_id: outer_connector_id,
             //        pin_id: _,
             //    } if project.connectors.contains_key(outer_connector_id) => match &connection.end2 {
-            //        ConnectionType::Wire { wire_id: inner_wire_id } if project.wires.contains_key(inner_wire_id) => {}
-            //        ConnectionType::Cable {
+            //        ConnectionType::Wire { wire_id: inner_wire_id } if
+            // project.wires.contains_key(inner_wire_id) => {}        ConnectionType::Cable {
             //            cable_id: inner_cable_id,
             //            core_id: inner_core_id,
             //        } if project.cables.contains_key(inner_cable_id) => {}

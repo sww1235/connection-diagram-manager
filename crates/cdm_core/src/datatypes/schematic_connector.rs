@@ -12,7 +12,12 @@ use egui::{Color32, Pos2, Rect, Sense, Ui, Vec2, response::Response, widgets::Wi
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    datatypes::{color::Color, library_types::Library, project_types::ProjectData, schematic_symbol::ConnectionDirection},
+    datatypes::{
+        color::Color,
+        library_types::Library,
+        project_types::{Project, ProjectData},
+        schematic_symbol::ConnectionDirection,
+    },
     error::Error,
 };
 
@@ -88,6 +93,7 @@ pub enum TypeFlag {
 }
 /// An enum to allow storing different `SchematicConnector`s in one `Vec`.
 #[non_exhaustive]
+#[expect(clippy::large_enum_variant, reason = "its not that big")]
 #[derive(Debug, Clone, PartialEq)]
 pub enum ConnectorType {
     /// `RightAngle` contains a `RightAngle` connector.

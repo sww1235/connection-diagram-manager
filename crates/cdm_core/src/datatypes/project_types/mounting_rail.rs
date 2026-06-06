@@ -79,6 +79,10 @@ impl MountingRail {
     )]
     #[inline(never)]
     #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
+    #[expect(
+        clippy::missing_panics_doc,
+        reason = "issue with infalliable errs, https://github.com/rust-lang/rust-clippy/issues/16709#issue-4068255944"
+    )]
     pub fn vis_rep(&self, library: &Library) -> Result<Svg, Error> {
         // because usvg is a read only parsing library, I can't build the SVG programatically and
         // instead have to bastardize creation of it via string concatenation and parsing
