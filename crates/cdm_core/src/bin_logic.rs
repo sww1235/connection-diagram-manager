@@ -10,7 +10,7 @@ use figment::{
     providers::{Format as _, Serialized, Toml},
 };
 use log::LevelFilter;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use simple_logger::SimpleLogger;
 
 use crate::{
@@ -121,8 +121,9 @@ pub struct Cli {
 }
 
 /// Unit types that can be printed for use in configuration files.
-#[derive(Parser, Debug, Serialize, Clone, Copy, ValueEnum, Default)]
+#[derive(Parser, Debug, Serialize, Deserialize, Clone, Copy, ValueEnum, Default)]
 #[non_exhaustive]
+#[serde(rename_all = "PascalCase")]
 pub enum PrintUnitCmdOption {
     /// Print all unit options.
     #[default]

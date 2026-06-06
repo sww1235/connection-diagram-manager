@@ -3,6 +3,8 @@ use std::path::PathBuf;
 use miniquad::conf::Conf as mqConf;
 use serde::{Deserialize, Serialize};
 
+use crate::bin_logic::PrintUnitCmdOption;
+
 /// `Config` represents configuration options for the various cdm binary programs.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
@@ -67,6 +69,8 @@ pub struct ApplicationConfig {
     /// Only shows log messages with `Error` level. Use twice to completely eliminate output. Takes
     /// precidence over verbose.
     pub quiet: u8,
+    /// print units accepted in configuration files.
+    pub print_units: Option<PrintUnitCmdOption>,
 }
 
 impl Default for ApplicationConfig {
@@ -90,6 +94,7 @@ impl Default for ApplicationConfig {
             project_directory: None,
             verbose: 0,
             quiet: 0,
+            print_units: None,
         }
     }
 }
