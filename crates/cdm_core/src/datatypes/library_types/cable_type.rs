@@ -22,12 +22,7 @@ use crate::{
     traits::FromFile,
 };
 
-//TODO: come up with better name
-
 //TODO: add validation to check that Figure8 cable cross sections only have 2 cores
-//
-//TODO: add optional parameters for ac/dc electric potential, min/max temperature rating to
-//cableType itself, maybe?
 //
 //TODO: add optional min/max bend radius parameters
 /// `CableType` contains defintions for any type of linear item such as wire, cable, fiber optic
@@ -76,7 +71,7 @@ impl From<file_types::cable_type::CableType> for CableType {
             cross_sect_area: value.cross_sect_area,
             cross_section: value.cross_section,
             dimensions: value.dimensions,
-            line_style: value.line_style,
+            line_style: value.line_style.unwrap_or_default(),
             cores: value
                 .cores
                 .into_iter()
@@ -103,7 +98,7 @@ impl FromFile for CableType {
 
 /// `CableCore` represents an individual conductor, strength member or optical fiber in a cable.
 #[derive(Debug, PartialEq, Clone)]
-#[expect(clippy::exhaustive_enums, reason = "only two options make sense")]
+#[non_exhaustive]
 pub struct CableCore {
     /// ID of `CableType` that this core is made of.
     pub type_id: String,
@@ -150,7 +145,7 @@ impl From<file_types::cable_type::CableCore> for CableCore {
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct CableLayer {
-    /// Layer number, counted from inside to outside of cable, 1 indexed.
+    /// Layer number, counted from inside to outside of cable, 0 indexed.
     pub layer_number: u64,
     /// Layer type.
     pub layer_type: LayerType,

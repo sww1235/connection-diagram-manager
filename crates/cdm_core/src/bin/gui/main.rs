@@ -71,11 +71,6 @@ fn main() -> anyhow::Result<()> {
         equipment_instance.update_symbol_data(&library_data, &project_data_reference)?;
     }
 
-    // Update styling info on wires from their library values
-    for wire in project_data.wires.values_mut() {
-        wire.update_data_from_library(&library_data)?;
-    }
-
     // update styling info and core data from their library values.
     for cable in project_data.cables.values_mut() {
         cable.update_data_from_library(&library_data)?;

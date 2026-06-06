@@ -32,7 +32,7 @@ use crate::{
         file_types,
         library_types::Library,
         project_types::{
-            connection::{EndDesignation, Type as ConnectionType},
+            connection::{End, EndDesignation, InnerConnection},
             terminal_strip::TermAccy,
         },
         schematic_connector::TypeFlag as SCType,
@@ -328,50 +328,56 @@ impl Project {
     }
 
     /// Add in connection references that apply to each `Equipment` and `TerminalStrip`.
+    ///
+    /// # Panics
+    ///
+    /// Will panic if equipment or terminal not found in appropriate btreemap in project.
     #[inline]
     pub fn add_initial_connection_lists(&mut self) {
         for (key, connection) in &self.connections {
-            #[expect(clippy::wildcard_enum_match_arm, reason = "only need to handle these 3 variants here")]
+            #[expect(
+                clippy::expect_used,
+                reason = "The equipment_ids/terminal_ids should already be in place in the maps."
+            )]
             match &connection.end1 {
-                ConnectionType::Equipment {
+                End::Equipment {
                     equipment_id,
                     connection_point_id,
                 } => {
-                    let _ = self
-                        .equipment
+                    self.equipment
                         .get_mut(equipment_id)
-                        .unwrap()
+                        .expect("Equipment_id not found in equipment btreemap during connection list insert")
                         .connections
                         .insert(key, EndDesignation::End1);
                 }
-                ConnectionType::TerminalStrip {
+                End::TerminalStrip {
                     term_strip_id,
                     element_id,
                 } => {
                     todo!()
                 }
-                _ => {}
             }
-            #[expect(clippy::wildcard_enum_match_arm, reason = "only need to handle these 3 variants here")]
+            #[expect(
+                clippy::expect_used,
+                reason = "The equipment_ids/terminal_ids should already be in place in the maps."
+            )]
             match &connection.end2 {
-                ConnectionType::Equipment {
+                End::Equipment {
                     equipment_id,
                     connection_point_id,
                 } => {
-                    let _ = self
-                        .equipment
+                    self.equipment
                         .get_mut(equipment_id)
-                        .unwrap()
+                        .expect("Equipment_id not found in equipment btreemap during connection list insert")
                         .connections
                         .insert(key, EndDesignation::End2);
                 }
-                ConnectionType::TerminalStrip {
+                End::TerminalStrip {
                     term_strip_id,
                     element_id,
                 } => {
                     todo!()
                 }
-                _ => {}
             }
         }
     }

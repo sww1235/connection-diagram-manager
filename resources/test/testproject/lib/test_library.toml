@@ -1,12 +1,3 @@
-[wire_types]
-[wire_types.12THHN]
-wire_type_code = "THHN"
-nominal_cross_section =  {value = [12,1], original_unit = "AWG"}
-material = "Copper"
-insulated = true
-stranded = true
-num_strands = 19
-
 [equipment_types]
 [equipment_types.spst_toggle_switch]
 supertype = "Switch"
@@ -19,3 +10,53 @@ schematic_symbols = ["spst_toggle_switch"]
 visual_representation = "resources/test/testproject/lib/SPST-Switch.svg"
 name = "SPST toggle switch"
 supports_links = false
+
+
+[cable_types]
+[cable_types.test_cable]
+
+cross_sect_area =  {value = [5,1], original_unit = "cm²"}
+cross_section = "Circular"
+
+[cable_types.test_cable.cores]
+[cable_types.test_cable.cores.red]
+type_id = "red"
+
+[cable_types.test_cable.cores.black]
+type_id = "black"
+
+[[cable_types.test_cable.layers]]
+layer_number = 0
+layer_type = "Jacket"
+color = "Grey"
+
+
+[cable_types.red]
+cross_sect_area =  {value = [2,1], original_unit = "cm²"}
+cross_section = "Circular"
+[cable_types.red.cores]
+[cable_types.red.cores.0]
+type_id = "bare"
+material = "Copper"
+stranded = true
+num_strands = 12
+
+[[cable_types.red.layers]]
+layer_number = 0
+layer_type = "Insulation"
+color = "Red"
+
+[cable_types.black]
+cross_sect_area =  {value = [2,1], original_unit = "cm²"}
+cross_section = "Circular"
+[cable_types.black.cores]
+[cable_types.black.cores.0]
+type_id = "bare"
+material = "Copper"
+stranded = true
+num_strands = 12
+
+[[cable_types.black.layers]]
+layer_number = 0
+layer_type = "Insulation"
+color = "Black"

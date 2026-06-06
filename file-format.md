@@ -328,7 +328,7 @@ cross_section = "PLACEHOLDER"
 # concentric neutrals, jackets, mechanical armor
 [[cable_types."PLACEHOLDER".layers]]
 
-# counted from inside to outside of cable
+# counted from inside to outside of cable, 0 indexed.
 layer_number = 0 # PLACEHOLDER
 
 # - Insulation
@@ -378,10 +378,10 @@ secondary_color = "PLACEHOLDER"
 #
 # See defintion of line_style below for more details
 #
-# the key of this key/value pair can be either WireType or CableType
+# If the cable you are representing only has one inner core (aka a wire), specifiy one core, with type_id = bare.
 type_id = "PLACEHOLDER"
 
-line_styler = { color: "PLACEHOLDER", secondary_color: "PLACEHOLDER", line_thickness: "PLACEHOLDER", line_appearance: "PLACEHOLDER"}
+line_style = { color: "PLACEHOLDER", secondary_color: "PLACEHOLDER", line_thickness: "PLACEHOLDER", line_appearance: "PLACEHOLDER"}
 
 material = "PLACEHOLDER"
 

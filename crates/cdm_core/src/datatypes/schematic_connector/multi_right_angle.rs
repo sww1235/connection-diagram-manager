@@ -34,6 +34,8 @@ pub struct MultiRightAngle {
     /// The `end1` `ConnectionPoint` of `RightAngle`, in this Vec are assumed to be connected to
     /// the `end2_junction` and the `end2` `ConnectionPoint` is connected to another entity.
     pub end2_connections: Vec<ConnectorType>,
+    /// Main body of connector.
+    pub core: RightAngle,
     /// If the connection is allowed to render past its bounds based on directions.
     ///
     /// Has no effect if opposing directions are specified.

@@ -12,6 +12,8 @@ use crate::{
     traits::FromFile,
 };
 
+//TODO: add cores field to TermCable like cable
+
 /// `TermCable` represents a particular instance of a `TermCableType`.
 /// It represents a physical item.
 #[derive(Debug, PartialEq, Clone)]

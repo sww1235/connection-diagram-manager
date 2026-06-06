@@ -28,7 +28,7 @@ pub struct CableType {
     /// Dimensions of cable.
     pub dimensions: Option<Dimension>,
     /// appearance in schematics.
-    pub line_style: LineStyle,
+    pub line_style: Option<LineStyle>,
     /// Map of cores in cable.
     ///
     /// Key of map is identifier of core within cable, and is unique within each cable.
@@ -39,6 +39,7 @@ pub struct CableType {
 
 /// `CableCore` represents an individual conductor, strength member or optical fiber in a cable.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[non_exhaustive]
 pub struct CableCore {
     /// ID of `CableType` that this core is made of.
     pub type_id: String,

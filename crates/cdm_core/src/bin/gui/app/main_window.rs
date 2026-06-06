@@ -117,7 +117,7 @@ pub(crate) fn main_window(
                     trace!("post_rendered position: {}", equipment.schematic_symbol().position);
                 }
 
-                for (id, wire) in &mut project_data.wires {
+                for (id, cable) in &mut project_data.cables {
                     //trace! {"ID: {id}, Wire: {wire:#?}"};
 
                     //trace! {"wire: {id} end1: {}->{:?}", end1.0, end1.1};
@@ -138,7 +138,7 @@ pub(crate) fn main_window(
                     #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
                     match connector_type.unwrap_or_default() {
                         SCType::RightAngle => {
-                            let response = ui.place(wire.connector().bounding_rect(), wire.connector_mut());
+                            let response = ui.place(cable.connector().bounding_rect(), cable.connector_mut());
                             if response.hovered() {
                                 // This should be CursorIcon::Grab but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
                                 ui.output_mut(|output| output.cursor_icon = CursorIcon::PointingHand);
@@ -150,9 +150,9 @@ pub(crate) fn main_window(
 
                                 //TODO: add optional hover text. See lines 614-621 of drag_value.rs from egui.
 
-                                let midpoint = wire.connector().midpoint();
+                                let midpoint = cable.connector().midpoint();
 
-                                wire.connector_mut().set_midpoint(
+                                cable.connector_mut().set_midpoint(
                                     (midpoint + response.drag_delta())
                                         .clamp(min_rect_position, max_rect_position)
                                         .round_ui(),

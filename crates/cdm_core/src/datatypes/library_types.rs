@@ -24,10 +24,7 @@ pub mod terminal_type;
 use std::{collections::BTreeMap, path::Path};
 
 use crate::{
-    datatypes::{
-        file_types,
-        library_types::{cable_type::CableCore, mounting_rail_type::MountingRailType, term_cable_type::WireCable},
-    },
+    datatypes::{file_types, library_types::mounting_rail_type::MountingRailType},
     error::{Error, LibraryError},
     traits::FromFile as _,
     util_functions,

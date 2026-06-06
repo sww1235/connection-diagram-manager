@@ -9,11 +9,10 @@ use crate::{
         library_types::Library,
         project_types::{
             Project,
-            connection::Type as ConnectionType,
             enclosure::{Enclosure, MountPoint},
         },
     },
-    error::{ConnectionError, Error, LibraryError, PDFError, ProjectError},
+    error::{Error, LibraryError, PDFError, ProjectError},
 };
 
 //TODO: add page templates with proper borders and titleblocks
@@ -96,10 +95,6 @@ pub fn pdf_one_enclosure(
 #[expect(clippy::pattern_type_mismatch, reason = "revisit this")]
 #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
 #[expect(unused_variables, reason = "function not finished yet")]
-#[expect(
-    clippy::unneeded_field_pattern,
-    reason = "leaving unused fields specified so I remember what fields are present"
-)]
 #[inline(never)]
 pub fn render_enclosure(
     project: &Project,
