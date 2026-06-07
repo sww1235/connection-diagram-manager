@@ -1,7 +1,7 @@
 use core::iter::chain;
 
 use egui::{CursorIcon, Pos2, Rect, Sense, Ui, Vec2, response::Response, widgets::Widget};
-use log::{trace, warn};
+use log::trace;
 
 use crate::datatypes::{
     color::Color,
@@ -227,35 +227,14 @@ impl MultiRightAngle {
         overflow: bool,
         line_style: LineStyle,
     ) -> Self {
-        //let midpoint = if end1_junction.directions.is_subset(&ConnectionDirection::horizontal())
-        //    && end2_junction.directions.is_subset(&ConnectionDirection::horizontal())
-        //{
-        //    Pos2::new(f32::midpoint(end1_junction.position.x, end2_junction.position.x), 0.0)
-        //} else if end1_junction.directions.is_subset(&ConnectionDirection::vertical())
-        //    && end2_junction.directions.is_subset(&ConnectionDirection::vertical())
-        //{
-        //    Pos2::new(0.0, f32::midpoint(end1_junction.position.y, end2_junction.position.y))
-        //} else if end1_junction.directions.is_subset(&ConnectionDirection::horizontal())
-        //    && end2_junction.directions.is_subset(&ConnectionDirection::vertical())
-        //{
-        //    trace! {"right/left:top/bottom"} //TODO
-        //    Pos2::new(end1_junction.position.x, end2_junction.position.y)
-        //} else if end1_junction.directions.is_subset(&ConnectionDirection::vertical())
-        //    && end2_junction.directions.is_subset(&ConnectionDirection::horizontal())
-        //{
-        //    trace! {"top/bottom:right/left"} //TODO
-        //    Pos2::new(end1_junction.position.y, end2_junction.position.x)
-        //} else {
-        //    error! {"unsupported direction combination"}
-        //    //TODO: replace with Pos2::NAN once migrated to egui 3.34.1
-        //    Pos2::new(f32::NAN, f32::NAN)
-        //};
+        let core = RightAngle::new(end1_junction.clone(), end2_junction.clone(), overflow, line_style.clone());
 
         Self {
             end1_junction,
             end1_connections,
             end2_junction,
             end2_connections,
+            core,
             overflow,
             line_style,
         }
@@ -319,6 +298,7 @@ impl Default for MultiRightAngle {
             end1_connections: Vec::default(),
             end2_junction: ConnectionPoint::default(),
             end2_connections: Vec::default(),
+            core: RightAngle::default(),
             overflow: false,
             line_style: LineStyle::default(),
         }

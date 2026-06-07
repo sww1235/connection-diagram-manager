@@ -12,7 +12,6 @@ use egui::{
     response::Response,
     widgets::{Image, ImageSource, Widget},
 };
-use log::trace;
 
 use crate::{
     datatypes::{Library, Project, project_types::ProjectData, svg::Svg},

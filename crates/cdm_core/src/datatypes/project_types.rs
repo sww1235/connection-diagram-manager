@@ -32,7 +32,7 @@ use crate::{
         file_types,
         library_types::Library,
         project_types::{
-            connection::{End, EndDesignation, InnerConnection},
+            connection::{End, EndDesignation},
             terminal_strip::TermAccy,
         },
         schematic_connector::TypeFlag as SCType,

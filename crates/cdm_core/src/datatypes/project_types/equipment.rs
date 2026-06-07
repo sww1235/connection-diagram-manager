@@ -20,6 +20,7 @@ use crate::{
             cable::Core,
             connection::{End, EndDesignation, InnerConnection},
         },
+        schematic_connector::AsConnector as _,
         schematic_symbol::{ConnectionDirection, SchematicRepresentation, SchematicSymbol, SymbolConnection},
         util_types::{IECCodes, PhysicalLocation, SymbolStyle, UserFields},
     },
@@ -113,25 +114,47 @@ impl Equipment {
     //}
 
     /// Update connection directions on associated
-    /// [`Connection`](crate::datatypes::project_types::connection::Connection)'s
+    /// [`Connection`](crate::datatypes::project_types::connection::Connection)'s.
+    ///
+    /// # Panics
+    ///
+    /// Will panic if any data is not found as `expect()`ed. As this is an internal function that
+    /// should be called after getting all the data set up, this should be fine.
     #[inline]
+    #[expect(clippy::panic, reason = "using instead of expect(format!())")]
     pub fn update_connection_directions_from_symbol(&self, project: &mut Project) {
         let symbol = self.schematic_symbol();
 
         for (connection_id, end_designation) in &self.connections {
-            let connection = project.connections.get_mut(connection_id).unwrap();
+            let connection = project.connections.get_mut(connection_id).unwrap_or_else(|| {
+                panic!("update_connection_directions_from_symbol(): {connection_id:?} not found in project.connections")
+            });
 
             if let End::Equipment { connection_point_id, .. } = &connection.end1 {
-                let symbol_connection_point = symbol.connections.get(connection_point_id).unwrap();
+                let symbol_connection_point = symbol.connections.get(connection_point_id).unwrap_or_else(|| {
+                    panic!(
+                        "update_connection_directions_from_symbol(): {connection_point_id} not found in {}",
+                        symbol.identifier
+                    )
+                });
                 let allowed_connection_directions = symbol_connection_point.allowed_connection_directions.clone();
 
                 match &connection.connection {
                     InnerConnection::Cable { cable_id, core_id } => {
-                        let cable = project.cables.get_mut(cable_id).unwrap();
-                        let core = cable.cores.get_mut(core_id).unwrap();
+                        let cable = project.cables.get_mut(cable_id).unwrap_or_else(|| {
+                            panic!("update_connection_directions_from_symbol(): cable {cable_id} not found in project.cables")
+                        });
+                        let core = cable.cores.get_mut(core_id).unwrap_or_else(|| {
+                            panic!("update_connection_directions_from_symbol(): core {core_id} not found in {cable_id}")
+                        });
 
+                        #[expect(clippy::iter_over_hash_type, reason = "order not important here")]
                         for direction in allowed_connection_directions {
-                            core.connector_mut().end1_junction.directions.insert(direction);
+                            match core {
+                                Core::Cable { cable, .. } => {
+                                    cable.connector_mut().end1_junction.directions.insert(direction);
+                                }
+                            }
                         }
                     }
                     InnerConnection::TermCable { cable_id, core_id } => {

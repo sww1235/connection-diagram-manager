@@ -12,12 +12,7 @@ use egui::{Color32, Pos2, Rect, Sense, Ui, Vec2, response::Response, widgets::Wi
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    datatypes::{
-        color::Color,
-        library_types::Library,
-        project_types::{Project, ProjectData},
-        schematic_symbol::ConnectionDirection,
-    },
+    datatypes::{color::Color, library_types::Library, project_types::ProjectData, schematic_symbol::ConnectionDirection},
     error::Error,
 };
 

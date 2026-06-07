@@ -150,9 +150,10 @@ pub(crate) fn main_window(
 
                                 //TODO: add optional hover text. See lines 614-621 of drag_value.rs from egui.
 
-                                let midpoint = cable.connector().midpoint();
+                                // TODO: need to figure out if the junction point is being dragged
+                                let midpoint = cable.connector().core.midpoint();
 
-                                cable.connector_mut().set_midpoint(
+                                cable.connector_mut().core.set_midpoint(
                                     (midpoint + response.drag_delta())
                                         .clamp(min_rect_position, max_rect_position)
                                         .round_ui(),

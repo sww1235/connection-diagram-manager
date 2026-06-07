@@ -6,13 +6,13 @@ use std::{
 
 use egui::Pos2;
 use log::trace;
-use slotmap::Key;
+use slotmap::Key as _;
 
 use crate::{
     datatypes::{
         file_types,
         library_types::{Library, cable_type, cable_type::CableLayer},
-        project_types::{InnerConnectionId, Project, ProjectData},
+        project_types::{InnerConnectionId, ProjectData},
         schematic_connector::{
             AsConnector,
             ConnectionPoint,
