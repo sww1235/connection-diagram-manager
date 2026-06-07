@@ -198,6 +198,10 @@ impl mq::EventHandler for App {
         self.egui_mq.mouse_button_up_event(mb, x, y);
     }
 
+    fn mouse_enter_event(&mut self, _button: mq::MouseButton, _x: f32, _y: f32) {}
+
+    fn mouse_leave_event(&mut self) {}
+
     fn char_event(&mut self, character: char, _keymods: mq::KeyMods, _repeat: bool) {
         self.egui_mq.char_event(character);
     }
@@ -214,15 +218,13 @@ impl mq::EventHandler for App {
 
     fn window_restored_event(&mut self) {}
 
-    #[expect(unused_variables, reason = "no implementation yet")]
-    fn touch_event(&mut self, phase: TouchPhase, _id: u64, x: f32, y: f32) {}
+    fn touch_event(&mut self, _phase: TouchPhase, _id: u64, _x: f32, _y: f32) {}
 
     fn quit_requested_event(&mut self) {}
 
     fn files_dropped_event(&mut self) {}
 
-    #[expect(unused_variables, reason = "no implementation yet")]
-    fn resize_event(&mut self, width: f32, height: f32) {}
+    fn resize_event(&mut self, _width: f32, _height: f32) {}
 
     fn raw_mouse_motion(&mut self, _dx: f32, _dy: f32) {}
 }
