@@ -122,7 +122,8 @@ impl mq::EventHandler for App {
             // only allow egui's zoom to override our zoom if the egui zoom is different from what
             // we saw last time (meaning the user has changed it).
             let curr_egui_zoom = egui_ctx.zoom_factor();
-            if self.state.prev_egui_zoom_factor != curr_egui_zoom {
+            //TODO: evaluate this comparision factor
+            if (self.state.prev_egui_zoom_factor - curr_egui_zoom).abs() < 0.1 {
                 self.state.zoom_factor = curr_egui_zoom;
             }
             self.state.prev_egui_zoom_factor = curr_egui_zoom;
