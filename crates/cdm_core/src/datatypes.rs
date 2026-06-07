@@ -140,16 +140,21 @@ pub fn parse_datafiles(cli: &Cli) -> Result<(ProjectConfig, Library, Project), E
         trace! {"library files: {library_files:?}"}
         for file in library_files {
             trace! {"{}", file.display()};
-            let library_file_contents = fs::read_to_string(&file)?;
-            let library_file: file_types::Library = toml::from_str(&library_file_contents)?;
-            library_data.merge(library_file.into(), &file)?;
+            let library_file_raw = fs::read_to_string(&file)?;
+            let library_file_parsed: file_types::Library = toml::from_str(&library_file_raw)?;
+            let mut library_file: Library = library_file_parsed.into();
+            library_file.add_datafile_paths(&file);
+            library_data.merge(library_file, &file)?;
         }
         for file in project_files {
             trace! {"{}", file.display()};
-            let project_file_contents = fs::read_to_string(&file)?;
-            let project_file: file_types::Project = toml::from_str(&project_file_contents)?;
-            project_data.merge(project_file.into(), &file)?;
+            let project_file_raw = fs::read_to_string(&file)?;
+            let project_file_parsed: file_types::Project = toml::from_str(&project_file_raw)?;
+            let mut project_file: Project = project_file_parsed.into();
+            project_file.add_datafile_paths(&file);
+            project_data.merge(project_file, &file)?;
         }
+
 
         Ok((project_config, library_data, project_data))
     } else {
