@@ -419,6 +419,11 @@ impl Cable {
     ///
     /// `super_id` passes through the core ID of the previous iteration so it gets concatenated
     /// correctly.
+    ///
+    /// # Errors
+    ///
+    /// Will error if values needed in the function are not found in project or library data.
+    #[inline]
     #[expect(clippy::needless_pass_by_value, reason = "need to use unwrap_or_default()")]
     fn insert_cores(
         &mut self,
@@ -434,9 +439,11 @@ impl Cable {
             })?;
 
             trace! {"creating cable for cable core {id} of {}", self.identifier}
+            let identifier = format!("{}.{id}", super_id.clone().unwrap_or_default());
+            let identifier_stripped = identifier.strip_prefix('.').unwrap_or(&identifier).to_owned();
             let mut cable = Cable {
                 cable_type: core.type_id.clone(),
-                identifier: format!("{}.{id}", super_id.clone().unwrap_or_default()),
+                identifier: identifier_stripped,
                 description: None,
                 length: self.length.clone(),
                 physical_location: self.physical_location.clone(),
@@ -456,10 +463,9 @@ impl Cable {
                     // migrate to trim_prefix() once stablized
                     // https://github.com/rust-lang/rust/issues/142312
                     let new_core_id = format!("{}.{id}", super_id.clone().unwrap_or_default());
-                    #[expect(clippy::shadow_reuse, reason = "just stripping a prefix")]
-                    let new_core_id = new_core_id.strip_prefix('.').unwrap_or(&new_core_id).to_owned();
+                    let new_core_id_stripped = new_core_id.strip_prefix('.').unwrap_or(&new_core_id).to_owned();
                     self.cores.insert(
-                        new_core_id,
+                        new_core_id_stripped,
                         Core::Cable {
                             cable,
                             connection_id: InnerConnectionId::null(),
@@ -475,8 +481,10 @@ impl Cable {
                     ));
                 }
                 Ordering::Equal => {
+                    let new_core_id = format!("{}.{id}", super_id.clone().unwrap_or_default());
+                    let new_core_id_stripped = new_core_id.strip_prefix('.').unwrap_or(&new_core_id).to_owned();
                     self.cores.insert(
-                        format!("{}.{id}", super_id.clone().unwrap_or_default()),
+                        new_core_id_stripped,
                         Core::Cable {
                             cable,
                             connection_id: InnerConnectionId::null(),

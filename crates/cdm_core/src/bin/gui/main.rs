@@ -59,6 +59,11 @@ fn main() -> anyhow::Result<()> {
         anyhow::bail!(project_validation_string);
     }
 
+    // update styling info and core data from their library values.
+    for cable in project_data.cables.values_mut() {
+        cable.update_data_from_library(&library_data)?;
+    }
+
     //TODO: figure out a better way to do this. In theory it should be fine, but if other updates
     //need to take place, then this could get messy
     let project_data_reference = project_data.clone();
@@ -71,10 +76,15 @@ fn main() -> anyhow::Result<()> {
         equipment_instance.update_symbol_data(&library_data, &project_data_reference)?;
     }
 
-    // update styling info and core data from their library values.
-    for cable in project_data.cables.values_mut() {
-        cable.update_data_from_library(&library_data)?;
+    for (id, equipment_instance) in project_data.equipment.clone() {
+        debug!("update_connections_on {id:?}");
+        equipment_instance.update_connection_directions_from_symbol(&mut project_data);
+        debug!("updated_connections_on {id:?}");
+        debug!("{equipment_instance:#?}");
+        debug!("printing_equipment_connections");
+        equipment_instance.debug_print_equipment_connections(&project_data);
     }
+
 
     let mut gui_conf: mqConf = app_config.clone().graphics_config.into();
 

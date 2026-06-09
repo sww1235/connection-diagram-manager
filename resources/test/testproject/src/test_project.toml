@@ -10,12 +10,12 @@ identifier = "switch2"
 
 [[connections]]
 end1 = {Equipment = {equipment_id = "switch1", connection_point_id = "right"}}
-end2 = {Equipment = {equipment_id = "switch1", connection_point_id = "left"}}
+end2 = {Equipment = {equipment_id = "switch2", connection_point_id = "left"}}
 connection = {Cable = {cable_id = "cable1", core_id = "red"}}
 
 
 [[connections]]
-end1 = {Equipment = {equipment_id = "switch2", connection_point_id = "right"}}
+end1 = {Equipment = {equipment_id = "switch1", connection_point_id = "right"}}
 end2 = {Equipment = {equipment_id = "switch2", connection_point_id = "left"}}
 connection = {Cable = {cable_id = "cable1", core_id = "black"}}
 

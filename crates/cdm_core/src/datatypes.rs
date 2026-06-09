@@ -152,9 +152,9 @@ pub fn parse_datafiles(cli: &Cli) -> Result<(ProjectConfig, Library, Project), E
             let project_file_parsed: file_types::Project = toml::from_str(&project_file_raw)?;
             let mut project_file: Project = project_file_parsed.into();
             project_file.add_datafile_paths(&file);
+            project_file.add_initial_connection_lists();
             project_data.merge(project_file, &file)?;
         }
-
 
         Ok((project_config, library_data, project_data))
     } else {
