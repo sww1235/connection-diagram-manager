@@ -1584,21 +1584,57 @@ user9 = "PLACEHOLDER"
 
 #### Connections
 ```toml
-# Connections between two objects, commonly either wires/cables/term_cables and a terminal/connector on equipment
-# This is the only root level item in the project definition that is an array rather than a table with sub-tables
-# This is because there are no human generated identifiers. Individual connections are tracked internally.
+# Connections are logical representations of physical connections.
 
-# There are no specific rules for what types end1 and end2 can be, but
-# suggested that end1 be the wire/cable type and end2 be the
-# terminal/equipment/connector, etc.
+# Connections can be defined between two of the following items:
+# - A connector on an Equipment instance
+# - A connector on a Terminal Strip element
 
-# end1 and end2 cannot refer to the same entity. This will cause an error during parsing.
+# Connections can contain the following items as the interconnection method:
+# - Cable instance and optional CableCore reference(s)
+# - Term Cable instance and optional CableCore reference(s)
 
-# All linear items that support connections can have a maximum of 2 connections defined.
-# Any more will error during parsing and will log errors during rendering if not caught during parsing.
+# Cables are intended to be used where the individual wires in a cable
+# or the wire terminate individually on equipment or terminal strips without
+# separately assembled connectors.
+
+# For example, individual THHN conductors, or SOOW cable.
+
+# TermCables represent wires/cables that have connectors pre-installed. These
+# can either be field installed connectors, or factory installed connectors.
+
+# For example, a SOOW cable with NEMA 5-15 connectors assembed on each end, or
+# a THHN conductor with a ring terminal on each end.
+
+# Since ferrules only minorly affect connection between cables and the
+# connectors on entities, there is a flag on individual cable cores, that
+# indicates if a ferrule is present. This affects connector validation.
+
+
+# Connections is the only root level item in the project definition that is an
+# array rather than a table with sub-tables # This is because there are no human
+# generated identifiers. Individual connections are tracked internally.
+
+# end1 and end2 cannot refer to the same connector/connection point. This will cause an error during parsing.
 
 # If only one connection is defined, a log message will be triggered and the connection will not render.
 
+# TODO: add a virtual entity such as autocad's arrow symbols to show field wiring.
+
+# end1 and end2 should have the PLACEHOLDER text replaced with one of the following:
+
+# - { Equipment = { equipment_id = PLACEHOLDER, connection_point_id = PLACEHOLDER } }
+# - { TerminalStrip = { term_strip_id = PLACHOLDER, element_id = PLACEHOLDER } }
+
+# connection should have the PLACEHOLDER text replaced with one of the following:
+
+
+# - { Wire = { wire_id = PLACEHOLDER } }
+# - { Cable = { cable_id = PLACEHOLDER, core_id = PLACEHOLDER } }
+# - { TermCable = { cable_id = PLACEHOLDER, core_id = PLACEHOLDER } }
+
+
+#TODO: work on Core IDs a bit more
 
 # core_id on Cable or TermCable should be populated as follows:
 #
@@ -1614,7 +1650,8 @@ user9 = "PLACEHOLDER"
 # This will recurse to as many cores as you need to define in a cable, or until the program runs
 # out of memory.
 #
-# This core_id is generated internally in the software, but must be manually created in each connection.
+# This core_id is generated internally in the software, but must be manually created
+# in each connection defined in the file.
 
 
 
@@ -1624,22 +1661,26 @@ user9 = "PLACEHOLDER"
 # 3 connections are specified, there will be overlap and it will probably look
 # like junk. This rendering issue is not considered a bug and will not be fixed.
 
-# replace Type with options from the following list:
-# - { Wire = { wire_id = PLACEHOLDER } }
-# - { Cable = { cable_id = PLACEHOLDER, core_id = PLACEHOLDER } }
-# - { TermCable = { cable_id = PLACEHOLDER, core_id = PLACEHOLDER } }
-# - { Equipment = { equipment_id = PLACEHOLDER, connection_point_id = PLACEHOLDER } }
-# - { TerminalStrip = { term_strip_id = PLACHOLDER, element_id = PLACEHOLDER } }
-# - { Connector = { connector_id = PLACEHOLDER, pin_id = PLACEHOLDER } }
-
-# The "PLACEHOLDER" text should be replaced with a selection from the above list
-
 [[connections]]
 
 end1 = "PLACEHOLDER"
 
 end2 = "PLACEHOLDER"
+
+connection = "PLACEHOLDER"
 ```
+
+end1 and end2 can be an Equipment or TerminalStrip and connection\_id can be
+Wire/Cable/TermCable.
+
+If using something like a wire nut or Wago lever nut to connect wires or cable
+cores, that should be defined as an equipment instance with the correct number
+of connection points.
+
+For connecting two TermCables with the correct gender, you can use a virtual
+equipment instance with a type of TODO. This will not show up on reports but
+will allow them to be joined. This is similar in concept to a net tie in KiCAD.
+
 
 #### Connectors
 ```toml
@@ -2228,6 +2269,9 @@ replaced with the `identifier` of the `element` within a `TerminalStrip`  of
 the connection point indicated by the value of this attribute. The value of
 this attribute should be the value of the matching `data-connection-point`
 attribute on the entity.
+
+This allows easy visual cross reference to what `element` of a `TerminalStrip`
+this connection point on an entity is connected to.
 
 
 
