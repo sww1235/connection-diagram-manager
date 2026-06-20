@@ -449,18 +449,19 @@ impl SchematicRepresentation for Equipment {
                                                             && equip_connection_point_id == connection_point_id_inner
                                                         {
                                                             match &connection.connection {
-                                                                    #[expect(
-                                                                        clippy::expect_used,
-                                                                        reason = "critical validation failure"
-                                                                    )]
+                                                                #[expect(
+                                                                    clippy::expect_used,
+                                                                    reason = "critical validation failure"
+                                                                )]
                                                                 InnerConnection::Cable { cable_id, core_id } => {
-                                                                        trace!("{cable_id} -- {core_id}");
-                                                                        trace!("Cable Data:\n{:#?}", &project.cables
-                                                                        .get(cable_id)
-                                                                        .expect(
+                                                                    trace!("{cable_id} -- {core_id}");
+                                                                    trace!(
+                                                                        "Cable Data:\n{:#?}",
+                                                                        &project.cables.get(cable_id).expect(
                                                                             "The presence of cable_id in project.cables should \
                                                                              already be validated by previous program logic",
-                                                                        ));
+                                                                        )
+                                                                    );
                                                                     let Core::Cable { cable, .. } = &project
                                                                         .cables
                                                                         .get(cable_id)

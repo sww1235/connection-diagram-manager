@@ -91,7 +91,12 @@ impl From<file_types::cable::Cable> for Cable {
 #[expect(clippy::exhaustive_enums, reason = "wrapper enum")]
 pub enum Core {
     /// `Cable`.
-    Cable { cable: Cable, connection_id: InnerConnectionId },
+    Cable {
+        /// Inner cable of core.
+        cable: Cable,
+        /// connection id.
+        connection_id: InnerConnectionId,
+    },
 }
 
 impl AsConnector for Cable {

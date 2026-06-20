@@ -46,10 +46,14 @@ pub fn read_config_files_cli() -> Result<(ApplicationConfig, Cli), Error> {
 
     // Doesn't work on windows
     // Figment will silently ignore missing files
-    // Once the fix in the below issue is released, re-evaluate
+    // TODO: Once the fix in the below issue is released, re-evaluate
     // https://github.com/SergioBenitez/Figment/issues/110
 
-    let home_dir = env::home_dir().ok_or(io::Error::new(ErrorKind::NotFound, "Home Directory not found"))?;
+    // TODO: provide flag for custom config directory and use that if found
+    let home_dir = env::home_dir().ok_or(io::Error::new(
+        ErrorKind::NotFound,
+        "Home Directory not found when searching for application config file",
+    ))?;
     let root = Path::new("/");
     let app_config_filename = "cdm_config.toml";
     let app_config: ApplicationConfig = Figment::new()

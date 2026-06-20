@@ -85,7 +85,6 @@ fn main() -> anyhow::Result<()> {
         equipment_instance.debug_print_equipment_connections(&project_data);
     }
 
-
     let mut gui_conf: mqConf = app_config.clone().graphics_config.into();
 
     gui_conf.window_resizable = true;
