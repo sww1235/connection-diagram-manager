@@ -29,9 +29,9 @@ fn main() -> anyhow::Result<()> {
         return Ok(());
     }
     let (project_config, library_data, mut project_data) = datatypes::parse_datafiles(&cli)?;
-    debug!("{library_data:#?}");
+    //debug!("{library_data:#?}");
 
-    debug!("{project_data:#?}");
+    //debug!("{project_data:#?}");
 
     #[expect(
         clippy::expect_used,

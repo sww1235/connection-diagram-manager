@@ -113,6 +113,15 @@ impl Equipment {
     //
     //}
 
+    #[inline]
+    pub fn debug_print_equipment_connections(&self, project: &Project) {
+        log::trace!("debug printing connections");
+        for (id, direction) in &self.connections {
+            log::debug! {"ID: {id:#?} -- Direction: {direction:?}"};
+            log::debug! {"connection: {:#?}", project.connections[id]};
+        }
+    }
+
     /// Update connection directions on associated
     /// [`Connection`](crate::datatypes::project_types::connection::Connection)'s.
     ///
@@ -125,10 +134,16 @@ impl Equipment {
     pub fn update_connection_directions_from_symbol(&self, project: &mut Project) {
         let symbol = self.schematic_symbol();
 
+        trace!("update_connections_from_symbol started");
+
+        trace!("defined connections: {:#?}", self.connections);
+
         for (connection_id, end_designation) in &self.connections {
             let connection = project.connections.get_mut(connection_id).unwrap_or_else(|| {
                 panic!("update_connection_directions_from_symbol(): {connection_id:?} not found in project.connections")
             });
+
+            trace!("Connection:\n{connection_id:?} -- {end_designation:?}\nConnection Data from lookup:\n{connection:#?}");
 
             if let End::Equipment { connection_point_id, .. } = &connection.end1 {
                 let symbol_connection_point = symbol.connections.get(connection_point_id).unwrap_or_else(|| {
@@ -163,6 +178,7 @@ impl Equipment {
                 }
             }
         }
+        trace!("update_connections_from_symbol exited");
     }
 }
 
@@ -433,11 +449,18 @@ impl SchematicRepresentation for Equipment {
                                                             && equip_connection_point_id == connection_point_id_inner
                                                         {
                                                             match &connection.connection {
-                                                                InnerConnection::Cable { cable_id, core_id } => {
                                                                     #[expect(
                                                                         clippy::expect_used,
                                                                         reason = "critical validation failure"
                                                                     )]
+                                                                InnerConnection::Cable { cable_id, core_id } => {
+                                                                        trace!("{cable_id} -- {core_id}");
+                                                                        trace!("Cable Data:\n{:#?}", &project.cables
+                                                                        .get(cable_id)
+                                                                        .expect(
+                                                                            "The presence of cable_id in project.cables should \
+                                                                             already be validated by previous program logic",
+                                                                        ));
                                                                     let Core::Cable { cable, .. } = &project
                                                                         .cables
                                                                         .get(cable_id)
