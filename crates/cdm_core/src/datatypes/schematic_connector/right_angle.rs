@@ -1,5 +1,5 @@
 use egui::{Pos2, Rect, Sense, Stroke, Ui, Vec2, response::Response, widgets::Widget};
-use log::{error, trace};
+use log::{debug, error, trace};
 
 use crate::datatypes::{
     color::Color,
@@ -58,6 +58,9 @@ impl Widget for &mut RightAngle {
         response.sense = sense_settings;
         //TODO: use painter.add and Shape::dashed_line_with_offset instead if dashed line.
 
+        debug! {"RightAngle::ui() end_1 directions: {:?}", self.end1.directions};
+        debug! {"RightAngle::ui() end_2 directions: {:?}", self.end2.directions};
+
         if self.end1.directions.is_subset(&ConnectionDirection::horizontal())
             && self.end2.directions.is_subset(&ConnectionDirection::horizontal())
         {
@@ -83,7 +86,7 @@ impl Widget for &mut RightAngle {
         {
             trace! {"top/bottom:right/left"} //TODO
         } else {
-            error! {"ui() fn: unsupported direction combination"}
+            error! {"RA ui() fn: unsupported direction combination"}
         }
         response
     }

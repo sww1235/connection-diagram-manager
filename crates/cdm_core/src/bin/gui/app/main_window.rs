@@ -118,10 +118,7 @@ pub(crate) fn main_window(
                 }
 
                 for (id, cable) in &mut project_data.cables {
-                    //trace! {"ID: {id}, Wire: {wire:#?}"};
-
-                    //trace! {"wire: {id} end1: {}->{:?}", end1.0, end1.1};
-                    //trace! {"wire: {id} end2: {}->{:?}", end2.0, end2.1};
+                    trace! {"ID: {id}, Cable: {cable:#?}"};
 
                     //TODO: Finish this
                     //

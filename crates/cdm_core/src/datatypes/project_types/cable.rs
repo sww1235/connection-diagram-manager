@@ -135,6 +135,7 @@ impl AsConnector for Cable {
             reason = "Only one option implemented at this point, but others may be in the future."
         )]
         match &mut self.connector {
+            //TODO: update this to use a method directly on mra.
             ConnectorType::MultiRightAngle(mra) => mra.end1_junction.set_position(position),
             #[expect(clippy::panic, reason = "The wildcard arm of the match should never happen currently")]
             _ => panic!(),
@@ -147,6 +148,7 @@ impl AsConnector for Cable {
             reason = "Only one option implemented at this point, but others may be in the future."
         )]
         match &mut self.connector {
+            //TODO: update this to use a method directly on mra.
             ConnectorType::MultiRightAngle(mra) => mra.end2_junction.set_position(position),
             #[expect(clippy::panic, reason = "The wildcard arm of the match should never happen currently")]
             _ => panic!(),
@@ -159,6 +161,7 @@ impl AsConnector for Cable {
             reason = "Only one option implemented at this point, but others may be in the future."
         )]
         match &self.connector {
+            //TODO: update this to use a method directly on mra.
             ConnectorType::MultiRightAngle(mra) => mra.end1_junction.position(),
             #[expect(clippy::panic, reason = "The wildcard arm of the match should never happen currently")]
             _ => panic!(),
@@ -171,12 +174,12 @@ impl AsConnector for Cable {
             reason = "Only one option implemented at this point, but others may be in the future."
         )]
         match &self.connector {
+            //TODO: update this to use a method directly on mra.
             ConnectorType::MultiRightAngle(mra) => mra.end2_junction.position(),
             #[expect(clippy::panic, reason = "The wildcard arm of the match should never happen currently")]
             _ => panic!(),
         }
     }
-
 
     #[inline]
     fn update_data_from_library(&mut self, library: &Library) -> Result<(), Error> {
