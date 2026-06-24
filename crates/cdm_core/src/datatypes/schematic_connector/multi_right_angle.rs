@@ -1,4 +1,5 @@
 use core::iter::chain;
+use std::collections::HashSet;
 
 use egui::{CursorIcon, Pos2, Rect, Sense, Ui, Vec2, response::Response, widgets::Widget};
 use log::trace;
@@ -6,6 +7,7 @@ use log::trace;
 use crate::datatypes::{
     color::Color,
     schematic_connector::{ConnectionPoint, ConnectorType, SchematicConnector, right_angle::RightAngle},
+    schematic_symbol::ConnectionDirection,
     util_types::LineStyle,
 };
 
@@ -24,14 +26,14 @@ pub struct MultiRightAngle {
     pub end1_junction: ConnectionPoint,
     /// All connections defined for this end of the `SchematicConnector`.
     ///
-    /// The `end1` `ConnectionPoint` of `RightAngle`, in this Vec are assumed to be connected to
+    /// The `end1` `ConnectionPoint` of `ConnectorType`, in this Vec are assumed to be connected to
     /// the `end1_junction` and the `end2` `ConnectionPoint` is connected to another entity.
     pub end1_connections: Vec<ConnectorType>,
     /// The split point of the other of the connection in screen coordinates.
     pub end2_junction: ConnectionPoint,
     /// All connections defined for this end of the `SchematicConnector`.
     ///
-    /// The `end1` `ConnectionPoint` of `RightAngle`, in this Vec are assumed to be connected to
+    /// The `end1` `ConnectionPoint` of `ConnectorType`, in this Vec are assumed to be connected to
     /// the `end2_junction` and the `end2` `ConnectionPoint` is connected to another entity.
     pub end2_connections: Vec<ConnectorType>,
     /// Main body of connector.
@@ -55,8 +57,8 @@ impl SchematicConnector for MultiRightAngle {
             .flat_map(|rect| [rect.left_top(), rect.right_bottom()].to_vec())
             .collect();
 
-        connection_points.push(self.end1_junction.position);
-        connection_points.push(self.end2_junction.position);
+        connection_points.push(self.end1_junction.position());
+        connection_points.push(self.end2_junction.position());
         Rect::from_points(&connection_points)
     }
 }
@@ -72,15 +74,8 @@ impl Widget for &mut MultiRightAngle {
         //TODO: use painter.add and Shape::dashed_line_with_offset instead if dashed line.
 
         // First render main connector
-
-        let mut main_connector = RightAngle::new(
-            self.end1_junction.clone(),
-            self.end2_junction.clone(),
-            self.overflow,
-            self.line_style.clone(),
-        );
-
-        let main_connector_response = ui.place(main_connector.bounding_rect(), &mut main_connector);
+        trace! {"Rendered core of connector"}
+        let main_connector_response = ui.place(self.core.bounding_rect(), &mut self.core);
         if main_connector_response.hovered() {
             // This should be CursorIcon::Grab but it is not implemented yet.
             // See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
@@ -94,7 +89,7 @@ impl Widget for &mut MultiRightAngle {
             ui.output_mut(|output| output.cursor_icon = CursorIcon::Move);
             trace!("main connector dragged");
 
-            main_connector.move_midpoint(main_connector_response.drag_delta());
+            self.core.move_midpoint(main_connector_response.drag_delta());
         }
 
         // then render the junctions themselves
@@ -115,7 +110,7 @@ impl Widget for &mut MultiRightAngle {
             trace!("end1_junction dragged");
             let drag_delta = end1_junction_response.drag_delta();
             self.end1_junction.move_position(drag_delta);
-            main_connector.move_end1_position(drag_delta);
+            self.core.move_end1_position(drag_delta);
             for connection in &mut self.end1_connections {
                 // Only updating end1 position here because that is the end of RightAngle
                 // linked to end1_junction.
@@ -143,7 +138,7 @@ impl Widget for &mut MultiRightAngle {
             trace!("end2_junction dragged");
             let drag_delta = end2_junction_response.drag_delta();
             self.end2_junction.move_position(drag_delta);
-            main_connector.move_end2_position(drag_delta);
+            self.core.move_end2_position(drag_delta);
             for connection in &mut self.end2_connections {
                 // Only updating end1 position here because that is the end of RightAngle
                 // linked to end2_junction.
@@ -190,7 +185,6 @@ impl Widget for &mut MultiRightAngle {
             if inner_response.hovered() {
                 // This should be CursorIcon::Grab but it is not implemented yet.
                 // See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
-
                 ui.output_mut(|output| output.cursor_icon = CursorIcon::PointingHand);
             }
 
@@ -246,20 +240,20 @@ impl MultiRightAngle {
         self.end1_junction.position = end1;
         self.end2_junction.position = end2;
     }
-    ////TODO: add overflow logic here
-    ///// Set midpoint position for Connector.
-    //#[inline]
-    //pub fn set_midpoint(&mut self, midpoint: Pos2) {
-    //    self.midpoint = midpoint;
-    //}
+    //TODO: add overflow logic here
+    /// Set midpoint position for Connector.
+    #[inline]
+    pub fn set_midpoint(&mut self, midpoint: Pos2) {
+        self.core.midpoint = midpoint;
+    }
 
-    ////TODO: add overflow logic here
-    ///// Change `midpoint` position for Connector.
-    //#[inline]
-    //#[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
-    //pub fn move_midpoint(&mut self, delta: Vec2) {
-    //    self.midpoint += delta;
-    //}
+    //TODO: add overflow logic here
+    /// Change `midpoint` position for Connector.
+    #[inline]
+    #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
+    pub fn move_midpoint(&mut self, delta: Vec2) {
+        self.core.midpoint += delta;
+    }
 
     //TODO: add overflow logic here
     /// Move `end1_junction` position for Connector.
@@ -287,6 +281,20 @@ impl MultiRightAngle {
     #[inline]
     pub fn set_color(&mut self, color: Color) {
         self.line_style.color = color;
+    }
+
+    /// Set allowed connection directions for end1.
+    #[inline]
+    pub fn set_end1_connection_directions(&mut self, allowed_directions: &HashSet<ConnectionDirection>) {
+        self.end1_junction.set_allowed_connection_directions(allowed_directions);
+        self.core.end1.set_allowed_connection_directions(allowed_directions);
+    }
+
+    /// Set allowed connection directions for end2.
+    #[inline]
+    pub fn set_end2_connection_directions(&mut self, allowed_directions: &HashSet<ConnectionDirection>) {
+        self.end2_junction.set_allowed_connection_directions(allowed_directions);
+        self.core.end2.set_allowed_connection_directions(allowed_directions);
     }
 }
 

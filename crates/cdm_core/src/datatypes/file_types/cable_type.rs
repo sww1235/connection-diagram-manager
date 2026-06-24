@@ -32,7 +32,7 @@ pub struct CableType {
     /// Map of cores in cable.
     ///
     /// Key of map is identifier of core within cable, and is unique within each cable.
-    pub cores: BTreeMap<String, CableCore>,
+    pub cores: BTreeMap<String, Core>,
     /// vector of exterior insulation/shielding layers.
     pub layers: Vec<CableLayer>,
 }
@@ -40,7 +40,7 @@ pub struct CableType {
 /// `CableCore` represents an individual conductor, strength member or optical fiber in a cable.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
-pub struct CableCore {
+pub struct Core {
     /// ID of `CableType` that this core is made of.
     pub type_id: String,
     /// `LineStyle` of `CableType`. If `None`, then it will inherit from the parent `CableType`.

@@ -186,6 +186,25 @@ impl ConnectionPoint {
     pub fn position(&self) -> Pos2 {
         self.position
     }
+
+    /// Returns set of directions that are allowed to connnect to this connection point.
+    #[must_use]
+    #[inline]
+    pub fn allowed_connection_directions(&self) -> HashSet<ConnectionDirection> {
+        self.directions.clone()
+    }
+
+    /// Sets the set of directions that are allowed to connnect to this connection point.
+    #[inline]
+    pub fn set_allowed_connection_directions(&mut self, allowed_directions: &HashSet<ConnectionDirection>) {
+        self.directions = allowed_directions.to_owned();
+    }
+
+    /// Extends the set of directions that are allowed to connnect to this connection point.
+    #[inline]
+    pub fn extend_allowed_connection_directions(&mut self, allowed_directions: &HashSet<ConnectionDirection>) {
+        self.directions.extend(allowed_directions);
+    }
 }
 
 impl Widget for &mut ConnectionPoint {

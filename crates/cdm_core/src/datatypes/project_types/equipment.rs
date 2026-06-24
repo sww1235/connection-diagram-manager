@@ -163,12 +163,42 @@ impl Equipment {
                             panic!("update_connection_directions_from_symbol(): core {core_id} not found in {cable_id}")
                         });
 
-                        #[expect(clippy::iter_over_hash_type, reason = "order not important here")]
-                        for direction in allowed_connection_directions {
-                            match core {
-                                Core::Cable { cable, .. } => {
-                                    cable.connector_mut().end1_junction.directions.insert(direction);
-                                }
+                        match core {
+                            Core::Cable { cable: inner_cable, .. } => {
+                                inner_cable
+                                    .connector_mut()
+                                    .set_end1_connection_directions(&allowed_connection_directions);
+                            }
+                        }
+                    }
+                    InnerConnection::TermCable { cable_id, core_id } => {
+                        //TODO
+                    }
+                }
+            }
+            if let End::Equipment { connection_point_id, .. } = &connection.end2 {
+                let symbol_connection_point = symbol.connections.get(connection_point_id).unwrap_or_else(|| {
+                    panic!(
+                        "update_connection_directions_from_symbol(): {connection_point_id} not found in {}",
+                        symbol.identifier
+                    )
+                });
+                let allowed_connection_directions = symbol_connection_point.allowed_connection_directions.clone();
+
+                match &connection.connection {
+                    InnerConnection::Cable { cable_id, core_id } => {
+                        let cable = project.cables.get_mut(cable_id).unwrap_or_else(|| {
+                            panic!("update_connection_directions_from_symbol(): cable {cable_id} not found in project.cables")
+                        });
+                        let core = cable.cores.get_mut(core_id).unwrap_or_else(|| {
+                            panic!("update_connection_directions_from_symbol(): core {core_id} not found in {cable_id}")
+                        });
+
+                        match core {
+                            Core::Cable { cable: inner_cable, .. } => {
+                                inner_cable
+                                    .connector_mut()
+                                    .set_end2_connection_directions(&allowed_connection_directions);
                             }
                         }
                     }

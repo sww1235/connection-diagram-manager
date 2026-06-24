@@ -55,7 +55,7 @@ pub struct CableType {
     /// Map of cores in cable.
     ///
     /// Key of map is identifier of core within cable, and is unique within each cable.
-    pub cores: BTreeMap<String, CableCore>,
+    pub cores: BTreeMap<String, Core>,
     /// vector of exterior insulation/shielding layers.
     pub layers: Vec<CableLayer>,
     /// datafile the struct instance was read in from.
@@ -75,7 +75,7 @@ impl From<file_types::cable_type::CableType> for CableType {
             cores: value
                 .cores
                 .into_iter()
-                .map(|(key, inner_value)| (key, CableCore::from(inner_value)))
+                .map(|(key, inner_value)| (key, Core::from(inner_value)))
                 .collect(),
             layers: value.layers,
             contained_datafile_path: PathBuf::new(),
@@ -96,10 +96,10 @@ impl FromFile for CableType {
 
 //https://stackoverflow.com/questions/67594909/multiple-possible-types-for-a-serializable-structs-field
 
-/// `CableCore` represents an individual conductor, strength member or optical fiber in a cable.
+/// `Core` represents an individual conductor, strength member or optical fiber in a cable.
 #[derive(Debug, PartialEq, Clone)]
 #[non_exhaustive]
-pub struct CableCore {
+pub struct Core {
     /// ID of `CableType` that this core is made of.
     pub type_id: String,
     /// `LineStyle` of `CableType`. If `None`, then it will inherit from the parent `CableType`.
@@ -118,9 +118,9 @@ pub struct CableCore {
     pub strand_cross_sect_area: Option<CrossSectionalArea>,
 }
 
-impl From<file_types::cable_type::CableCore> for CableCore {
+impl From<file_types::cable_type::Core> for Core {
     #[inline]
-    fn from(value: file_types::cable_type::CableCore) -> Self {
+    fn from(value: file_types::cable_type::Core) -> Self {
         Self {
             type_id: value.type_id,
             line_style: value.line_style,

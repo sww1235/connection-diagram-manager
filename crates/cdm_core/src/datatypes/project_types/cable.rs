@@ -6,20 +6,14 @@ use std::{
 
 use egui::Pos2;
 use log::trace;
-use slotmap::Key as _;
 
+//use slotmap::Key as _;
 use crate::{
     datatypes::{
         file_types,
         library_types::{Library, cable_type, cable_type::CableLayer},
         project_types::{InnerConnectionId, ProjectData},
-        schematic_connector::{
-            AsConnector,
-            ConnectionPoint,
-            ConnectorType,
-            multi_right_angle::MultiRightAngle,
-            right_angle::RightAngle,
-        },
+        schematic_connector::{AsConnector, ConnectorType, multi_right_angle::MultiRightAngle, right_angle::RightAngle},
         unit_helper::length::Length,
         util_types::{IECCodes, LineStyle, PhysicalLocation, UserFields},
     },
@@ -51,6 +45,9 @@ pub struct Cable {
     /// The cores in this cable. Generated from the data in the associcated `CableType`.
     ///
     /// Key of map is identifier of core within cable, and is unique within each cable.
+    ///
+    /// NOTE: this is a flat map of cores within cable, with dot joined ids. This does not maintain
+    /// the internal structure of the cable.
     pub(crate) cores: BTreeMap<String, Core>,
     //TODO: rename connector and connectortype to something more distinct
     /// The schematic representation of this cable.
@@ -82,21 +79,6 @@ impl From<file_types::cable::Cable> for Cable {
             contained_datafile_path: PathBuf::new(),
         }
     }
-}
-
-//TODO: may not need InnerConnectionId here
-
-/// `CableCore` represents a core of a cable.
-#[derive(Debug, PartialEq, Clone)]
-#[expect(clippy::exhaustive_enums, reason = "wrapper enum")]
-pub enum Core {
-    /// `Cable`.
-    Cable {
-        /// Inner cable of core.
-        cable: Cable,
-        /// connection id.
-        connection_id: InnerConnectionId,
-    },
 }
 
 impl AsConnector for Cable {
@@ -195,29 +177,30 @@ impl AsConnector for Cable {
 
         self.cores = BTreeMap::new();
 
-        self.insert_cores(&cable_type.cores, library, None)?;
+        self.insert_cores(&cable_type.cores, library)?;
 
         match self.cores.len().cmp(&1) {
             Ordering::Equal => {
-                self.connector = ConnectorType::RightAngle(RightAngle::new(
-                    ConnectionPoint::default(),
-                    ConnectionPoint::default(),
-                    false,
-                    self.line_style.clone(),
-                ));
+                let connector_inst = RightAngle {
+                    line_style: self.line_style.clone(),
+                    ..Default::default()
+                };
+                self.connector = ConnectorType::RightAngle(connector_inst);
             }
             Ordering::Less => {
                 return Err(LibraryError::from(CableTypeError::NoCores(self.cable_type.clone())).into());
             }
             Ordering::Greater => {
-                self.connector = ConnectorType::MultiRightAngle(MultiRightAngle::new(
-                    ConnectionPoint::default(),
-                    Vec::new(),
-                    ConnectionPoint::default(),
-                    Vec::new(),
-                    false,
-                    self.line_style.clone(),
-                ));
+                let mut connector_inst = MultiRightAngle {
+                    line_style: self.line_style.clone(),
+                    ..Default::default()
+                };
+                // flat_map of cores within cable
+                for (id, core) in &self.cores {
+
+                }
+
+                self.connector = ConnectorType::MultiRightAngle(connector_inst);
             }
         }
 
@@ -231,7 +214,75 @@ impl Cable {
     /// `insert_cores` handles the creation of all the individual cables inside a cable and
     /// its cores.
     ///
-    /// It is a recursive function.
+    /// `super_id` passes through the core ID of the previous iteration so it gets concatenated
+    /// correctly.
+    ///
+    /// # Errors
+    ///
+    /// Will error if values needed in the function are not found in project or library data.
+    #[inline]
+    #[expect(clippy::needless_pass_by_value, reason = "need to use unwrap_or_default()")]
+    fn insert_cores(
+        &mut self,
+        reference_cores: &BTreeMap<String, cable_type::Core>,
+        library: &Library,
+    ) -> Result<(), LibraryError> {
+        for (id, ref_core) in reference_cores {
+            let core_type = library
+                .cable_types
+                .get(&ref_core.type_id)
+                .ok_or(LibraryError::ValueNotFound {
+                    id: ref_core.type_id.clone(),
+                    found_in: format!("cable instance {}", self.identifier).to_owned(),
+                    library_type: "Cable Type".to_owned(),
+                })?;
+
+            trace! {"creating core for cable core {id} of {}", self.identifier}
+            let mut core = Core {
+                cable_type: ref_core.type_id.clone(),
+                cores: BTreeMap::new(),
+                layers: core_type.layers.clone(),
+                line_style: ref_core.line_style.clone().unwrap_or(core_type.line_style.clone()),
+            };
+            match core_type.cores.len().cmp(&1) {
+                Ordering::Greater => {
+                    // recursive call to handle inner cables
+                    core.insert_cores(&core_type.cores, library, self.identifier.clone(), String::new())?;
+                    // migrate to trim_prefix() once stablized
+                    // https://github.com/rust-lang/rust/issues/142312
+                    self.cores.insert(id.to_owned(), core);
+                }
+                Ordering::Equal => {
+                    self.cores.insert(id.to_owned(), core);
+                }
+                Ordering::Less => {
+                    return Err(CableTypeError::NoCores(ref_core.type_id.clone()).into());
+                }
+            }
+        }
+
+        if self.cores.is_empty() {
+            return Err(CableTypeError::NoCores(self.cable_type.clone()).into());
+        }
+
+        Ok(())
+    }
+}
+
+/// `Core` represents a core of a `Cable`.
+#[derive(Debug, PartialEq, Clone)]
+pub struct Core {
+    /// The `CableType` key of this core.
+    pub cable_type: String,
+    /// The `LineStyle` of this cable. Initially copied from the `CableType`.
+    pub line_style: LineStyle,
+    /// vector of exterior insulation/shielding layers. Copied from the `CableType`.
+    pub layers: Vec<CableLayer>,
+}
+
+impl Core {
+    /// `insert_cores` handles the creation of all the individual cables inside a cable and
+    /// its cores.
     ///
     /// `super_id` passes through the core ID of the previous iteration so it gets concatenated
     /// correctly.
@@ -243,78 +294,44 @@ impl Cable {
     #[expect(clippy::needless_pass_by_value, reason = "need to use unwrap_or_default()")]
     fn insert_cores(
         &mut self,
-        reference_cores: &BTreeMap<String, cable_type::CableCore>,
+        reference_cores: &BTreeMap<String, cable_type::Core>,
         library: &Library,
-        super_id: Option<String>,
+        cable_id: String,
+        super_id: String,
     ) -> Result<(), LibraryError> {
-        for (id, core) in reference_cores {
-            let core_type = library.cable_types.get(&core.type_id).ok_or(LibraryError::ValueNotFound {
-                id: core.type_id.clone(),
-                found_in: format!("cable instance {}", self.identifier).to_owned(),
-                library_type: "Cable Type".to_owned(),
-            })?;
+        for (id, ref_core) in reference_cores {
+            let core_type = library
+                .cable_types
+                .get(&ref_core.type_id)
+                .ok_or(LibraryError::ValueNotFound {
+                    id: ref_core.type_id.clone(),
+                    found_in: format!("cable instance {cable_id}").to_owned(),
+                    library_type: "Cable Type".to_owned(),
+                })?;
 
-            trace! {"creating cable for cable core {id} of {}", self.identifier}
-            let identifier = format!("{}.{id}", super_id.clone().unwrap_or_default());
-            let identifier_stripped = identifier.strip_prefix('.').unwrap_or(&identifier).to_owned();
-            let mut cable = Cable {
-                cable_type: core.type_id.clone(),
-                identifier: identifier_stripped,
-                description: None,
-                length: self.length.clone(),
-                physical_location: self.physical_location.clone(),
-                iec_codes: None,
-                user_fields: None,
-                pathway: None,
+            let mut core = Core {
+                cable_type: ref_core.type_id.clone(),
                 cores: BTreeMap::new(),
                 layers: core_type.layers.clone(),
-                line_style: core.line_style.clone().unwrap_or(core_type.line_style.clone()),
-                connector: ConnectorType::MultiRightAngle(MultiRightAngle::default()),
-                contained_datafile_path: self.contained_datafile_path.clone(),
+                line_style: ref_core.line_style.clone().unwrap_or(core_type.line_style.clone()),
             };
             match core_type.cores.len().cmp(&1) {
                 Ordering::Greater => {
                     // recursive call to handle inner cables
-                    cable.insert_cores(&core_type.cores, library, super_id.clone())?;
+                    core.insert_cores(&core_type.cores, library, cable_id.clone(), super_id.clone())?;
                     // migrate to trim_prefix() once stablized
                     // https://github.com/rust-lang/rust/issues/142312
-                    let new_core_id = format!("{}.{id}", super_id.clone().unwrap_or_default());
+                    let new_core_id = format!("{}.{id}", super_id.clone());
                     let new_core_id_stripped = new_core_id.strip_prefix('.').unwrap_or(&new_core_id).to_owned();
-                    self.cores.insert(
-                        new_core_id_stripped,
-                        Core::Cable {
-                            cable,
-                            connection_id: InnerConnectionId::null(),
-                        },
-                    );
-                    self.connector = ConnectorType::MultiRightAngle(MultiRightAngle::new(
-                        ConnectionPoint::default(),
-                        Vec::new(),
-                        ConnectionPoint::default(),
-                        Vec::new(),
-                        false,
-                        self.line_style.clone(),
-                    ));
+                    self.cores.insert(new_core_id_stripped, core);
                 }
                 Ordering::Equal => {
-                    let new_core_id = format!("{}.{id}", super_id.clone().unwrap_or_default());
+                    let new_core_id = format!("{}.{id}", super_id.clone());
                     let new_core_id_stripped = new_core_id.strip_prefix('.').unwrap_or(&new_core_id).to_owned();
-                    self.cores.insert(
-                        new_core_id_stripped,
-                        Core::Cable {
-                            cable,
-                            connection_id: InnerConnectionId::null(),
-                        },
-                    );
-                    self.connector = ConnectorType::RightAngle(RightAngle::new(
-                        ConnectionPoint::default(),
-                        ConnectionPoint::default(),
-                        false,
-                        self.line_style.clone(),
-                    ));
+                    self.cores.insert(new_core_id_stripped, core);
                 }
                 Ordering::Less => {
-                    return Err(CableTypeError::NoCores(core.type_id.clone()).into());
+                    return Err(CableTypeError::NoCores(ref_core.type_id.clone()).into());
                 }
             }
         }
@@ -324,6 +341,27 @@ impl Cable {
         }
 
         Ok(())
+    }
+
+    fn create_connector(&self) -> ConnectorType {
+        match self.cores.len().cmp(&1) {
+            Ordering::Greater | Ordering::Equal => {
+                let mut connector_inst = MultiRightAngle {
+                    line_style: self.line_style.clone(),
+                    ..Default::default()
+                };
+                for (id, core) in &self.cores {
+                    let core_connector = core.create_connector();
+                    connector_inst.end1_connections.push(core_connector.clone());
+                    connector_inst.end2_connections.push(core_connector.clone());
+                }
+                ConnectorType::MultiRightAngle(connector_inst)
+            }
+            Ordering::Less => ConnectorType::RightAngle(RightAngle {
+                line_style: self.line_style.clone(),
+                ..Default::default()
+            }),
+        }
     }
 }
 
