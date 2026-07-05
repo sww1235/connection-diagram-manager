@@ -11,10 +11,7 @@ use std::collections::HashSet;
 use egui::{Color32, Pos2, Rect, Sense, Ui, Vec2, response::Response, widgets::Widget};
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    datatypes::{color::Color, library_types::Library, project_types::ProjectData, schematic_symbol::ConnectionDirection},
-    error::Error,
-};
+use crate::datatypes::{color::Color, project_types::ProjectData, schematic_symbol::ConnectionDirection};
 
 //TODO: multiple connections on each end.
 
@@ -54,17 +51,6 @@ where Self: ProjectData
     /// If the connector branches, then this should return the position of the `end2` branch point or
     /// junction.
     fn end2_position(&self) -> Pos2;
-
-    /// Updates the data embedded in `Self` from its library representation.
-    ///
-    /// Also inserts `SchematicConnector`s as appropriate.
-    ///
-    /// # Errors
-    ///
-    /// Shall error if the id of `&self.entity_type` is not found in the provided library or other
-    /// implementation specific errors.
-    #[expect(clippy::result_large_err, reason = "Using main Error type")]
-    fn update_data_from_library(&mut self, library: &Library) -> Result<(), Error>;
 }
 
 /// Marker trait for the various types of `SchematicConnectors`.

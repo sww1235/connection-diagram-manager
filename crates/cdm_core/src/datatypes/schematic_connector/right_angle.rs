@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use egui::{Pos2, Rect, Sense, Stroke, Ui, Vec2, response::Response, widgets::Widget};
 use log::{debug, error, trace};
 
@@ -189,6 +191,18 @@ impl RightAngle {
     #[inline]
     pub fn set_color(&mut self, color: Color) {
         self.line_style.color = color;
+    }
+
+    /// Set allowed connection directions for end1.
+    #[inline]
+    pub fn set_end1_connection_directions(&mut self, allowed_directions: &HashSet<ConnectionDirection>) {
+        self.end1.set_allowed_connection_directions(allowed_directions);
+    }
+
+    /// Set allowed connection directions for end2.
+    #[inline]
+    pub fn set_end2_connection_directions(&mut self, allowed_directions: &HashSet<ConnectionDirection>) {
+        self.end2.set_allowed_connection_directions(allowed_directions);
     }
 }
 

@@ -17,7 +17,6 @@ use crate::{
             InnerConnectionId,
             Project,
             ProjectData,
-            cable::Core,
             connection::{End, EndDesignation, InnerConnection},
         },
         schematic_connector::AsConnector as _,
@@ -113,6 +112,7 @@ impl Equipment {
     //
     //}
 
+    /// Print list of connections on this equipment for debugging purposes.
     #[inline]
     pub fn debug_print_equipment_connections(&self, project: &Project) {
         log::trace!("debug printing connections");
@@ -163,13 +163,8 @@ impl Equipment {
                             panic!("update_connection_directions_from_symbol(): core {core_id} not found in {cable_id}")
                         });
 
-                        match core {
-                            Core::Cable { cable: inner_cable, .. } => {
-                                inner_cable
-                                    .connector_mut()
-                                    .set_end1_connection_directions(&allowed_connection_directions);
-                            }
-                        }
+                        core.connector_mut()
+                            .set_end1_connection_directions(&allowed_connection_directions);
                     }
                     InnerConnection::TermCable { cable_id, core_id } => {
                         //TODO
@@ -194,13 +189,8 @@ impl Equipment {
                             panic!("update_connection_directions_from_symbol(): core {core_id} not found in {cable_id}")
                         });
 
-                        match core {
-                            Core::Cable { cable: inner_cable, .. } => {
-                                inner_cable
-                                    .connector_mut()
-                                    .set_end2_connection_directions(&allowed_connection_directions);
-                            }
-                        }
+                        core.connector_mut()
+                            .set_end2_connection_directions(&allowed_connection_directions);
                     }
                     InnerConnection::TermCable { cable_id, core_id } => {
                         //TODO
@@ -322,7 +312,7 @@ impl SchematicRepresentation for Equipment {
         //TODO: look at writer config
         let mut writer = EventWriter::new(&mut out_buffer);
 
-        trace! {"updating symbol data"};
+        trace! {"updating symbol data on equipment {}", self.identifier};
 
         while let Some(event) = reader.next() {
             #[expect(clippy::shadow_reuse, reason = "unwrapping error")]
@@ -470,6 +460,7 @@ impl SchematicRepresentation for Equipment {
                                                 //more
                                                 match which_end {
                                                     EndDesignation::End1 => {
+                                                        trace! {"Connection_Point_ID: {connection_point_id_inner} -- Connection Key: {connection_key:?} -- {which_end:?}"};
                                                         //TODO: not sure if we need to validate
                                                         //equipment_id here as well.
                                                         if let End::Equipment {
@@ -485,24 +476,21 @@ impl SchematicRepresentation for Equipment {
                                                                 )]
                                                                 InnerConnection::Cable { cable_id, core_id } => {
                                                                     trace!("{cable_id} -- {core_id}");
-                                                                    trace!(
-                                                                        "Cable Data:\n{:#?}",
-                                                                        &project.cables.get(cable_id).expect(
-                                                                            "The presence of cable_id in project.cables should \
-                                                                             already be validated by previous program logic",
-                                                                        )
+                                                                    //trace!(
+                                                                    //    "Cable Data:\n{:#?}",
+                                                                    //    &project.cables.get(cable_id).expect(
+                                                                    //        "The presence of cable_id in project.cables should \
+                                                                    //         already be validated by previous program logic",
+                                                                    //    )
+                                                                    //);
+                                                                    let cable = &project.cables.get(cable_id).expect(
+                                                                        "The presence of cable_id in project.cables should \
+                                                                         already be validated by previous program logic",
                                                                     );
-                                                                    let Core::Cable { cable, .. } = &project
-                                                                        .cables
-                                                                        .get(cable_id)
-                                                                        .expect(
-                                                                            "The presence of cable_id in project.cables should \
-                                                                             already be validated by previous program logic",
-                                                                        )
-                                                                        .cores
-                                                                        .get(core_id)
-                                                                        .expect("Core ID presence should already be validated.");
-                                                                    identifier = cable.identifier.clone();
+                                                                    if identifier != String::new() {
+                                                                        warn! {"connection identifier already set to {identifier}"}
+                                                                    }
+                                                                    identifier = cable.core_identifier(core_id).clone();
                                                                 }
                                                                 InnerConnection::TermCable { cable_id, core_id } => {
                                                                     //TODO: need to correctly pull
@@ -519,6 +507,7 @@ impl SchematicRepresentation for Equipment {
                                                     EndDesignation::End2 => {
                                                         //TODO: not sure if we need to validate
                                                         //equipment_id here as well.
+                                                        trace! {"Connection_Point_ID: {connection_point_id_inner} -- Connection Key: {connection_key:?} -- {which_end:?}"};
                                                         if let End::Equipment {
                                                             connection_point_id: equip_connection_point_id,
                                                             ..
@@ -526,22 +515,20 @@ impl SchematicRepresentation for Equipment {
                                                             && equip_connection_point_id == connection_point_id_inner
                                                         {
                                                             match &connection.connection {
+                                                                #[expect(
+                                                                    clippy::expect_used,
+                                                                    reason = "critical validation failure"
+                                                                )]
                                                                 InnerConnection::Cable { cable_id, core_id } => {
-                                                                    #[expect(
-                                                                        clippy::expect_used,
-                                                                        reason = "critical validation failure"
-                                                                    )]
-                                                                    let Core::Cable { cable, .. } = &project
-                                                                        .cables
-                                                                        .get(cable_id)
-                                                                        .expect(
-                                                                            "The presence of cable_id in project.cables should \
-                                                                             already be validated by previous program logic",
-                                                                        )
-                                                                        .cores
-                                                                        .get(core_id)
-                                                                        .expect("Core ID presence should already be validated.");
-                                                                    identifier = cable.identifier.clone();
+                                                                    trace!("{cable_id} -- {core_id}");
+                                                                    let cable = &project.cables.get(cable_id).expect(
+                                                                        "The presence of cable_id in project.cables should \
+                                                                         already be validated by previous program logic",
+                                                                    );
+                                                                    if identifier != String::new() {
+                                                                        warn! {"connection identifier already set to {identifier}"}
+                                                                    }
+                                                                    identifier = cable.core_identifier(core_id).clone();
                                                                 }
                                                                 InnerConnection::TermCable { cable_id, core_id } => {
                                                                     //TODO: need to correctly pull

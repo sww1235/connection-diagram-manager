@@ -94,9 +94,7 @@ impl FromFile for CableType {
     }
 }
 
-//https://stackoverflow.com/questions/67594909/multiple-possible-types-for-a-serializable-structs-field
-
-/// `Core` represents an individual conductor, strength member or optical fiber in a cable.
+/// `Core` represents an individual conductor, sub_cable, strength member or optical fiber in a cable.
 #[derive(Debug, PartialEq, Clone)]
 #[non_exhaustive]
 pub struct Core {

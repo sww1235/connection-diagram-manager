@@ -135,26 +135,28 @@ pub(crate) fn main_window(
                     #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
                     match connector_type.unwrap_or_default() {
                         SCType::RightAngle => {
-                            let response = ui.place(cable.connector().bounding_rect(), cable.connector_mut());
-                            if response.hovered() {
-                                // This should be CursorIcon::Grab but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
-                                ui.output_mut(|output| output.cursor_icon = CursorIcon::PointingHand);
-                            }
-                            if response.dragged() {
-                                // This should be CursorIcon::Grabbing but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
-                                ui.output_mut(|output| output.cursor_icon = CursorIcon::Move);
-                                trace!("connector for wire {id} dragged");
+                            for (id, core) in cable.cores_mut() {
+                                let response = ui.place(core.connector().bounding_rect(), core.connector_mut());
+                                if response.hovered() {
+                                    // This should be CursorIcon::Grab but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
+                                    ui.output_mut(|output| output.cursor_icon = CursorIcon::PointingHand);
+                                }
+                                if response.dragged() {
+                                    // This should be CursorIcon::Grabbing but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
+                                    ui.output_mut(|output| output.cursor_icon = CursorIcon::Move);
+                                    trace!("connector for wire {id} dragged");
 
-                                //TODO: add optional hover text. See lines 614-621 of drag_value.rs from egui.
+                                    //TODO: add optional hover text. See lines 614-621 of drag_value.rs from egui.
 
-                                // TODO: need to figure out if the junction point is being dragged
-                                let midpoint = cable.connector().core.midpoint();
+                                    // TODO: need to figure out if the junction point is being dragged
+                                    let midpoint = core.connector().midpoint();
 
-                                cable.connector_mut().core.set_midpoint(
-                                    (midpoint + response.drag_delta())
-                                        .clamp(min_rect_position, max_rect_position)
-                                        .round_ui(),
-                                );
+                                    core.connector_mut().set_midpoint(
+                                        (midpoint + response.drag_delta())
+                                            .clamp(min_rect_position, max_rect_position)
+                                            .round_ui(),
+                                    );
+                                }
                             }
                         }
                         _ => {
