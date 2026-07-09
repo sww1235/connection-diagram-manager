@@ -328,13 +328,11 @@ impl AsConnector for Core {
 
     #[inline]
     fn set_end1_position(&mut self, position: Pos2) {
-        //TODO: update this to use a method directly on connector.
-        self.connector.end1.set_position(position);
+        self.connector.set_end1_position(position);
     }
     #[inline]
     fn set_end2_position(&mut self, position: Pos2) {
-        //TODO: update this to use a method directly on connector.
-        self.connector.end2.set_position(position);
+        self.connector.set_end2_position(position);
     }
     #[inline]
     fn end1_position(&self) -> Pos2 {

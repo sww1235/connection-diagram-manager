@@ -15,7 +15,7 @@ use crate::datatypes::{color::Color, project_types::ProjectData, schematic_symbo
 
 //TODO: multiple connections on each end.
 
-/// `IntoConnector` converts a linear entity into a connector for rendering.
+/// `AsConnector` converts a linear entity into a connector for rendering.
 pub trait AsConnector
 where Self: ProjectData
 {

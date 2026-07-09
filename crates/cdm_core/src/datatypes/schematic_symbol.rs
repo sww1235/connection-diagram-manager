@@ -63,8 +63,8 @@ impl Widget for &mut SchematicSymbol {
             bytes: svg_data.into(),
         })
         .sense(sense_settings)
-        .fit_to_original_size(self.scale);
-        //trace!("scale: {}", self.scale);
+        .fit_to_original_size(self.scale)
+        .maintain_aspect_ratio(true);
 
         ui.add(image)
     }
@@ -233,6 +233,13 @@ where Self: ProjectData
 
     /// Returns the current symbol position.
     fn symbol_position(&self) -> Pos2;
+
+    /// Returns the offset of a connection point from the top-left corner of the symbol.
+    ///
+    /// # Errors
+    ///
+    /// Will error if the `connection_id` is not found in `Self`.
+    fn connection_point_offset(&self, connection_id: &str) -> Result<Vec2, SchematicSymbolError>;
 
     /// Updates the `schematic_symbol` in `Self` from the options defined in `&self.entity_type`.
     ///

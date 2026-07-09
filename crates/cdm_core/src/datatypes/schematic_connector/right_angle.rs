@@ -46,49 +46,54 @@ pub struct RightAngle {
 impl SchematicConnector for RightAngle {
     #[inline]
     fn bounding_rect(&self) -> Rect {
-        Rect::from_two_pos(self.end1.position, self.end2.position)
+        Rect::from_points(&[self.end1.position, self.end2.position, self.midpoint])
     }
 }
 
 impl Widget for &mut RightAngle {
     #[inline]
     fn ui(self, ui: &mut Ui) -> Response {
-        let sense_settings = Sense::click_and_drag();
-        let mut response = ui.response();
+        let sense = Sense::click_and_drag();
+        let response: Response;
         let painter = ui.painter();
 
-        response.sense = sense_settings;
+        //TODO: see if it is possible to create a interact polygon rather than rectangle.
         //TODO: use painter.add and Shape::dashed_line_with_offset instead if dashed line.
 
-        debug! {"RightAngle::ui() end_1 directions: {:?}", self.end1.directions};
-        debug! {"RightAngle::ui() end_2 directions: {:?}", self.end2.directions};
+        //debug! {"RightAngle::ui() end_1 directions: {:?}", self.end1.directions};
+        //debug! {"RightAngle::ui() end_2 directions: {:?}", self.end2.directions};
 
         if self.end1.directions.is_subset(&ConnectionDirection::horizontal())
             && self.end2.directions.is_subset(&ConnectionDirection::horizontal())
         {
-            trace! {"right/left:right/left"}
+            //trace! {"right/left:right/left"}
             let end1_midpoint = Pos2::new(self.midpoint.x, self.end1.position.y);
             let end2_midpoint = Pos2::new(self.midpoint.x, self.end2.position.y);
             let line_points: Vec<Pos2> = vec![self.end1.position, end1_midpoint, end2_midpoint, self.end2.position];
-            painter.line(line_points, Into::<Stroke>::into(self.line_style.clone()));
+            painter.line(line_points.clone(), Into::<Stroke>::into(self.line_style.clone()));
+            response = ui.allocate_rect(Rect::from_points(&line_points), sense);
         } else if self.end1.directions.is_subset(&ConnectionDirection::vertical())
             && self.end2.directions.is_subset(&ConnectionDirection::vertical())
         {
-            trace! {"top/bottom:top/bottom"}
+            //trace! {"top/bottom:top/bottom"}
             let end1_midpoint = Pos2::new(self.end1.position.x, self.midpoint.y);
             let end2_midpoint = Pos2::new(self.end2.position.x, self.midpoint.y);
             let line_points: Vec<Pos2> = vec![self.end1.position, end1_midpoint, end2_midpoint, self.end2.position];
-            painter.line(line_points, Into::<Stroke>::into(self.line_style.clone()));
+            painter.line(line_points.clone(), Into::<Stroke>::into(self.line_style.clone()));
+            response = ui.allocate_rect(Rect::from_points(&line_points), sense);
         } else if self.end1.directions.is_subset(&ConnectionDirection::horizontal())
             && self.end2.directions.is_subset(&ConnectionDirection::vertical())
         {
             trace! {"right/left:top/bottom"} //TODO
+            response = ui.response();
         } else if self.end1.directions.is_subset(&ConnectionDirection::vertical())
             && self.end2.directions.is_subset(&ConnectionDirection::horizontal())
         {
             trace! {"top/bottom:right/left"} //TODO
+            response = ui.response();
         } else {
             error! {"RA ui() fn: unsupported direction combination"}
+            response = ui.response();
         }
         response
     }

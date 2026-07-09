@@ -2,7 +2,10 @@ use cdm_core::{
     config::ApplicationConfig,
     datatypes::{
         library_types::Library,
-        project_types::Project,
+        project_types::{
+            Project,
+            connection::{End, EndDesignation, InnerConnection},
+        },
         schematic_connector::{AsConnector as _, SchematicConnector as _, TypeFlag as SCType},
         schematic_symbol::SchematicRepresentation as _,
     },
@@ -12,6 +15,7 @@ use egui::{
     Id,
     Rect,
     Theme,
+    Vec2,
     containers::{
         Window,
         menu,
@@ -43,6 +47,7 @@ pub(crate) fn main_window(
     Window::new("Main Window")
         .id(main_window_id)
         .open(main_window_is_open)
+        .movable(false)
         .default_width(f32::from_i32(app_config.graphics_config.starting_window_width).unwrap_or(1024.0))
         .default_height(f32::from_i32(app_config.graphics_config.starting_window_height).unwrap_or(1024.0))
         .resizable(true)
@@ -63,9 +68,9 @@ pub(crate) fn main_window(
                 let max_rect_position = panel_rect.right_bottom();
 
                 for (id, equipment) in &mut project_data.equipment {
-                    trace! {"ID: {id}, Equipment: {equipment:#?}"};
+                    //trace! {"ID: {id}, Equipment: {equipment:#?}"};
                     equipment.update_symbol_scale(app_state.symbol_scale_factor);
-                    trace! {"Equipment connections: {:?}", equipment.schematic_symbol().connections};
+                    //trace! {"Equipment connections: {:?}", equipment.schematic_symbol().connections};
                     trace!("pre_rendered position: {}", equipment.schematic_symbol().position);
                     //TODO: revisit scaling here. Provide a method to return size based on scale,
                     //instead of doing the math all over the place.
@@ -77,14 +82,96 @@ pub(crate) fn main_window(
                         .symbol_position()
                         .clamp(min_rect_position, max_symbol_rect_position)
                         .round_ui();
-                    trace! {"min_postion: {symbol_position}"}
+                    //trace! {"min_postion: {symbol_position}"}
                     let rect = Rect::from_min_size(symbol_position, symbol_size);
-                    trace!("rect: {rect:?}");
+                    //trace!("rect: {rect:?}");
                     equipment.set_symbol_position(symbol_position.clamp(min_rect_position, max_symbol_rect_position).round_ui());
                     let response = ui.place(rect, equipment.schematic_symbol_mut());
                     // from https://github.com/emilk/egui/discussions/1926#discussioncomment-3414942
                     //
                     //trace!("{response:?}");
+
+                    // equipment.connections stores index of all connections
+
+                    //TODO: embed connection_id inside cable/core and figure out a better way
+                    //of looking this up rather than looping every frame.
+                    #[expect(clippy::panic, reason = "using instead of expect(format!())")]
+                    for (connection_id, end_designation) in &equipment.connections {
+                        let connection = project_data.connections.get(connection_id).unwrap_or_else(|| {
+                            panic!(
+                                "Connection in equipment {}: {connection_id:?} not found in project connections",
+                                equipment.identifier
+                            )
+                        });
+                        trace! {
+                        "connection rendering loop: {connection_id:?} -- {end_designation}"}
+
+                        match &connection.connection {
+                            InnerConnection::Cable { cable_id, core_id } => {
+                                let cable = project_data.cables.get_mut(cable_id).unwrap_or_else(|| {
+                                    panic!(
+                                        "Cable {cable_id} referenced in connection {connection_id:?} of equipment {}: \
+                                         {connection_id:?} not found in project.",
+                                        equipment.identifier
+                                    )
+                                });
+
+                                let core = cable
+                                    .cores_mut()
+                                    .get_mut(core_id)
+                                    .unwrap_or_else(|| panic!("Core {core_id} not found in cable {cable_id}"));
+
+                                match end_designation {
+                                    EndDesignation::End1 => {
+                                        // Only care about equipment here.
+                                        if let End::Equipment { connection_point_id, .. } = &connection.end1 {
+                                            let connection_offset =
+                                                equipment.connection_point_offset(connection_point_id).unwrap_or_else(|_| {
+                                                    panic! {
+                                                    "Connection point {connection_point_id} not \
+                                                    found in schematic symbol for equipment {}",
+                                                    equipment.identifier}
+                                                });
+                                            trace! {"end1 position {} of cable {cable_id} -- {core_id}", core.end1_position()}
+
+                                            trace! {"setting end1 position of cable {cable_id} -- {core_id}"}
+                                            //TODO: change this to a move_symbol_position() function rather than doing
+                                            //the delta math here
+                                            #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
+                                            core.set_end1_position((equipment.symbol_position() + connection_offset).round_ui());
+                                        }
+                                    }
+
+                                    EndDesignation::End2 => {
+                                        // Only care about equipment here.
+                                        if let End::Equipment { connection_point_id, .. } = &connection.end2 {
+                                            let connection_offset =
+                                                equipment.connection_point_offset(connection_point_id).unwrap_or_else(|_| {
+                                                    panic! {
+                                                    "Connection point {connection_point_id} not \
+                                                    found in schematic symbol for equipment {}",
+                                                    equipment.identifier}
+                                                });
+
+                                            trace! {"end2 position {} of cable {cable_id} -- {core_id}", core.end2_position()}
+
+                                            trace! {"setting end2 position of cable {cable_id} -- {core_id}"}
+                                            //TODO: change this to a move_symbol_position() function rather than doing
+                                            //the delta math here
+                                            #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
+                                            core.set_end2_position((equipment.symbol_position() + connection_offset).round_ui());
+                                        }
+                                    }
+                                }
+                            }
+                            InnerConnection::TermCable { cable_id, core_id } => {}
+                            _ => {
+                                panic! {"InnerConnection type not implemented."}
+                            }
+                        }
+                    }
+                    response.paint_debug_info();
+
                     if response.hovered() {
                         // This should be CursorIcon::Grab but it is not implemented yet.
                         // See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
@@ -101,24 +188,20 @@ pub(crate) fn main_window(
 
                         //TODO: add optional hover text. See lines 614-621 of drag_value.rs from egui.
 
+                        //TODO: change this to a move_symbol_position() function rather than doing
+                        //the delta math here
                         #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
                         equipment.set_symbol_position(
                             (symbol_position + response.drag_delta())
                                 .clamp(min_rect_position, max_symbol_rect_position)
                                 .round_ui(),
                         );
-
-                        // equipment.connections stores index of all connections
-
-                        // for connection in equipment.connections
-                        //  Update connection end position (based on which end this equipment is
-                        //  connected to)
                     }
                     trace!("post_rendered position: {}", equipment.schematic_symbol().position);
                 }
 
-                for (id, cable) in &mut project_data.cables {
-                    trace! {"ID: {id}, Cable: {cable:#?}"};
+                for (cable_id, cable) in &mut project_data.cables {
+                    //trace! {"ID: {id}, Cable: {cable:#?}"};
 
                     //TODO: Finish this
                     //
@@ -135,10 +218,17 @@ pub(crate) fn main_window(
                     #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
                     match connector_type.unwrap_or_default() {
                         SCType::RightAngle => {
-                            for (id, core) in cable.cores_mut() {
+                            for (core_id, core) in cable.cores_mut() {
+                                trace! {"attempting to render cable {cable_id} -- {core_id}"}
+                                let core_old_midpoint = core.connector().midpoint();
+                                core.connector_mut()
+                                    .set_midpoint(core_old_midpoint.clamp(min_rect_position, max_rect_position).round_ui());
                                 let response = ui.place(core.connector().bounding_rect(), core.connector_mut());
+                                response.paint_debug_info();
+                                trace! {"core_response: {response:?}"}
+                                // This should be CursorIcon::Grab but it is not implemented yet.
+                                // See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
                                 if response.hovered() {
-                                    // This should be CursorIcon::Grab but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
                                     ui.output_mut(|output| output.cursor_icon = CursorIcon::PointingHand);
                                 }
                                 if response.dragged() {
@@ -146,7 +236,7 @@ pub(crate) fn main_window(
                                     // See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
 
                                     ui.output_mut(|output| output.cursor_icon = CursorIcon::Move);
-                                    trace!("connector for wire {id} dragged");
+                                    trace!("connector for core {core_id} dragged");
 
                                     //TODO: add optional hover text. See lines 614-621 of drag_value.rs from egui.
 

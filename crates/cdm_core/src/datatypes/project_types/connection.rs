@@ -1,4 +1,7 @@
-use std::path::{Path, PathBuf};
+use std::{
+    fmt,
+    path::{Path, PathBuf},
+};
 
 use crate::{datatypes::file_types, traits::FromFile};
 
@@ -145,4 +148,18 @@ pub enum EndDesignation {
     End1,
     /// End 2.
     End2,
+}
+
+impl fmt::Display for EndDesignation {
+    #[inline]
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::End1 => {
+                write! {f, "End1"}
+            }
+            Self::End2 => {
+                write! {f, "End2"}
+            }
+        }
+    }
 }

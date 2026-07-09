@@ -4,7 +4,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use egui::Pos2;
+use egui::{Pos2, Vec2};
 use log::{trace, warn};
 use slotmap::SparseSecondaryMap;
 use xml::{EventReader, EventWriter, reader::XmlEvent as ReaderEvent, writer::XmlEvent as WriterEvent};
@@ -23,7 +23,7 @@ use crate::{
         schematic_symbol::{ConnectionDirection, SchematicRepresentation, SchematicSymbol, SymbolConnection},
         util_types::{IECCodes, PhysicalLocation, SymbolStyle, UserFields},
     },
-    error::{Error, LibraryError, SVGModificationError, SVGValidationError},
+    error::{Error, LibraryError, SVGModificationError, SVGValidationError, SchematicSymbolError},
     traits::FromFile,
 };
 
@@ -62,7 +62,7 @@ pub struct Equipment {
     ///
     /// The mapped value indicates if the connection end that represents the equipment instance is
     /// `End1` or `End2`.
-    pub(crate) connections: SparseSecondaryMap<InnerConnectionId, EndDesignation>,
+    pub connections: SparseSecondaryMap<InnerConnectionId, EndDesignation>,
     /// Schematic symbol instance that is updated from the library and contains updated data unique
     /// to this instance. This also has the `symbol_style` applied if `Some()`.
     ///
@@ -226,6 +226,11 @@ impl SchematicRepresentation for Equipment {
     #[inline]
     fn symbol_position(&self) -> Pos2 {
         self.schematic_symbol.position
+    }
+
+    #[inline]
+    fn connection_point_offset(&self, connection_id: &str) -> Result<Vec2, SchematicSymbolError> {
+        self.schematic_symbol.connection_point_offset(connection_id)
     }
 
     #[inline]
