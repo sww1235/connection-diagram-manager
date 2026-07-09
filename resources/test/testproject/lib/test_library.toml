@@ -21,9 +21,11 @@ cross_section = "Circular"
 [cable_types.test_cable.cores]
 [cable_types.test_cable.cores.red]
 type_id = "red"
+line_style = {color = "Red", line_thickness = 4.0}
 
 [cable_types.test_cable.cores.black]
 type_id = "black"
+line_style = {color = "Blue", line_thickness = 4.0}
 
 [[cable_types.test_cable.layers]]
 layer_number = 0

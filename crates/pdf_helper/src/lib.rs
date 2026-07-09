@@ -4,7 +4,10 @@ pub mod paper;
 
 //TODO: investigate other graphics libraries other than tiny_skia due to usage of f32 only
 
-use std::path::{Path, PathBuf};
+use std::{
+    fmt,
+    path::{Path, PathBuf},
+};
 
 use log::warn;
 use lopdf::{

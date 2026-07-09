@@ -144,6 +144,7 @@ impl Visitor<'_> for SvgVisitor {
     }
 }
 
+#[rustfmt::skip]
 impl Default for Svg {
     #[inline]
     fn default() -> Self {

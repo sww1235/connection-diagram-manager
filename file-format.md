@@ -381,7 +381,7 @@ secondary_color = "PLACEHOLDER"
 # If the cable you are representing only has one inner core (aka a wire), specifiy one core, with type_id = bare.
 type_id = "PLACEHOLDER"
 
-line_style = { color: "PLACEHOLDER", secondary_color: "PLACEHOLDER", line_thickness: "PLACEHOLDER", line_appearance: "PLACEHOLDER"}
+line_style = { color = "PLACEHOLDER", secondary_color = "PLACEHOLDER", line_thickness = "PLACEHOLDER", line_appearance = "PLACEHOLDER"}
 
 material = "PLACEHOLDER"
 
