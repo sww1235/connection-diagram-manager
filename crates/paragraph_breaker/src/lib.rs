@@ -116,8 +116,7 @@ fn line_break_internal(
     let last = words[current_word_index].last.unwrap_or(0);
     // current line length is length of first word.
     for glyph in &glyph_positions[first..last] {
-        line_length +=
-            Rational64::from_integer(glyph.x_advance.into()) * em_width / Rational64::from_integer(units_per_em.into());
+        line_length += Rational64::from_integer(glyph.x_advance.into()) * em_width / Rational64::from_integer(units_per_em.into());
     }
     // the best score is current line length, squared
     let mut best_score = ideal_width - line_length;
@@ -134,8 +133,7 @@ fn line_break_internal(
         let first = words[next_word_index].first.unwrap_or(0);
         let last = words[next_word_index].last.unwrap_or(0);
         for glyph in &glyph_positions[first..last] {
-            word_width +=
-                Rational64::from_integer(glyph.x_advance.into()) * em_width / Rational64::from_integer(units_per_em.into());
+            word_width += Rational64::from_integer(glyph.x_advance.into()) * em_width / Rational64::from_integer(units_per_em.into());
         }
         // if the new word will make the line too long, stop
         if (line_length + word_width) >= max_width {
@@ -282,8 +280,7 @@ fn greedy_break(
         let first = words[internal_index].first.unwrap_or(0);
         let last = words[internal_index].last.unwrap_or(0);
         for glyph in &glyph_positions[first..last] {
-            word_width +=
-                Rational64::from_integer(glyph.x_advance.into()) * em_width / Rational64::from_integer(units_per_em.into());
+            word_width += Rational64::from_integer(glyph.x_advance.into()) * em_width / Rational64::from_integer(units_per_em.into());
         }
         if (line_length + word_width + space_width) >= ideal_width {
             words[line_next].next = Some(internal_index - 1);

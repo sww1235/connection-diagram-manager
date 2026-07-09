@@ -60,13 +60,7 @@ impl From<file_types::connection::End> for End {
                 equipment_id,
                 connection_point_id,
             },
-            End::TerminalStrip {
-                term_strip_id,
-                element_id,
-            } => Self::TerminalStrip {
-                term_strip_id,
-                element_id,
-            },
+            End::TerminalStrip { term_strip_id, element_id } => Self::TerminalStrip { term_strip_id, element_id },
         }
     }
 }

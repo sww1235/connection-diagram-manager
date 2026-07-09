@@ -40,9 +40,9 @@ pub fn pdf_all_the_things(project: &Project, library: &Library, page_size: Paper
 /// * `enclosure` - the `Enclosure` that will be rendered as a PDF
 /// * `page_size` - the target page size of the PDF file
 /// * `margins` - the margin sizes of the PDF page
-/// * `scale` - optional - specifies the scale of the rendered objects relative to their full size,
-///   represented as a:b. For example, 1:2 would double the size of the object on the page, relative to its
-///   actual size, and 2:1 would half the size of the object.
+/// * `scale` - optional - specifies the scale of the rendered objects relative to their full size, represented as
+///   a:b. For example, 1:2 would double the size of the object on the page, relative to its actual size, and 2:1
+///   would half the size of the object.
 ///
 /// # Errors
 ///
@@ -73,10 +73,9 @@ pub fn pdf_one_enclosure(
 /// * `project` - the `Project` that contains this enclosure
 /// * `library` - the `Library` that contains reference data for this project
 /// * `enclosure` - the `Enclosure` that will be rendered as a PDF
-/// * `scale` - optional - specifies the scale of the rendered objects relative to their full size,
-///   represented as `a`:`b`. For example, 1:2 would double the size of the object on the page, relative to
-///   its actual size, and 2:1 would half the size of the object. This is equal scaling in both X and Y
-///   direction.
+/// * `scale` - optional - specifies the scale of the rendered objects relative to their full size, represented as
+///   `a`:`b`. For example, 1:2 would double the size of the object on the page, relative to its actual size, and
+///   2:1 would half the size of the object. This is equal scaling in both X and Y direction.
 /// * `pdf_page` - a particular page within a pdf that this enclosure will be rendered on.
 /// * `render_connections` - if connections with enclosure should be rendered.
 ///
@@ -113,8 +112,8 @@ pub fn render_enclosure(
     let page_height = pdf_page.page_size.size().1;
     #[expect(
         clippy::expect_used,
-        reason = "if the key of the value can't be found when searching by value, with both in the map, something went \
-                  seriously wrong"
+        reason = "if the key of the value can't be found when searching by value, with both in the map, something went seriously \
+                  wrong"
     )]
     let enclosure_id = project
         .enclosures
@@ -202,16 +201,15 @@ pub fn render_enclosure(
                 project_type: "Equipment".to_owned(),
                 data_missing: "mount point".to_owned(),
             })?;
-            let equipment_mount_point =
-                enclosure
-                    .mount_points
-                    .get(&equipment_mount_point_id)
-                    .ok_or(ProjectError::DataMissing {
-                        id: enclosure_id.clone(),
-                        found_in: equipment_id.clone(),
-                        project_type: "Enclosure".to_owned(),
-                        data_missing: format!("mount_point with id {equipment_mount_point_id}").to_owned(),
-                    })?;
+            let equipment_mount_point = enclosure
+                .mount_points
+                .get(&equipment_mount_point_id)
+                .ok_or(ProjectError::DataMissing {
+                    id: enclosure_id.clone(),
+                    found_in: equipment_id.clone(),
+                    project_type: "Enclosure".to_owned(),
+                    data_missing: format!("mount_point with id {equipment_mount_point_id}").to_owned(),
+                })?;
             match equipment_mount_point {
                 MountPoint::CoordinatePair { x, y } => {
                     //pdf_page.add_svg(equipment_type.visual_rep().get_tree(), x.value, y.value,
@@ -909,10 +907,9 @@ pub fn render_enclosure(
 /// * `project` - the `Project` that contains this enclosure
 /// * `library` - the `Library` that contains reference data for this project
 /// * `enclosure` - the `Enclosure` that will be rendered as a PDF
-/// * `scale` - optional - specifies the scale of the rendered objects relative to their full size,
-///   represented as `a`:`b`. For example, 1:2 would double the size of the object on the page, relative to
-///   its actual size, and 2:1 would half the size of the object. This is equal scaling in both X and Y
-///   direction.
+/// * `scale` - optional - specifies the scale of the rendered objects relative to their full size, represented as
+///   `a`:`b`. For example, 1:2 would double the size of the object on the page, relative to its actual size, and
+///   2:1 would half the size of the object. This is equal scaling in both X and Y direction.
 /// * `pdf_page` - a particular page within a pdf that this enclosure will be rendered on.
 /// * `render_connections` - if connections with enclosure should be rendered.
 ///
@@ -949,8 +946,8 @@ pub fn render_enclosure_schematic_ladder(
     let page_height = pdf_page.page_size.size().1;
     #[expect(
         clippy::expect_used,
-        reason = "if the key of the value can't be found when searching by value, with both in the map, something went \
-                  seriously wrong"
+        reason = "if the key of the value can't be found when searching by value, with both in the map, something went seriously \
+                  wrong"
     )]
     let enclosure_id = project
         .enclosures
@@ -1038,16 +1035,15 @@ pub fn render_enclosure_schematic_ladder(
                 project_type: "Equipment".to_owned(),
                 data_missing: "mount point".to_owned(),
             })?;
-            let equipment_mount_point =
-                enclosure
-                    .mount_points
-                    .get(&equipment_mount_point_id)
-                    .ok_or(ProjectError::DataMissing {
-                        id: enclosure_id.clone(),
-                        found_in: equipment_id.clone(),
-                        project_type: "Enclosure".to_owned(),
-                        data_missing: format!("mount_point with id {equipment_mount_point_id}").to_owned(),
-                    })?;
+            let equipment_mount_point = enclosure
+                .mount_points
+                .get(&equipment_mount_point_id)
+                .ok_or(ProjectError::DataMissing {
+                    id: enclosure_id.clone(),
+                    found_in: equipment_id.clone(),
+                    project_type: "Enclosure".to_owned(),
+                    data_missing: format!("mount_point with id {equipment_mount_point_id}").to_owned(),
+                })?;
             match equipment_mount_point {
                 MountPoint::CoordinatePair { x, y } => {
                     //pdf_page.add_svg(equipment_type.visual_rep().get_tree(), x.value, y.value,
@@ -1745,10 +1741,9 @@ pub fn render_enclosure_schematic_ladder(
 /// * `project` - the `Project` that contains this enclosure
 /// * `library` - the `Library` that contains reference data for this project
 /// * `enclosure` - the `Enclosure` that will be rendered as a PDF
-/// * `scale` - optional - specifies the scale of the rendered objects relative to their full size,
-///   represented as `a`:`b`. For example, 1:2 would double the size of the object on the page, relative to
-///   its actual size, and 2:1 would half the size of the object. This is equal scaling in both X and Y
-///   direction.
+/// * `scale` - optional - specifies the scale of the rendered objects relative to their full size, represented as
+///   `a`:`b`. For example, 1:2 would double the size of the object on the page, relative to its actual size, and
+///   2:1 would half the size of the object. This is equal scaling in both X and Y direction.
 /// * `pdf_page` - a particular page within a pdf that this enclosure will be rendered on.
 /// * `render_connections` - if connections with enclosure should be rendered.
 ///
@@ -1765,12 +1760,7 @@ pub fn render_enclosure_schematic_ladder(
 #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
 #[expect(unused_variables, reason = "function not finished yet")]
 #[inline(never)]
-pub fn render_schematic_ladder(
-    project: &Project,
-    library: &Library,
-    page_size: PaperSize,
-    scale: Rational64,
-) -> Result<(), Error> {
+pub fn render_schematic_ladder(project: &Project, library: &Library, page_size: PaperSize, scale: Rational64) -> Result<(), Error> {
     //    // layout all equipment in location
     //
     //    if project.equipment.is_empty() {

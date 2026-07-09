@@ -98,67 +98,17 @@ impl CrossSectionalArea {
         //.as_str()
 
         format!("{string1:^21}|{string2:^21}\n{dash_string}|{dash_string}\n")
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_gigameter::singular(),
-                square_gigameter::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_megameter::singular(),
-                square_megameter::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_kilometer::singular(),
-                square_kilometer::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_hectometer::singular(),
-                square_hectometer::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_decameter::singular(),
-                square_decameter::abbreviation()
-            )
-            .as_str()
+            + format!("{:^21}|{:^21}\n", square_gigameter::singular(), square_gigameter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", square_megameter::singular(), square_megameter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", square_kilometer::singular(), square_kilometer::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", square_hectometer::singular(), square_hectometer::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", square_decameter::singular(), square_decameter::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", square_meter::singular(), square_meter::abbreviation()).as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_decimeter::singular(),
-                square_decimeter::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_centimeter::singular(),
-                square_centimeter::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_millimeter::singular(),
-                square_millimeter::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_micrometer::singular(),
-                square_micrometer::abbreviation()
-            )
-            .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                square_nanometer::singular(),
-                square_nanometer::abbreviation()
-            )
-            .as_str()
+            + format!("{:^21}|{:^21}\n", square_decimeter::singular(), square_decimeter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", square_centimeter::singular(), square_centimeter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", square_millimeter::singular(), square_millimeter::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", square_micrometer::singular(), square_micrometer::abbreviation()).as_str()
+            + format!("{:^21}|{:^21}\n", square_nanometer::singular(), square_nanometer::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", acre::singular(), acre::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", are::singular(), are::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", barn::singular(), barn::abbreviation()).as_str()
@@ -177,8 +127,7 @@ impl TryFrom<IntermediateUnit> for CrossSectionalArea {
     #[expect(
         clippy::too_many_lines,
         clippy::match_same_arms,
-        reason = "match same arms due to issues with underlying datatype for now, too many lines, thats the amount of units we \
-                  have"
+        reason = "match same arms due to issues with underlying datatype for now, too many lines, thats the amount of units we have"
     )]
     #[inline]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {

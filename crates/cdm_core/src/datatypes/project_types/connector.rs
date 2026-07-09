@@ -32,8 +32,8 @@ impl From<file_types::connector::Connector> for Connector {
 impl Connectorize for Connector {
     #[expect(
         clippy::unwrap_in_result,
-        reason = "if somehow this library is used on a 128 bit architecture, I want a panic so people bug me and I can \
-                  rearchitect the library to accomodate"
+        reason = "if somehow this library is used on a 128 bit architecture, I want a panic so people bug me and I can rearchitect \
+                  the library to accomodate"
     )]
     #[inline(never)]
     fn pin_count(&self, library: &Library) -> Result<u64, LibraryError> {

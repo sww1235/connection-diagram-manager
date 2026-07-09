@@ -64,12 +64,7 @@ impl Length {
                 atomic_unit_of_length::abbreviation()
             )
             .as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                astronomical_unit::singular(),
-                astronomical_unit::abbreviation()
-            )
-            .as_str()
+            + format!("{:^21}|{:^21}\n", astronomical_unit::singular(), astronomical_unit::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", chain::singular(), chain::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", fathom::singular(), fathom::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", foot::singular(), foot::abbreviation()).as_str()
@@ -98,8 +93,7 @@ impl TryFrom<IntermediateUnit> for Length {
     #[expect(
         clippy::too_many_lines,
         clippy::match_same_arms,
-        reason = "match same arms due to issues with underlying datatype for now, too many lines, thats the amount of units we \
-                  have"
+        reason = "match same arms due to issues with underlying datatype for now, too many lines, thats the amount of units we have"
     )]
     #[inline]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {

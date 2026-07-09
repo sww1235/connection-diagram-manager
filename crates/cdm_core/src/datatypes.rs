@@ -66,10 +66,7 @@ pub fn parse_datafiles(cli: &Cli) -> Result<(ProjectConfig, Library, Project), E
         if !project_directory.is_dir() {
             return Err(io::Error::new(
                 ErrorKind::NotADirectory,
-                format!(
-                    "Project directory specified: {} is not a directory",
-                    project_directory.display()
-                ),
+                format!("Project directory specified: {} is not a directory", project_directory.display()),
             )
             .into());
         }
@@ -159,8 +156,7 @@ pub fn parse_datafiles(cli: &Cli) -> Result<(ProjectConfig, Library, Project), E
         Ok((project_config, library_data, project_data))
     } else {
         Err(io::Error::other(
-            "Project Directory not specified when it should have been. This should be impossible if Clap's logic is working \
-             correctly",
+            "Project Directory not specified when it should have been. This should be impossible if Clap's logic is working correctly",
         )
         .into())
     }

@@ -185,14 +185,11 @@ impl Cable {
         super_id: Option<&str>,
     ) -> Result<(), LibraryError> {
         for (id, ref_core) in reference_cores {
-            let core_type = library
-                .cable_types
-                .get(&ref_core.type_id)
-                .ok_or(LibraryError::ValueNotFound {
-                    id: ref_core.type_id.clone(),
-                    found_in: format!("cable instance {}", self.identifier).to_owned(),
-                    library_type: "Cable Type".to_owned(),
-                })?;
+            let core_type = library.cable_types.get(&ref_core.type_id).ok_or(LibraryError::ValueNotFound {
+                id: ref_core.type_id.clone(),
+                found_in: format!("cable instance {}", self.identifier).to_owned(),
+                library_type: "Cable Type".to_owned(),
+            })?;
 
             let core_id = format! {"{}.{id}", super_id.unwrap_or_default()};
             // migrate to trim_prefix() once stablized

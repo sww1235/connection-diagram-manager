@@ -229,10 +229,7 @@ fn validate_and_update_svg(svg: &mut Svg) -> Result<(), Error> {
                             // I don't like that I can't chain these two into one method
                             // call chain
                             let temp = attr.value.replace(',', " ");
-                            let values: Vec<f32> = temp
-                                .split_whitespace()
-                                .map(|num| f32::from_str(num).unwrap_or(f32::NAN))
-                                .collect();
+                            let values: Vec<f32> = temp.split_whitespace().map(|num| f32::from_str(num).unwrap_or(f32::NAN)).collect();
                             if values.len() > 4 {
                                 return Err(SVGValidationError::InvalidViewPort(
                                     "viewPort contained more than 4 sub-attributes".to_owned(),
@@ -246,9 +243,7 @@ fn validate_and_update_svg(svg: &mut Svg) -> Result<(), Error> {
                             //
                             // Require viewport to start from top left
                             if values[0] != 0.0_f32 || values[1] != 0.0_f32 {
-                                return Err(
-                                    SVGValidationError::InvalidViewPort("viewPort does not start at 0 0".to_owned()).into(),
-                                );
+                                return Err(SVGValidationError::InvalidViewPort("viewPort does not start at 0 0".to_owned()).into());
                             }
                             svg.original_width = Some(values[2]);
                             svg.original_height = Some(values[3]);

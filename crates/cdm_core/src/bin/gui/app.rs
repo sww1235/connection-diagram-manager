@@ -107,8 +107,7 @@ impl mq::EventHandler for App {
         // red, green, blue, alpha, depth, stencil
         // TODO: test if I need this call
         self.mq_ctx.clear(Some((1.0, 1.0, 1.0, 1.0)), None, None);
-        self.mq_ctx
-            .begin_default_pass(mq::PassAction::clear_color(0.0, 0.0, 0.0, 1.0));
+        self.mq_ctx.begin_default_pass(mq::PassAction::clear_color(0.0, 0.0, 0.0, 1.0));
         self.mq_ctx.end_render_pass();
         let dpi_scale = mqWindow::dpi_scale();
 
@@ -139,13 +138,7 @@ impl mq::EventHandler for App {
 
             egui_extras::install_image_loaders(egui_ctx);
             // Load main window
-            main_window::main_window(
-                egui_ctx,
-                &self.config,
-                &mut self.state,
-                &mut self.project_data,
-                &self.library_data,
-            );
+            main_window::main_window(egui_ctx, &self.config, &mut self.state, &mut self.project_data, &self.library_data);
             // This is the close button of the main window being clicked (.open())
             //
             // true when window open

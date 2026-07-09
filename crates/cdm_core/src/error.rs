@@ -111,8 +111,8 @@ pub enum LibraryError {
     /// This error is used when optional data is missing from library data when required for a
     /// certain operation in the program.
     #[error(
-        "The Library entry of type <{library_type}> with ID <{id}> specified in <{found_in}> requires the following data to \
-         peform the operation requested: {data_missing}"
+        "The Library entry of type <{library_type}> with ID <{id}> specified in <{found_in}> requires the following data to peform \
+         the operation requested: {data_missing}"
     )]
     DataMissing {
         /// The ID of the the `Library` entry.
@@ -172,8 +172,8 @@ pub enum ProjectError {
     /// This error is used when optional data is missing from project data when required for a
     /// certain operation in the program.
     #[error(
-        "The Project entry of type {project_type} with ID {id} specified in <{found_in}> requires the following data to peform \
-         the operation requested: {data_missing}"
+        "The Project entry of type {project_type} with ID {id} specified in <{found_in}> requires the following data to peform the \
+         operation requested: {data_missing}"
     )]
     DataMissing {
         /// The ID of the the `Project` entry.

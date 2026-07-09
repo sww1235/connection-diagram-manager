@@ -51,9 +51,7 @@ fn main() -> anyhow::Result<()> {
         reason = "This function should never error, no Err() return in function currently"
     )]
     #[expect(clippy::unwrap_in_result, reason = "The expect should never trigger currently")]
-    let project_validation = project_data
-        .validate(&library_data)
-        .expect("This function should never error");
+    let project_validation = project_data.validate(&library_data).expect("This function should never error");
     if !project_validation.is_empty() {
         let project_validation_string: String = project_validation.iter().format("\n").to_string();
         anyhow::bail!(project_validation_string);

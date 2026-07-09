@@ -73,10 +73,7 @@ impl MountingRail {
     /// # Errors
     ///
     /// Will error if `mounting_rail_type` not found in library.
-    #[expect(
-        clippy::format_push_string,
-        reason = "not worried about the additional allocation in this case."
-    )]
+    #[expect(clippy::format_push_string, reason = "not worried about the additional allocation in this case.")]
     #[inline(never)]
     #[expect(clippy::result_large_err, reason = "Don't want to have to split up error::Error ")]
     #[expect(

@@ -142,7 +142,9 @@ pub(crate) fn main_window(
                                     ui.output_mut(|output| output.cursor_icon = CursorIcon::PointingHand);
                                 }
                                 if response.dragged() {
-                                    // This should be CursorIcon::Grabbing but it is not implemented yet. See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
+                                    // This should be CursorIcon::Grabbing but it is not implemented yet.
+                                    // See https://github.com/not-fl3/miniquad/issues/171#issuecomment-773394249
+
                                     ui.output_mut(|output| output.cursor_icon = CursorIcon::Move);
                                     trace!("connector for wire {id} dragged");
 

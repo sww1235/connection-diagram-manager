@@ -86,11 +86,7 @@ impl Library {
             test_map.terminal_strip_jumper_types,
             test_file,
         )?;
-        util_functions::merge_btreemaps(
-            &mut self.terminal_accessory_types,
-            test_map.terminal_accessory_types,
-            test_file,
-        )?;
+        util_functions::merge_btreemaps(&mut self.terminal_accessory_types, test_map.terminal_accessory_types, test_file)?;
         util_functions::merge_btreemaps(
             &mut self.terminal_strip_accessory_types,
             test_map.terminal_strip_accessory_types,
@@ -671,10 +667,7 @@ mod tests {
             }],
             cores: {
                 let mut cores = BTreeMap::new();
-                cores.insert(
-                    "flamingo".to_string(),
-                    CableCore::WireType("soow14_flamingo_inner".to_string()),
-                );
+                cores.insert("flamingo".to_string(), CableCore::WireType("soow14_flamingo_inner".to_string()));
                 cores
             },
             cable_type_code: None,
@@ -793,10 +786,7 @@ mod tests {
             ],
             cores: {
                 let mut cores = BTreeMap::new();
-                cores.insert(
-                    "inner".to_string(),
-                    CableCore::WireType("triax_15awg_copper_inner".to_string()),
-                );
+                cores.insert("inner".to_string(), CableCore::WireType("triax_15awg_copper_inner".to_string()));
                 cores
             },
             cable_type_code: Some("RG11".to_string()),
@@ -1074,10 +1064,7 @@ mod tests {
                     "black".to_string(),
                     CableCore::WireType("belden_638AFJ_18AWG_black_inner".to_string()),
                 );
-                cores.insert(
-                    "red".to_string(),
-                    CableCore::WireType("belden_638AFJ_18AWG_red_inner".to_string()),
-                );
+                cores.insert("red".to_string(), CableCore::WireType("belden_638AFJ_18AWG_red_inner".to_string()));
                 cores.insert(
                     "white".to_string(),
                     CableCore::WireType("belden_638AFJ_18AWG_white_inner".to_string()),
@@ -1152,10 +1139,7 @@ mod tests {
                     "black".to_string(),
                     CableCore::WireType("belden_638AFJ_18AWG_black_inner".to_string()),
                 );
-                cores.insert(
-                    "red".to_string(),
-                    CableCore::WireType("belden_638AFJ_18AWG_red_inner".to_string()),
-                );
+                cores.insert("red".to_string(), CableCore::WireType("belden_638AFJ_18AWG_red_inner".to_string()));
                 cores
             },
             dimensions: Some(Dimension {
@@ -1215,10 +1199,7 @@ mod tests {
                     "black".to_string(),
                     CableCore::WireType("belden_638AFJ_18AWG_black_inner".to_string()),
                 );
-                cores.insert(
-                    "red".to_string(),
-                    CableCore::WireType("belden_638AFJ_18AWG_red_inner".to_string()),
-                );
+                cores.insert("red".to_string(), CableCore::WireType("belden_638AFJ_18AWG_red_inner".to_string()));
                 cores.insert(
                     "white".to_string(),
                     CableCore::WireType("belden_638AFJ_18AWG_white_inner".to_string()),
@@ -1286,10 +1267,7 @@ mod tests {
                     "black".to_string(),
                     CableCore::WireType("belden_638AFJ_16AWG_black_inner".to_string()),
                 );
-                cores.insert(
-                    "red".to_string(),
-                    CableCore::WireType("belden_638AFJ_16AWG_red_inner".to_string()),
-                );
+                cores.insert("red".to_string(), CableCore::WireType("belden_638AFJ_16AWG_red_inner".to_string()));
                 cores.insert(
                     "white".to_string(),
                     CableCore::WireType("belden_638AFJ_16AWG_white_inner".to_string()),
@@ -1597,10 +1575,7 @@ mod tests {
                     "belden_638AFJ_card_reader_3_pair_inner".to_string(),
                     belden_638AFJ_card_reader_3_pair_inner,
                 );
-                cable_types.insert(
-                    "belden_638AFJ_door_contact_inner".to_string(),
-                    belden_638AFJ_door_contact_inner,
-                );
+                cable_types.insert("belden_638AFJ_door_contact_inner".to_string(), belden_638AFJ_door_contact_inner);
                 cable_types.insert("belden_638AFJ_rex_inner".to_string(), belden_638AFJ_rex_inner);
                 cable_types.insert("belden_638AFJ_lock_power_inner".to_string(), belden_638AFJ_lock_power_inner);
                 cable_types
@@ -1623,10 +1598,7 @@ mod tests {
                 wire_types.insert("belden_638AFJ_18AWG_white_inner".to_string(), belden_638AFJ_18AWG_white_inner);
                 wire_types.insert("belden_638AFJ_18AWG_green_inner".to_string(), belden_638AFJ_18AWG_green_inner);
                 wire_types.insert("belden_638AFJ_18AWG_brown_inner".to_string(), belden_638AFJ_18AWG_brown_inner);
-                wire_types.insert(
-                    "belden_638AFJ_18AWG_orange_inner".to_string(),
-                    belden_638AFJ_18AWG_orange_inner,
-                );
+                wire_types.insert("belden_638AFJ_18AWG_orange_inner".to_string(), belden_638AFJ_18AWG_orange_inner);
 
                 wire_types.insert("belden_638AFJ_16AWG_black_inner".to_string(), belden_638AFJ_16AWG_black_inner);
                 wire_types.insert("belden_638AFJ_16AWG_red_inner".to_string(), belden_638AFJ_16AWG_red_inner);
@@ -1741,30 +1713,15 @@ mod tests {
             }],
             cores: {
                 let mut cores = BTreeMap::new();
-                cores.insert(
-                    "1oclock".to_string(),
-                    CableCore::WireType("corning_filling_element".to_string()),
-                );
+                cores.insert("1oclock".to_string(), CableCore::WireType("corning_filling_element".to_string()));
                 cores.insert(
                     "3oclock".to_string(),
                     CableCore::CableType("corning_12_strand_buffer_tube".to_string()),
                 );
-                cores.insert(
-                    "5oclock".to_string(),
-                    CableCore::WireType("corning_filling_element".to_string()),
-                );
-                cores.insert(
-                    "7oclock".to_string(),
-                    CableCore::WireType("corning_filling_element".to_string()),
-                );
-                cores.insert(
-                    "9oclock".to_string(),
-                    CableCore::WireType("corning_filling_element".to_string()),
-                );
-                cores.insert(
-                    "11oclock".to_string(),
-                    CableCore::WireType("corning_filling_element".to_string()),
-                );
+                cores.insert("5oclock".to_string(), CableCore::WireType("corning_filling_element".to_string()));
+                cores.insert("7oclock".to_string(), CableCore::WireType("corning_filling_element".to_string()));
+                cores.insert("9oclock".to_string(), CableCore::WireType("corning_filling_element".to_string()));
+                cores.insert("11oclock".to_string(), CableCore::WireType("corning_filling_element".to_string()));
                 cores.insert(
                     "central_element".to_string(),
                     CableCore::WireType("corning_dialectric_central_member".to_string()),
@@ -1796,10 +1753,7 @@ mod tests {
             }],
             cores: {
                 let mut cores = BTreeMap::new();
-                cores.insert(
-                    "blue".to_string(),
-                    CableCore::WireType("corning_os2_fiber_strand_blue".to_string()),
-                );
+                cores.insert("blue".to_string(), CableCore::WireType("corning_os2_fiber_strand_blue".to_string()));
                 cores.insert(
                     "orange".to_string(),
                     CableCore::WireType("corning_os2_fiber_strand_orange".to_string()),
@@ -1820,10 +1774,7 @@ mod tests {
                     "white".to_string(),
                     CableCore::WireType("corning_os2_fiber_strand_white".to_string()),
                 );
-                cores.insert(
-                    "red".to_string(),
-                    CableCore::WireType("corning_os2_fiber_strand_red".to_string()),
-                );
+                cores.insert("red".to_string(), CableCore::WireType("corning_os2_fiber_strand_red".to_string()));
                 cores.insert(
                     "black".to_string(),
                     CableCore::WireType("corning_os2_fiber_strand_black".to_string()),
@@ -1836,14 +1787,8 @@ mod tests {
                     "violet".to_string(),
                     CableCore::WireType("corning_os2_fiber_strand_violet".to_string()),
                 );
-                cores.insert(
-                    "rose".to_string(),
-                    CableCore::WireType("corning_os2_fiber_strand_rose".to_string()),
-                );
-                cores.insert(
-                    "aqua".to_string(),
-                    CableCore::WireType("corning_os2_fiber_strand_aqua".to_string()),
-                );
+                cores.insert("rose".to_string(), CableCore::WireType("corning_os2_fiber_strand_rose".to_string()));
+                cores.insert("aqua".to_string(), CableCore::WireType("corning_os2_fiber_strand_aqua".to_string()));
                 cores
             },
             dimensions: None,
@@ -2229,10 +2174,7 @@ mod tests {
             cable_types: {
                 let mut cable_types = BTreeMap::new();
                 cable_types.insert("fig8_fiber".to_string(), fig8_fiber);
-                cable_types.insert(
-                    "corning_altos_os2_12_strand_fiber".to_string(),
-                    corning_altos_os2_12_strand_fiber,
-                );
+                cable_types.insert("corning_altos_os2_12_strand_fiber".to_string(), corning_altos_os2_12_strand_fiber);
                 cable_types.insert("corning_12_strand_buffer_tube".to_string(), corning_12_strand_buffer_tube);
                 cable_types
             },
@@ -2263,10 +2205,7 @@ mod tests {
                 wire_types.insert("corning_os2_fiber_strand_aqua".to_string(), corning_os2_fiber_strand_aqua);
                 wire_types.insert("corning_steel_messenger_025".to_string(), corning_steel_messenger);
                 wire_types.insert("corning_filling_element".to_string(), corning_filling_element);
-                wire_types.insert(
-                    "corning_dialectric_central_member".to_string(),
-                    corning_dialectric_central_member,
-                );
+                wire_types.insert("corning_dialectric_central_member".to_string(), corning_dialectric_central_member);
 
                 wire_types
             },
@@ -2393,10 +2332,7 @@ mod tests {
             ],
             cores: {
                 let mut cores = BTreeMap::new();
-                cores.insert(
-                    "inner".to_string(),
-                    CableCore::WireType("triax_15awg_copper_inner".to_string()),
-                );
+                cores.insert("inner".to_string(), CableCore::WireType("triax_15awg_copper_inner".to_string()));
                 cores
             },
             cable_type_code: Some("RG11".to_string()),

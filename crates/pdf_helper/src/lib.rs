@@ -114,13 +114,12 @@ impl PDFPage {
     ///
     /// * `text`: the text that will be added to the pdf page
     /// * `font`: a `PDFFont` object representing a font defined for use in a PDF document
-    /// * `font_size`: Font size specified in points. This is used internally as a multiple of the standard
-    ///   PDF user space unit size 1/72 inch
+    /// * `font_size`: Font size specified in points. This is used internally as a multiple of the standard PDF
+    ///   user space unit size 1/72 inch
     /// * `line_spacing`: text line spacing in multiples of line height
-    /// * `text width`: An optional parameter that defines the width of the text element. If `None`, the width
-    ///   of the page minus the margins is used.
-    /// * `x_pos`: horizontal starting position of text insertion, with 0 on left side of page inside the
-    ///   margin
+    /// * `text width`: An optional parameter that defines the width of the text element. If `None`, the width of
+    ///   the page minus the margins is used.
+    /// * `x_pos`: horizontal starting position of text insertion, with 0 on left side of page inside the margin
     /// * `y_pos`: vertical starting position of text insertion, with 0 on the bottom side of page, inside the
     ///   margin
     ///
@@ -151,10 +150,7 @@ impl PDFPage {
 
         if x_pos > current_page_size.0 || x_pos < Length::zero() || y_pos > current_page_size.1 || y_pos < Length::zero() {
             return Err(Error::Other(format!(
-                concat!(
-                    "Position of text X: {}, Y: {}, ",
-                    "is outside page boundaries. Please fix this"
-                ),
+                concat!("Position of text X: {}, Y: {}, ", "is outside page boundaries. Please fix this"),
                 //TODO: allow user to configure default units
                 x_pos.get::<millimeter>(),
                 y_pos.get::<millimeter>(),
@@ -222,16 +218,14 @@ impl PDFPage {
         ));
 
         // sets rendering mode of text
-        self.operations
-            .push(Operation::new("Tr", vec![text_render_mode.value().into()]));
+        self.operations.push(Operation::new("Tr", vec![text_render_mode.value().into()]));
 
         if num_lines == 1 {
             // Tj prints a string literal to the page.
             self.operations.push(Operation::new("Tj", vec![Object::string_literal(text)]));
         } else {
             // set leading / line gap
-            self.operations
-                .push(Operation::new("TL", vec![font.font_face.line_gap().into()]));
+            self.operations.push(Operation::new("TL", vec![font.font_face.line_gap().into()]));
             // push first line
             self.operations
                 .push(Operation::new("Tj", vec![Object::string_literal(lines[1].as_str())]));
@@ -359,7 +353,10 @@ fn convert_path(path: &usvg::Path, x_pos: Length, y_pos: Length, scale: Rational
                 // append a straight line segment from current point to the point (x,y).
                 new_operations.push(Operation::new("l", vec![scaled_p.x.into(), scaled_p.y.into()]));
             }
-            // https://web.archive.org/web/20240625010856/https://www.reddit.com/r/AskComputerScience/comments/x0rrd2/does_applying_a_transformation_to_the_control/?rdt=60310
+            // https://web.archive.org/web/20240625010856/
+            // https://www.reddit.com/r/AskComputerScience/
+            // comments/x0rrd2/does_applying_a_transformation_to_the_control/?rdt=60310
+            //
             // Scaling control points is ok, because the control points define the curve
             // p0 is control point, p1 is end point
             PathSegment::QuadTo(p0, p1) => {
@@ -380,18 +377,11 @@ fn convert_path(path: &usvg::Path, x_pos: Length, y_pos: Length, scale: Rational
 
                 // begining control point
                 #[expect(clippy::arithmetic_side_effects)]
-                let cp1 = last_point
-                    + Point::from_xy(
-                        (2.0 / 3.0) * (scaled_p0 - last_point).x,
-                        (2.0 / 3.0) * (scaled_p0 - last_point).y,
-                    );
+                let cp1 =
+                    last_point + Point::from_xy((2.0 / 3.0) * (scaled_p0 - last_point).x, (2.0 / 3.0) * (scaled_p0 - last_point).y);
                 // end control point
                 #[expect(clippy::arithmetic_side_effects)]
-                let cp2 = scaled_p1
-                    + Point::from_xy(
-                        (2.0 / 3.0) * (scaled_p0 - scaled_p1).x,
-                        (2.0 / 3.0) * (scaled_p0 - scaled_p1).y,
-                    );
+                let cp2 = scaled_p1 + Point::from_xy((2.0 / 3.0) * (scaled_p0 - scaled_p1).x, (2.0 / 3.0) * (scaled_p0 - scaled_p1).y);
                 last_point = scaled_p1;
                 // append a cubic bezier curve to current path.
                 // Last 2 points are end point,
@@ -518,8 +508,7 @@ impl<'a> PDFDocument<'a> {
         //TODO: maybe error out if font_file is a collection
         let face_index = font_index.unwrap_or(0);
 
-        let font_face =
-            Face::from_slice(font_data_owned, face_index).ok_or(Error::FontLoading("font failed to parse".to_string()))?;
+        let font_face = Face::from_slice(font_data_owned, face_index).ok_or(Error::FontLoading("font failed to parse".to_string()))?;
 
         // 0 indexed, 4 is the table row that contains the full name of the font
         // https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6name.html
@@ -862,8 +851,8 @@ pub enum Error {
     Other(String),
 }
 
-impl std::fmt::Display for Error {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             Error::ParagraphBreaking(ref e) => write!(f, "Line Breaking failed: {e}"),
             Error::FontLoading(ref e) => write!(f, "Font Loading: {e}"),

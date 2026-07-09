@@ -57,12 +57,7 @@ impl TemperatureInterval {
             + format!("{:^21}|{:^21}\n", femtokelvin::singular(), femtokelvin::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", attokelvin::singular(), attokelvin::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", degree_celsius::singular(), degree_celsius::abbreviation()).as_str()
-            + format!(
-                "{:^21}|{:^21}\n",
-                degree_fahrenheit::singular(),
-                degree_fahrenheit::abbreviation()
-            )
-            .as_str()
+            + format!("{:^21}|{:^21}\n", degree_fahrenheit::singular(), degree_fahrenheit::abbreviation()).as_str()
             + format!("{:^21}|{:^21}\n", degree_rankine::singular(), degree_rankine::abbreviation()).as_str()
     }
 }
@@ -73,8 +68,7 @@ impl TryFrom<IntermediateUnit> for TemperatureInterval {
     #[expect(
         clippy::too_many_lines,
         clippy::match_same_arms,
-        reason = "match same arms due to issues with underlying datatype for now, too many lines, thats the amount of units we \
-                  have"
+        reason = "match same arms due to issues with underlying datatype for now, too many lines, thats the amount of units we have"
     )]
     #[inline]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {

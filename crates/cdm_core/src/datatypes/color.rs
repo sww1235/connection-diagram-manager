@@ -148,14 +148,7 @@ impl From<Color> for Color32 {
             Color::White => Self::WHITE,
             Color::Cyan | Color::Aqua => Self::CYAN,
             Color::Transparent => Self::TRANSPARENT,
-            Color::Violet
-            | Color::Pink
-            | Color::Rose
-            | Color::DarkBrown
-            | Color::Gray
-            | Color::Grey
-            | Color::Slate
-            | Color::Clear => {
+            Color::Violet | Color::Pink | Color::Rose | Color::DarkBrown | Color::Gray | Color::Grey | Color::Slate | Color::Clear => {
                 let (red, green, blue, alpha) = value.to_rgba();
                 Self::from_rgba_unmultiplied(red, green, blue, alpha)
             }

@@ -213,10 +213,7 @@ impl Project {
         }
         // Mounting Rails
         for (id, mounting_rail) in &self.mounting_rails {
-            if !library_data
-                .mounting_rail_types
-                .contains_key(&mounting_rail.mounting_rail_type)
-            {
+            if !library_data.mounting_rail_types.contains_key(&mounting_rail.mounting_rail_type) {
                 errors.push(
                     LibraryError::ValueNotFound {
                         id: mounting_rail.mounting_rail_type.clone(),
@@ -350,10 +347,7 @@ impl Project {
                         .connections
                         .insert(key, EndDesignation::End1);
                 }
-                End::TerminalStrip {
-                    term_strip_id,
-                    element_id,
-                } => {
+                End::TerminalStrip { term_strip_id, element_id } => {
                     todo!()
                 }
             }
@@ -372,10 +366,7 @@ impl Project {
                         .connections
                         .insert(key, EndDesignation::End2);
                 }
-                End::TerminalStrip {
-                    term_strip_id,
-                    element_id,
-                } => {
+                End::TerminalStrip { term_strip_id, element_id } => {
                     todo!()
                 }
             }

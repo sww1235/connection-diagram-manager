@@ -59,10 +59,7 @@ pub fn read_config_files_cli() -> Result<(ApplicationConfig, Cli), Error> {
     let app_config: ApplicationConfig = Figment::new()
         .merge(Serialized::defaults(ApplicationConfig::default()))
         .merge(Toml::file(
-            home_dir
-                .join(".config")
-                .join("ConnectionDiagramManager")
-                .join(app_config_filename),
+            home_dir.join(".config").join("ConnectionDiagramManager").join(app_config_filename),
         ))
         .merge(Toml::file(
             home_dir

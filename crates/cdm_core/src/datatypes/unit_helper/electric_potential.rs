@@ -64,10 +64,7 @@ impl ElectricPotential {
 //TODO: return a different error if the unit is of the wrong type rather than just unknown unit
 impl TryFrom<IntermediateUnit> for ElectricPotential {
     type Error = UnitParsingError;
-    #[expect(
-        clippy::match_same_arms,
-        reason = "match same arms due to issues with underlying datatype for now"
-    )]
+    #[expect(clippy::match_same_arms, reason = "match same arms due to issues with underlying datatype for now")]
     #[inline]
     fn try_from(item: IntermediateUnit) -> Result<Self, Self::Error> {
         match item.original_unit.as_str() {

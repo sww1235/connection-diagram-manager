@@ -163,8 +163,7 @@ impl Equipment {
                             panic!("update_connection_directions_from_symbol(): core {core_id} not found in {cable_id}")
                         });
 
-                        core.connector_mut()
-                            .set_end1_connection_directions(&allowed_connection_directions);
+                        core.connector_mut().set_end1_connection_directions(&allowed_connection_directions);
                     }
                     InnerConnection::TermCable { cable_id, core_id } => {
                         //TODO
@@ -189,8 +188,7 @@ impl Equipment {
                             panic!("update_connection_directions_from_symbol(): core {core_id} not found in {cable_id}")
                         });
 
-                        core.connector_mut()
-                            .set_end2_connection_directions(&allowed_connection_directions);
+                        core.connector_mut().set_end2_connection_directions(&allowed_connection_directions);
                     }
                     InnerConnection::TermCable { cable_id, core_id } => {
                         //TODO
@@ -328,9 +326,7 @@ impl SchematicRepresentation for Equipment {
             match event {
                 #[expect(clippy::ref_patterns, reason = "can't get this to work otherwise")]
                 ReaderEvent::StartElement {
-                    ref name,
-                    ref attributes,
-                    ..
+                    ref name, ref attributes, ..
                 } => {
                     trace! {"StartElement name: {}", name.local_name};
 
@@ -355,8 +351,7 @@ impl SchematicRepresentation for Equipment {
                             //https://stackoverflow.com/a/37700229
                             //
                             // Checking for duplicate attributes on text element
-                            let unique_attributes: HashSet<_> =
-                                attributes.iter().map(|attr| attr.name.local_name.as_str()).collect();
+                            let unique_attributes: HashSet<_> = attributes.iter().map(|attr| attr.name.local_name.as_str()).collect();
 
                             if unique_attributes.len() < attributes.len() {
                                 //TODO: return list of duplicate attributes here as well
@@ -393,9 +388,10 @@ impl SchematicRepresentation for Equipment {
                                     }
                                     "data-manufacturer" => {
                                         let character_event = WriterEvent::Characters(
-                                            &equipment_type.catalog.as_ref().map_or(String::new(), |catalog| {
-                                                catalog.manufacturer.clone().unwrap_or_default()
-                                            }),
+                                            &equipment_type
+                                                .catalog
+                                                .as_ref()
+                                                .map_or(String::new(), |catalog| catalog.manufacturer.clone().unwrap_or_default()),
                                         );
                                         writer.write(character_event)?;
                                     }
@@ -409,8 +405,7 @@ impl SchematicRepresentation for Equipment {
                                         writer.write(character_event)?;
                                     }
                                     "data-description" => {
-                                        let character_event =
-                                            WriterEvent::Characters(&self.description.clone().unwrap_or_default());
+                                        let character_event = WriterEvent::Characters(&self.description.clone().unwrap_or_default());
                                         writer.write(character_event)?;
                                     }
                                     "data-installation" => {
@@ -453,14 +448,16 @@ impl SchematicRepresentation for Equipment {
                                                     reason = "this condition should be impossible within this application."
                                                 )]
                                                 let connection = project.connections.get(connection_key).expect(
-                                                    "Connection_key not found in slotmap of connections. This should be \
-                                                     impossible.",
+                                                    "Connection_key not found in slotmap of connections. This should be impossible.",
                                                 );
                                                 //TODO: not sure if which_end is needed here any
                                                 //more
                                                 match which_end {
                                                     EndDesignation::End1 => {
-                                                        trace! {"Connection_Point_ID: {connection_point_id_inner} -- Connection Key: {connection_key:?} -- {which_end:?}"};
+                                                        trace! {
+                                                            "Connection_Point_ID: {connection_point_id_inner} -- \
+                                                            Connection Key: {connection_key:?} -- {which_end:?}"
+                                                        };
                                                         //TODO: not sure if we need to validate
                                                         //equipment_id here as well.
                                                         if let End::Equipment {
@@ -470,10 +467,7 @@ impl SchematicRepresentation for Equipment {
                                                             && equip_connection_point_id == connection_point_id_inner
                                                         {
                                                             match &connection.connection {
-                                                                #[expect(
-                                                                    clippy::expect_used,
-                                                                    reason = "critical validation failure"
-                                                                )]
+                                                                #[expect(clippy::expect_used, reason = "critical validation failure")]
                                                                 InnerConnection::Cable { cable_id, core_id } => {
                                                                     trace!("{cable_id} -- {core_id}");
                                                                     //trace!(
@@ -484,8 +478,8 @@ impl SchematicRepresentation for Equipment {
                                                                     //    )
                                                                     //);
                                                                     let cable = &project.cables.get(cable_id).expect(
-                                                                        "The presence of cable_id in project.cables should \
-                                                                         already be validated by previous program logic",
+                                                                        "The presence of cable_id in project.cables should already \
+                                                                         be validated by previous program logic",
                                                                     );
                                                                     if identifier != String::new() {
                                                                         warn! {"connection identifier already set to {identifier}"}
@@ -507,7 +501,10 @@ impl SchematicRepresentation for Equipment {
                                                     EndDesignation::End2 => {
                                                         //TODO: not sure if we need to validate
                                                         //equipment_id here as well.
-                                                        trace! {"Connection_Point_ID: {connection_point_id_inner} -- Connection Key: {connection_key:?} -- {which_end:?}"};
+                                                        trace! {
+                                                            "Connection_Point_ID: {connection_point_id_inner} -- \
+                                                            Connection Key: {connection_key:?} -- {which_end:?}"
+                                                        };
                                                         if let End::Equipment {
                                                             connection_point_id: equip_connection_point_id,
                                                             ..
@@ -515,15 +512,12 @@ impl SchematicRepresentation for Equipment {
                                                             && equip_connection_point_id == connection_point_id_inner
                                                         {
                                                             match &connection.connection {
-                                                                #[expect(
-                                                                    clippy::expect_used,
-                                                                    reason = "critical validation failure"
-                                                                )]
+                                                                #[expect(clippy::expect_used, reason = "critical validation failure")]
                                                                 InnerConnection::Cable { cable_id, core_id } => {
                                                                     trace!("{cable_id} -- {core_id}");
                                                                     let cable = &project.cables.get(cable_id).expect(
-                                                                        "The presence of cable_id in project.cables should \
-                                                                         already be validated by previous program logic",
+                                                                        "The presence of cable_id in project.cables should already \
+                                                                         be validated by previous program logic",
                                                                     );
                                                                     if identifier != String::new() {
                                                                         warn! {"connection identifier already set to {identifier}"}
@@ -562,8 +556,7 @@ impl SchematicRepresentation for Equipment {
                                                     reason = "this condition should be impossible within this application."
                                                 )]
                                                 let connection = project.connections.get(connection_key).expect(
-                                                    "Connection_key not found in slotmap of connections. This should be \
-                                                     impossible.",
+                                                    "Connection_key not found in slotmap of connections. This should be impossible.",
                                                 );
                                                 match which_end {
                                                     EndDesignation::End1 => {
@@ -574,10 +567,7 @@ impl SchematicRepresentation for Equipment {
                                                             ..
                                                         } = &connection.end1
                                                             && equip_connection_point_id == connection_point_id_inner
-                                                            && let End::TerminalStrip {
-                                                                term_strip_id,
-                                                                element_id,
-                                                            } = &connection.end2
+                                                            && let End::TerminalStrip { term_strip_id, element_id } = &connection.end2
                                                         {
                                                             identifier = format! {"{term_strip_id}.{element_id}"};
                                                         }
@@ -590,10 +580,7 @@ impl SchematicRepresentation for Equipment {
                                                             ..
                                                         } = &connection.end2
                                                             && equip_connection_point_id == connection_point_id_inner
-                                                            && let End::TerminalStrip {
-                                                                term_strip_id,
-                                                                element_id,
-                                                            } = &connection.end1
+                                                            && let End::TerminalStrip { term_strip_id, element_id } = &connection.end1
                                                         {
                                                             identifier = format! {"{term_strip_id}.{element_id}"};
                                                         }
@@ -628,10 +615,9 @@ impl SchematicRepresentation for Equipment {
                                         }
                                         "data-connection-point-type" => {
                                             if attr.value.is_empty() {
-                                                return Err(SVGValidationError::BlankAttributeValue(
-                                                    attr.name.local_name.clone(),
-                                                )
-                                                .into());
+                                                return Err(
+                                                    SVGValidationError::BlankAttributeValue(attr.name.local_name.clone()).into()
+                                                );
                                             }
                                             match attr.value.as_str() {
                                                 "left" => {
@@ -666,10 +652,9 @@ impl SchematicRepresentation for Equipment {
 
                                         "cx" => {
                                             if attr.value.is_empty() {
-                                                return Err(SVGValidationError::BlankAttributeValue(
-                                                    attr.name.local_name.clone(),
-                                                )
-                                                .into());
+                                                return Err(
+                                                    SVGValidationError::BlankAttributeValue(attr.name.local_name.clone()).into()
+                                                );
                                             }
 
                                             if !attr.value.ends_with('%') {
@@ -682,10 +667,9 @@ impl SchematicRepresentation for Equipment {
                                         }
                                         "cy" => {
                                             if attr.value.is_empty() {
-                                                return Err(SVGValidationError::BlankAttributeValue(
-                                                    attr.name.local_name.clone(),
-                                                )
-                                                .into());
+                                                return Err(
+                                                    SVGValidationError::BlankAttributeValue(attr.name.local_name.clone()).into()
+                                                );
                                             }
 
                                             if !attr.value.ends_with('%') {
@@ -702,9 +686,7 @@ impl SchematicRepresentation for Equipment {
                                 }
                                 // Making sure there is indeed a value assigned to the connection_id after processing attributes.
                                 if connection_id == String::new() {
-                                    return Err(
-                                        SVGValidationError::BlankAttributeValue("data-connection-point".to_owned()).into()
-                                    );
+                                    return Err(SVGValidationError::BlankAttributeValue("data-connection-point".to_owned()).into());
                                 }
                                 self.schematic_symbol.connections.insert(connection_id, connection);
                             }
