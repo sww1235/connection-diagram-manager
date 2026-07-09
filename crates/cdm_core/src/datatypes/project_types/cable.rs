@@ -12,8 +12,8 @@ use crate::{
     datatypes::{
         file_types,
         library_types::{Library, cable_type, cable_type::CableLayer},
-        project_types::{InnerConnectionId, ProjectData},
-        schematic_connector::{AsConnector, ConnectorType, multi_right_angle::MultiRightAngle, right_angle::RightAngle},
+        project_types::ProjectData,
+        schematic_connector::{AsConnector, right_angle::RightAngle},
         unit_helper::length::Length,
         util_types::{IECCodes, LineStyle, PhysicalLocation, UserFields},
     },
@@ -290,7 +290,7 @@ impl Cable {
         &mut self.cores
     }
 
-    /// Return identifier of cable core
+    /// Return identifier of cable core.
     #[must_use]
     #[inline]
     pub fn core_identifier(&self, core_id: &str) -> String {

@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use egui::{Pos2, Rect, Sense, Stroke, Ui, Vec2, response::Response, widgets::Widget};
-use log::{debug, error, trace};
+use log::{error, trace};
 
 use crate::datatypes::{
     color::Color,

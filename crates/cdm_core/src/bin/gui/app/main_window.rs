@@ -15,7 +15,6 @@ use egui::{
     Id,
     Rect,
     Theme,
-    Vec2,
     containers::{
         Window,
         menu,
@@ -30,6 +29,7 @@ use num_traits::cast::FromPrimitive as _;
 use crate::app::{AppState, Commands};
 
 #[expect(clippy::shadow_reuse, reason = "ui and other variables keep getting passed into closures")]
+#[expect(clippy::too_many_lines, reason = "UI function")]
 /// Main window rendering code.
 pub(crate) fn main_window(
     egui_ctx: &egui::Context,

@@ -37,6 +37,7 @@ pub enum End {
 /// `InnerConnection` is the source code representation of the on-disk file format for an in-memory
 /// [`InnerConnection`](crate::datatypes::project_types::connection::InnerConnection).
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[expect(clippy::module_name_repetitions, reason = "still deciding on a better name")]
 #[non_exhaustive]
 pub enum InnerConnection {
     /// A [`Cable`].
