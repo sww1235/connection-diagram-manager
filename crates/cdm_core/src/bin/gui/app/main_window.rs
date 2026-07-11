@@ -199,17 +199,11 @@ pub(crate) fn main_window(
                     }
                     trace!("post_rendered position: {}", equipment.schematic_symbol().position);
                 }
+                //TODO: look for crossed SchematicConnectors and insert wire jumps. Add config
+                //option for this.
 
                 for (cable_id, cable) in &mut project_data.cables {
                     //trace! {"ID: {id}, Cable: {cable:#?}"};
-
-                    //TODO: Finish this
-                    //
-                    //new connector
-                    //
-                    //set endpoints
-                    //
-                    //monitor response for drag
 
                     //TODO: figure out how to get this value out of project config.
                     let connector_type = Some(SCType::RightAngle);

@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use egui::{Pos2, Rect, Sense, Stroke, Ui, Vec2, response::Response, widgets::Widget};
+use egui::{Pos2, Rect, Sense, Stroke, Ui, Vec2, epaint::MarginF32, response::Response, widgets::Widget};
 use log::{error, trace};
 
 use crate::datatypes::{
@@ -52,12 +52,30 @@ impl SchematicConnector for RightAngle {
 
 impl Widget for &mut RightAngle {
     #[inline]
+    #[expect(clippy::similar_names, reason = "partial false positive")]
+    #[expect(clippy::arithmetic_side_effects, reason = "UI code")]
     fn ui(self, ui: &mut Ui) -> Response {
         let sense = Sense::click_and_drag();
         let response: Response;
         let painter = ui.painter();
 
-        //TODO: see if it is possible to create a interact polygon rather than rectangle.
+        //TODO: add configuration option for this
+        let buffer_buffer: f32 = 2.0;
+        let interaction_buffer_amount = self.line_style.line_thickness + buffer_buffer;
+
+        let vertical_interaction_buffer = MarginF32 {
+            left: 0.0,
+            right: 0.0,
+            top: interaction_buffer_amount,
+            bottom: interaction_buffer_amount,
+        };
+        let horizontal_interaction_buffer = MarginF32 {
+            left: interaction_buffer_amount,
+            right: interaction_buffer_amount,
+            top: 0.0,
+            bottom: 0.0,
+        };
+
         //TODO: use painter.add and Shape::dashed_line_with_offset instead if dashed line.
 
         //debug! {"RightAngle::ui() end_1 directions: {:?}", self.end1.directions};
@@ -67,24 +85,52 @@ impl Widget for &mut RightAngle {
             && self.end2.directions.is_subset(&ConnectionDirection::horizontal())
         {
             //trace! {"right/left:right/left"}
+            let stroke = Into::<Stroke>::into(self.line_style.clone());
+            trace! {"STROKE: {stroke:?}"}
             let end1_midpoint = Pos2::new(self.midpoint.x, self.end1.position.y);
             let end2_midpoint = Pos2::new(self.midpoint.x, self.end2.position.y);
             let line_points: Vec<Pos2> = vec![self.end1.position, end1_midpoint, end2_midpoint, self.end2.position];
-            let stroke = Into::<Stroke>::into(self.line_style.clone());
-            trace! {"STROKE: {stroke:?}"}
             painter.line(line_points.clone(), stroke);
-            response = ui.allocate_rect(Rect::from_points(&line_points), sense);
+            //let line1_points: Vec<Pos2> = vec![self.end1.position, end1_midpoint];
+            let line2_points: Vec<Pos2> = vec![end1_midpoint, end2_midpoint];
+            //let line3_points: Vec<Pos2> = vec![end2_midpoint, self.end2.position];
+
+            //let line1_rect: Rect = Rect::from_points(&line1_points) + vertical_interaction_buffer;
+            let line2_rect: Rect = Rect::from_points(&line2_points) + horizontal_interaction_buffer;
+            //let line3_rect: Rect = Rect::from_points(&line3_points) + vertical_interaction_buffer;
+
+            // Horizontal line
+            //let line1_response = ui.allocate_rect(line1_rect, sense);
+            // Vertical line
+            let line2_response = ui.allocate_rect(line2_rect, sense);
+            // Horizontal line
+            //let line3_response = ui.allocate_rect(line3_rect, sense);
+            response = line2_response;
         } else if self.end1.directions.is_subset(&ConnectionDirection::vertical())
             && self.end2.directions.is_subset(&ConnectionDirection::vertical())
         {
             //trace! {"top/bottom:top/bottom"}
+            let stroke = Into::<Stroke>::into(self.line_style.clone());
+            trace! {"STROKE: {stroke:?}"}
             let end1_midpoint = Pos2::new(self.end1.position.x, self.midpoint.y);
             let end2_midpoint = Pos2::new(self.end2.position.x, self.midpoint.y);
             let line_points: Vec<Pos2> = vec![self.end1.position, end1_midpoint, end2_midpoint, self.end2.position];
-            let stroke = Into::<Stroke>::into(self.line_style.clone());
-            trace! {"STROKE: {stroke:?}"}
             painter.line(line_points.clone(), stroke);
-            response = ui.allocate_rect(Rect::from_points(&line_points), sense);
+            //let line1_points: Vec<Pos2> = vec![self.end1.position, end1_midpoint];
+            let line2_points: Vec<Pos2> = vec![end1_midpoint, end2_midpoint];
+            //let line3_points: Vec<Pos2> = vec![end2_midpoint, self.end2.position];
+
+            //let line1_rect: Rect = Rect::from_points(&line1_points) + horizontal_interaction_buffer;
+            let line2_rect: Rect = Rect::from_points(&line2_points) + vertical_interaction_buffer;
+            //let line3_rect: Rect = Rect::from_points(&line3_points) + horizontal_interaction_buffer;
+
+            // vertical line
+            //let line1_response = ui.allocate_rect(line1_rect, sense);
+            // horizontal line
+            let line2_response = ui.allocate_rect(line2_rect, sense);
+            // vertical line
+            //let line3_response = ui.allocate_rect(line3_rect, sense);
+            response = line2_response;
         } else if self.end1.directions.is_subset(&ConnectionDirection::horizontal())
             && self.end2.directions.is_subset(&ConnectionDirection::vertical())
         {
