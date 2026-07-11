@@ -134,12 +134,30 @@ impl Widget for &mut RightAngle {
         } else if self.end1.directions.is_subset(&ConnectionDirection::horizontal())
             && self.end2.directions.is_subset(&ConnectionDirection::vertical())
         {
-            trace! {"right/left:top/bottom"} //TODO
+            // This is a true right angle connector. There is no 3rd line to drag here so no need
+            // to allocate rectangle, and no actual dragablility, other than being updated via the
+            // endpoints during equipment drag.
+
+            //trace! {"right/left:top/bottom"}
+            let stroke = Into::<Stroke>::into(self.line_style.clone());
+            trace! {"STROKE: {stroke:?}"}
+            let corner = Pos2::new(self.end2.position.x, self.end1.position.y);
+            let line_points: Vec<Pos2> = vec![self.end1.position, corner, self.end2.position];
+            painter.line(line_points.clone(), stroke);
             response = ui.response();
         } else if self.end1.directions.is_subset(&ConnectionDirection::vertical())
             && self.end2.directions.is_subset(&ConnectionDirection::horizontal())
         {
-            trace! {"top/bottom:right/left"} //TODO
+            // This is a true right angle connector. There is no 3rd line to drag here so no need
+            // to allocate rectangle, and no actual dragablility, other than being updated via the
+            // endpoints during equipment drag.
+
+            //trace! {"right/left:top/bottom"}
+            let stroke = Into::<Stroke>::into(self.line_style.clone());
+            trace! {"STROKE: {stroke:?}"}
+            let corner = Pos2::new(self.end1.position.x, self.end2.position.y);
+            let line_points: Vec<Pos2> = vec![self.end1.position, corner, self.end2.position];
+            painter.line(line_points.clone(), stroke);
             response = ui.response();
         } else {
             error! {"RA ui() fn: unsupported direction combination"}
