@@ -43,6 +43,7 @@ pub(crate) fn main_window(
     let left_sidebar_id = Id::new("root-left-sidebar");
     //let central_panel_id = Id::new("central-panel");
 
+    //TODO: provide configuration option for showing interaction rect around objects when hovered.
     let main_window_is_open = &mut app_state.main_window_state.is_open;
     Window::new("Main Window")
         .id(main_window_id)
@@ -170,7 +171,7 @@ pub(crate) fn main_window(
                             }
                         }
                     }
-                    response.paint_debug_info();
+                    //response.paint_debug_info();
 
                     if response.hovered() {
                         // This should be CursorIcon::Grab but it is not implemented yet.

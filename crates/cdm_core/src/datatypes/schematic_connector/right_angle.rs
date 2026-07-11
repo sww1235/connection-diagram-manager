@@ -59,7 +59,7 @@ impl Widget for &mut RightAngle {
         let response: Response;
         let painter = ui.painter();
 
-        //TODO: add configuration option for this
+        //TODO: add configuration option for extra interaction buffer
         let buffer_buffer: f32 = 2.0;
         let interaction_buffer_amount = self.line_style.line_thickness + buffer_buffer;
 
@@ -75,6 +75,7 @@ impl Widget for &mut RightAngle {
             top: 0.0,
             bottom: 0.0,
         };
+
 
         //TODO: use painter.add and Shape::dashed_line_with_offset instead if dashed line.
 

@@ -53,6 +53,9 @@ impl From<file_types::term_cable::TermCable> for TermCable {
     }
 }
 
+//TODO: for schematic connector implementation, look at which cores have all their cores assigned
+//to connector pins, and then only craete schematic connecors for the cores with connectors.
+
 impl TermCable {
     /// length of `TermCableType`.
     ///
