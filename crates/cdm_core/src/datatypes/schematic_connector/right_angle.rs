@@ -70,7 +70,9 @@ impl Widget for &mut RightAngle {
             let end1_midpoint = Pos2::new(self.midpoint.x, self.end1.position.y);
             let end2_midpoint = Pos2::new(self.midpoint.x, self.end2.position.y);
             let line_points: Vec<Pos2> = vec![self.end1.position, end1_midpoint, end2_midpoint, self.end2.position];
-            painter.line(line_points.clone(), Into::<Stroke>::into(self.line_style.clone()));
+            let stroke = Into::<Stroke>::into(self.line_style.clone());
+            trace! {"STROKE: {stroke:?}"}
+            painter.line(line_points.clone(), stroke);
             response = ui.allocate_rect(Rect::from_points(&line_points), sense);
         } else if self.end1.directions.is_subset(&ConnectionDirection::vertical())
             && self.end2.directions.is_subset(&ConnectionDirection::vertical())
@@ -79,7 +81,9 @@ impl Widget for &mut RightAngle {
             let end1_midpoint = Pos2::new(self.end1.position.x, self.midpoint.y);
             let end2_midpoint = Pos2::new(self.end2.position.x, self.midpoint.y);
             let line_points: Vec<Pos2> = vec![self.end1.position, end1_midpoint, end2_midpoint, self.end2.position];
-            painter.line(line_points.clone(), Into::<Stroke>::into(self.line_style.clone()));
+            let stroke = Into::<Stroke>::into(self.line_style.clone());
+            trace! {"STROKE: {stroke:?}"}
+            painter.line(line_points.clone(), stroke);
             response = ui.allocate_rect(Rect::from_points(&line_points), sense);
         } else if self.end1.directions.is_subset(&ConnectionDirection::horizontal())
             && self.end2.directions.is_subset(&ConnectionDirection::vertical())

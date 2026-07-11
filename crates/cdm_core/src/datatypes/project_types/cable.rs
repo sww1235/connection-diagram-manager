@@ -202,13 +202,18 @@ impl Cable {
                     self.insert_cores(&core_type.cores, library, Some(core_id_stripped))?;
                 }
                 Ordering::Equal => {
+                    let line_style = ref_core.line_style.clone().unwrap_or(core_type.line_style.clone());
+                    let connector = RightAngle {
+                        line_style: line_style.clone(),
+                        ..RightAngle::default()
+                    };
                     self.cores.insert(
                         id.to_owned(),
                         Core {
                             cable_type: ref_core.type_id.clone(),
                             layers: core_type.layers.clone(),
-                            line_style: ref_core.line_style.clone().unwrap_or(core_type.line_style.clone()),
-                            connector: RightAngle::default(),
+                            line_style,
+                            connector,
                         },
                     );
                 }
