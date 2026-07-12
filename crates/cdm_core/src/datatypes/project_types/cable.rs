@@ -267,7 +267,7 @@ impl Cable {
                     core_ids.extend(sub_core_ids);
                 }
                 Ordering::Equal => {
-                        core_ids.push(core_id);
+                    core_ids.push(core_id);
                 }
                 Ordering::Less => {
                     return Err(CableTypeError::NoCores(ref_core.type_id.clone()).into());
@@ -281,7 +281,6 @@ impl Cable {
 
         Ok(core_ids)
     }
-
 
     /// Updates internal fields of `Cable` instance from library data.
     ///

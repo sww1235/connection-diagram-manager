@@ -76,7 +76,6 @@ impl Widget for &mut RightAngle {
             bottom: 0.0,
         };
 
-
         //TODO: use painter.add and Shape::dashed_line_with_offset instead if dashed line.
 
         //debug! {"RightAngle::ui() end_1 directions: {:?}", self.end1.directions};
