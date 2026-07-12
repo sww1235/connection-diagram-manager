@@ -18,7 +18,7 @@ use egui::{
     containers::{
         Window,
         menu,
-        panel::{CentralPanel, SidePanel, TopBottomPanel},
+        panel::{CentralPanel, Panel},
     },
     epaint::emath::GuiRounding as _,
     style::Visuals,
@@ -53,17 +53,17 @@ pub(crate) fn main_window(
         .default_height(f32::from_i32(app_config.graphics_config.starting_window_height).unwrap_or(1024.0))
         .resizable(true)
         .show(egui_ctx, |ui| {
-            TopBottomPanel::top(top_menu_id).show_inside(ui, |ui| {
+            Panel::top(top_menu_id).show(ui, |ui| {
                 main_menu(ui, &mut app_state.commands);
             });
 
-            SidePanel::left(left_sidebar_id).show_inside(ui, |ui| {
+            Panel::left(left_sidebar_id).show(ui, |ui| {
                 //TODO: add list of locations/physical locations/enclosures? here as a tree
                 //view and make selecting them filter what objects you see.
                 ui.label("This is the sidebar");
             });
 
-            CentralPanel::default().show_inside(ui, |ui| {
+            CentralPanel::default().show(ui, |ui| {
                 let panel_rect = ui.max_rect();
                 let min_rect_position = panel_rect.left_top();
                 let max_rect_position = panel_rect.right_bottom();
