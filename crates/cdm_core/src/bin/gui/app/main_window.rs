@@ -2,6 +2,7 @@ use cdm_core::{
     config::ApplicationConfig,
     datatypes::{
         project_types::{
+            Config as ProjectConfig,
             Project,
             connection::{End, EndDesignation, InnerConnection},
         },
@@ -35,6 +36,7 @@ pub(crate) fn main_window(
     app_config: &ApplicationConfig,
     app_state: &mut AppState,
     project_data: &mut Project,
+    project_config: &ProjectConfig,
 ) {
     let main_window_id = Id::new("root");
     let top_menu_id = Id::new("root-top-menu");
@@ -204,12 +206,9 @@ pub(crate) fn main_window(
                 for (cable_id, cable) in &mut project_data.cables {
                     //trace! {"ID: {id}, Cable: {cable:#?}"};
 
-                    //TODO: figure out how to get this value out of project config.
-                    let connector_type = Some(SCType::RightAngle);
                     #[expect(clippy::wildcard_enum_match_arm, reason = "returns unimplemented error")]
-                    #[expect(clippy::unnecessary_literal_unwrap, reason = "testing porpoises")]
                     #[expect(clippy::arithmetic_side_effects, reason = "/shrug")]
-                    match connector_type.unwrap_or_default() {
+                    match project_config.schematic_connector_style {
                         SCType::RightAngle => {
                             for (core_id, core) in cable.cores_mut() {
                                 trace! {"attempting to render cable {cable_id} -- {core_id}"}

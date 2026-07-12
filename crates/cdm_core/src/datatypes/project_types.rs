@@ -489,7 +489,8 @@ pub struct Config {
     /// If angled connections will render in schematic and PDF export.
     pub angled_connections: bool,
     /// Default `SchematicConnector` style used in project.
-    pub schematic_connector_style: Option<SCType>,
+    #[serde(default)]
+    pub schematic_connector_style: SCType,
 }
 
 //TODO: impl id() method that returns entity.identifier

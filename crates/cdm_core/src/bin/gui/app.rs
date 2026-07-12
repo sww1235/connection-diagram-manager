@@ -137,7 +137,13 @@ impl mq::EventHandler for App {
 
             egui_extras::install_image_loaders(egui_ctx);
             // Load main window
-            main_window::main_window(egui_ctx, &self.config, &mut self.state, &mut self.project_data);
+            main_window::main_window(
+                egui_ctx,
+                &self.config,
+                &mut self.state,
+                &mut self.project_data,
+                &self.project_config,
+            );
             // This is the close button of the main window being clicked (.open())
             //
             // true when window open

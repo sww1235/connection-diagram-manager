@@ -264,6 +264,16 @@ project_code = "PLACEHOLDER"
 
 # optional
 description = "PLACEHOLDER"
+
+# If angled connections will render
+# Required
+angled_connections = true # PLACEHOLDER
+
+# optional
+# Possible values are RightAngle and Straight
+# RightAngle renders connections using right angled lines (standard eCAD methods)
+# Straight renders connections as straight lines with no adjustability.
+schematic_connection = "PLACEHOLDER"
 ```
 
 
