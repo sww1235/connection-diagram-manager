@@ -1,3 +1,5 @@
+//TODO: remove once bug is fixed: https://github.com/rust-lang/rust-clippy/issues/17407
+#![expect(clippy::std_instead_of_core, reason = "bug in clippy")]
 use std::{
     env,
     io::{self, ErrorKind},
@@ -38,7 +40,7 @@ pub fn read_config_files_cli() -> Result<(ApplicationConfig, Cli), Error> {
 
     // check for config file in various locations first
 
-    // {NAME_SCREAMING_SNAKE_CASE}_CONFIG envitonment variable
+    // {NAME_SCREAMING_SNAKE_CASE}_CONFIG enviroment variable
     // ~/.config/ConnectionDiagramManager/cdm_config.toml
     // /etc/ConnectionDiagramManager/cdm_config.toml
     // /usr/local/etc/ConnectionDiagramManager/cdm_config.toml

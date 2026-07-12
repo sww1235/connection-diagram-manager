@@ -46,7 +46,7 @@ pub fn to_lines(
     buffer.set_language(text_language.clone());
     // see harfbuzz documentation for what this means
     buffer.set_cluster_level(rustybuzz::BufferClusterLevel::MonotoneCharacters);
-    trace! {"{:?}", &buffer};
+    trace! {"{:?}", buffer};
     // see harfbuzz documentation for what this means
     let features: Vec<rustybuzz::Feature> = Vec::new();
 
