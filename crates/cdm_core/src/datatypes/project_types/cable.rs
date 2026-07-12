@@ -207,7 +207,7 @@ impl Cable {
                         ..RightAngle::default()
                     };
                     self.cores.insert(
-                        core_id,
+                        core_id_stripped.to_owned(),
                         Core {
                             cable_type: ref_core.type_id.clone(),
                             layers: core_type.layers.clone(),
