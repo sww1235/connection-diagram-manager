@@ -1,7 +1,6 @@
 use cdm_core::{
     config::ApplicationConfig,
     datatypes::{
-        library_types::Library,
         project_types::{
             Project,
             connection::{End, EndDesignation, InnerConnection},
@@ -36,7 +35,6 @@ pub(crate) fn main_window(
     app_config: &ApplicationConfig,
     app_state: &mut AppState,
     project_data: &mut Project,
-    library_data: &Library,
 ) {
     let main_window_id = Id::new("root");
     let top_menu_id = Id::new("root-top-menu");
