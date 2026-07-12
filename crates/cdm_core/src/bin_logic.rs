@@ -7,7 +7,7 @@ use std::{
 };
 
 use clap::{Parser, ValueEnum};
-use figment::{
+use figment2::{
     Figment,
     providers::{Format as _, Serialized, Toml},
 };

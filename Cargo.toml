@@ -15,7 +15,7 @@ log = { version = "~0" }
 rustybuzz = { version = "~0" }
 serde = { version = "~1", features = ["derive"] }
 toml = { version = "~1" }
-figment = { version = "~0.10", features = ["toml"] }
+figment2 = { version = "~0.11", features = ["toml"] }
 simple_logger = { version = "~5" }
 thiserror = { version = "~2" }
 usvg = { version = "~0" }

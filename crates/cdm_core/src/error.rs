@@ -55,7 +55,7 @@ pub enum Error {
     UnitParsingError(#[from] UnitParsingError),
     /// Errors resulting from parsing config files.
     #[error(transparent)]
-    ConfigParsingError(#[from] figment::Error),
+    ConfigParsingError(#[from] figment2::Error),
     /// Errors resulting from TOML file parsing.
     #[error(transparent)]
     TomlError(#[from] toml::de::Error),
