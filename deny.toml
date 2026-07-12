@@ -108,11 +108,9 @@ exceptions = [
     # Each entry is the crate and version constraint, and its specific allow
     # list
     { allow = ["Zlib"], crate = "slotmap" },
+    { allow = ["Zlib"], crate = "foldhash" },
     { allow = ["Unicode-3.0"], crate = "unicode-ident"},
-    { allow = ["BSL-1.0"], crate = "clipboard-win"},
-    { allow = ["BSL-1.0"], crate = "error-code"},
     { allow = ["OFL-1.1", "Ubuntu-font-1.0"], crate = "epaint_default_fonts"},
-    { allow = ["ISC"], crate = "libloading"},
 ]
 
 # Some crates don't have (easily) machine readable licensing information,
@@ -153,7 +151,7 @@ registries = [
 # Lint level for when multiple versions of the same crate are detected
 multiple-versions = "warn"
 # Lint level for when a crate version requirement is `*`
-wildcards = "allow"
+wildcards = "warn"
 # The graph highlighting used when creating dotgraphs for crates
 # with multiple versions
 # * lowest-version - The path to the lowest versioned duplicate is highlighted
@@ -230,11 +228,13 @@ unknown-registry = "warn"
 # Lint level for what to happen when a crate from a git repository that is not
 # in the allow list is encountered
 unknown-git = "warn"
+# What is the least restrictive specifier for a git dependancy.
+required-git-spec = "tag"
 # List of URLs for allowed crate registries. Defaults to the crates.io index
 # if not specified. If it is specified but empty, no registries are allowed.
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
 # List of URLs for allowed Git repositories
-allow-git = []
+allow-git = ["https://github.com/sww1235/egui-miniquad"]
 
 #[sources.allow-org]
 # 1 or more github.com organizations to allow git sources for
