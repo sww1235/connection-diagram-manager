@@ -10,7 +10,7 @@ pub struct TermCable {
     /// The `TermCableType` of this instance.
     pub term_cable_type: String,
     /// The structured name of the `TermCable` instance.
-    pub identifier: Option<String>,
+    pub identifier: String,
     /// Optional description.
     pub description: Option<String>,
     /// Pathway containing instance.

@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use serde::{Deserialize, Serialize};
 
 use crate::datatypes::{
-    library_types::term_cable_type::{Connector, WireCable},
+    library_types::term_cable_type::Connector,
     unit_helper::length::Length,
     util_types::{Catalog, LineStyle},
 };
@@ -15,8 +15,8 @@ use crate::datatypes::{
 pub struct TermCableType {
     /// Catalog information.
     pub catalog: Option<Catalog>,
-    /// Underlying wire or cable type of Terminated Cable.
-    pub wire_cable: WireCable,
+    /// ID of underlying cable type of Terminated Cable.
+    pub cable_type: String,
     /// Nominal Length of Terminated Cable.
     pub nominal_length: Option<Length>,
     /// Actual Length of Terminated Cable.

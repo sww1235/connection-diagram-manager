@@ -94,7 +94,7 @@ impl FromFile for CableType {
     }
 }
 
-/// `Core` represents an individual conductor, sub_cable, strength member or optical fiber in a cable.
+/// `Core` represents an individual conductor, inner cable, strength member or optical fiber in a cable.
 #[derive(Debug, PartialEq, Clone)]
 #[non_exhaustive]
 pub struct Core {

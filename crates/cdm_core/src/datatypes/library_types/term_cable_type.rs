@@ -23,8 +23,8 @@ use crate::{
 pub struct TermCableType {
     /// Catalog information.
     pub catalog: Option<Catalog>,
-    /// Underlying wire or cable type of Terminated Cable.
-    pub wire_cable: WireCable,
+    /// ID of underlying cable type of Terminated Cable.
+    pub cable_type: String,
     /// Nominal Length of Terminated Cable.
     pub nominal_length: Option<Length>,
     /// Actual Length of Terminated Cable.
@@ -44,7 +44,7 @@ impl From<file_types::term_cable_type::TermCableType> for TermCableType {
     fn from(value: file_types::term_cable_type::TermCableType) -> Self {
         Self {
             catalog: value.catalog,
-            wire_cable: value.wire_cable,
+            cable_type: value.cable_type,
             nominal_length: value.nominal_length,
             actual_length: value.actual_length,
             line_style: value.line_style,
@@ -64,16 +64,6 @@ impl FromFile for TermCableType {
     fn set_datafile(&mut self, datafile_path: &Path) {
         self.contained_datafile_path = datafile_path.to_path_buf();
     }
-}
-
-/// `WireCable` allows either a `WireType` or `CableType` to be the root of a `TermCableType`.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-#[expect(clippy::exhaustive_enums, reason = "Only these two options make sense in this enum")]
-pub enum WireCable {
-    /// `CableType`.
-    CableType(String),
-    /// `WireType`.
-    WireType(String),
 }
 
 /// `TermCableConnectorTermination` represents the connections between a pin of an individual
