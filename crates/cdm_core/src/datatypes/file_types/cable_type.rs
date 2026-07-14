@@ -42,7 +42,7 @@ pub struct CableType {
 #[non_exhaustive]
 pub struct Core {
     /// ID of `CableType` that this core is made of.
-    pub type_id: String,
+    pub cable_type: String,
     /// `LineStyle` of `CableType`. If `None`, then it will inherit from the parent `CableType`.
     pub line_style: Option<LineStyle>,
     /// The material the core is made out of.

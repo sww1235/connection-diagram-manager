@@ -33,7 +33,7 @@ pub struct Cable {
     /// Optional description.
     pub description: Option<String>,
     /// length of wire or cable.
-    pub length: Length,
+    length: Length,
     /// Pathway key containing instance.
     pub pathway: Option<String>,
     /// physical location of Cable.
@@ -184,8 +184,8 @@ impl Cable {
         super_id: Option<&str>,
     ) -> Result<(), LibraryError> {
         for (id, ref_core) in reference_cores {
-            let core_type = library.cable_types.get(&ref_core.type_id).ok_or(LibraryError::ValueNotFound {
-                id: ref_core.type_id.clone(),
+            let core_type = library.cable_types.get(&ref_core.cable_type).ok_or(LibraryError::ValueNotFound {
+                id: ref_core.cable_type.clone(),
                 found_in: format!("cable instance {}", self.identifier).to_owned(),
                 library_type: "Cable Type".to_owned(),
             })?;
@@ -209,7 +209,7 @@ impl Cable {
                     self.cores.insert(
                         core_id_stripped.to_owned(),
                         Core {
-                            cable_type: ref_core.type_id.clone(),
+                            cable_type: ref_core.cable_type.clone(),
                             layers: core_type.layers.clone(),
                             line_style,
                             connector,
@@ -217,7 +217,7 @@ impl Cable {
                     );
                 }
                 Ordering::Less => {
-                    return Err(CableTypeError::NoCores(ref_core.type_id.clone()).into());
+                    return Err(CableTypeError::NoCores(ref_core.cable_type.clone()).into());
                 }
             }
         }
@@ -249,8 +249,8 @@ impl Cable {
     ) -> Result<Vec<String>, LibraryError> {
         let mut core_ids: Vec<String> = Vec::new();
         for (id, ref_core) in reference_cores {
-            let core_type = library.cable_types.get(&ref_core.type_id).ok_or(LibraryError::ValueNotFound {
-                id: ref_core.type_id.clone(),
+            let core_type = library.cable_types.get(&ref_core.cable_type).ok_or(LibraryError::ValueNotFound {
+                id: ref_core.cable_type.clone(),
                 found_in: format!("cable instance {}", self.identifier).to_owned(),
                 library_type: "Cable Type".to_owned(),
             })?;
@@ -270,7 +270,7 @@ impl Cable {
                     core_ids.push(core_id);
                 }
                 Ordering::Less => {
-                    return Err(CableTypeError::NoCores(ref_core.type_id.clone()).into());
+                    return Err(CableTypeError::NoCores(ref_core.cable_type.clone()).into());
                 }
             }
         }
@@ -353,6 +353,13 @@ impl Cable {
     pub fn core_identifier(&self, core_id: &str) -> String {
         let core_identifier = format! {"{}-{}", self.identifier, core_id};
         core_identifier
+    }
+
+    /// Returns length of cable.
+    #[must_use]
+    #[inline]
+    pub fn len(&self) -> Length {
+        self.length.clone()
     }
 }
 

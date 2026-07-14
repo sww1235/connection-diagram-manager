@@ -99,7 +99,7 @@ impl FromFile for CableType {
 #[non_exhaustive]
 pub struct Core {
     /// ID of `CableType` that this core is made of.
-    pub type_id: String,
+    pub cable_type: String,
     /// `LineStyle` of `CableType`. If `None`, then it will inherit from the parent `CableType`.
     pub line_style: Option<LineStyle>,
     /// The material the core is made out of.
@@ -120,7 +120,7 @@ impl From<file_types::cable_type::Core> for Core {
     #[inline]
     fn from(value: file_types::cable_type::Core) -> Self {
         Self {
-            type_id: value.type_id,
+            cable_type: value.cable_type,
             line_style: value.line_style,
             material: value.material,
             cross_sect_area: value.cross_sect_area,
