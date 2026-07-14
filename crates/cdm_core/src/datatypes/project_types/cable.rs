@@ -11,13 +11,13 @@ use log::trace;
 use crate::{
     datatypes::{
         file_types,
-        library_types::{Library, cable_type, cable_type::CableLayer},
+        library_types::{Library, cable_type::{self, CableLayer}},
         project_types::ProjectData,
         schematic_connector::{AsConnector, right_angle::RightAngle},
         unit_helper::length::Length,
         util_types::{IECCodes, LineStyle, PhysicalLocation, UserFields},
     },
-    error::{CableTypeError, Error, LibraryError},
+    error::{CableTypeError, LibraryError},
     traits::FromFile,
 };
 
@@ -167,8 +167,8 @@ impl From<file_types::cable::Cable> for Cable {
 //}
 
 impl Cable {
-    /// `insert_cores` handles the creation of all the individual cables inside a cable and
-    /// its cores.
+    /// `insert_cores` handles the creation of all the individual `Core`s inside a cable and
+    /// nested `Core`s.
     ///
     /// `super_id` passes through the core ID of the previous iteration so it gets concatenated
     /// correctly.
@@ -289,8 +289,7 @@ impl Cable {
     /// Will return errors if values needed in the function are not found in project or library
     /// data.
     #[inline]
-    #[expect(clippy::result_large_err, reason = "deal with it")]
-    pub fn update_data_from_library(&mut self, library: &Library) -> Result<(), Error> {
+    pub fn update_data_from_library(&mut self, library: &Library) -> Result<(), LibraryError> {
         let cable_type = library.cable_types.get(&self.cable_type).ok_or(LibraryError::ValueNotFound {
             id: self.cable_type.clone(),
             found_in: format!("cable instance {}", self.identifier).to_owned(),
