@@ -32,8 +32,12 @@ pub struct TermCableType {
     /// appearance in schematics.
     pub line_style: LineStyle,
     /// One end of Terminated Cable.
+    ///
+    /// Flat map of all connectors on end1 of `TermCableType`.
     pub end1: BTreeMap<String, Connector>,
     /// The other end of Terminated Cable.
+    ///
+    /// Flat map of all connectors on end2 of `TermCableType`.
     pub end2: BTreeMap<String, Connector>,
     /// datafile the struct instance was read in from.
     pub(crate) contained_datafile_path: PathBuf,
@@ -66,22 +70,24 @@ impl FromFile for TermCableType {
     }
 }
 
-/// `TermCableConnectorTermination` represents the connections between a pin of an individual
-/// `TermCableConnector` and the individual core of the cable.
+/// [`Termination`] represents the connections between a pin of an individual
+/// [`Connector`] and the individual core of the cable.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct Termination {
-    /// `Core` represents which individual wire inside a cable this pin is connected to.
+    /// `Core` represents which individual core inside a cable this pin is connected to.
+    ///
+    /// This is the id used in the TOML file.
     pub core: String,
     /// `Pin` represents which pin in the associated connector the core is connected to.
     pub pin: String,
 }
 
-/// `Connector` represents a connector on one end of a `TermCable`.
+/// `Connector` represents a connector on one end of a `TermCableType`.
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[non_exhaustive]
 pub struct Connector {
-    /// `connector_type` represents the connector type that is on the end of a `TermCable`.
+    /// `connector_type` represents the connector type that is on the end of a `TermCableType`.
     pub connector_type: String,
     /// `terminations` represents the pin/core mapping for this connector.
     pub terminations: Vec<Termination>,

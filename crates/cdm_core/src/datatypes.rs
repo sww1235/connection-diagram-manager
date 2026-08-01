@@ -1,3 +1,5 @@
+// https://github.com/rust-lang/rust-clippy/issues/17407
+#![expect(clippy::std_instead_of_core, reason = "This is a false positive for ErrorKind")]
 /// `color` is used to define common colors, as well as allow custom colors to be defined.
 pub mod color;
 /// `file_types` contains the on-disk representation of datatypes used within this application.

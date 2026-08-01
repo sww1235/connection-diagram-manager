@@ -13,19 +13,22 @@ use crate::datatypes::{
 /// `RightAngle` is a connector that either has a `Z` or `S` shape using right angles or an `L`
 /// shape.
 ///
-/// If `end1_direction` and `end2_direction` are both subsets of `ConnectionDirection::horizontal()`
-/// then the connection will render as 2 horizontal lines, one each extending from each of the ends
-/// of the connection. These will extend to the midpoint in the `x` direction between the two ends
-/// and then will be joined with a vertical line.
+/// If `end1.allowed_connection_directions()` and `end2.allowed_connection_directions()` are both
+/// subsets of `ConnectionDirection::horizontal()` then the connection will render as 2 horizontal
+/// lines, one each extending from each of the ends of the connection. These will extend to the
+/// midpoint in the `x` direction between the two ends and then will be joined with a vertical
+/// line.
 ///
-/// If `end1_direction` and `end2_direction` are both subsets of `ConnectionDirection::vertical()`
-/// then the connection will render as 2 vertical lines, one each extending from each of the ends
-/// of the connection. These will extend to the midpoint in the `y` direction between the two ends
-/// and then will be joined with a horizontal line.
+/// If `end1.allowed_connection_directions()` and `end2.allowed_connection_directions()` are both
+/// subsets of `ConnectionDirection::vertical()` then the connection will render as 2 vertical
+/// lines, one each extending from each of the ends of the connection. These will extend to the
+/// midpoint in the `y` direction between the two ends and then will be joined with a horizontal
+/// line.
 ///
-/// If `end1_direction` and `end2_direction` are not subsets of the same orientation
-/// `ConnectionDirection`, then the connection will render as a right angled line, with one
-/// horizontal and one vertical line. Which is which will depend on the `end_direction`.
+/// If `end1.allowed_connection_directions()` and `end2.allowed_connection_directions()` are not
+/// subsets of the same orientation `ConnectionDirection`, then the connection will render as a
+/// right angled line, with one horizontal and one vertical line. Which is which will depend on the
+/// `end_direction`.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq)]
 pub struct RightAngle {
